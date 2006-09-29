@@ -1,0 +1,43 @@
+plugins:
+  - jekyll-redirect-from
+  - jekyll-relative-links
+  - jekyll-remote-theme
+
+readme_index:
+  enabled: false
+
+remote_theme: pmarsceill/just-the-docs
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - assets/generated_files/samples/readme.md
+  - build_scripts
+  - "*.bat"
+
+markdown: kramdown
+kramdown:
+  parse_block_html: true
+
+baseurl: "/foo_title/" 
+url: "https://theqwertiest.github.io"
+
+permalink: pretty
+
+title: Title Bar
+
+collections_dir: collections
+collections:
+  - screenshots
+  - showcase_sample
+  - showcase_user
+
+aux_links:
+  "View on GitHub":
+    - "//github.com/theqwertiest/foo_title"
+
+color_scheme: "dark"
+
+footer_content: "Copyright &copy; 2021 Yuri Shutenko.<br/>Distributed by an MIT license.</a>"
+
+ga_tracking: UA-154231909-1
