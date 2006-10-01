@@ -224,6 +224,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\mainMenuCommands.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ManagedWrapper.cpp"
 				>
 			</File>
@@ -261,6 +265,10 @@
 			</File>
 			<File
 				RelativePath=".\initQuit.h"
+				>
+			</File>
+			<File
+				RelativePath=".\mainMenuCommands.h"
 				>
 			</File>
 			<File

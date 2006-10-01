@@ -1,3 +1,10 @@
+/*
+Part of the foobar2000 0.9 SDK
+Copyright (c) 2001 - 2006, Peter Pawlowski
+Modified by Roman Plasil for foo_managedWrapper and foo_title projects
+Copyright (c) 2005, 2006 Roman Plasil
+
+*/
 #include "Stdafx.h"
 #include <vcclr.h>
 
