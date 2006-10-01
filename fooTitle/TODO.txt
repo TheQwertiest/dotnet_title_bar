@@ -1,3 +1,9 @@
 - add menu command to show up foo_title (which can be particulary useful when it's not always on top or it disappeared mysteriously)
-  - add support for adding menu commands to foo_managedWrapper
+  + add support for adding menu commands to foo_managedWrapper
 - prevent layers from drawing outside their clientRect, that could be probably done with Drawing.Clip or ClipRegion
+ - click through
+ - vizualizace
+ - add support for more actions for buttons, such as commands from the context menu
+ - scriptable values
+ - show only for a while (like pretty popup)
+ - option to set actions for click/doubleclick/rightclick
