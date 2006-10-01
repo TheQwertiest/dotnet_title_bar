@@ -23,7 +23,8 @@
 // LIABILITY FOR ANY DATA DAMAGE/LOSS THAT THIS PRODUCT MAY CAUSE.
 //
 
-// modified by Roman Plasil aka Quiark (www.fi.muni.cz/~xplasil/)
+// Modified by Roman Plasil for foo_managedWrapper and foo_title projects
+
 
 using System;
 using System.Drawing;

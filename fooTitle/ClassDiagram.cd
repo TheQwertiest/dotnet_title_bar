@@ -19,7 +19,7 @@
     <Position X="14.5" Y="3" Width="1.5" />
     <TypeIdentifier>
       <FileName>Display.cs</FileName>
-      <HashCode>AQAAAAQAACAAAAAIAAKIAAQCEAAAACAAEAACIAAAAAA=</HashCode>
+      <HashCode>ASAAAAQAACAAAAAIAAKIAAQCEgAAgCAAEAACYAQACBE=</HashCode>
     </TypeIdentifier>
   </Class>
   <Class Name="fooTitle.Layers.AbsoluteImagesLayer" Collapsed="true">
@@ -40,7 +40,7 @@
     <Position X="5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Layers\FillImagesLayer.cs</FileName>
-      <HashCode>AAAAIAAAAAAAAgAAABAAAAAAAAAEBAAAAAIAAAAAAAA=</HashCode>
+      <HashCode>AAABoAAAAACAAgAAABBAQAAAAAAEBQAAAAIAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
   <Class Name="fooTitle.Layers.Layer">
@@ -58,7 +58,7 @@
     <Position X="9.75" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Layers\Skin.cs</FileName>
-      <HashCode>AAAAKAQAABAAAIQgAAAIAAAAQBIEAAAgrIEyQAECAEI=</HashCode>
+      <HashCode>AAAEKAQIABAAAIQwCBAIAAAAQBIEAABgrIEyQAEiAEM=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -66,17 +66,24 @@
     <Position X="3" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Layers\TextLayer.cs</FileName>
-      <HashCode>AAIAAAAAABQgAgAAAACIAAIAQAAAAAAAAAAACMAAKAA=</HashCode>
+      <HashCode>AAAAAAAAABAgAgAAAACIAAAQYAAJAAAAAAAECAAAqAA=</HashCode>
     </TypeIdentifier>
     <Compartments>
       <Compartment Name="Protected" Collapsed="true" />
     </Compartments>
+    <NestedTypes>
+      <Class Name="fooTitle.Layers.TextLayer.LabelPart" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Layers\TextLayer.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
   </Class>
   <Class Name="fooTitle.Main" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="16.25" Y="1" Width="2" />
     <TypeIdentifier>
       <FileName>Main.cs</FileName>
-      <HashCode>AAQICBgIBRAgAJAAwIAJAQAShgBAAEQABIAQQIDJAAA=</HashCode>
+      <HashCode>AEQMCBgABRAogJQgiIAJIQA6hwFACERADcQQQoBJAAE=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -102,11 +109,18 @@
     </TypeIdentifier>
   </Class>
   <Class Name="fooTitle.Layers.ScrollingTextLayer">
-    <Position X="3" Y="10.25" Width="1.5" />
+    <Position X="3" Y="11.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Layers\ScrollingTextLayer.cs</FileName>
-      <HashCode>AACAAAAAAAAAIgCAAAAAAAAEQAAAEQAAAAAACAAAIAA=</HashCode>
+      <HashCode>AACAAAAAAAAAIgCAAACAAAAEQAQAEQAAAAAACAAAIAA=</HashCode>
     </TypeIdentifier>
+    <NestedTypes>
+      <Enum Name="fooTitle.Layers.ScrollingTextLayer.Align" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Layers\ScrollingTextLayer.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
   </Class>
   <Enum Name="fooTitle.stop_reason" Collapsed="true">
     <Position X="12.25" Y="4" Width="1.5" />
