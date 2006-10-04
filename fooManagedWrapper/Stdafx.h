@@ -38,6 +38,8 @@
 #include "prefPages.h"
 #include "ManagedWrapper.h"
 #include "cfgVars.h"
+#include "Command.h"
 #include "mainMenuCommands.h"
+
 
 #include <vector>

@@ -23,37 +23,42 @@
 
 
 using namespace fooManagedWrapper;
+using namespace System::Collections::Generic;
 
 namespace fooManagedWrapper {
 
 	class CMainMenuCommandsFactoryWrapper;
 
 	public ref class CManagedMainMenuCommands abstract : public IFoobarService {
+	private:
+		void commonInit();
 	protected:
 		CMainMenuCommandsFactoryWrapper *wrapper;
+		List<CCommand^> ^cmds;
 	public:
+		CManagedMainMenuCommands(List<CCommand^> ^_cmds);
 		CManagedMainMenuCommands();
 		virtual ~CManagedMainMenuCommands();
 		!CManagedMainMenuCommands();
 
 		// now the prototypes for the interface methods
-		virtual unsigned int GetCommandsCount() = 0;
-		virtual Guid GetGuid(unsigned int index) = 0;
-		virtual String ^GetName(unsigned int index) = 0;
-		virtual bool GetDescription(unsigned int index, String^ %desc) = 0;
+		virtual unsigned int GetCommandsCount();
+		virtual Guid GetGuid(unsigned int index);
+		virtual String ^GetName(unsigned int index);
+		virtual bool GetDescription(unsigned int index, String^ %desc);
 		virtual Guid GetCommandsParent() = 0;
-		virtual void Execute(unsigned int index) = 0;
+		virtual void Execute(unsigned int index);
 		virtual unsigned int GetCommandsSortPriority() = 0;
-		virtual bool GetDisplay(unsigned int index, String^ %text, unsigned int %flags) = 0;
+		virtual bool GetDisplay(unsigned int index, String^ %text, unsigned int %flags);
 
 		static System::Guid ^file, ^view, ^edit, ^playback, ^library, ^help;
 		
 		enum class Flags {
-			Disabled = mainmenu_commands::flag_disabled,
-			Checked = mainmenu_commands::flag_checked,
-			PriorityBase = mainmenu_commands::sort_priority_base,
-			PriorityDontCare = mainmenu_commands::sort_priority_dontcare,
-			PriorityLast = mainmenu_commands::sort_priority_last
+			Disabled = (unsigned int)mainmenu_commands::flag_disabled,
+			Checked = (unsigned int)mainmenu_commands::flag_checked,
+			PriorityBase = (unsigned int)mainmenu_commands::sort_priority_base,
+			PriorityDontCare = (unsigned int)mainmenu_commands::sort_priority_dontcare,
+			PriorityLast = (unsigned int)mainmenu_commands::sort_priority_last
 		};
 	};
 

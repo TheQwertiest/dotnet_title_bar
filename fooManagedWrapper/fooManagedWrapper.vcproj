@@ -204,6 +204,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Command.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\component_client_managed.cpp"
 				>
 			</File>
@@ -253,6 +257,10 @@
 			>
 			<File
 				RelativePath=".\cfgVars.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Command.h"
 				>
 			</File>
 			<File

@@ -24,15 +24,26 @@
 
 using namespace fooManagedWrapper;
 using namespace std;
+using namespace System::Collections::Generic;
 
 namespace fooManagedWrapper {
 
+	CManagedMainMenuCommands::CManagedMainMenuCommands(List<CCommand ^> ^_cmds) {
+		commonInit();
+		cmds = _cmds;
+	};
+
 	CManagedMainMenuCommands::CManagedMainMenuCommands() {
+		commonInit();
+	}
+
+	void CManagedMainMenuCommands::commonInit() {
+		cmds = gcnew List<CCommand ^>();
 		CManagedWrapper::getInstance()->AddService(this);
 
 		wrapper = new CMainMenuCommandsFactoryWrapper();
 		wrapper->mainMenuCommands.get_static_instance().SetImplementation(this);
-	};
+	}
 
 	CManagedMainMenuCommands::!CManagedMainMenuCommands() {
 		this->~CManagedMainMenuCommands();
@@ -42,7 +53,29 @@ namespace fooManagedWrapper {
 		delete wrapper;
 	}
 
+	unsigned int CManagedMainMenuCommands::GetCommandsCount() {
+		return cmds->Count;
+	}
 
+	Guid CManagedMainMenuCommands::GetGuid(unsigned int index) {
+		return cmds[index]->GetGuid();
+	}
+
+	String ^CManagedMainMenuCommands::GetName(unsigned int index) {
+		return cmds[index]->GetName();
+	}
+
+	bool CManagedMainMenuCommands::GetDescription(unsigned int index, String ^ %desc) {
+		return cmds[index]->GetDescription(desc);
+	}
+
+	void CManagedMainMenuCommands::Execute(unsigned int index) {
+		return cmds[index]->Execute();
+	}
+
+	bool CManagedMainMenuCommands::GetDisplay(unsigned int index, String ^ %text, unsigned int %flags) {
+		return cmds[index]->GetDisplay(text, flags);
+	}
 
 	void CCustomMainMenuCommands::SetImplementation(gcroot<CManagedMainMenuCommands ^> impl) {
 		managedMainMenuCommands = impl;
