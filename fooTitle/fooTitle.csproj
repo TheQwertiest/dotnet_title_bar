@@ -144,6 +144,7 @@
     <Compile Include="Properties.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ViewMenuCommands.cs" />
     <EmbeddedResource Include="Display.resx">
       <DependentUpon>Display.cs</DependentUpon>
       <SubType>Designer</SubType>

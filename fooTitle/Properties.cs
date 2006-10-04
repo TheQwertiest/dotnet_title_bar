@@ -473,7 +473,7 @@ namespace fooTitle {
 
         void Properties_VisibleChanged(object sender, EventArgs e) {
             if (Visible)
-                fillSkinList(Main.DataDir);
+                UpdateValues();
         }
 
         private void applySkinBtn_Click(object sender, EventArgs e) {

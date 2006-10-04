@@ -165,6 +165,8 @@ namespace fooTitle
             }
         }
 
+
+
         private CCfgInt myNormalOpacity;
         /// <summary>
         /// The opacity in normal state
@@ -233,6 +235,13 @@ namespace fooTitle
             fooTitleEnabled = true;
             if (initDone)
                 Display.Show();
+        }
+
+        public void ToggleEnabled() {
+            if (ShowWhen == ShowWhenEnum.Always)
+                ShowWhen = ShowWhenEnum.Never;
+            else
+                ShowWhen = ShowWhenEnum.Always;
         }
 
         /// <summary>
@@ -309,6 +318,8 @@ namespace fooTitle
             }
         }
 
+        protected ViewMenuCommands viewMenuCommands;
+
         public void Create() {
             instance = this;
             positionX = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 5), 100);
@@ -323,6 +334,8 @@ namespace fooTitle
             myFadeLength = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 10), 500);
             myWindowPosition = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 11), (int)Win32.WindowPosition.Topmost);
             propsForm = new Properties(this);
+            viewMenuCommands = new ViewMenuCommands();
+
         }
 
         public void SavePosition() {

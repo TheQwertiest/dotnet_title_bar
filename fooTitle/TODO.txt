@@ -1,5 +1,7 @@
 - add menu command to show up foo_title (which can be particulary useful when it's not always on top or it disappeared mysteriously)
   + add support for adding menu commands to foo_managedWrapper
+  - test unicode in menu items = they don't work
+  + when foo_title is disabled via the menu command, it doesn't show up in the prefpage
 - prevent layers from drawing outside their clientRect, that could be probably done with Drawing.Clip or ClipRegion
  - click through
  - vizualizace
