@@ -25,6 +25,7 @@
 using namespace fooManagedWrapper;
 using namespace std;
 using namespace System::Collections::Generic;
+using namespace System::Text;
 
 namespace fooManagedWrapper {
 
@@ -90,18 +91,13 @@ namespace fooManagedWrapper {
 	}
 
 	void CCustomMainMenuCommands::get_name(t_uint32 p_index, pfc::string_base & p_out) {
-		const char *c_str = CManagedWrapper::ToCString(managedMainMenuCommands->GetName(p_index));
-		p_out = c_str;
-		CManagedWrapper::FreeCString(c_str);
+		p_out = CManagedWrapper::StringToPfcString(managedMainMenuCommands->GetName(p_index));
 	}
 
 	bool CCustomMainMenuCommands::get_description(t_uint32 p_index, pfc::string_base &p_out) {
-		String ^str2 = gcnew String("");
-		bool res;
-		res = managedMainMenuCommands->GetDescription(p_index, (String ^)str2);
-		const char *c_str = CManagedWrapper::ToCString(str2);
-		p_out = c_str;
-		CManagedWrapper::FreeCString(c_str);
+		String ^str;
+		bool res = managedMainMenuCommands->GetDescription(p_index, str);
+		p_out = CManagedWrapper::StringToPfcString(str);
 		return res;
 	}
 
@@ -118,11 +114,9 @@ namespace fooManagedWrapper {
 	}
 	
 	bool CCustomMainMenuCommands::get_display(t_uint32 p_index,pfc::string_base & p_text,t_uint32 & p_flags) {
-		String ^str = gcnew String("");
+		String ^str;
 		bool res = managedMainMenuCommands->GetDisplay(p_index, str, p_flags);
-		const char *c_str = CManagedWrapper::ToCString(str);
-		p_text = c_str;
-		CManagedWrapper::FreeCString(c_str);
+		p_text = CManagedWrapper::StringToPfcString(str);
 		return res;
 	}
 
