@@ -60,11 +60,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\foobar2000\shared\shared.lib $(SolutionDir)\debug\foobar2000_SDK.lib $(SolutionDir)\debug\pfc.lib ole32.lib User32.lib $(NOINHERIT)"
+				AdditionalDependencies="..\..\foobar2000\shared\shared.lib ole32.lib User32.lib $(NOINHERIT)"
 				OutputFile="C:\Devel\foobar2000\devel-0.9.4\components\foo_managedWrapper.dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
+				ProgramDatabaseFile="$(IntDir)\vc80.pdb"
 				EntryPointSymbol="TestEntry"
 				TargetMachine="1"
 			/>
@@ -137,7 +139,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\..\foobar2000\shared\shared.lib ole32.lib User32.lib $(NOINHERIT)"
-				OutputFile="g:\software\fb2k.devel\components\foo_managedWrapper.dll"
+				OutputFile="C:\Devel\foobar2000\devel-0.9.4\components\foo_managedWrapper.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				EntryPointSymbol="TestEntry"
