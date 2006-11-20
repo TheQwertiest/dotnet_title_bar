@@ -72,6 +72,7 @@ namespace fooManagedWrapper {
 		static const char *ToCString(String ^a);
 		// must be called on the string returned by ToCString when it's no longer needed
 		static void FreeCString(const char *a);
+		static pfc::string8 StringToPfcString(String ^a);
 		
 		static _GUID ToGUID(Guid^ guid);
 		static Guid ^FromGUID(const _GUID& guid);

@@ -21,6 +21,7 @@
 
 using namespace System;
 using namespace fooManagedWrapper;
+using namespace System::Text;
 
 namespace fooManagedWrapper {
 
@@ -143,6 +144,28 @@ namespace fooManagedWrapper {
 
 	bool CManagedWrapper::IsFoobarActivated() {
 		return (*UIControlInstance).get_ptr()->is_visible();
+	}
+
+
+	union CharToBytes {
+		unsigned int netChar;
+		struct {
+			unsigned char first;
+			unsigned char second;
+		} bytes;
+	};
+
+	pfc::string8 CManagedWrapper::StringToPfcString(String ^a) {
+		Encoder ^enc = Encoding::UTF8->GetEncoder();
+		int charsUsed, bytesUsed;
+		bool completed;
+		array<unsigned char> ^out = gcnew array<unsigned char>(a->Length * 4);
+		enc->Convert(a->ToCharArray(), 0, a->Length, out, 0, a->Length * 4, true, charsUsed, bytesUsed, completed);
+		char *c_str = new char[bytesUsed];
+		System::Runtime::InteropServices::Marshal::Copy((array<unsigned char> ^)out, (int)0, (System::IntPtr)c_str, (int)bytesUsed);
+		pfc::string8 result(c_str);
+		delete[] c_str;
+		return result;
 	}
 
 
