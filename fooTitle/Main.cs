@@ -272,6 +272,9 @@ namespace fooTitle
 
 		private void timerUpdate(object sender, System.EventArgs e) {
             if (fooTitleEnabled) {
+                // need to update all values that are calculated from formatting strings
+                CurrentSkin.UpdateGeometry(CurrentSkin.ClientRect);
+                CurrentSkin.CheckSize();
                 updateDisplay();
             }
             checkFoobarMinimized();
