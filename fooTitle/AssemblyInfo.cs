@@ -53,6 +53,7 @@ using System.Runtime.CompilerServices;
      - fixed disappearing fades
      - added support for choosing always on top/normal/on desktop z-order
      - added support for creating menu commands from .NET code
+
   
    0.6
      - support for bold/italic text, textlayer rewritten 
