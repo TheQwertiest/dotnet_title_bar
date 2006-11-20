@@ -101,7 +101,7 @@ namespace fooTitle.Layers
 		/// <summary>
 		/// Resizes the skin and all layers, but not the form.
 		/// </summary>
-		/// <param name="newWidth">The new width, it's not yet possible to change height</param>
+		/// <param name="newSize">The new size the skin should have</param>
 		public void Resize(Size newSize) {
 			((AbsoluteGeometry)geometry).Width = newSize.Width;
             ((AbsoluteGeometry)geometry).Height = newSize.Height;
