@@ -35,7 +35,11 @@ namespace fooTitle.Geometries {
     class AbsoluteGeometry : Geometry {
 
         protected Rectangle myParentRect;
-
+        
+        /// <summary>
+        /// The expression to calculate width from. May be null if no expression was given.
+        /// </summary>
+        protected string myExprWidth;
         protected int myWidth;
         public int Width {
             get {
@@ -46,6 +50,11 @@ namespace fooTitle.Geometries {
                 Update(myParentRect);
             }
         }
+
+        /// <summary>
+        /// The expression to calculate height from. May be null if no expression was given.
+        /// </summary>
+        protected string myExprHeight;
         protected int myHeight;
         public int Height {
             get {
@@ -56,6 +65,11 @@ namespace fooTitle.Geometries {
                 Update(myParentRect);
             }
         }
+        /// <summary>
+        /// The expressions to calculate X and Y coordinates of the position from. Either of them may be
+        /// null if no expression was given.
+        /// </summary>
+        protected ExpressionPoint myExprPosition;
         protected Point myPosition;
         public Point Position {
             get {
@@ -66,6 +80,7 @@ namespace fooTitle.Geometries {
                 Update(myParentRect);
             }
         }
+
         protected AlignType myAlign;
         public AlignType Align {
             get {
@@ -82,13 +97,25 @@ namespace fooTitle.Geometries {
 
             // read description from the xml
             XmlNode size = GetFirstChildByName(node, "size");
-            myWidth = Int32.Parse(size.Attributes.GetNamedItem("x").Value);
-            myHeight = Int32.Parse(size.Attributes.GetNamedItem("y").Value);
+
+            // read and store expressions
+            myExprWidth = GetExpressionFromAttribute(size, "x", "100");
+            myExprHeight = GetExpressionFromAttribute(size, "y", "30");
+
+            // get the actual values
+            myWidth = (int)GetNumberFromAttribute(size, "x", "100");
+            myHeight = (int)GetNumberFromAttribute(size, "y", "30");
 
             // read position
             XmlNode position = GetFirstChildByName(node, "position");
-            myPosition.X = Int32.Parse(position.Attributes.GetNamedItem("x").Value);
-            myPosition.Y = Int32.Parse(position.Attributes.GetNamedItem("y").Value);
+
+            // read and store expressions (if any)
+            myExprPosition.X = GetExpressionFromAttribute(position, "x", "0");
+            myExprPosition.Y = GetExpressionFromAttribute(position, "y", "0");
+
+            // get the actual values
+            myPosition.X = (int)GetNumberFromAttribute(position, "x", "0");
+            myPosition.Y = (int)GetNumberFromAttribute(position, "y", "0");
 
             // read align
             if (position.Attributes.GetNamedItem("align").Value == "right")
@@ -106,6 +133,13 @@ namespace fooTitle.Geometries {
         }
 
         public override void Update(Rectangle parentRect) {
+            // calculate parameters 
+            myPosition.X = GetValueFromExpression(myExprPosition.X, myPosition.X);
+            myPosition.Y = GetValueFromExpression(myExprPosition.Y, myPosition.Y);
+            myWidth = GetValueFromExpression(myExprWidth, myWidth);
+            myHeight = GetValueFromExpression(myExprHeight, myHeight);
+
+            // now calculate client rect from the parameters
             myClientRect.Width = myWidth;
             myClientRect.Height = myHeight;
 

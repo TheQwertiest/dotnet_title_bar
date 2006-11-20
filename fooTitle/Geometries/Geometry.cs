@@ -36,6 +36,33 @@ namespace fooTitle.Geometries {
                 return myClientRect;
             }
         }
+        /// <summary>
+        /// This structure describes a rectangle using foobar2000's formatting expressions.
+        /// </summary>
+        public struct ExpressionPadding {
+            public string Left;
+            public string Top;
+            public string Right;
+            public string Bottom;
+        }
+
+        /// <summary>
+        /// This structure describes a point using foobar2000's formatting expressions.
+        /// </summary>
+        public struct ExpressionPoint {
+            public string X;
+            public string Y;
+        }
+
+        /// <summary>
+        /// Stores padding information. Each member stores the size of padding at each side of a rectangle
+        /// </summary>
+        public struct Padding {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
 
         /// <summary>
         /// Creates a new geometry object.

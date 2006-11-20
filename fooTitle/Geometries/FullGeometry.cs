@@ -27,24 +27,44 @@ namespace fooTitle.Geometries {
     [GeometryTypeAttribute("full")]
     class FullGeometry : Geometry{
 
-        protected Rectangle myPadding;
+        /// <summary>
+        /// Current values of padding
+        /// </summary>
+        protected Padding myPadding;
+
+        /// <summary>
+        /// Stored expressions to calculate padding from
+        /// </summary>
+        protected ExpressionPadding myExprPadding;
 
         public FullGeometry(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
             XmlNode padding = GetFirstChildByName(node, "padding");
-            myPadding.X = Int32.Parse(padding.Attributes.GetNamedItem("left").Value);
-            myPadding.Y = Int32.Parse(padding.Attributes.GetNamedItem("top").Value);
-            myPadding.Width = Int32.Parse(padding.Attributes.GetNamedItem("right").Value) - myPadding.Left;
-            myPadding.Height = Int32.Parse(padding.Attributes.GetNamedItem("bottom").Value) - myPadding.Top;
+
+            // read and store expressions
+            myExprPadding.Left = GetExpressionFromAttribute(padding, "left", "0");
+            myExprPadding.Top = GetExpressionFromAttribute(padding, "top", "0");
+            myExprPadding.Right = GetExpressionFromAttribute(padding, "right", "0");
+            myExprPadding.Bottom = GetExpressionFromAttribute(padding, "bottom", "0");
+
+            // get the actual values
+            myPadding.Left = (int)GetNumberFromAttribute(padding, "left", "0");
+            myPadding.Top = (int)GetNumberFromAttribute(padding, "top", "0");
+            myPadding.Right = (int)GetNumberFromAttribute(padding, "right", "0");
+            myPadding.Bottom = (int)GetNumberFromAttribute(padding, "bottom", "0");
             
         }
 
         public override void Update(Rectangle parentRect) {
+            myPadding.Left = GetValueFromExpression(myExprPadding.Left, myPadding.Left);
+            myPadding.Top = GetValueFromExpression(myExprPadding.Top, myPadding.Top);
+            myPadding.Right = GetValueFromExpression(myExprPadding.Right, myPadding.Right);
+            myPadding.Bottom = GetValueFromExpression(myExprPadding.Bottom, myPadding.Bottom);
+
             myClientRect.X = myPadding.Left + parentRect.Left;
             myClientRect.Y = myPadding.Top + parentRect.Top;
 
             myClientRect.Width = parentRect.Width - (myPadding.Left + myPadding.Right);
             myClientRect.Height = parentRect.Height - (myPadding.Top + myPadding.Bottom);
-            
         }
 
         public override Size GetMinimalSize(Display display, Size contentSize) {
