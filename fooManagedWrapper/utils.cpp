@@ -60,20 +60,14 @@ String ^CPlayControl::FormatTitle(MetaDBHandle ^handle, String ^spec) {
 	return res;
 }
 
-/*
-String ^CPlayControl::FormatTitle(String ^spec) {
+MetaDBHandle ^CPlayControl::GetNowPlaying() {
 	static_api_ptr_t<play_control> pc;
-	
-	static_api_ptr_t<titleformat_compiler> titlecompiler;
-	service_ptr_t<titleformat_object> compiledScript;
-	titlecompiler->compile(compiledScript, spec_c);
-	
+	metadb_handle_ptr out;
+	pc->get_now_playing(out);
 
-	
-
+	MetaDBHandle ^res = gcnew MetaDBHandle(out.get_ptr());
+	return res;
 }
-*/
-
 
 void fooManagedWrapper::Console::Error(String ^a) {
 	const char *c_msg = CManagedWrapper::ToCString(a);

@@ -55,11 +55,12 @@ namespace fooManagedWrapper
 			stop_reason_shutting_down = 3
 		};
 		String ^FormatTitle(MetaDBHandle ^dbHandle, String ^spec);
+		MetaDBHandle ^GetNowPlaying();
 	};
 
 	public ref class CPlayControl : public IPlayControl {
 	public:
-	
+		virtual MetaDBHandle ^GetNowPlaying();
 		virtual String ^FormatTitle(MetaDBHandle ^dbHandle, String ^spec);
 	};
 
