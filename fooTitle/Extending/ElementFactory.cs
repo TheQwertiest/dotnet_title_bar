@@ -28,13 +28,13 @@ namespace fooTitle.Extending {
     public class MultipleElementTypesException : ApplicationException {
         protected Type onElement;
 
-        public override String Message { 
-            get { 
+        public override String Message {
+            get {
                 return String.Format("Can't have more than one ElementTypeAttribute on single class : {0} ", onElement.ToString());
-            } 
+            }
         }
 
-        public MultipleElementTypesException(Type _onElement) { 
+        public MultipleElementTypesException(Type _onElement) {
             onElement = _onElement;
         }
     }
@@ -44,8 +44,8 @@ namespace fooTitle.Extending {
         protected Type elementClass;
         protected Assembly assembly;
 
-        public override String Message { 
-            get { 
+        public override String Message {
+            get {
                 return String.Format("Duplicate element type {0} found in assembly {1} on class {2}.",
                         elementType.ToString(), assembly.ToString(), elementClass.ToString());
             }
@@ -63,8 +63,8 @@ namespace fooTitle.Extending {
         protected Type elementClass;
         protected String auxMsg;
 
-        public override String Message { 
-            get { 
+        public override String Message {
+            get {
                 return String.Format("No suitable constructor for element type {0} class {1} found {2}.",
                         elementType, elementClass.ToString(), auxMsg);
             }
@@ -93,8 +93,8 @@ namespace fooTitle.Extending {
         protected String elementType;
         protected String auxMsg;
 
-        public override String Message { 
-            get { 
+        public override String Message {
+            get {
                 return String.Format("Element of type {0} not found {1}.",
                         elementType, auxMsg);
             }
@@ -122,13 +122,13 @@ namespace fooTitle.Extending {
     public class ElementTypeAttribute : Attribute {
         public String Type;
 
-        public ElementTypeAttribute(String type){
+        public ElementTypeAttribute(String type) {
             Type = type;
         }
     }
 
 
-    public class Element  {
+    public class Element {
         public static XmlNode GetFirstChildByName(XmlNode where, string name) {
             foreach (XmlNode i in where)
                 if (i.Name == name)
@@ -145,6 +145,63 @@ namespace fooTitle.Extending {
                 return where.Attributes.GetNamedItem(name).Value;
 
             return def;
+        }
+
+        /// <summary>
+        /// If the attribute contains an expression, it is evaluated and the result is returned. 
+        /// If the attribute is a number, the number is returned
+        /// </summary>
+        /// <param name="where">the node</param>
+        /// <param name="name">name of the attribute</param>
+        /// <param name="def">if the attribute doesn't exist, def is read</param>
+        /// <returns>Evaluated expression or number (depending on what's in the attribute)</returns>
+        public static float GetNumberFromAttribute(XmlNode where, string name, string def) {
+            string val = GetAttributeValue(where, name, def);
+            try {
+                if (val.IndexOfAny(new char[] { '%', '$' }) != -1) {
+                    // a formatting expression
+                    return float.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), val));
+                } else {
+                    // just a plain number
+                    return float.Parse(val);
+                }
+            } catch (Exception e) {
+                fooManagedWrapper.Console.Warning(e.ToString());
+                return float.Parse(def);
+            }
+        }
+
+        /// <summary>
+        /// Reads an expression from XML node attribute. If the node contains no expression, returns null
+        /// (to indicate that it's not an expression and no evaluation should be done)
+        /// </summary>
+        /// <param name="where">The node to extract the attribute from</param>
+        /// <param name="name">The name of the attribute</param>
+        /// <param name="def">The default value if the attribute is not present</param>
+        /// <returns>the expression if it's present or null if there's just a string or a number</returns>
+        public static string GetExpressionFromAttribute(XmlNode where, string name, string def) {
+            string val = GetAttributeValue(where, name, def);
+            if ((val.IndexOfAny(new char[] { '%', '$' })) != -1) {
+                return val;
+            } else {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the expression using the currently playing song. If the expression is null, returns the default valued
+        /// </summary>
+        /// <param name="expr">the expression to evaluate</param>
+        /// <param name="def">the default value which is evaluated if expr is null</param>
+        /// <returns>An integer result</returns>
+        public static int GetValueFromExpression(string expr, int def) {
+            if (expr == null)
+                return def;
+            try {
+                return int.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), expr));
+            } catch (Exception e) {
+                return def;
+            }
         }
     }
 
@@ -192,7 +249,7 @@ namespace fooTitle.Extending {
 
         protected bool elementTypeExists(String type) {
             foreach (Object o in elementsDictionary) {
-                if (((ElementEntry)o).TypeName  == type)  
+                if (((ElementEntry)o).TypeName == type)
                     return true;
             }
             return false;
@@ -211,7 +268,7 @@ namespace fooTitle.Extending {
         /// creates an element specified by it's type
         protected Element CreateElement(String type, object[] parameters) {
             foreach (Object o in elementsDictionary) {
-                if (((ElementEntry)o).TypeName  == type) {
+                if (((ElementEntry)o).TypeName == type) {
                     // an element found
                     Type elementClass = ((ElementEntry)o).Class;
                     return createElement(elementClass, type, parameters);
