@@ -6,6 +6,27 @@
  - click through
  - vizualizace
  - add support for more actions for buttons, such as commands from the context menu
- - scriptable values
+ + scriptable values
  - show only for a while (like pretty popup)
  - option to set actions for click/doubleclick/rightclick
+ - reset options button
+ - maybe create the effect of reflecting glass ;)
+ - extendable panels :)
+ - BUG: closing the display window with Alt-F4 makes it crash
+- cleaning the code
+ - divide the Main class into several smaller classes for easier mantaince
+     - one class that is the plugin itself - that receives events from foobar
+                                           - that creates services such as menu commands
+     - other classes for ..
+     - move properties to one block, protected fields to one block, methods to one block,...
+     
+     
+ted musim udelat:
++ procistit kod
++ jakoze detekci chyb apod
++ moznost odregistrovani z eventu
+- dodelat dalsi typy (float, bool, ...)
++ do intu pridat max/min
+- predelat foo_title na to novy
++ otestovat ruznou casovou souslednost vytvoreni tech promennych apod
++ kdyz se vytvori dalsi promenna se stejnym jmenem tak vyhodit vyjimku
