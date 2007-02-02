@@ -26,6 +26,7 @@ using fooManagedWrapper;
 using fooTitle.Layers;
 using fooTitle.Geometries;
 using fooTitle;
+using fooTitle.Config;
 
 
 namespace fooTitle
@@ -322,9 +323,17 @@ namespace fooTitle
         }
 
         protected ViewMenuCommands viewMenuCommands;
+        protected ShowControl showControl;
+
+        public IConfigStorage Config;
 
         public void Create() {
             instance = this;
+
+            // create the configuration manager
+            Config = new XmlConfigStorage();
+
+
             positionX = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 5), 100);
             positionY = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 6), 100);
             myShowWhen = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 7), 1);
@@ -336,7 +345,13 @@ namespace fooTitle
             myOverOpacity = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 9), 120);
             myFadeLength = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 10), 500);
             myWindowPosition = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 11), (int)Win32.WindowPosition.Topmost);
+            
             propsForm = new Properties(this);
+
+            // initialize show control
+            showControl = new ShowControl();
+
+            // initialize menu commands
             viewMenuCommands = new ViewMenuCommands();
 
         }
@@ -359,6 +374,13 @@ namespace fooTitle
         /// </summary>
 		public void OnInit(IPlayControl a) {
             Main.PlayControl = a;
+
+#if DEBUG
+            // run the tests
+            Tests.TestFramework t = new Tests.test_all();
+            t.Run();
+            t.ReportGUI();
+#endif
 
             propsForm.UpdateValues();
 
