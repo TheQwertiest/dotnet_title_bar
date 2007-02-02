@@ -40,13 +40,12 @@
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
     <RemoteDebugMachine>
     </RemoteDebugMachine>
-    <StartAction>Project</StartAction>
+    <StartAction>Program</StartAction>
     <StartArguments>
     </StartArguments>
     <StartPage>
     </StartPage>
-    <StartProgram>
-    </StartProgram>
+    <StartProgram>C:\Devel\foobar2000\devel-0.9.4\foobar2000.exe</StartProgram>
     <StartURL>
     </StartURL>
     <StartWorkingDirectory>
