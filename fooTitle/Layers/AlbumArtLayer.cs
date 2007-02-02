@@ -78,7 +78,9 @@ namespace fooTitle.Layers {
             string fileName = findAlbumArt(song, Main.GetInstance().AlbumArtFilenames);
             if (fileName != null) {
                 try {
-                    albumArt = new Bitmap(fileName);
+                    Bitmap tmp = new Bitmap(fileName);
+                    albumArt = new Bitmap(tmp);
+                    tmp.Dispose();
                 } catch (Exception e) {
                     albumArt = null;
                     fooManagedWrapper.Console.Warning(String.Format("Cannot open album art {0} : {1}", fileName, e.Message));
