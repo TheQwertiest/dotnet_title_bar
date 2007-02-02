@@ -199,7 +199,7 @@ namespace fooTitle.Extending {
                 return def;
             try {
                 return int.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), expr));
-            } catch (Exception e) {
+            } catch (Exception) {
                 return def;
             }
         }
