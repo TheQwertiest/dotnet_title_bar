@@ -100,6 +100,9 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Config\ConfigStorage.cs" />
+    <Compile Include="Config\ConfigVariables.cs" />
+    <Compile Include="Config\ControlWrappers.cs" />
     <Compile Include="Display.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -144,6 +147,22 @@
     <Compile Include="Properties.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ShowControl.cs" />
+    <Compile Include="Tests\TestFramework.cs" />
+    <Compile Include="Tests\TestReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tests\TestReport.Designer.cs">
+      <DependentUpon>TestReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tests\test_all.cs" />
+    <Compile Include="Tests\test_Config.cs" />
+    <Compile Include="Tests\test_ConfigGUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tests\test_ConfigGUI.Designer.cs">
+      <DependentUpon>test_ConfigGUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="ViewMenuCommands.cs" />
     <EmbeddedResource Include="Display.resx">
       <DependentUpon>Display.cs</DependentUpon>
@@ -152,6 +171,14 @@
     <EmbeddedResource Include="Properties.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Properties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tests\TestReport.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TestReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tests\test_ConfigGUI.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>test_ConfigGUI.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
