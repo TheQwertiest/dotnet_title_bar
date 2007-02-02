@@ -46,14 +46,14 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("0.7.*")]
-[assembly: AssemblyInformationalVersion("0.7 alpha")]
+[assembly: AssemblyInformationalVersion("0.6.99")]
 
 /* Changelog:
    0.7
      - fixed disappearing fades
      - added support for choosing always on top/normal/on desktop z-order
      - added support for creating menu commands from .NET code
-
+     - album art image file is no longer locked, it is loaded into memory
   
    0.6
      - support for bold/italic text, textlayer rewritten 
