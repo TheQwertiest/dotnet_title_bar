@@ -152,7 +152,7 @@ namespace fooTitle
                 SetWindowsPos(Win32.WindowPosition.Bottom);
             }
         }
-
+#pragma warning disable 0168, 219, 67
         protected override void WndProc(ref Message m) {
             if (Main.GetInstance().WindowPosition == Win32.WindowPosition.Bottom) {
                 const int WM_MOUSEACTIVATE = 0x21;
@@ -169,7 +169,8 @@ namespace fooTitle
 
             base.WndProc(ref m);
         }
-#endregion
+#pragma warning restore 0168, 219, 67
+#endregion 
 
 
         #region Dragging
