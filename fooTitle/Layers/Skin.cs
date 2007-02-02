@@ -170,14 +170,14 @@ namespace fooTitle.Layers
         }
 
         #region IPlayCallbackSender Members
-
+#pragma warning disable 0168, 219, 67
         public event OnPlaybackTimeDelegate OnPlaybackTimeEvent;
         public event OnPlaybackNewTrackDelegate OnPlaybackNewTrackEvent;
         public event OnQuitDelegate OnQuitEvent;
         public event OnInitDelegate OnInitEvent;
         public event OnPlaybackStopDelegate OnPlaybackStopEvent;
         public event OnPlaybackPauseDelegate OnPlaybackPauseEvent;
-
+#pragma warning restore 0168, 219, 67
 
         #endregion
 
