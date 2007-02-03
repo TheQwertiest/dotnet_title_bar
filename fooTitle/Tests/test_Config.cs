@@ -193,6 +193,7 @@ namespace fooTitle.Tests {
         public void testMultipleValues() {
             ConfInt eCount = new ConfInt("test/eCount", 1);
             AssertExceptionThrown<ValueAlreadyExistsException>(delegate() { new ConfInt("test/eCount", 1); });
+            eCount.Unregister();
         }
 
         [TestMethod]
@@ -213,6 +214,25 @@ namespace fooTitle.Tests {
             TextBoxWrapper wrapper2 = new TextBoxWrapper(gui2.textBox5, "test/bValue");
 
             AssertEquals(gui2.textBox5.Text, "bbb");
+
+            fValue.Unregister();
+            aValue.Unregister();
+            bValue.Unregister();
+
+            gui2.Dispose();
+        }
+
+        [TestMethod]
+        public void testBool() {
+            ConfBool aBool = new ConfBool("test/aBool", true);
+            AssertEquals(configGui.checkBox1.Checked, true);
+
+            aBool.Value = false;
+            AssertEquals(configGui.checkBox1.Checked, false);
+
+            configGui.checkBox1.Checked = true;
+            AssertEquals(aBool.Value, true);
+
         }
     }
 

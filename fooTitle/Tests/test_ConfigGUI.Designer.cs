@@ -35,6 +35,7 @@ namespace fooTitle.Tests {
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.trackBar3 = new System.Windows.Forms.TrackBar();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
@@ -145,11 +146,23 @@ namespace fooTitle.Tests {
             this.trackBar3.Size = new System.Drawing.Size(104, 40);
             this.trackBar3.TabIndex = 8;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(198, 223);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(80, 17);
+            this.checkBox1.TabIndex = 9;
+            this.checkBox1.Tag = "test/aBool";
+            this.checkBox1.Text = "checkBox1";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // test_ConfigGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(488, 269);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.trackBar3);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.textBox4);
@@ -185,5 +198,6 @@ namespace fooTitle.Tests {
         public System.Windows.Forms.TextBox textBox4;
         public System.Windows.Forms.TextBox textBox5;
         public System.Windows.Forms.TrackBar trackBar3;
+        public System.Windows.Forms.CheckBox checkBox1;
     }
 }

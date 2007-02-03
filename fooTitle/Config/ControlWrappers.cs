@@ -235,6 +235,36 @@ namespace fooTitle.Config {
         }
     }
 
+    public class CheckBoxWrapper : ControlWrapper {
+        protected CheckBox checkBox;
+
+        public CheckBoxWrapper(CheckBox _checkBox, string _valueName)
+            : base(_valueName) {
+            checkBox = _checkBox;
+
+            // register onChange event
+            checkBox.CheckedChanged += new EventHandler(checkBox_CheckedChanged);
+
+            if (value != null)
+                value.ReadVisit(this);
+        }
+
+        void checkBox_CheckedChanged(object sender, EventArgs e) {
+            if (value == null)
+                return;
+
+            value.WriteVisit(this);
+        }
+
+        public override void ReadInt(ConfInt val) {
+            checkBox.Checked = (val.Value != 0);
+        }
+
+        public override void WriteInt(ConfInt val) {
+            val.Value = checkBox.Checked ? 1 : 0;
+        }
+    }
+
     public class AutoWrapperCreator {
         protected object instance;
         protected List<ControlWrapper> controlWrappers = new List<ControlWrapper>();
@@ -258,16 +288,22 @@ namespace fooTitle.Config {
                     continue;
                 if (value.Tag == null)
                     continue;
-
-                if (f.FieldType.Equals(typeof(TextBox))) {
-                    controlWrappers.Add(new TextBoxWrapper((TextBox)value, (string)value.Tag));
-                } else if (f.FieldType.Equals(typeof(TrackBar))) {
-                    controlWrappers.Add(new TrackBarWrapper((TrackBar)value, (string)value.Tag));
-                }
+                createWrapper(f, value);
             }
         }
 
-        bool controlsMemberFilter(MemberInfo m, object filterCriteria) {
+        protected void createWrapper(FieldInfo f, Control value) {
+
+            if (f.FieldType.Equals(typeof(TextBox))) {
+                controlWrappers.Add(new TextBoxWrapper((TextBox)value, (string)value.Tag));
+            } else if (f.FieldType.Equals(typeof(TrackBar))) {
+                controlWrappers.Add(new TrackBarWrapper((TrackBar)value, (string)value.Tag));
+            } else if (f.FieldType.Equals(typeof(CheckBox))) {
+                controlWrappers.Add(new CheckBoxWrapper((CheckBox)value, (string)value.Tag));
+            }
+        }
+
+        protected bool controlsMemberFilter(MemberInfo m, object filterCriteria) {
             return typeof(Control).IsAssignableFrom(((FieldInfo)m).FieldType);
         }
     }

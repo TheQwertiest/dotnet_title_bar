@@ -380,4 +380,21 @@ namespace fooTitle.Config {
             }
         }
     }
+
+    public class ConfBool : ConfInt {
+        public ConfBool(string _name, bool _def)
+            : base(_name, _def?1:0) {
+            min = 0;
+            max = 1;
+        }
+
+        public new bool Value {
+            set {
+                base.Value = value?1:0;
+            }
+            get {
+                return base.Value != 0;
+            }
+        }
+    }
 }

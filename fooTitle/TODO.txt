@@ -20,13 +20,3 @@
      - other classes for ..
      - move properties to one block, protected fields to one block, methods to one block,...
      
-     
-ted musim udelat:
-+ procistit kod
-+ jakoze detekci chyb apod
-+ moznost odregistrovani z eventu
-- dodelat dalsi typy (float, bool, ...)
-+ do intu pridat max/min
-- predelat foo_title na to novy
-+ otestovat ruznou casovou souslednost vytvoreni tech promennych apod
-+ kdyz se vytvori dalsi promenna se stejnym jmenem tak vyhodit vyjimku
