@@ -36,7 +36,9 @@ namespace fooTitle.Config {
             valueName = _valueName;
 
             associateValue();
-            ConfValuesManager.GetInstance().OnValueChanged += new ConfValuesManager.ValueChangedDelegate(onValueChanged);
+            //ConfValuesManager.GetInstance().OnValueChanged += new ConfValuesManager.ValueChangedDelegate(onValueChanged);
+            if (value == null)
+                ConfValuesManager.GetInstance().OnValueCreated += new ConfValuesManager.ValueChangedDelegate(onValueCreated);
         }
 
         protected void associateValue() {
@@ -44,19 +46,23 @@ namespace fooTitle.Config {
                 return;
 
             value = ConfValuesManager.GetInstance().GetValueByName(valueName);
+
+            if (value != null) {
+                value.OnChanged += new ConfValuesManager.ValueChangedDelegate(onValueChanged);
+            }
         }
 
         protected virtual void onValueChanged(string name) {
+            value.ReadVisit(this);
+        }
+
+        protected void onValueCreated(string name) {
             if (name != valueName)
                 return;
 
             associateValue();
-            if (value == null)
-                return;
-
             value.ReadVisit(this);
         }
-
 
         #region IConfigValueVisitor Members
 
@@ -201,6 +207,15 @@ namespace fooTitle.Config {
             radioButtons.Add(a);
 
             a.CheckedChanged += new EventHandler(onCheckedChanged);
+
+            // try to update the value
+            if (value != null) {
+                try {
+                    value.ReadVisit(this);
+                } catch (InvalidOperationException) {
+                    // don't worry
+                }
+            }
         }
 
         protected void onCheckedChanged(object sender, EventArgs e) {
@@ -228,7 +243,7 @@ namespace fooTitle.Config {
         }
 
         public override void ReadInt(ConfInt val) {
-            if ((val.Value > radioButtons.Count) || (val.Value < 0))
+            if ((val.Value >= radioButtons.Count) || (val.Value < 0))
                 throw new InvalidOperationException("The associated value is larger than the number of radiobuttons registered.");
 
             radioButtons[val.Value].Checked = true;
