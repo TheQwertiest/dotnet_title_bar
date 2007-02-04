@@ -76,6 +76,11 @@ namespace fooTitle.Config {
         void Save();
 
         /// <summary>
+        /// Invokes loading from the storage.
+        /// </summary>
+        void Load();
+
+        /// <summary>
         /// Used mostly for debugging purposes.
         /// </summary>
         /// <returns>Returns a string representation of the stored data.</returns>
@@ -96,14 +101,20 @@ namespace fooTitle.Config {
         /// <summary>
         /// Creates an instance of XmlConfigStorage and prepares it for writing and reading
         /// </summary>
-        public XmlConfigStorage() {
-            cfgEntry = new fooManagedWrapper.CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 12, 1, 1), "<config/>");
+        public XmlConfigStorage(bool forTesting) {
+            if (forTesting)
+                cfgEntry = new fooManagedWrapper.CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 13), "<config/>");
+            else
+                cfgEntry = new fooManagedWrapper.CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 12), "<config/>");
+        }
+
+        #region IConfig Members
+        public void Load() {
             xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(cfgEntry.GetVal());
             configRoot = (XmlElement)xmlDocument.GetElementsByTagName("config")[0];
         }
 
-        #region IConfig Members
         public void WriteVal(string name, object value) {
             XmlNode el = findElementById(name);
             if (el == null) {
