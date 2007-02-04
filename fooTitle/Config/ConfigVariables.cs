@@ -26,25 +26,6 @@ using fooTitle.Tests;
 
 
 namespace fooTitle.Config {
-    #region Exceptions
-    /// <summary>
-    /// Thrown when user attempts to create multiple values of the same name.
-    /// </summary>
-    public class ValueAlreadyExistsException : Exception {
-        protected string name;
-
-        public override string Message {
-            get {
-                return String.Format("Value {0} is already registered with the ConfValuesManager.");
-            }
-        }
-
-        public ValueAlreadyExistsException(string _name) {
-            name = _name;
-        }
-    }
-
-    #endregion
 
     #region IConfigValueVisitor
     /// <summary>
@@ -73,101 +54,6 @@ namespace fooTitle.Config {
         /// </summary>
         void WriteString(ConfString val);
     }
-    #endregion
-
-    #region ConfValuesManager
-    /// <summary>
-    /// This class stores the available configuration values, handles loading and saving and notifying 
-    /// other classes when a value changes.
-    /// </summary>
-    class ConfValuesManager {
-        protected List<ConfValue> values = new List<ConfValue>();
-        protected static ConfValuesManager instance;
-
-
-        /// <summary>
-        /// This method implements the singleton pattern.
-        /// </summary>
-        /// <returns>An instance of ConfValuesManager. Always returns the same instance.</returns>
-        public static ConfValuesManager GetInstance() {
-            if (instance != null) {
-                return instance;
-            } else {
-                instance = new ConfValuesManager();
-                return instance;
-            }
-        }
-
-        /// <summary>
-        /// Adds a value to this manager to handle.
-        /// </summary>
-        public void AddVal(ConfValue v) {
-            if (GetValueByName(v.Name) != null)
-                throw new ValueAlreadyExistsException(v.Name);
-
-            values.Add(v);
-        }
-
-        /// <summary>
-        /// Removes a value from this manager's care.
-        /// </summary>
-        public void RemoveVal(ConfValue v) {
-            values.Remove(v);
-        }
-
-        /// <summary>
-        /// Notifies registered classes that the value by the name has been changed.
-        /// </summary>
-        public void FireValueChanged(string name) {
-            if (GetValueByName(name) == null) 
-                throw new InvalidOperationException(String.Format("Cannot fire the OnValueChanged event for value named {0}. There is no such variable registered.", name));
-
-            // check if anyone's listening
-            if (OnValueChanged != null)
-                OnValueChanged(name);
-        }
-
-        public delegate void ValueChangedDelegate(string name);
-        public event ValueChangedDelegate OnValueChanged;
-
-        /// <summary>
-        /// Saves all handled values to a config storage
-        /// </summary>
-        public void SaveTo(IConfigStorage to) {
-            foreach (ConfValue v in values) {
-                v.SaveTo(to);
-            }
-
-            to.Save();
-        }
-
-
-        /// <summary>
-        /// Loads all currently registered values from a config storage.
-        /// </summary>
-        public void LoadFrom(IConfigStorage from) {
-            foreach (ConfValue v in values) {
-
-                v.LoadFrom(from);
-            }
-        }
-
-        /// <summary>
-        /// Finds a value by its name.
-        /// </summary>
-        /// <returns>The ConfValue if found, otherwise null.</returns>
-        public ConfValue GetValueByName(string name) {
-            foreach (ConfValue v in values) {
-                if (v.Name == name) {
-                    return v;
-                }
-            }
-
-            return null;
-        }
-
-    }
-
     #endregion
 
     #region ConfValue
@@ -208,8 +94,22 @@ namespace fooTitle.Config {
         /// </summary>
         public virtual void Unregister() {
             ConfValuesManager.GetInstance().RemoveVal(this);
+            OnChanged = null;
         }
         
+        /// <summary>
+        /// Invoked when the value changes
+        /// </summary>
+        public event ConfValuesManager.ValueChangedDelegate OnChanged;
+
+        /// <summary>
+        /// Helper function to fire the OnChanged event. Should be preffered over invoking the event directly
+        /// </summary>
+        protected void fireOnChanged() {
+            if (OnChanged != null)
+                OnChanged(Name);
+        }
+
         /// <summary>
         /// Implement this method to provide a way to save the value to a IConfigStorage
         /// </summary>
@@ -236,7 +136,6 @@ namespace fooTitle.Config {
     #endregion
 
 
-
     /// <summary>
     /// Stores an integer (Int32). Supports a minimum and a maximum value to be specified. Setting the value out of the
     /// bounds will not generate an exception, but the value will stay on the maximum/minimum.
@@ -259,7 +158,7 @@ namespace fooTitle.Config {
                 else
                     val = value;
 
-                ConfValuesManager.GetInstance().FireValueChanged(Name);
+                fireOnChanged();
             }
             get {
                 return val;
@@ -311,7 +210,9 @@ namespace fooTitle.Config {
         }
 
         public override void LoadFrom(IConfigStorage from) {
-            Value = (int)from.ReadVal<int>(name);
+            object res = from.ReadVal<int>(name);
+            if (res != null)
+                Value = (int)res;
         }
 
         public override void ReadVisit(IConfigValueVisitor visitor) {
@@ -343,7 +244,7 @@ namespace fooTitle.Config {
                 if (value != val) {
                     val = value;
 
-                    ConfValuesManager.GetInstance().FireValueChanged(Name);
+                    fireOnChanged();
                 }
             }
         }
@@ -353,7 +254,9 @@ namespace fooTitle.Config {
         }
 
         public override void LoadFrom(IConfigStorage from) {
-            Value = (string)from.ReadVal<string>(Name);
+            object res = from.ReadVal<string>(Name);
+            if (res != null)
+                Value = (string)res;
         }
 
         public override void ReadVisit(IConfigValueVisitor visitor) {
@@ -368,7 +271,7 @@ namespace fooTitle.Config {
     public class ConfEnum<T> : ConfInt where T : IConvertible {
         public ConfEnum(string _name, T _def)
             : base(_name, System.Convert.ToInt32(_def)) {
-
+            min = 0;
         }
 
         public new T Value {
