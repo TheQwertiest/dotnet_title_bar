@@ -114,9 +114,9 @@ namespace fooTitle
         public static extern Bool DeleteObject(IntPtr hObject);
 
         public enum WindowPosition {
-            Topmost = 1,
-            Bottom = 2,
-            NoTopmost = 3
+            Topmost,
+            Bottom,
+            NoTopmost
         }
     }
 

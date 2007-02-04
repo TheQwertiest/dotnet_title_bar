@@ -23,6 +23,8 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
+using fooTitle.Config;
+
 namespace fooTitle
 {
     public class Display : PerPixelAlphaForm
@@ -76,7 +78,12 @@ namespace fooTitle
         }
 
         protected Fade opacityFade;
-        
+
+        protected ConfInt normalOpacity = new ConfInt("display/normalOpacity", 255, 5, 255);
+        protected ConfInt overOpacity = new ConfInt("display/overOpacity", 255, 5, 255);
+        protected ConfInt fadeLength = new ConfInt("display/fadeLength", 100, 0, 2000);
+        protected ConfEnum<Win32.WindowPosition> windowPosition = new ConfEnum<Win32.WindowPosition>("display/windowPosition", Win32.WindowPosition.Topmost);
+
 		public Display(int width, int height)
 		{
 			InitializeComponent();
@@ -89,11 +96,21 @@ namespace fooTitle
 			this.Left = 250;
 			this.Top = 0;
 
-            opacity = Main.GetInstance().NormalOpacity;
+            opacity = normalOpacity.Value;
 
-            SetWindowsPos(Main.GetInstance().WindowPosition);
+            normalOpacity.OnChanged += new ConfValuesManager.ValueChangedDelegate(normalOpacity_OnChanged);
+            windowPosition.OnChanged += new ConfValuesManager.ValueChangedDelegate(windowPosition_OnChanged);
+            SetWindowsPos(windowPosition.Value);
 
 		}
+
+        void windowPosition_OnChanged(string name) {
+            SetWindowsPos(windowPosition.Value);
+        }
+
+        private void normalOpacity_OnChanged(string name) {
+            SetNormalOpacity(normalOpacity.Value);
+        }
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -148,13 +165,13 @@ namespace fooTitle
         
 #region Bottom
         void Display_Activated(object sender, EventArgs e) {
-            if (Main.GetInstance().WindowPosition == Win32.WindowPosition.Bottom) {
+            if (windowPosition.Value == Win32.WindowPosition.Bottom) {
                 SetWindowsPos(Win32.WindowPosition.Bottom);
             }
         }
 #pragma warning disable 0168, 219, 67
         protected override void WndProc(ref Message m) {
-            if (Main.GetInstance().WindowPosition == Win32.WindowPosition.Bottom) {
+            if (windowPosition.Value == Win32.WindowPosition.Bottom) {
                 const int WM_MOUSEACTIVATE = 0x21;
                 const int MA_ACTIVATE = 1;
                 const int MA_ACTIVATEANDEAT = 2;
@@ -216,11 +233,11 @@ namespace fooTitle
         }
 
         void Display_MouseLeave(object sender, EventArgs e) {
-            opacityFade = new Fade(Main.GetInstance().OverOpacity, Main.GetInstance().NormalOpacity, Main.GetInstance().FadeLength);
+            opacityFade = new Fade(overOpacity.Value, normalOpacity.Value, fadeLength.Value);
         }
 
         void Display_MouseEnter(object sender, EventArgs e) {
-            opacityFade = new Fade(Main.GetInstance().NormalOpacity, Main.GetInstance().OverOpacity, Main.GetInstance().FadeLength);
+            opacityFade = new Fade(normalOpacity.Value, overOpacity.Value, fadeLength.Value);
         }
 
         public void SetNormalOpacity(int value) {

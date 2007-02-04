@@ -23,14 +23,34 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 
+using fooTitle.Config;
+
 namespace fooTitle {
    class Properties : fooManagedWrapper.CManagedPrefPage{
   //  class Properties : System.Windows.Forms.Form {
+
+
+       protected AutoWrapperCreator autoWrapperCreator = new AutoWrapperCreator();
+       protected RadioGroupWrapper showWhenWrapper;
+       protected RadioGroupWrapper windowPositionWrapper;
 
         public Properties(Main _main)
            : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage.guid_display) {
            main = _main;
             InitializeComponent();
+
+            showWhenWrapper = new RadioGroupWrapper("display/showWhen");
+            showWhenWrapper.AddRadioButton(alwaysRadio);
+            showWhenWrapper.AddRadioButton(minimizedRadio);
+            showWhenWrapper.AddRadioButton(neverRadio);
+
+            windowPositionWrapper = new RadioGroupWrapper("display/windowPosition");
+            windowPositionWrapper.AddRadioButton(alwaysOnTopRadio);
+            windowPositionWrapper.AddRadioButton(onDesktopRadio);
+            windowPositionWrapper.AddRadioButton(normalRadio);
+
+            
+            autoWrapperCreator.CreateWrappers(this);
         }
 
         protected void fillSkinList(string baseDir) {
@@ -43,27 +63,34 @@ namespace fooTitle {
 
         public void UpdateValues() {
             fillSkinList(Main.DataDir);
-            updateIntervalTrackBar.Value = main.UpdateInterval;
-            albumArtFilenames.Text = main.AlbumArtFilenames;
-            if (main.ShowWhen == ShowWhenEnum.Always)
+            //updateIntervalTrackBar.Value = main.UpdateInterval;
+            //albumArtFilenames.Text = main.AlbumArtFilenames;
+
+            /*
+            if (main.ShowWhen.Value == ShowWhenEnum.Always)
                 alwaysRadio.Checked = true;
-            else if (main.ShowWhen == ShowWhenEnum.Never)
+            else if (main.ShowWhen.Value == ShowWhenEnum.Never)
                 neverRadio.Checked = true;
-            else if (main.ShowWhen == ShowWhenEnum.WhenMinimized)
+            else if (main.ShowWhen.Value == ShowWhenEnum.WhenMinimized)
                 minimizedRadio.Checked = true;
+             */
+            /*
             normalOpacityTrackBar.Value = main.NormalOpacity;
             overOpacityTrackBar.Value = main.OverOpacity;
             fadeLengthTrackBar.Value = main.FadeLength;
             fadeLengthLabel.Text = main.FadeLength.ToString() + " ms";
+            */
             Assembly myAssembly = Assembly.GetExecutingAssembly();
             versionLabel.Text = "Version: " + myAssembly.GetName().Version.ToString();
 
+            /*
             if (main.WindowPosition == Win32.WindowPosition.Bottom)
                 onDesktopRadio.Checked = true;
             else if (main.WindowPosition == Win32.WindowPosition.NoTopmost)
                 normalRadio.Checked = true;
             else if (main.WindowPosition == Win32.WindowPosition.Topmost)
                 alwaysOnTopRadio.Checked = true;
+            */
         }
 
         #region Windows Form Designer generated code
@@ -177,7 +204,8 @@ namespace fooTitle {
             this.updateIntervalTrackBar.TabIndex = 2;
             this.updateIntervalTrackBar.TickFrequency = 50;
             this.updateIntervalTrackBar.Value = 50;
-            this.updateIntervalTrackBar.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
+            this.updateIntervalTrackBar.Tag = "display/updateInterval";
+            //this.updateIntervalTrackBar.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
             // 
             // label1
             // 
@@ -205,7 +233,8 @@ namespace fooTitle {
             this.albumArtFilenames.Name = "albumArtFilenames";
             this.albumArtFilenames.Size = new System.Drawing.Size(231, 20);
             this.albumArtFilenames.TabIndex = 5;
-            this.albumArtFilenames.TextChanged += new System.EventHandler(this.albumArtFilenames_TextChanged);
+            this.albumArtFilenames.Tag = "skin/albumArtFilenames";
+            //this.albumArtFilenames.TextChanged += new System.EventHandler(this.albumArtFilenames_TextChanged);
             // 
             // label3
             // 
@@ -260,7 +289,7 @@ namespace fooTitle {
             this.neverRadio.TabStop = true;
             this.neverRadio.Text = "Never";
             this.neverRadio.UseVisualStyleBackColor = true;
-            this.neverRadio.CheckedChanged += new System.EventHandler(this.neverRadio_CheckedChanged);
+            //this.neverRadio.CheckedChanged += new System.EventHandler(this.neverRadio_CheckedChanged);
             // 
             // minimizedRadio
             // 
@@ -272,7 +301,7 @@ namespace fooTitle {
             this.minimizedRadio.TabStop = true;
             this.minimizedRadio.Text = "When foobar2000 is minimized";
             this.minimizedRadio.UseVisualStyleBackColor = true;
-            this.minimizedRadio.CheckedChanged += new System.EventHandler(this.minimizedRadio_CheckedChanged);
+            //this.minimizedRadio.CheckedChanged += new System.EventHandler(this.minimizedRadio_CheckedChanged);
             // 
             // alwaysRadio
             // 
@@ -284,7 +313,7 @@ namespace fooTitle {
             this.alwaysRadio.TabStop = true;
             this.alwaysRadio.Text = "Always";
             this.alwaysRadio.UseVisualStyleBackColor = true;
-            this.alwaysRadio.CheckedChanged += new System.EventHandler(this.alwaysRadio_CheckedChanged);
+            //this.alwaysRadio.CheckedChanged += new System.EventHandler(this.alwaysRadio_CheckedChanged);
             // 
             // opacityOpts
             // 
@@ -322,7 +351,8 @@ namespace fooTitle {
             this.fadeLengthTrackBar.SmallChange = 10;
             this.fadeLengthTrackBar.TabIndex = 3;
             this.fadeLengthTrackBar.TickFrequency = 100;
-            this.fadeLengthTrackBar.ValueChanged += new System.EventHandler(this.fadeLengthTrackBar_ValueChanged);
+            this.fadeLengthTrackBar.Tag = "display/fadeLength";
+            //this.fadeLengthTrackBar.ValueChanged += new System.EventHandler(this.fadeLengthTrackBar_ValueChanged);
             // 
             // label7
             // 
@@ -343,7 +373,8 @@ namespace fooTitle {
             this.normalOpacityTrackBar.TabIndex = 3;
             this.normalOpacityTrackBar.TickFrequency = 16;
             this.normalOpacityTrackBar.Value = 5;
-            this.normalOpacityTrackBar.ValueChanged += new System.EventHandler(this.normalOpacityTrackBar_ValueChanged);
+            this.normalOpacityTrackBar.Tag = "display/normalOpacity";
+            //this.normalOpacityTrackBar.ValueChanged += new System.EventHandler(this.normalOpacityTrackBar_ValueChanged);
             // 
             // overOpacityTrackBar
             // 
@@ -355,7 +386,8 @@ namespace fooTitle {
             this.overOpacityTrackBar.TabIndex = 2;
             this.overOpacityTrackBar.TickFrequency = 16;
             this.overOpacityTrackBar.Value = 5;
-            this.overOpacityTrackBar.ValueChanged += new System.EventHandler(this.overOpacityTrackBar_ValueChanged);
+            this.overOpacityTrackBar.Tag = "display/overOpacity";
+            //this.overOpacityTrackBar.ValueChanged += new System.EventHandler(this.overOpacityTrackBar_ValueChanged);
             // 
             // label6
             // 
@@ -406,7 +438,7 @@ namespace fooTitle {
             this.onDesktopRadio.TabStop = true;
             this.onDesktopRadio.Text = "On desktop";
             this.onDesktopRadio.UseVisualStyleBackColor = true;
-            this.onDesktopRadio.CheckedChanged += new System.EventHandler(this.onDesktopRadio_CheckedChanged);
+            //this.onDesktopRadio.CheckedChanged += new System.EventHandler(this.onDesktopRadio_CheckedChanged);
             // 
             // normalRadio
             // 
@@ -418,7 +450,7 @@ namespace fooTitle {
             this.normalRadio.TabStop = true;
             this.normalRadio.Text = "Normal";
             this.normalRadio.UseVisualStyleBackColor = true;
-            this.normalRadio.CheckedChanged += new System.EventHandler(this.normalRadio_CheckedChanged);
+            //this.normalRadio.CheckedChanged += new System.EventHandler(this.normalRadio_CheckedChanged);
             // 
             // alwaysOnTopRadio
             // 
@@ -430,7 +462,7 @@ namespace fooTitle {
             this.alwaysOnTopRadio.TabStop = true;
             this.alwaysOnTopRadio.Text = "Always on top";
             this.alwaysOnTopRadio.UseVisualStyleBackColor = true;
-            this.alwaysOnTopRadio.CheckedChanged += new System.EventHandler(this.alwaysOnTopRadio_CheckedChanged);
+            //this.alwaysOnTopRadio.CheckedChanged += new System.EventHandler(this.alwaysOnTopRadio_CheckedChanged);
             // 
             // groupBox1
             // 
@@ -537,6 +569,7 @@ namespace fooTitle {
         }
         #endregion
 
+       /*
         void onDesktopRadio_CheckedChanged(object sender, EventArgs e) {
             if (onDesktopRadio.Checked)
                 main.WindowPosition = Win32.WindowPosition.Bottom;
@@ -551,6 +584,7 @@ namespace fooTitle {
             if (alwaysOnTopRadio.Checked)
                 main.WindowPosition = Win32.WindowPosition.Topmost;
         }
+       */
 
 
         void Properties_VisibleChanged(object sender, EventArgs e) {
@@ -559,35 +593,39 @@ namespace fooTitle {
         }
 
         private void applySkinBtn_Click(object sender, EventArgs e) {
-            main.SkinName = (string)skinsList.SelectedItem;
+            main.SkinName.Value = (string)skinsList.SelectedItem;
         }
 
-        private void trackBar1_ValueChanged(object sender, EventArgs e) {
-            main.UpdateInterval = updateIntervalTrackBar.Value;
-        }
+        //private void trackBar1_ValueChanged(object sender, EventArgs e) {
+        //    main.UpdateInterval = updateIntervalTrackBar.Value;
+        //}
 
+       
+       /*
         private void albumArtFilenames_TextChanged(object sender, EventArgs e) {
             main.AlbumArtFilenames = albumArtFilenames.Text;
         }
+       */
 
+       /*
         private void alwaysRadio_CheckedChanged(object sender, EventArgs e) {
             if (alwaysRadio.Checked)
-                Main.GetInstance().ShowWhen = ShowWhenEnum.Always;
+                Main.GetInstance().ShowWhen.Value = ShowWhenEnum.Always;
         }
 
         void neverRadio_CheckedChanged(object sender, EventArgs e) {
             if (neverRadio.Checked)
-                Main.GetInstance().ShowWhen = ShowWhenEnum.Never;
+                Main.GetInstance().ShowWhen.Value = ShowWhenEnum.Never;
         }
 
         void minimizedRadio_CheckedChanged(object sender, EventArgs e) {
             if (minimizedRadio.Checked)
-                Main.GetInstance().ShowWhen = ShowWhenEnum.WhenMinimized;
+                Main.GetInstance().ShowWhen.Value = ShowWhenEnum.WhenMinimized;
         }
+       */
 
 
-
-
+       /*
         private void normalOpacityTrackBar_ValueChanged(object sender, EventArgs e) {
             main.NormalOpacity = normalOpacityTrackBar.Value;
         }
@@ -600,5 +638,6 @@ namespace fooTitle {
             main.FadeLength = fadeLengthTrackBar.Value;
             fadeLengthLabel.Text = fadeLengthTrackBar.Value.ToString() + " ms";
         }
+       */
     }
 }

@@ -102,6 +102,7 @@
     </Compile>
     <Compile Include="Config\ConfigStorage.cs" />
     <Compile Include="Config\ConfigVariables.cs" />
+    <Compile Include="Config\ConfValuesManager.cs" />
     <Compile Include="Config\ControlWrappers.cs">
     </Compile>
     <Compile Include="Display.cs">

@@ -32,9 +32,9 @@ using fooTitle.Config;
 namespace fooTitle
 {
     public enum ShowWhenEnum {
-        Always = 1,
-        WhenMinimized = 2,
-        Never = 3
+        Always,
+        WhenMinimized,
+        Never
     }
 
 	public class Main : IComponentClient, IPlayCallbackSender
@@ -45,20 +45,26 @@ namespace fooTitle
         /// </summary>
         private bool initDone = false;
 
-        private static CCfgString myDataDir;
+        private static ConfString myDataDir = new ConfString("base/dataDir", "foo_title\\");
         /// <summary>
 		/// Returns where the skin and other components should look for their files.
 		/// </summary>
 		public static string DataDir {
 			get {
-				return Path.Combine(CManagedWrapper.getInstance().GetFoobarDirectory(), myDataDir.GetVal());
+				return Path.Combine(CManagedWrapper.getInstance().GetFoobarDirectory(), myDataDir.Value);
 			}
 		}
 
-        private CCfgInt myUpdateInterval;
         /// <summary>
         /// How often the display should be redrawn
         /// </summary>
+        private ConfInt UpdateInterval = new ConfInt("display/updateInterval", 100, 50, 500);
+        protected void updateIntervalChanged(string name) {
+            if (initDone)
+                timer.Interval = UpdateInterval.Value;
+        }
+        
+        /*
         public int UpdateInterval {
             get {
                 return myUpdateInterval.GetVal();
@@ -69,24 +75,20 @@ namespace fooTitle
                     timer.Interval = value;
             }
         }
+         */
 
-        private CCfgString mySkinName;
         /// <summary>
         /// The name of the currently used skin. Can be changed
         /// </summary>
-        public string SkinName {
-            get {
-                return mySkinName.GetVal();
-            }
-            set {
-                mySkinName.SetVal(value);
-                if (initDone) {
-                    try {
-                        loadSkin(value);
-                    } catch (Exception e) {
-                        skin = null;
-                        System.Windows.Forms.MessageBox.Show("foo_title - There was an error loading skin " + value + ":\n" + e.Message, "foo_title");
-                    }
+        public ConfString SkinName = new ConfString("base/skinName", "white");
+
+        protected void skinNameChanged(string name) {
+            if (initDone) {
+                try {
+                    loadSkin(SkinName.Value);
+                } catch (Exception e) {
+                    skin = null;
+                    System.Windows.Forms.MessageBox.Show("foo_title - There was an error loading skin " + SkinName.Value + ":\n" + e.Message, "foo_title");
                 }
             }
         }
@@ -101,19 +103,11 @@ namespace fooTitle
             }
         }
 
-        private CCfgString myAlbumArtFilenames;
         /// <summary>
         /// A semicolon separated list of possible filenames (without extension) for album art. 
         /// May contain formatting strings.
         /// </summary>
-        public string AlbumArtFilenames {
-            get {
-                return myAlbumArtFilenames.GetVal();
-            }
-            set {
-                myAlbumArtFilenames.SetVal(value);
-            }
-        }
+        public ConfString AlbumArtFilenames = new ConfString("skin/albumArtFilenames", "folder");
 
         private LayerFactory myLayerFactory;
         /// <summary>
@@ -145,29 +139,22 @@ namespace fooTitle
             }
         }
 
-        private CCfgInt myShowWhen;
         /// <summary>
         /// When to show foo_title: Always, never or only when foobar is minimized
         /// </summary>
-        public ShowWhenEnum ShowWhen {
-            get {
-                return (ShowWhenEnum)myShowWhen.GetVal();
-            }
-            set {
-                myShowWhen.SetVal((int)value);
+        public ConfEnum<ShowWhenEnum> ShowWhen = new ConfEnum<ShowWhenEnum>("display/showWhen", ShowWhenEnum.Always);
+        void ShowWhen_OnChanged(string name) {
 
-                if (value == ShowWhenEnum.Always)
+                if (ShowWhen.Value == ShowWhenEnum.Always)
                     EnableFooTitle();
-                else if (value == ShowWhenEnum.Never)
+                else if (ShowWhen.Value == ShowWhenEnum.Never)
                     DisableFooTitle();
                 else {
                     checkFoobarMinimized();
                 }
-            }
         }
-
-
-
+        
+        /*
         private CCfgInt myNormalOpacity;
         /// <summary>
         /// The opacity in normal state
@@ -208,7 +195,9 @@ namespace fooTitle
                 myFadeLength.SetVal(value);
             }
         }
+*/
 
+        /*
         /// <summary>
         /// The z position of the window - either always on top or on the bottom.
         /// </summary>
@@ -223,7 +212,7 @@ namespace fooTitle
                     Display.SetWindowsPos(value);
             }
         }
-
+        */
 
         protected bool fooTitleEnabled = true;
         public void DisableFooTitle() {
@@ -239,17 +228,17 @@ namespace fooTitle
         }
 
         public void ToggleEnabled() {
-            if (ShowWhen == ShowWhenEnum.Always)
-                ShowWhen = ShowWhenEnum.Never;
+            if (ShowWhen.Value == ShowWhenEnum.Always)
+                ShowWhen.Value = ShowWhenEnum.Never;
             else
-                ShowWhen = ShowWhenEnum.Always;
+                ShowWhen.Value = ShowWhenEnum.Always;
         }
 
         /// <summary>
         /// Checks if foobar is minimized or active and shows/hides display according to it
         /// </summary>
         private void checkFoobarMinimized() {
-            if (ShowWhen != ShowWhenEnum.WhenMinimized) return;
+            if (ShowWhen.Value != ShowWhenEnum.WhenMinimized) return;
 
             if (CManagedWrapper.getInstance().IsFoobarActivated())
                 DisableFooTitle();                
@@ -257,8 +246,9 @@ namespace fooTitle
                 EnableFooTitle();
         }
 
-        private CCfgInt positionX;
-        private CCfgInt positionY;
+        private ConfInt positionX = new ConfInt("display/positionX", 0);
+        private ConfInt positionY = new ConfInt("display/positionY", 0);
+
 
 		System.Windows.Forms.Timer timer;
 		
@@ -326,27 +316,29 @@ namespace fooTitle
         protected ShowControl showControl;
 
         public IConfigStorage Config;
+        public IConfigStorage TestConfig;
 
         public void Create() {
             instance = this;
 
-            // create the configuration manager
-            Config = new XmlConfigStorage();
-
-
-            positionX = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 5), 100);
-            positionY = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 6), 100);
-            myShowWhen = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 7), 1);
-            myUpdateInterval = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 59), 100);
-            mySkinName = new CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 2), "white");
-            myDataDir = new CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 1), "foo_title\\");
-            myAlbumArtFilenames = new CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 4), "folder");
-            myNormalOpacity = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 8), 255);
-            myOverOpacity = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 9), 120);
-            myFadeLength = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 10), 500);
-            myWindowPosition = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 11), (int)Win32.WindowPosition.Topmost);
-            
+            //positionX = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 5), 100);
+            //positionY = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 6), 100);
+            //myShowWhen = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 7), 1);
+            //myUpdateInterval = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 59), 100);
+            //mySkinName = new CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 2), "white");
+            //myDataDir = new CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 1), "foo_title\\");
+            //myAlbumArtFilenames = new CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 4), "folder");
+            //myNormalOpacity = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 8), 255);
+            //myOverOpacity = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 9), 120);
+            //myFadeLength = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 10), 500);
+            //myWindowPosition = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 11), (int)Win32.WindowPosition.Topmost);
             propsForm = new Properties(this);
+
+            // create the configuration manager
+            Config = new XmlConfigStorage(false);
+            TestConfig = new XmlConfigStorage(true);
+            fooManagedWrapper.CManagedConfigIOCallback.OnWrite += new CManagedConfigIOCallback.OnWriteDelegate(CManagedConfigIOCallback_OnWrite);
+
 
             // initialize show control
             showControl = new ShowControl();
@@ -356,14 +348,21 @@ namespace fooTitle
 
         }
 
+        void CManagedConfigIOCallback_OnWrite(bool reset) {
+            if (reset)
+                return;
+
+            ConfValuesManager.GetInstance().SaveTo(Config);
+        }
+
         public void SavePosition() {
-            positionX.SetVal(Display.Left);
-            positionY.SetVal(Display.Top);
+            positionX.Value = Display.Left;
+            positionY.Value = Display.Top;
         }
 
         public void RestorePosition() {
-            Display.Left = positionX.GetVal();
-            Display.Top = positionY.GetVal();
+            Display.Left = positionX.Value;
+            Display.Top = positionY.Value;
         }
 
         #region Events
@@ -381,6 +380,11 @@ namespace fooTitle
             t.Run();
             t.ReportGUI();
 #endif
+            Config.Load();
+            ConfValuesManager.GetInstance().LoadFrom(Config);
+            ConfValuesManager.GetInstance().SetStorage(Config);
+
+
 
             propsForm.UpdateValues();
 
@@ -391,7 +395,7 @@ namespace fooTitle
 
 			// start a timer updating the display
 			timer = new System.Windows.Forms.Timer();
-            timer.Interval = myUpdateInterval.GetVal();
+            timer.Interval = UpdateInterval.Value;
 			timer.Tick += new System.EventHandler(timerUpdate);
 			timer.Enabled = true;
 
@@ -405,22 +409,23 @@ namespace fooTitle
 
 			// initialize the form displaying the images
             myDisplay = new Display(300, 22);
-            myDisplay.SetWindowsPos(this.WindowPosition);
             myDisplay.Show();
 
             // load the skin
-            loadSkin(SkinName);
+            loadSkin(SkinName.Value);
 
             RestorePosition();
 
-            if (ShowWhen == ShowWhenEnum.Never)
+            ShowWhen.OnChanged += new ConfValuesManager.ValueChangedDelegate(ShowWhen_OnChanged);
+            UpdateInterval.OnChanged += new ConfValuesManager.ValueChangedDelegate(updateIntervalChanged);
+            SkinName.OnChanged += new ConfValuesManager.ValueChangedDelegate(skinNameChanged);
+
+            if (ShowWhen.Value == ShowWhenEnum.Never)
                 DisableFooTitle();
 
             initDone = true;
 
         }
-
-
 
         public event OnQuitDelegate OnQuitEvent;
 
