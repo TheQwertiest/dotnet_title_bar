@@ -39,12 +39,16 @@ namespace fooTitle.Tests {
         }
 
         public virtual List<TestResult> Run() {
+            SetUp();
+
             // run methods marked with the test attribute
             foreach (MethodInfo method in this.GetType().GetMethods()) {
                 if (method.GetCustomAttributes(typeof(TestMethodAttribute), false).Length != 0) {
                     method.Invoke(this, null);
                 }
             }
+
+            TearDown();
 
             return results;
         }
@@ -123,6 +127,14 @@ namespace fooTitle.Tests {
         public void ReportGUI() {
             TestReport report = new TestReport(results);
             report.Show();
+        }
+
+        public virtual void SetUp() {
+
+        }
+
+        public virtual void TearDown() {
+
         }
     }
 

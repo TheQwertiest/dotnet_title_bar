@@ -25,9 +25,15 @@ using fooTitle.Config;
 
 namespace fooTitle.Tests {
     class test_Config : TestFramework {
+        IConfigStorage cfg = Main.GetInstance().TestConfig;
+
+        public override void SetUp() {
+            cfg.Load();
+        }
+
+        
         [TestMethod]
         public void storageTest() {
-            IConfigStorage cfg = Main.GetInstance().Config;
             cfg.WriteVal("test/Bear", "Teddy");
             AssertEquals(cfg.ReadVal<string>("test/Bear"), "Teddy");
 
@@ -37,6 +43,7 @@ namespace fooTitle.Tests {
             cfg.WriteVal("test/Bear", "Grizzly");
             AssertEquals(cfg.ReadVal<string>("test/Bear"), "Grizzly");
             fooManagedWrapper.Console.Write(cfg.ToString());
+
         }
 
 
@@ -71,7 +78,6 @@ namespace fooTitle.Tests {
         
         [TestMethod]
         public void testWrongType() {
-            IConfigStorage cfg = Main.GetInstance().Config;
             AssertExceptionThrown<UnsupportedTypeException>(delegate(){ cfg.ReadVal<System.Drawing.Point>("test/Bear"); });
         }
 
@@ -115,7 +121,7 @@ namespace fooTitle.Tests {
             AssertEquals(paperCount.Value, 10);
             AssertEquals(lunchType.Value, LunchType.luBreakfast);
 
-            IConfigStorage temp = Main.GetInstance().Config;
+            IConfigStorage temp = cfg;
             paperCount.Value = 2;
             lunchType.Value = LunchType.luMeal;
             ConfValuesManager.GetInstance().SaveTo(temp);
@@ -161,16 +167,25 @@ namespace fooTitle.Tests {
             AssertEquals(configGui.trackBar1.SmallChange, 1);
         }
 
-        ConfInt cCount = new ConfInt("test/cCount", 0, 0, 4);
+        ConfInt cCount = new ConfInt("test/cCount", 1, 0, 4);
         [TestMethod]
         public void testRadioGroup() {
-            AssertEquals(configGui.radioButton1.Checked, true);
-            AssertEquals(configGui.radioButton2.Checked, false);
-            AssertEquals(configGui.radioButton3.Checked, false);
+            test_ConfigGUI gui2 = new test_ConfigGUI();
+            gui2.Show();
 
-            cCount.Value = 1;
+
+            AssertEquals(gui2.radioButton4.Checked, false);
+            AssertEquals(gui2.radioButton5.Checked, true);
+            AssertEquals(gui2.radioButton6.Checked, false);
+
+
             AssertEquals(configGui.radioButton1.Checked, false);
             AssertEquals(configGui.radioButton2.Checked, true);
+            AssertEquals(configGui.radioButton3.Checked, false);
+
+            cCount.Value = 0;
+            AssertEquals(configGui.radioButton1.Checked, true);
+            AssertEquals(configGui.radioButton2.Checked, false);
             AssertEquals(configGui.radioButton3.Checked, false);
 
 
@@ -178,7 +193,7 @@ namespace fooTitle.Tests {
             AssertEquals(cCount.Value, 2);
 
             // test overflow
-            AssertExceptionThrown<InvalidOperationException>(delegate() { cCount.Value = 4; });
+            AssertExceptionThrown<InvalidOperationException>(delegate() { cCount.Value = 3; });
 
         }
 
@@ -233,6 +248,55 @@ namespace fooTitle.Tests {
             configGui.checkBox1.Checked = true;
             AssertEquals(aBool.Value, true);
 
+            aBool.Unregister();
+        }
+
+        [TestMethod]
+        public void testValuesHaveCallback() {
+            ConfInt gValue = new ConfInt("test/gValue", 0);
+            
+            bool handlerCalled = false;
+            ConfValuesManager.ValueChangedDelegate tester = delegate(string name) {
+                AssertEquals(gValue.Value, 1);
+                handlerCalled = true;
+            };
+
+            gValue.OnChanged += new ConfValuesManager.ValueChangedDelegate(tester);
+
+            gValue.Value = 1;
+            gValue.Unregister();
+
+            AssertEquals(handlerCalled, true);
+        }
+
+        [TestMethod]
+        public void testValueCreationCallback() {
+            bool handlerCalled = false;
+            ConfValuesManager.ValueChangedDelegate tester = delegate(string name) {
+                if (name != "test/hValue")
+                    return;
+                AssertEquals(name, "test/hValue");
+                handlerCalled = true;
+            };
+
+            ConfValuesManager.GetInstance().OnValueCreated += new ConfValuesManager.ValueChangedDelegate(tester);
+            ConfInt hValue = new ConfInt("test/hValue", 0);
+
+            AssertEquals(handlerCalled, true);
+            ConfValuesManager.GetInstance().OnValueCreated -= new ConfValuesManager.ValueChangedDelegate(tester);
+            hValue.Unregister();
+        }
+
+        [TestMethod]
+        public void testSetStorage() {
+            cfg.WriteVal("test/afterLoad", "abc");
+            ConfValuesManager.GetInstance().LoadFrom(cfg);
+            ConfValuesManager.GetInstance().SetStorage(cfg);
+            ConfString afterLoad = new ConfString("test/afterLoad", "");
+            AssertEquals(afterLoad.Value, "abc");
+
+            afterLoad.Unregister();
+            
         }
     }
 

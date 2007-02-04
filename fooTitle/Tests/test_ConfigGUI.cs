@@ -43,7 +43,7 @@ namespace fooTitle.Tests {
         }
         TextBoxWrapper textBoxWrapper1, textBoxWrapper2;
         TrackBarWrapper trackBarWrapper1;
-        RadioGroupWrapper radioGroupWrapper1;
+        RadioGroupWrapper radioGroupWrapper1, radioGroupWrapper2;
 
         protected void initForTesting() {
             textBoxWrapper1 = new TextBoxWrapper(textBox1, "test/aCount");
@@ -56,6 +56,10 @@ namespace fooTitle.Tests {
             radioGroupWrapper1.AddRadioButton(radioButton2);
             radioGroupWrapper1.AddRadioButton(radioButton3);
 
+            radioGroupWrapper2 = new RadioGroupWrapper("test/cCount");
+            radioGroupWrapper2.AddRadioButton(radioButton4);
+            radioGroupWrapper2.AddRadioButton(radioButton5);
+            radioGroupWrapper2.AddRadioButton(radioButton6);
 
         }
 

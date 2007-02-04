@@ -15,6 +15,8 @@ namespace fooTitle.Tests {
         }
 
         protected void fillResults(List<TestFramework.TestResult> results) {
+            panel1.BackColor = Color.Green;
+
             foreach (TestFramework.TestResult res in results) {
                 treeView.Nodes.Add(createSingleResult(res));
             }
@@ -29,6 +31,9 @@ namespace fooTitle.Tests {
             node.Nodes.Add(String.Format("method: {0}", res.method));
             node.Nodes.Add(String.Format("File: {0}:{1}", res.file, res.line));
             node.Checked = res.passed;
+
+            if (!res.passed)
+                panel1.BackColor = Color.Red;
             return node;
         }
     }
