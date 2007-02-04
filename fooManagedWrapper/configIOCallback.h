@@ -17,30 +17,29 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently,
-// but are changed infrequently
-
 #pragma once
-
-#define CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
+#include "stdafx.h"
+#include <vcclr.h>
 
 
-#include "..\..\foobar2000\sdk\foobar2000.h"
-#include "../../foobar2000/SDK/component.h"
-#include "utils.h"
-#include "fooServices.h"
-#include "ComponentLoader.h"
-#include "playCallback.h"
-#include "initQuit.h"
-#include "prefPages.h"
-#include "ManagedWrapper.h"
-#include "cfgVars.h"
-#include "Command.h"
-#include "mainMenuCommands.h"
-#include "configIOCallback.h"
+namespace fooManagedWrapper {
+	// config_io_callback wrapper
+	class ConfigIO : public config_io_callback {
+	public:
+		virtual void on_read();
+		virtual void on_write(bool reset);
+	};
 
+	public ref class CManagedConfigIOCallback {
+	public:
+		delegate void OnReadDelegate();
+		delegate void OnWriteDelegate(bool reset);
 
-#include <vector>
+		static event OnReadDelegate ^OnRead;
+		static event OnWriteDelegate ^OnWrite;
+
+		static void FireReadEvent();
+		static void FireWriteEvent(bool reset);
+
+	};
+};

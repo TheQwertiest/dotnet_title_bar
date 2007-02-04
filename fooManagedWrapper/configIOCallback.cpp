@@ -17,30 +17,31 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently,
-// but are changed infrequently
 
-#pragma once
-
-#define CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
+#include "stdafx.h"
+#include <vcclr.h>
 
 
-#include "..\..\foobar2000\sdk\foobar2000.h"
-#include "../../foobar2000/SDK/component.h"
-#include "utils.h"
-#include "fooServices.h"
-#include "ComponentLoader.h"
-#include "playCallback.h"
-#include "initQuit.h"
-#include "prefPages.h"
-#include "ManagedWrapper.h"
-#include "cfgVars.h"
-#include "Command.h"
-#include "mainMenuCommands.h"
-#include "configIOCallback.h"
+using namespace fooManagedWrapper;
+using namespace System;
+using namespace std;
 
+namespace fooManagedWrapper {
+	static service_factory_t<ConfigIO> configIOInstance;
 
-#include <vector>
+	void ConfigIO::on_read() {
+		CManagedConfigIOCallback::FireReadEvent();
+	}
+
+	void ConfigIO::on_write(bool reset) {
+		CManagedConfigIOCallback::FireWriteEvent(reset);
+	}
+
+	void CManagedConfigIOCallback::FireReadEvent() {
+		OnRead();
+	}
+
+	void CManagedConfigIOCallback::FireWriteEvent(bool reset) {
+		OnWrite(reset);
+	}
+};
