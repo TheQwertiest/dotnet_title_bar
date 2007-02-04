@@ -75,7 +75,7 @@ namespace fooTitle.Layers {
         }
 
         void CurrentSkin_OnPlaybackNewTrackEvent(fooManagedWrapper.MetaDBHandle song) {
-            string fileName = findAlbumArt(song, Main.GetInstance().AlbumArtFilenames);
+            string fileName = findAlbumArt(song, Main.GetInstance().AlbumArtFilenames.Value);
             if (fileName != null) {
                 try {
                     Bitmap tmp = new Bitmap(fileName);
