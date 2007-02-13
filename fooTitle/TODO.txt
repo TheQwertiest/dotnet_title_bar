@@ -3,7 +3,7 @@
   + test unicode in menu items = they don't work
   + when foo_title is disabled via the menu command, it doesn't show up in the prefpage
 - prevent layers from drawing outside their clientRect, that could be probably done with Drawing.Clip or ClipRegion
- - click through
+ - click through - could be made .... and buttons wouldn't be click through..
  - vizualizace
  - add support for more actions for buttons, such as commands from the context menu
  + scriptable values
@@ -12,7 +12,9 @@
  - reset options button
  - maybe create the effect of reflecting glass ;)
  - extendable panels :)
+ - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
  - BUG: closing the display window with Alt-F4 makes it crash
+ + BUG: setting it to Normal (instead of always on top) and dragging right after that makes it freeze...completely
 - cleaning the code
  - divide the Main class into several smaller classes for easier mantaince
      - one class that is the plugin itself - that receives events from foobar
@@ -20,3 +22,6 @@
      - other classes for ..
      - move properties to one block, protected fields to one block, methods to one block,...
      
++ implement saving of the value by implementing a custom version of cfg_var
+- profile for speed 
+- test stability
