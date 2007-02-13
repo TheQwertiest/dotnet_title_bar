@@ -149,6 +149,9 @@
     <Compile Include="Properties.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="SafeTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ShowControl.cs" />
     <Compile Include="Tests\TestFramework.cs" />
     <Compile Include="Tests\TestReport.cs">
@@ -157,6 +160,7 @@
     <Compile Include="Tests\TestReport.Designer.cs">
       <DependentUpon>TestReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tests\TestServices.cs" />
     <Compile Include="Tests\test_all.cs" />
     <Compile Include="Tests\test_Config.cs" />
     <Compile Include="Tests\test_ConfigGUI.cs">
@@ -165,6 +169,7 @@
     <Compile Include="Tests\test_ConfigGUI.Designer.cs">
       <DependentUpon>test_ConfigGUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tests\test_ManagedWrapper.cs" />
     <Compile Include="ViewMenuCommands.cs" />
     <EmbeddedResource Include="Display.resx">
       <DependentUpon>Display.cs</DependentUpon>
