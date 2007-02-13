@@ -17,18 +17,28 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
-using fooTitle.Tests;
 
 namespace fooTitle.Tests {
-    class test_all : fooTitle.Tests.TestList{
-        public test_all() {
-            // create the test list
-            this.AddTest(new test_Config());
-            this.AddTest(new test_ManagedWrapper());
-        }
+    class test_ManagedWrapper : TestFramework{
+        [TestMethod]
+        public void testNotifyingString() {
+            TestServices testServices = Main.GetInstance().TestServicesInstance;
+            AssertEquals(testServices.savedOnWrite.GetVal(), testServices.futureValueOf_savedOnWrite.GetVal());
 
+            // prepare a random value that will be stored to savedOnWrite on write
+            Random r = new Random();
+            testServices.futureValueOf_savedOnWrite.SetVal(r.Next().ToString());
+
+            fooManagedWrapper.CNotifyingCfgString.BeforeWritingDelegate tester = delegate(fooManagedWrapper.CNotifyingCfgString sender) {
+                sender.SetVal(testServices.futureValueOf_savedOnWrite.GetVal());
+            };
+            //testServices.savedOnWrite.SetVal(testServices.futureValueOf_savedOnWrite.GetVal());
+            testServices.savedOnWrite.BeforeWriting += tester;
+
+        }
     }
 }
