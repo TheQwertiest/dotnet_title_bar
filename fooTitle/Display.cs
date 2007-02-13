@@ -79,9 +79,21 @@ namespace fooTitle
 
         protected Fade opacityFade;
 
+        /// <summary>
+        /// The opacity in normal state
+        /// </summary>
         protected ConfInt normalOpacity = new ConfInt("display/normalOpacity", 255, 5, 255);
+        /// <summary>
+        /// The opacity when the mouse is over foo_title
+        /// </summary>
         protected ConfInt overOpacity = new ConfInt("display/overOpacity", 255, 5, 255);
+        /// <summary>
+        /// The length of fade between normal and over states in miliseconds
+        /// </summary>
         protected ConfInt fadeLength = new ConfInt("display/fadeLength", 100, 0, 2000);
+        /// <summary>
+        /// The z position of the window - either always on top or on the bottom.
+        /// </summary>
         protected ConfEnum<Win32.WindowPosition> windowPosition = new ConfEnum<Win32.WindowPosition>("display/windowPosition", Win32.WindowPosition.Topmost);
 
 		public Display(int width, int height)
@@ -105,7 +117,7 @@ namespace fooTitle
 		}
 
         void windowPosition_OnChanged(string name) {
-            SetWindowsPos(windowPosition.Value);
+           SetWindowsPos(windowPosition.Value);
         }
 
         private void normalOpacity_OnChanged(string name) {
@@ -146,7 +158,7 @@ namespace fooTitle
 			this.Name = "Display";
 			this.ShowInTaskbar = false;
 			this.Text = "foo_title";
-			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Display_MouseDown);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Display_MouseDown);
 			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Display_MouseUp);
 			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Display_MouseMove);
             this.MouseEnter += new EventHandler(Display_MouseEnter);

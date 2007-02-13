@@ -22,21 +22,26 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Windows.Forms;
 
 using fooTitle.Config;
+using fooTitle.Tests;
+
 
 namespace fooTitle {
-   class Properties : fooManagedWrapper.CManagedPrefPage{
-  //  class Properties : System.Windows.Forms.Form {
+ class Properties : fooManagedWrapper.CManagedPrefPage{
+ //  class Properties : System.Windows.Forms.Form {
 
 
        protected AutoWrapperCreator autoWrapperCreator = new AutoWrapperCreator();
        protected RadioGroupWrapper showWhenWrapper;
        protected RadioGroupWrapper windowPositionWrapper;
+     protected RadioGroupWrapper popupShowingWrapper;
 
         public Properties(Main _main)
-           : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage.guid_display) {
-           main = _main;
+       : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage.guid_display)
+        {
+            main = _main;
             InitializeComponent();
 
             showWhenWrapper = new RadioGroupWrapper("display/showWhen");
@@ -49,9 +54,13 @@ namespace fooTitle {
             windowPositionWrapper.AddRadioButton(onDesktopRadio);
             windowPositionWrapper.AddRadioButton(normalRadio);
 
-            
+            popupShowingWrapper = new RadioGroupWrapper("showControl/popupShowing");
+            popupShowingWrapper.AddRadioButton(allTheTimeRadio);
+            popupShowingWrapper.AddRadioButton(onlyWhenRadio);
+
             autoWrapperCreator.CreateWrappers(this);
         }
+
 
         protected void fillSkinList(string baseDir) {
             skinsList.Items.Clear();
@@ -94,7 +103,15 @@ namespace fooTitle {
         }
 
         #region Windows Form Designer generated code
-
+        private SafeTabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox beforeSongEndsStayTextBox;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox onSongStartStayTextBox;
         private System.Windows.Forms.ListBox skinsList;
         private System.Windows.Forms.Button applySkinBtn;
         private System.Windows.Forms.TrackBar updateIntervalTrackBar;
@@ -121,7 +138,7 @@ namespace fooTitle {
         private System.Windows.Forms.RadioButton onDesktopRadio;
         private System.Windows.Forms.RadioButton normalRadio;
         private System.Windows.Forms.RadioButton alwaysOnTopRadio;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox popupBox;
         private System.Windows.Forms.RadioButton onlyWhenRadio;
         private System.Windows.Forms.RadioButton allTheTimeRadio;
         private System.Windows.Forms.Label label8;
@@ -157,12 +174,21 @@ namespace fooTitle {
             this.onDesktopRadio = new System.Windows.Forms.RadioButton();
             this.normalRadio = new System.Windows.Forms.RadioButton();
             this.alwaysOnTopRadio = new System.Windows.Forms.RadioButton();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.allTheTimeRadio = new System.Windows.Forms.RadioButton();
-            this.onlyWhenRadio = new System.Windows.Forms.RadioButton();
-            this.label8 = new System.Windows.Forms.Label();
-            this.onSongStartCheckbox = new System.Windows.Forms.CheckBox();
+            this.popupBox = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.beforeSongEndsStayTextBox = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.onSongStartStayTextBox = new System.Windows.Forms.TextBox();
             this.beforeSongEndsCheckbox = new System.Windows.Forms.CheckBox();
+            this.onSongStartCheckbox = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.onlyWhenRadio = new System.Windows.Forms.RadioButton();
+            this.allTheTimeRadio = new System.Windows.Forms.RadioButton();
+            this.tabControl1 = new fooTitle.SafeTabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
             this.albumArtGroup.SuspendLayout();
             this.showWhenBox.SuspendLayout();
@@ -171,22 +197,25 @@ namespace fooTitle {
             ((System.ComponentModel.ISupportInitialize)(this.normalOpacityTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.overOpacityTrackBar)).BeginInit();
             this.zOrderBox.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.popupBox.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // skinsList
             // 
             this.skinsList.FormattingEnabled = true;
-            this.skinsList.Location = new System.Drawing.Point(12, 26);
+            this.skinsList.Location = new System.Drawing.Point(6, 26);
             this.skinsList.Name = "skinsList";
-            this.skinsList.Size = new System.Drawing.Size(152, 160);
+            this.skinsList.Size = new System.Drawing.Size(182, 160);
             this.skinsList.TabIndex = 0;
             // 
             // applySkinBtn
             // 
-            this.applySkinBtn.Location = new System.Drawing.Point(12, 191);
+            this.applySkinBtn.Location = new System.Drawing.Point(6, 192);
             this.applySkinBtn.Name = "applySkinBtn";
-            this.applySkinBtn.Size = new System.Drawing.Size(75, 23);
+            this.applySkinBtn.Size = new System.Drawing.Size(182, 23);
             this.applySkinBtn.TabIndex = 1;
             this.applySkinBtn.Text = "Apply skin";
             this.applySkinBtn.UseVisualStyleBackColor = true;
@@ -195,22 +224,21 @@ namespace fooTitle {
             // updateIntervalTrackBar
             // 
             this.updateIntervalTrackBar.LargeChange = 100;
-            this.updateIntervalTrackBar.Location = new System.Drawing.Point(170, 25);
+            this.updateIntervalTrackBar.Location = new System.Drawing.Point(194, 19);
             this.updateIntervalTrackBar.Maximum = 500;
             this.updateIntervalTrackBar.Minimum = 50;
             this.updateIntervalTrackBar.Name = "updateIntervalTrackBar";
-            this.updateIntervalTrackBar.Size = new System.Drawing.Size(152, 40);
+            this.updateIntervalTrackBar.Size = new System.Drawing.Size(182, 40);
             this.updateIntervalTrackBar.SmallChange = 10;
             this.updateIntervalTrackBar.TabIndex = 2;
+            this.updateIntervalTrackBar.Tag = "display/updateInterval";
             this.updateIntervalTrackBar.TickFrequency = 50;
             this.updateIntervalTrackBar.Value = 50;
-            this.updateIntervalTrackBar.Tag = "display/updateInterval";
-            //this.updateIntervalTrackBar.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(167, 9);
+            this.label1.Location = new System.Drawing.Point(191, 3);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(82, 13);
             this.label1.TabIndex = 3;
@@ -219,7 +247,7 @@ namespace fooTitle {
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 9);
+            this.label2.Location = new System.Drawing.Point(3, 3);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(76, 13);
             this.label2.TabIndex = 4;
@@ -234,7 +262,6 @@ namespace fooTitle {
             this.albumArtFilenames.Size = new System.Drawing.Size(231, 20);
             this.albumArtFilenames.TabIndex = 5;
             this.albumArtFilenames.Tag = "skin/albumArtFilenames";
-            //this.albumArtFilenames.TextChanged += new System.EventHandler(this.albumArtFilenames_TextChanged);
             // 
             // label3
             // 
@@ -260,7 +287,7 @@ namespace fooTitle {
             this.albumArtGroup.Controls.Add(this.albumArtFilenames);
             this.albumArtGroup.Controls.Add(this.label4);
             this.albumArtGroup.Controls.Add(this.label3);
-            this.albumArtGroup.Location = new System.Drawing.Point(170, 71);
+            this.albumArtGroup.Location = new System.Drawing.Point(6, 6);
             this.albumArtGroup.Name = "albumArtGroup";
             this.albumArtGroup.Size = new System.Drawing.Size(243, 100);
             this.albumArtGroup.TabIndex = 8;
@@ -272,48 +299,45 @@ namespace fooTitle {
             this.showWhenBox.Controls.Add(this.neverRadio);
             this.showWhenBox.Controls.Add(this.minimizedRadio);
             this.showWhenBox.Controls.Add(this.alwaysRadio);
-            this.showWhenBox.Location = new System.Drawing.Point(170, 177);
+            this.showWhenBox.Location = new System.Drawing.Point(6, 218);
             this.showWhenBox.Name = "showWhenBox";
-            this.showWhenBox.Size = new System.Drawing.Size(243, 86);
+            this.showWhenBox.Size = new System.Drawing.Size(182, 86);
             this.showWhenBox.TabIndex = 9;
             this.showWhenBox.TabStop = false;
-            this.showWhenBox.Text = "Show foo_title when:";
+            this.showWhenBox.Text = "foo_title is enabled when";
             // 
             // neverRadio
             // 
             this.neverRadio.AutoSize = true;
-            this.neverRadio.Location = new System.Drawing.Point(4, 57);
+            this.neverRadio.Location = new System.Drawing.Point(6, 63);
             this.neverRadio.Name = "neverRadio";
             this.neverRadio.Size = new System.Drawing.Size(54, 17);
             this.neverRadio.TabIndex = 2;
             this.neverRadio.TabStop = true;
             this.neverRadio.Text = "Never";
             this.neverRadio.UseVisualStyleBackColor = true;
-            //this.neverRadio.CheckedChanged += new System.EventHandler(this.neverRadio_CheckedChanged);
             // 
             // minimizedRadio
             // 
             this.minimizedRadio.AutoSize = true;
-            this.minimizedRadio.Location = new System.Drawing.Point(4, 34);
+            this.minimizedRadio.Location = new System.Drawing.Point(6, 41);
             this.minimizedRadio.Name = "minimizedRadio";
             this.minimizedRadio.Size = new System.Drawing.Size(169, 17);
             this.minimizedRadio.TabIndex = 1;
             this.minimizedRadio.TabStop = true;
             this.minimizedRadio.Text = "When foobar2000 is minimized";
             this.minimizedRadio.UseVisualStyleBackColor = true;
-            //this.minimizedRadio.CheckedChanged += new System.EventHandler(this.minimizedRadio_CheckedChanged);
             // 
             // alwaysRadio
             // 
             this.alwaysRadio.AutoSize = true;
-            this.alwaysRadio.Location = new System.Drawing.Point(4, 11);
+            this.alwaysRadio.Location = new System.Drawing.Point(6, 19);
             this.alwaysRadio.Name = "alwaysRadio";
             this.alwaysRadio.Size = new System.Drawing.Size(58, 17);
             this.alwaysRadio.TabIndex = 0;
             this.alwaysRadio.TabStop = true;
             this.alwaysRadio.Text = "Always";
             this.alwaysRadio.UseVisualStyleBackColor = true;
-            //this.alwaysRadio.CheckedChanged += new System.EventHandler(this.alwaysRadio_CheckedChanged);
             // 
             // opacityOpts
             // 
@@ -324,7 +348,7 @@ namespace fooTitle {
             this.opacityOpts.Controls.Add(this.overOpacityTrackBar);
             this.opacityOpts.Controls.Add(this.label6);
             this.opacityOpts.Controls.Add(this.label5);
-            this.opacityOpts.Location = new System.Drawing.Point(170, 269);
+            this.opacityOpts.Location = new System.Drawing.Point(6, 112);
             this.opacityOpts.Name = "opacityOpts";
             this.opacityOpts.Size = new System.Drawing.Size(243, 153);
             this.opacityOpts.TabIndex = 10;
@@ -350,9 +374,8 @@ namespace fooTitle {
             this.fadeLengthTrackBar.Size = new System.Drawing.Size(40, 110);
             this.fadeLengthTrackBar.SmallChange = 10;
             this.fadeLengthTrackBar.TabIndex = 3;
-            this.fadeLengthTrackBar.TickFrequency = 100;
             this.fadeLengthTrackBar.Tag = "display/fadeLength";
-            //this.fadeLengthTrackBar.ValueChanged += new System.EventHandler(this.fadeLengthTrackBar_ValueChanged);
+            this.fadeLengthTrackBar.TickFrequency = 100;
             // 
             // label7
             // 
@@ -371,10 +394,9 @@ namespace fooTitle {
             this.normalOpacityTrackBar.Name = "normalOpacityTrackBar";
             this.normalOpacityTrackBar.Size = new System.Drawing.Size(104, 40);
             this.normalOpacityTrackBar.TabIndex = 3;
+            this.normalOpacityTrackBar.Tag = "display/normalOpacity";
             this.normalOpacityTrackBar.TickFrequency = 16;
             this.normalOpacityTrackBar.Value = 5;
-            this.normalOpacityTrackBar.Tag = "display/normalOpacity";
-            //this.normalOpacityTrackBar.ValueChanged += new System.EventHandler(this.normalOpacityTrackBar_ValueChanged);
             // 
             // overOpacityTrackBar
             // 
@@ -384,10 +406,9 @@ namespace fooTitle {
             this.overOpacityTrackBar.Name = "overOpacityTrackBar";
             this.overOpacityTrackBar.Size = new System.Drawing.Size(104, 40);
             this.overOpacityTrackBar.TabIndex = 2;
+            this.overOpacityTrackBar.Tag = "display/overOpacity";
             this.overOpacityTrackBar.TickFrequency = 16;
             this.overOpacityTrackBar.Value = 5;
-            this.overOpacityTrackBar.Tag = "display/overOpacity";
-            //this.overOpacityTrackBar.ValueChanged += new System.EventHandler(this.overOpacityTrackBar_ValueChanged);
             // 
             // label6
             // 
@@ -410,7 +431,7 @@ namespace fooTitle {
             // versionLabel
             // 
             this.versionLabel.AutoSize = true;
-            this.versionLabel.Location = new System.Drawing.Point(339, 15);
+            this.versionLabel.Location = new System.Drawing.Point(3, 408);
             this.versionLabel.Name = "versionLabel";
             this.versionLabel.Size = new System.Drawing.Size(35, 13);
             this.versionLabel.TabIndex = 11;
@@ -421,9 +442,9 @@ namespace fooTitle {
             this.zOrderBox.Controls.Add(this.onDesktopRadio);
             this.zOrderBox.Controls.Add(this.normalRadio);
             this.zOrderBox.Controls.Add(this.alwaysOnTopRadio);
-            this.zOrderBox.Location = new System.Drawing.Point(15, 220);
+            this.zOrderBox.Location = new System.Drawing.Point(6, 310);
             this.zOrderBox.Name = "zOrderBox";
-            this.zOrderBox.Size = new System.Drawing.Size(149, 95);
+            this.zOrderBox.Size = new System.Drawing.Size(182, 95);
             this.zOrderBox.TabIndex = 12;
             this.zOrderBox.TabStop = false;
             this.zOrderBox.Text = "Z-order";
@@ -438,7 +459,6 @@ namespace fooTitle {
             this.onDesktopRadio.TabStop = true;
             this.onDesktopRadio.Text = "On desktop";
             this.onDesktopRadio.UseVisualStyleBackColor = true;
-            //this.onDesktopRadio.CheckedChanged += new System.EventHandler(this.onDesktopRadio_CheckedChanged);
             // 
             // normalRadio
             // 
@@ -450,7 +470,6 @@ namespace fooTitle {
             this.normalRadio.TabStop = true;
             this.normalRadio.Text = "Normal";
             this.normalRadio.UseVisualStyleBackColor = true;
-            //this.normalRadio.CheckedChanged += new System.EventHandler(this.normalRadio_CheckedChanged);
             // 
             // alwaysOnTopRadio
             // 
@@ -462,38 +481,114 @@ namespace fooTitle {
             this.alwaysOnTopRadio.TabStop = true;
             this.alwaysOnTopRadio.Text = "Always on top";
             this.alwaysOnTopRadio.UseVisualStyleBackColor = true;
-            //this.alwaysOnTopRadio.CheckedChanged += new System.EventHandler(this.alwaysOnTopRadio_CheckedChanged);
             // 
-            // groupBox1
+            // popupBox
             // 
-            this.groupBox1.Controls.Add(this.beforeSongEndsCheckbox);
-            this.groupBox1.Controls.Add(this.onSongStartCheckbox);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.onlyWhenRadio);
-            this.groupBox1.Controls.Add(this.allTheTimeRadio);
-            this.groupBox1.Location = new System.Drawing.Point(15, 322);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(149, 179);
-            this.groupBox1.TabIndex = 13;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Popup";
+            this.popupBox.Controls.Add(this.label11);
+            this.popupBox.Controls.Add(this.label12);
+            this.popupBox.Controls.Add(this.beforeSongEndsStayTextBox);
+            this.popupBox.Controls.Add(this.label10);
+            this.popupBox.Controls.Add(this.label9);
+            this.popupBox.Controls.Add(this.onSongStartStayTextBox);
+            this.popupBox.Controls.Add(this.beforeSongEndsCheckbox);
+            this.popupBox.Controls.Add(this.onSongStartCheckbox);
+            this.popupBox.Controls.Add(this.label8);
+            this.popupBox.Controls.Add(this.onlyWhenRadio);
+            this.popupBox.Controls.Add(this.allTheTimeRadio);
+            this.popupBox.Location = new System.Drawing.Point(194, 65);
+            this.popupBox.Name = "popupBox";
+            this.popupBox.Size = new System.Drawing.Size(269, 177);
+            this.popupBox.TabIndex = 13;
+            this.popupBox.TabStop = false;
+            this.popupBox.Text = "Popup";
             // 
-            // allTheTimeRadio
+            // label11
             // 
-            this.allTheTimeRadio.AutoSize = true;
-            this.allTheTimeRadio.Checked = true;
-            this.allTheTimeRadio.Location = new System.Drawing.Point(5, 37);
-            this.allTheTimeRadio.Name = "allTheTimeRadio";
-            this.allTheTimeRadio.Size = new System.Drawing.Size(76, 17);
-            this.allTheTimeRadio.TabIndex = 0;
-            this.allTheTimeRadio.TabStop = true;
-            this.allTheTimeRadio.Text = "All the time";
-            this.allTheTimeRadio.UseVisualStyleBackColor = true;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(127, 153);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(47, 13);
+            this.label11.TabIndex = 20;
+            this.label11.Text = "seconds";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(22, 153);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(28, 13);
+            this.label12.TabIndex = 19;
+            this.label12.Text = "Stay";
+            // 
+            // beforeSongEndsStayTextBox
+            // 
+            this.beforeSongEndsStayTextBox.Location = new System.Drawing.Point(56, 150);
+            this.beforeSongEndsStayTextBox.Name = "beforeSongEndsStayTextBox";
+            this.beforeSongEndsStayTextBox.Size = new System.Drawing.Size(65, 20);
+            this.beforeSongEndsStayTextBox.TabIndex = 18;
+            this.beforeSongEndsStayTextBox.Tag = "showControl/beforeSongEndsStay";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(127, 104);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(47, 13);
+            this.label10.TabIndex = 17;
+            this.label10.Text = "seconds";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(22, 104);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(28, 13);
+            this.label9.TabIndex = 16;
+            this.label9.Text = "Stay";
+            // 
+            // onSongStartStayTextBox
+            // 
+            this.onSongStartStayTextBox.Location = new System.Drawing.Point(56, 101);
+            this.onSongStartStayTextBox.Name = "onSongStartStayTextBox";
+            this.onSongStartStayTextBox.Size = new System.Drawing.Size(65, 20);
+            this.onSongStartStayTextBox.TabIndex = 15;
+            this.onSongStartStayTextBox.Tag = "showControl/onSongStartStay";
+            // 
+            // beforeSongEndsCheckbox
+            // 
+            this.beforeSongEndsCheckbox.AutoSize = true;
+            this.beforeSongEndsCheckbox.Location = new System.Drawing.Point(21, 127);
+            this.beforeSongEndsCheckbox.Name = "beforeSongEndsCheckbox";
+            this.beforeSongEndsCheckbox.Size = new System.Drawing.Size(109, 17);
+            this.beforeSongEndsCheckbox.TabIndex = 14;
+            this.beforeSongEndsCheckbox.Tag = "showControl/beforeSongEnds";
+            this.beforeSongEndsCheckbox.Text = "Before song ends";
+            this.beforeSongEndsCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // onSongStartCheckbox
+            // 
+            this.onSongStartCheckbox.AutoSize = true;
+            this.onSongStartCheckbox.Location = new System.Drawing.Point(21, 78);
+            this.onSongStartCheckbox.Name = "onSongStartCheckbox";
+            this.onSongStartCheckbox.Size = new System.Drawing.Size(89, 17);
+            this.onSongStartCheckbox.TabIndex = 3;
+            this.onSongStartCheckbox.Tag = "showControl/onSongStart";
+            this.onSongStartCheckbox.Text = "On song start";
+            this.onSongStartCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 16);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(63, 13);
+            this.label8.TabIndex = 2;
+            this.label8.Text = "Show when";
             // 
             // onlyWhenRadio
             // 
             this.onlyWhenRadio.AutoSize = true;
-            this.onlyWhenRadio.Location = new System.Drawing.Point(6, 60);
+            this.onlyWhenRadio.Location = new System.Drawing.Point(9, 55);
             this.onlyWhenRadio.Name = "onlyWhenRadio";
             this.onlyWhenRadio.Size = new System.Drawing.Size(75, 17);
             this.onlyWhenRadio.TabIndex = 1;
@@ -501,51 +596,65 @@ namespace fooTitle {
             this.onlyWhenRadio.Text = "Only when";
             this.onlyWhenRadio.UseVisualStyleBackColor = true;
             // 
-            // label8
+            // allTheTimeRadio
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(10, 16);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(63, 13);
-            this.label8.TabIndex = 2;
-            this.label8.Text = "Show when";
+            this.allTheTimeRadio.AutoSize = true;
+            this.allTheTimeRadio.Checked = true;
+            this.allTheTimeRadio.Location = new System.Drawing.Point(9, 32);
+            this.allTheTimeRadio.Name = "allTheTimeRadio";
+            this.allTheTimeRadio.Size = new System.Drawing.Size(76, 17);
+            this.allTheTimeRadio.TabIndex = 0;
+            this.allTheTimeRadio.TabStop = true;
+            this.allTheTimeRadio.Text = "All the time";
+            this.allTheTimeRadio.UseVisualStyleBackColor = true;
             // 
-            // onSongStartCheckbox
+            // tabControl1
             // 
-            this.onSongStartCheckbox.AutoSize = true;
-            this.onSongStartCheckbox.Location = new System.Drawing.Point(21, 88);
-            this.onSongStartCheckbox.Name = "onSongStartCheckbox";
-            this.onSongStartCheckbox.Size = new System.Drawing.Size(89, 17);
-            this.onSongStartCheckbox.TabIndex = 3;
-            this.onSongStartCheckbox.Text = "On song start";
-            this.onSongStartCheckbox.UseVisualStyleBackColor = true;
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(12, 3);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(477, 457);
+            this.tabControl1.TabIndex = 14;
             // 
-            // beforeSongEndsCheckbox
+            // tabPage1
             // 
-            this.beforeSongEndsCheckbox.AutoSize = true;
-            this.beforeSongEndsCheckbox.Location = new System.Drawing.Point(21, 111);
-            this.beforeSongEndsCheckbox.Name = "beforeSongEndsCheckbox";
-            this.beforeSongEndsCheckbox.Size = new System.Drawing.Size(109, 17);
-            this.beforeSongEndsCheckbox.TabIndex = 14;
-            this.beforeSongEndsCheckbox.Text = "Before song ends";
-            this.beforeSongEndsCheckbox.UseVisualStyleBackColor = true;
+            this.tabPage1.Controls.Add(this.zOrderBox);
+            this.tabPage1.Controls.Add(this.versionLabel);
+            this.tabPage1.Controls.Add(this.popupBox);
+            this.tabPage1.Controls.Add(this.applySkinBtn);
+            this.tabPage1.Controls.Add(this.label1);
+            this.tabPage1.Controls.Add(this.label2);
+            this.tabPage1.Controls.Add(this.updateIntervalTrackBar);
+            this.tabPage1.Controls.Add(this.showWhenBox);
+            this.tabPage1.Controls.Add(this.skinsList);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(469, 431);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Appearance";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.albumArtGroup);
+            this.tabPage2.Controls.Add(this.opacityOpts);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(469, 431);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Misc";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // Properties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 513);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.zOrderBox);
-            this.Controls.Add(this.versionLabel);
-            this.Controls.Add(this.opacityOpts);
-            this.Controls.Add(this.showWhenBox);
-            this.Controls.Add(this.albumArtGroup);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.updateIntervalTrackBar);
-            this.Controls.Add(this.applySkinBtn);
-            this.Controls.Add(this.skinsList);
+            this.ClientSize = new System.Drawing.Size(501, 501);
+            this.Controls.Add(this.tabControl1);
             this.Name = "Properties";
             this.Text = "foo_title";
             this.VisibleChanged += new System.EventHandler(this.Properties_VisibleChanged);
@@ -561,10 +670,13 @@ namespace fooTitle {
             ((System.ComponentModel.ISupportInitialize)(this.overOpacityTrackBar)).EndInit();
             this.zOrderBox.ResumeLayout(false);
             this.zOrderBox.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.popupBox.ResumeLayout(false);
+            this.popupBox.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
         #endregion
