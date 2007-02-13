@@ -54,6 +54,7 @@ using System.Runtime.CompilerServices;
      - added support for choosing always on top/normal/on desktop z-order
      - added support for creating menu commands from .NET code
      - album art image file is no longer locked, it is loaded into memory
+     - created a custom configuration system
   
    0.6
      - support for bold/italic text, textlayer rewritten 
