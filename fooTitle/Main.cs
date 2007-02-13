@@ -64,19 +64,6 @@ namespace fooTitle
                 timer.Interval = UpdateInterval.Value;
         }
         
-        /*
-        public int UpdateInterval {
-            get {
-                return myUpdateInterval.GetVal();
-            }
-            set {
-                myUpdateInterval.SetVal(value);
-                if (initDone)
-                    timer.Interval = value;
-            }
-        }
-         */
-
         /// <summary>
         /// The name of the currently used skin. Can be changed
         /// </summary>
@@ -154,66 +141,6 @@ namespace fooTitle
                 }
         }
         
-        /*
-        private CCfgInt myNormalOpacity;
-        /// <summary>
-        /// The opacity in normal state
-        /// </summary>
-        public int NormalOpacity {
-            get {
-                return myNormalOpacity.GetVal();
-            }
-            set {
-                myNormalOpacity.SetVal(value);
-                if (Display != null)
-                    Display.SetNormalOpacity(value);
-            }
-        }
-
-        /// <summary>
-        /// The opacity when the mouse is over foo_title
-        /// </summary>
-        private CCfgInt myOverOpacity;
-        public int OverOpacity {
-            get {
-                return myOverOpacity.GetVal();
-            }
-            set {
-                myOverOpacity.SetVal(value);
-            }
-        }
-
-        /// <summary>
-        /// The length of fade between normal and over states in miliseconds
-        /// </summary>
-        private CCfgInt myFadeLength;
-        public int FadeLength {
-            get {
-                return myFadeLength.GetVal();
-            }
-            set {
-                myFadeLength.SetVal(value);
-            }
-        }
-*/
-
-        /*
-        /// <summary>
-        /// The z position of the window - either always on top or on the bottom.
-        /// </summary>
-        private CCfgInt myWindowPosition;
-        public Win32.WindowPosition WindowPosition {
-            get {
-                return (Win32.WindowPosition)myWindowPosition.GetVal();
-            }
-            set {
-                myWindowPosition.SetVal((int)value);
-                if (Display != null)
-                    Display.SetWindowsPos(value);
-            }
-        }
-        */
-
         protected bool fooTitleEnabled = true;
         public void DisableFooTitle() {
             if (initDone)
@@ -318,27 +245,24 @@ namespace fooTitle
         public IConfigStorage Config;
         public IConfigStorage TestConfig;
 
+        public Tests.TestServices TestServicesInstance;
+
         public void Create() {
             instance = this;
 
-            //positionX = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 5), 100);
-            //positionY = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 6), 100);
-            //myShowWhen = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 7), 1);
-            //myUpdateInterval = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 59), 100);
-            //mySkinName = new CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 2), "white");
-            //myDataDir = new CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 1), "foo_title\\");
-            //myAlbumArtFilenames = new CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 4), "folder");
-            //myNormalOpacity = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 8), 255);
-            //myOverOpacity = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 9), 120);
-            //myFadeLength = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 10), 500);
-            //myWindowPosition = new CCfgInt(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 11), (int)Win32.WindowPosition.Topmost);
+            // create the property sheet form
             propsForm = new Properties(this);
 
-            // create the configuration manager
-            Config = new XmlConfigStorage(false);
-            TestConfig = new XmlConfigStorage(true);
-            fooManagedWrapper.CManagedConfigIOCallback.OnWrite += new CManagedConfigIOCallback.OnWriteDelegate(CManagedConfigIOCallback_OnWrite);
+            // create the services for testing
+            TestServicesInstance = new Tests.TestServices();
 
+            // create a notifying string value for saving the configuration
+            CNotifyingCfgString cfgEntry = new CNotifyingCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 13), "<config/>");
+            cfgEntry.BeforeWriting += new CNotifyingCfgString.BeforeWritingDelegate(cfgEntry_BeforeWriting);
+
+            // create the configuration manager
+            Config = new XmlConfigStorage(cfgEntry);
+            TestConfig = new XmlConfigStorage(TestServicesInstance.testConfigStorage);
 
             // initialize show control
             showControl = new ShowControl();
@@ -346,13 +270,13 @@ namespace fooTitle
             // initialize menu commands
             viewMenuCommands = new ViewMenuCommands();
 
+
+
         }
 
-        void CManagedConfigIOCallback_OnWrite(bool reset) {
-            if (reset)
-                return;
-
+        private void cfgEntry_BeforeWriting(CNotifyingCfgString sender) {
             ConfValuesManager.GetInstance().SaveTo(Config);
+
         }
 
         public void SavePosition() {
@@ -374,7 +298,7 @@ namespace fooTitle
 		public void OnInit(IPlayControl a) {
             Main.PlayControl = a;
 
-#if DEBUG
+#if DEBU
             // run the tests
             Tests.TestFramework t = new Tests.test_all();
             t.Run();
@@ -416,6 +340,7 @@ namespace fooTitle
 
             RestorePosition();
 
+            // register response events on some variables
             ShowWhen.OnChanged += new ConfValuesManager.ValueChangedDelegate(ShowWhen_OnChanged);
             UpdateInterval.OnChanged += new ConfValuesManager.ValueChangedDelegate(updateIntervalChanged);
             SkinName.OnChanged += new ConfValuesManager.ValueChangedDelegate(skinNameChanged);
