@@ -42,6 +42,10 @@ String ^MetaDBHandle::GetPath() {
 	return gcnew String(c_path, 0, strlen(c_path), gcnew System::Text::UTF8Encoding(true, true));
 }
 
+double MetaDBHandle::GetLength() {
+	return handle->get_length();
+}
+
 String ^CPlayControl::FormatTitle(MetaDBHandle ^handle, String ^spec) {
 	metadb_handle * handle_c = handle->GetHandle();
 	const char* spec_c = (const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(spec)).ToPointer();
@@ -67,6 +71,11 @@ MetaDBHandle ^CPlayControl::GetNowPlaying() {
 
 	MetaDBHandle ^res = gcnew MetaDBHandle(out.get_ptr());
 	return res;
+}
+
+double CPlayControl::PlaybackGetPosition() {
+	static_api_ptr_t<play_control> pc;
+	return pc->playback_get_position();
 }
 
 void fooManagedWrapper::Console::Error(String ^a) {

@@ -34,6 +34,7 @@ namespace fooManagedWrapper
 
 		metadb_handle *GetHandle() { return handle; };
 		String ^GetPath();
+		double GetLength();
 	private:
 		metadb_handle *handle;
 	};
@@ -56,12 +57,14 @@ namespace fooManagedWrapper
 		};
 		String ^FormatTitle(MetaDBHandle ^dbHandle, String ^spec);
 		MetaDBHandle ^GetNowPlaying();
+		double PlaybackGetPosition();
 	};
 
 	public ref class CPlayControl : public IPlayControl {
 	public:
 		virtual MetaDBHandle ^GetNowPlaying();
 		virtual String ^FormatTitle(MetaDBHandle ^dbHandle, String ^spec);
+		virtual double PlaybackGetPosition();
 	};
 
 
