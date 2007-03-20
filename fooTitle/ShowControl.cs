@@ -48,18 +48,62 @@ namespace fooTitle {
 
         protected Timer hideAfterSongStart = new Timer();
         private bool timeEventRegistered = false;
+
+        protected fooManagedWrapper.MetaDBHandle lastSong;
         
         public ShowControl() {
             Main.GetInstance().OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(ShowControl_OnPlaybackNewTrackEvent);
 
             // I don't want to receive the playback time event when before song ends is not checked
             beforeSongEnds.OnChanged += new ConfValuesManager.ValueChangedDelegate(beforeSongEnds_OnChanged);
+            if (beforeSongEnds.Value)
+                registerTimeEvent();
+
+
+            // enable foo_title back when restrictions are turned off
+            popupShowing.OnChanged += new ConfValuesManager.ValueChangedDelegate(popupShowing_OnChanged);
 
             // init the timers
             hideAfterSongStart.Tick += new EventHandler(hideAfterSongStart_Tick);
 
         }
 
+        /// <summary>
+        /// Check the situation and disable/enable foo_title as needed
+        /// </summary>
+        void popupShowing_OnChanged(string name) {
+            if (popupShowing.Value == PopupShowing.AllTheTime)
+                doEnable();
+            else {
+                // check time
+                double pos = Main.PlayControl.PlaybackGetPosition();
+
+                if ((pos < onSongStartStay.Value) && (onSongStart.Value)) {
+                    showOnStart(pos);
+                } else if ((lastSong.GetLength() - beforeSongEndsStay.Value <= pos) && (beforeSongEnds.Value)){
+                    doEnable();
+                } else {
+                    doDisable();
+                }
+            }
+        }
+
+        #region Showing and hiding functions
+        /// <summary>
+        /// This enables foo_title, but only if it's enabled in the preferences
+        /// </summary>
+        protected void doEnable() {
+            // TODO tohle musi kontrolovat jestli to neni nastaveny na minimized only a pripadne se ani nesnazit to zobrazit
+            // a na druhe strane - checkFoobarMinimized musi brat ohledy na to ze ShowControl to chce mit schovany
+            Main.GetInstance().EnableFooTitle();
+        }
+
+        protected void doDisable() {
+            Main.GetInstance().DisableFooTitle();
+        }
+        #endregion
+
+        #region time event tools
         /// <summary>
         /// Registers receiving the playback time event and makes sure that it's not registered multiple times
         /// </summary>
@@ -81,6 +125,7 @@ namespace fooTitle {
             Main.GetInstance().OnPlaybackTimeEvent -= new OnPlaybackTimeDelegate(ShowControl_OnPlaybackTimeEvent);
             timeEventRegistered = false;
         }
+        #endregion
 
         /// <summary>
         /// Registers or unregisters the time changed event, in order to prevent wasting performance 
@@ -94,27 +139,48 @@ namespace fooTitle {
             }
         }
 
+        /// <summary>
+        /// Checks time and displays foo_title when time has come
+        /// </summary>
         void ShowControl_OnPlaybackTimeEvent(double time) {
-            // TODO tady potrebuju zjistit jak je ten song dlouhy
+            if (lastSong.GetLength() - beforeSongEndsStay.Value <= time) {
+                doEnable();
+            }
+        }
+        
+        /// <summary>
+        /// Displays foo_title when it's set to display on new song and also hides foo_title if not set
+        /// </summary>
+        void ShowControl_OnPlaybackNewTrackEvent(fooManagedWrapper.MetaDBHandle song) {
+            // store the song
+            lastSong = song;
+
+            if (popupShowing.Value != PopupShowing.OnlySometimes) 
+                return;   // no need to do anything
+            if (!onSongStart.Value) {
+                // hide foo_title when the previous song has ended
+                if (beforeSongEnds.Value)
+                    doDisable();
+                return;
+            }
+
+            showOnStart(0);
         }
 
-        void ShowControl_OnPlaybackNewTrackEvent(fooManagedWrapper.MetaDBHandle song) {
-            if (popupShowing.Value != PopupShowing.OnlySometimes) 
-                return;
-            if (!onSongStart.Value)
-                return;
-
-            // show now
-            Main.GetInstance().EnableFooTitle();
+        /// <summary>
+        /// Handles showing foo_title on a start of a new song. Plans the hiding accordingly to the playPos parameter.
+        /// </summary>
+        /// <param name="playPos">The current playback position in seconds</param>
+        protected void showOnStart(double playPos) {
+            doEnable();
 
             // plan a hide event
-            hideAfterSongStart.Interval = onSongStartStay.Value * 1000;
+            hideAfterSongStart.Interval = (int)((float)onSongStartStay.Value - playPos) * 1000;
             hideAfterSongStart.Start();
-
         }
 
         void hideAfterSongStart_Tick(object sender, EventArgs e) {
-            Main.GetInstance().DisableFooTitle();
+            doDisable();
             hideAfterSongStart.Stop();  
         }
     }

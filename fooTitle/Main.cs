@@ -269,9 +269,6 @@ namespace fooTitle
 
             // initialize menu commands
             viewMenuCommands = new ViewMenuCommands();
-
-
-
         }
 
         private void cfgEntry_BeforeWriting(CNotifyingCfgString sender) {
