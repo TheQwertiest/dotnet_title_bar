@@ -47,5 +47,39 @@ namespace fooManagedWrapper {
 		CManagedWrapper::FreeCString(_defString);
 	};
 
+	void notifying_cfg_string::get_data_raw(foobar2000_io::stream_writer *p_stream, foobar2000_io::abort_callback &p_abort) {
+		owner->FireBeforeWritingEvent();
+		cfg_string::get_data_raw(p_stream, p_abort);
+	};
+
+	/*
+	void notifying_cfg_string::set_data_raw(foobar2000_io::stream_reader *p_stream, t_size p_sizehint, foobar2000_io::abort_callback &p_abort) {
+		cfg_string::set_data_raw(p_stream, p_sizehint, p_abort);
+	};
+	*/
+
+	CNotifyingCfgString::!CNotifyingCfgString() {
+		delete wrapper;
+	}
+
+	CNotifyingCfgString::~CNotifyingCfgString() {
+		this->!CNotifyingCfgString();
+	}
+
+	void CNotifyingCfgString::SetVal(String ^a) {
+		const char *_defString = CManagedWrapper::ToCString(a);
+		wrapper->val = _defString;
+		CManagedWrapper::FreeCString(_defString);
+	}
+
+	CNotifyingCfgString::CNotifyingCfgString(Guid ^_guid, String ^_def) {
+		const char *_defString = CManagedWrapper::ToCString(_def);
+		wrapper = new CNotifyingCfgStringWrapper(CManagedWrapper::ToGUID(_guid), _defString, this);
+		CManagedWrapper::FreeCString(_defString);
+	}
+
+	void CNotifyingCfgString::FireBeforeWritingEvent() {
+		BeforeWriting(this);
+	}
 
 };

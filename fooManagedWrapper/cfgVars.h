@@ -46,7 +46,7 @@ namespace fooManagedWrapper {
 	typedef CCfgGenericWrapper<cfg_uint, unsigned int> CCfgUIntWrapper;
 	typedef CCfgGenericWrapper<cfg_bool, bool> CCfgBoolWrapper;
 	typedef CCfgGenericWrapper<cfg_string, const char *> CCfgStringWrapper;
-
+	
 	// these are the configuration classes, they must be created in the component's Create method
 	// (like any other service)
 	public ref class CCfgInt : public CCfgVar {
@@ -145,6 +145,57 @@ namespace fooManagedWrapper {
 
 		void SetVal(String ^a);
 	};
+
+
+	ref class CNotifyingCfgString;
+	
+	class notifying_cfg_string : public cfg_string {
+	protected:
+		gcroot<CNotifyingCfgString^> owner;
+
+		void get_data_raw(stream_writer * p_stream,abort_callback & p_abort);
+		//void set_data_raw(stream_reader * p_stream,t_size p_sizehint,abort_callback & p_abort); // I am not interested in this
+		
+
+	public:
+		notifying_cfg_string(const GUID & p_guid, const char * p_defaultval, CNotifyingCfgString^ _owner) : cfg_string(p_guid, p_defaultval), owner(_owner) {};
+
+		inline const notifying_cfg_string& operator=(const cfg_string & p_val) {set_string(p_val);return *this;}
+		inline const notifying_cfg_string& operator=(const char* p_val) {set_string(p_val);return *this;}
+
+	};
+
+	class CNotifyingCfgStringWrapper {
+	public:
+		notifying_cfg_string val;
+
+		CNotifyingCfgStringWrapper(const GUID &_guid, const char *_def, CNotifyingCfgString ^_owner) : val(_guid, _def, _owner) {};
+	};
+
+	public ref class CNotifyingCfgString : public CCfgVar {
+	protected:
+		CNotifyingCfgStringWrapper *wrapper;
+
+	public:
+		CNotifyingCfgString(Guid ^_guid, String^ _def);
+
+		virtual ~CNotifyingCfgString();
+		!CNotifyingCfgString();
+
+		String ^GetVal() {
+			return gcnew String(wrapper->val);
+		};
+
+		void SetVal(String ^a);
+
+		delegate void BeforeWritingDelegate(CNotifyingCfgString ^sender);
+		event BeforeWritingDelegate ^BeforeWriting;
+
+		void FireBeforeWritingEvent();
+	};
+
+
+
 
 
 };
