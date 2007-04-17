@@ -164,8 +164,8 @@ namespace fooTitle
             this.MouseEnter += new EventHandler(Display_MouseEnter);
             this.MouseLeave += new EventHandler(Display_MouseLeave);
             this.Activated += new EventHandler(Display_Activated);
+            this.Closing += new CancelEventHandler(Display_Closing);
 		}
-
 
 		#endregion
 
@@ -174,7 +174,12 @@ namespace fooTitle
             SetBitmap(canvasBitmap, (byte)opacity);
             Canvas.Clear(Color.Transparent);
         }
-        
+  
+        void Display_Closing(object sender, CancelEventArgs e) {
+            e.Cancel = true;
+            Main.GetInstance().ShowWhen.Value = ShowWhenEnum.Never;
+        }   
+   
 #region Bottom
         void Display_Activated(object sender, EventArgs e) {
             if (windowPosition.Value == Win32.WindowPosition.Bottom) {
@@ -228,7 +233,11 @@ namespace fooTitle
         // snapping
         private int doSnapping(int pos, int border) {
             if (pos - border < SnapDist) {
-                return border;
+                if (Math.Abs(pos - border) > 2 * SnapDist) {
+                    return pos;
+                } else {
+                    return border;
+                }
             }
             return pos;
         }
