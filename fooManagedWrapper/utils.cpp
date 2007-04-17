@@ -78,6 +78,11 @@ double CPlayControl::PlaybackGetPosition() {
 	return pc->playback_get_position();
 }
 
+bool CPlayControl::IsPlaying() {
+	static_api_ptr_t<play_control> pc;
+	return pc->is_playing();
+}
+
 void fooManagedWrapper::Console::Error(String ^a) {
 	const char *c_msg = CManagedWrapper::ToCString(a);
 	console::error(c_msg);

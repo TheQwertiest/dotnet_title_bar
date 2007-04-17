@@ -58,6 +58,7 @@ namespace fooManagedWrapper
 		String ^FormatTitle(MetaDBHandle ^dbHandle, String ^spec);
 		MetaDBHandle ^GetNowPlaying();
 		double PlaybackGetPosition();
+		bool IsPlaying();
 	};
 
 	public ref class CPlayControl : public IPlayControl {
@@ -65,6 +66,7 @@ namespace fooManagedWrapper
 		virtual MetaDBHandle ^GetNowPlaying();
 		virtual String ^FormatTitle(MetaDBHandle ^dbHandle, String ^spec);
 		virtual double PlaybackGetPosition();
+		virtual bool IsPlaying();
 	};
 
 
