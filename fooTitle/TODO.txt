@@ -7,13 +7,15 @@
  - vizualizace
  - add support for more actions for buttons, such as commands from the context menu
  + scriptable values
- - show only for a while (like pretty popup)
+ + show only for a while (like pretty popup)
  - option to set actions for click/doubleclick/rightclick
- - reset options button
+ + reset options button
  - maybe create the effect of reflecting glass ;)
  - extendable panels :)
+ - pixel accurate button hit testing
  - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
- - BUG: closing the display window with Alt-F4 makes it crash
+ + BUG: it may not be possible to drag it to some other monitor
+ + BUG: closing the display window with Alt-F4 makes it crash
  + BUG: setting it to Normal (instead of always on top) and dragging right after that makes it freeze...completely
 - cleaning the code
  - divide the Main class into several smaller classes for easier mantaince
@@ -25,3 +27,5 @@
 + implement saving of the value by implementing a custom version of cfg_var
 - profile for speed 
 - test stability
+
+
