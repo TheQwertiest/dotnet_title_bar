@@ -29,6 +29,7 @@ namespace fooManagedWrapper {
 
 	CCustomPrefPage::CCustomPrefPage() {
 		name = NULL;
+		form = NULL;
 	}
 
 	CCustomPrefPage::~CCustomPrefPage(){ 
@@ -76,6 +77,17 @@ namespace fooManagedWrapper {
 
 	void CCustomPrefPage::SetParentGUID(GUID a) {
 		parentGuid = a;
+	}
+
+	bool CCustomPrefPage::reset_query() {
+		if (static_cast<CManagedPrefPage^>(form) == nullptr)
+			return false;
+		return form->QueryReset();
+	}
+
+	void CCustomPrefPage::reset() {
+		if (static_cast<CManagedPrefPage^>(form) != nullptr)
+			form->Reset();
 	}
 
 	CManagedPrefPage::~CManagedPrefPage() {

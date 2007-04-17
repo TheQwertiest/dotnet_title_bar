@@ -37,6 +37,8 @@ namespace fooManagedWrapper {
 		CManagedPrefPage(System::Guid ^myGuid, System::Guid ^parentGuid);
 		virtual ~CManagedPrefPage();
 		!CManagedPrefPage();
+		virtual void Reset() {};
+		virtual bool QueryReset() { return false; };
 
 		static System::Guid ^guid_root, ^guid_hidden, ^guid_tools, ^guid_core, ^guid_display, ^guid_playback, ^guid_visualisations, ^guid_input, ^guid_tag_writing, ^guid_media_library;
 
@@ -66,13 +68,15 @@ namespace fooManagedWrapper {
 		//! Retrieves GUID of parent page/branch of this page. See preferences_page::guid_* constants for list of standard parent GUIDs. Can also be a GUID of another page or a branch (see: preferences_branch).
 		virtual GUID get_parent_guid() ;
 		//! Queries whether this page supports "reset page" feature.
-		virtual bool reset_query() {
+		virtual bool reset_query(); /* {
 			return false;
 		}
+		*/
 		//! Activates "reset page" feature. It is safe to assume that the preferences page dialog does not exist at the point this is called (caller destroys it before calling reset and creates it again afterwards).
-		virtual void reset() {
+		virtual void reset(); /* {
 
 		}
+		*/
 
 		virtual ~CCustomPrefPage();
 
