@@ -55,7 +55,11 @@ using System.Runtime.CompilerServices;
      - added support for creating menu commands from .NET code
      - album art image file is no longer locked, it is loaded into memory
      - created a custom configuration system
-  
+     - foo_title can now pop up at the beginning and/or the end of a song
+     - pressing Alt-F4 on foo_title will disable it instead of crashing
+     - sticking to screen borders now permits pushing it behind the edge (this should make it possible to put foo_title on a different monitor)
+     - reset button in the pref page - resets everything, including window position
+ 
    0.6
      - support for bold/italic text, textlayer rewritten 
      - fixed a bug that prevented foo_title from loading when foobar wasn't started from it's directory
