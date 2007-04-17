@@ -102,6 +102,14 @@ namespace fooTitle {
             */
         }
 
+     public override bool QueryReset() {
+         return true;
+     }
+
+     public override void Reset() {
+         ConfValuesManager.GetInstance().Reset();
+     }
+
         #region Windows Form Designer generated code
         private SafeTabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
