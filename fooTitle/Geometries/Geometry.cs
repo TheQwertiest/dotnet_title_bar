@@ -95,6 +95,11 @@ namespace fooTitle.Geometries {
         /// Returns the position of this layer, relative to it's parent rectangle.
         /// </summary>
         public abstract Point GetPosition();
+
+        /// <summary>
+        /// Returns true if the geometry has a formatting string and thus needs to be updated regularly
+        /// </summary>
+        public abstract bool IsDynamic();
     }
 
 }

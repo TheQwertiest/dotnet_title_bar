@@ -159,5 +159,9 @@ namespace fooTitle.Geometries {
         public override System.Drawing.Point GetPosition() {
             return Position;
         }
+
+        public override bool IsDynamic() {
+            return (myExprHeight != null || myExprPosition.X != null || myExprPosition.Y != null || myExprWidth != null);
+        }
     }
 }

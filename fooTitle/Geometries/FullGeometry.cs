@@ -75,5 +75,9 @@ namespace fooTitle.Geometries {
         public override System.Drawing.Point GetPosition() {
             return new Point(0, 0);
         }
+
+        public override bool IsDynamic() {
+            return (myExprPadding.Bottom != null || myExprPadding.Left != null || myExprPadding.Right != null || myExprPadding.Top != null);
+        }
     }
 }
