@@ -132,6 +132,11 @@ namespace fooTitle.Config {
         /// </summary>
         /// <param name="visitor"></param>
         public abstract void WriteVisit(IConfigValueVisitor visitor);
+
+        /// <summary>
+        /// Resets the value of this variable to the default
+        /// </summary>
+        public abstract void Reset();
     }
     #endregion
 
@@ -222,6 +227,10 @@ namespace fooTitle.Config {
         public override void WriteVisit(IConfigValueVisitor visitor) {
             visitor.WriteInt(this);
         }
+
+        public override void Reset() {
+            Value = def;
+        }
     }
 
     public class ConfString : ConfValue {
@@ -265,6 +274,10 @@ namespace fooTitle.Config {
 
         public override void WriteVisit(IConfigValueVisitor visitor) {
             visitor.WriteString(this);
+        }
+
+        public override void Reset() {
+            Value = def;
         }
     }
 

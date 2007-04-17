@@ -156,6 +156,15 @@ namespace fooTitle.Config {
             return null;
         }
 
+
+        /// <summary>
+        /// Resets all values to default
+        /// </summary>
+        public void Reset() {
+            foreach (ConfValue v in values) {
+                v.Reset();
+            }
+        }
     }
 
     #endregion
