@@ -73,6 +73,8 @@ namespace fooTitle.Layers
 		protected ArrayList images = new ArrayList();
 		protected ArrayList layers = new ArrayList();
 
+        public Layer ParentLayer;
+
 		public Layer(Rectangle parentRect, XmlNode node) {
 			XPathNavigator nav = node.CreateNavigator();
 
@@ -85,9 +87,11 @@ namespace fooTitle.Layers
                 if (child.Name == "geometry") {
                     string geomType = child.Attributes.GetNamedItem("type").Value;
                     geometry = Main.GetInstance().GeometryFactory.CreateGeometry(geomType, parentRect, child);
+                    if (geometry.IsDynamic())
+                        Main.GetInstance().CurrentSkin.DynamicLayers.Add(this);
+                    break;
                 }
             }
-
 
 			UpdateGeometry(parentRect);
 		}
@@ -111,6 +115,7 @@ namespace fooTitle.Layers
 
             if (layer != null) {
                 layer.Display = this.Display;
+                layer.ParentLayer = this;
                 layer.loadLayers(node);
                 layers.Add(layer);
             }
@@ -124,6 +129,10 @@ namespace fooTitle.Layers
 				i.UpdateGeometry(ClientRect);
 			}
 		}
+
+        public void UpdateThisLayerGeometry(Rectangle parentRect) {
+            geometry.Update(parentRect);
+        }
 
         protected void drawSubLayers() {
             foreach (Layer i in layers) {

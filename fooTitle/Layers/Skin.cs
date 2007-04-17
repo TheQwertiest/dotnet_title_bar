@@ -19,6 +19,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Schema;
@@ -39,6 +40,7 @@ namespace fooTitle.Layers
 		XmlDocument document = new XmlDocument();
         XmlNode skin;
         string name;
+        public List<Layer> DynamicLayers = new List<Layer>();
         
 
         /// <summary>
@@ -115,16 +117,38 @@ namespace fooTitle.Layers
             return defaultGetMinimalSize();
         }
 
-
         /// <summary>
         /// Asks layers for optimal size and resizes itself and the display in case it's needed.
         /// </summary>
         public void CheckSize() {
             Size size = GetMinimalSize();
+            if ((size.Width != ((AbsoluteGeometry)geometry).Width) || (size.Height != ((AbsoluteGeometry)geometry).Height)) {
+                Resize(size);
+                Main.GetInstance().Display.SetSize(ClientRect.Width, ClientRect.Height);
+            }
+        }
+
+        /// <summary>
+        /// Asks layers for optimal size and resizes itself and the display in case it's needed.
+        /// Called when the skin is loaded - does full size checking
+        /// </summary>
+        public void FirstCheckSize() {
+            Size size = GetMinimalSize();
             Resize(size);
             Main.GetInstance().Display.SetSize(ClientRect.Width, ClientRect.Height);
         }
-        
+
+        /// <summary>
+        /// Optimised version of updateGeometry - processes only the dynamic layers
+        /// </summary>
+        /// <param name="parentRect">parent rectangle - the geometry should fit in it</param>
+        public void FrameUpdateGeometry(Rectangle parentRect) {
+            foreach (Layer l in DynamicLayers) {
+                //l.UpdateGeometry(l.ParentLayer.ClientRect);
+                l.UpdateThisLayerGeometry(l.ParentLayer.ClientRect);
+            }
+        }
+
         /// <summary>
         /// Used for easily finding out what is the path to a skin's file (image, xml, extension,...)
         /// </summary>
@@ -232,5 +256,7 @@ namespace fooTitle.Layers
             if (temp != null)
                 temp(sender, e);
         }
+
+
     }
 }
