@@ -49,6 +49,11 @@ namespace fooTitle {
         protected Timer hideAfterSongStart = new Timer();
         private bool timeEventRegistered = false;
 
+        /// <summary>
+        /// Set to true when it's time when foo_title should be displayed - such as the 5 seconds after the start of playback
+        /// </summary>
+        protected bool timeToShow;
+
         protected fooManagedWrapper.MetaDBHandle lastSong;
         
         public ShowControl() {
@@ -59,25 +64,29 @@ namespace fooTitle {
             if (beforeSongEnds.Value)
                 registerTimeEvent();
 
-
             // enable foo_title back when restrictions are turned off
             popupShowing.OnChanged += new ConfValuesManager.ValueChangedDelegate(popupShowing_OnChanged);
 
             // init the timers
             hideAfterSongStart.Tick += new EventHandler(hideAfterSongStart_Tick);
-
         }
 
         /// <summary>
-        /// Check the situation and disable/enable foo_title as needed
+        /// When the showing option changes, check the situation and disable/enable foo_title as needed
         /// </summary>
         void popupShowing_OnChanged(string name) {
             if (popupShowing.Value == PopupShowing.AllTheTime)
                 doEnable();
             else {
+                if (!Main.PlayControl.IsPlaying()) {
+                    // just hide it
+                    doDisable();
+                    return;
+                }
+
                 // check time
                 double pos = Main.PlayControl.PlaybackGetPosition();
-
+                
                 if ((pos < onSongStartStay.Value) && (onSongStart.Value)) {
                     showOnStart(pos);
                 } else if ((lastSong.GetLength() - beforeSongEndsStay.Value <= pos) && (beforeSongEnds.Value)){
@@ -91,19 +100,32 @@ namespace fooTitle {
         #region Showing and hiding functions
         /// <summary>
         /// This enables foo_title, but only if it's enabled in the preferences
+        /// Should be called from functions that check if it's time to show
         /// </summary>
         protected void doEnable() {
-            // TODO tohle musi kontrolovat jestli to neni nastaveny na minimized only a pripadne se ani nesnazit to zobrazit
-            // a na druhe strane - checkFoobarMinimized musi brat ohledy na to ze ShowControl to chce mit schovany
-            Main.GetInstance().EnableFooTitle();
+            timeToShow = true;
+
+            if (Main.GetInstance().ShowWhen.Value == ShowWhenEnum.WhenMinimized) {
+                // can show only if minimized
+                if (!CManagedWrapper.getInstance().IsFoobarActivated())
+                    Main.GetInstance().EnableFooTitle();
+            } else if (Main.GetInstance().ShowWhen.Value == ShowWhenEnum.Never) {
+                // nothing
+            } else {
+                // can show it freely
+                Main.GetInstance().EnableFooTitle();
+            }
         }
 
         protected void doDisable() {
+            timeToShow = false;
+
+            // can always hide
             Main.GetInstance().DisableFooTitle();
         }
         #endregion
 
-        #region time event tools
+        #region playback time event tools
         /// <summary>
         /// Registers receiving the playback time event and makes sure that it's not registered multiple times
         /// </summary>
@@ -125,7 +147,6 @@ namespace fooTitle {
             Main.GetInstance().OnPlaybackTimeEvent -= new OnPlaybackTimeDelegate(ShowControl_OnPlaybackTimeEvent);
             timeEventRegistered = false;
         }
-        #endregion
 
         /// <summary>
         /// Registers or unregisters the time changed event, in order to prevent wasting performance 
@@ -138,6 +159,7 @@ namespace fooTitle {
                 unregisterTimeEvent();
             }
         }
+        #endregion
 
         /// <summary>
         /// Checks time and displays foo_title when time has come
@@ -182,6 +204,16 @@ namespace fooTitle {
         void hideAfterSongStart_Tick(object sender, EventArgs e) {
             doDisable();
             hideAfterSongStart.Stop();  
+        }
+
+        /// <summary>
+        /// Called by the Main class when foobar2000's window gets minimized
+        /// Should check if foo_title should be enabled
+        /// </summary>
+        public void TryShowWhenMinimized() {
+            if (timeToShow) {
+                Main.GetInstance().EnableFooTitle();
+            }
         }
     }
 }
