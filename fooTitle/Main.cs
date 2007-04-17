@@ -29,17 +29,15 @@ using fooTitle;
 using fooTitle.Config;
 
 
-namespace fooTitle
-{
+namespace fooTitle {
     public enum ShowWhenEnum {
         Always,
         WhenMinimized,
         Never
     }
 
-	public class Main : IComponentClient, IPlayCallbackSender
-	{
-		public static IPlayControl PlayControl;
+    public class Main : IComponentClient, IPlayCallbackSender {
+        public static IPlayControl PlayControl;
         /// <summary>
         /// Set to true after everything has been created and can be manipulated
         /// </summary>
@@ -47,13 +45,13 @@ namespace fooTitle
 
         private static ConfString myDataDir = new ConfString("base/dataDir", "foo_title\\");
         /// <summary>
-		/// Returns where the skin and other components should look for their files.
-		/// </summary>
-		public static string DataDir {
-			get {
-				return Path.Combine(CManagedWrapper.getInstance().GetFoobarDirectory(), myDataDir.Value);
-			}
-		}
+        /// Returns where the skin and other components should look for their files.
+        /// </summary>
+        public static string DataDir {
+            get {
+                return Path.Combine(CManagedWrapper.getInstance().GetFoobarDirectory(), myDataDir.Value);
+            }
+        }
 
         /// <summary>
         /// How often the display should be redrawn
@@ -63,7 +61,7 @@ namespace fooTitle
             if (initDone)
                 timer.Interval = UpdateInterval.Value;
         }
-        
+
         /// <summary>
         /// The name of the currently used skin. Can be changed
         /// </summary>
@@ -116,7 +114,7 @@ namespace fooTitle
             }
         }
 
-		private Display myDisplay;
+        private Display myDisplay;
         /// <summary>
         /// Provides access to the display.
         /// </summary>
@@ -132,15 +130,15 @@ namespace fooTitle
         public ConfEnum<ShowWhenEnum> ShowWhen = new ConfEnum<ShowWhenEnum>("display/showWhen", ShowWhenEnum.Always);
         void ShowWhen_OnChanged(string name) {
 
-                if (ShowWhen.Value == ShowWhenEnum.Always)
-                    EnableFooTitle();
-                else if (ShowWhen.Value == ShowWhenEnum.Never)
-                    DisableFooTitle();
-                else {
-                    checkFoobarMinimized();
-                }
+            if (ShowWhen.Value == ShowWhenEnum.Always)
+                EnableFooTitle();
+            else if (ShowWhen.Value == ShowWhenEnum.Never)
+                DisableFooTitle();
+            else {
+                checkFoobarMinimized();
+            }
         }
-        
+
         protected bool fooTitleEnabled = true;
         public void DisableFooTitle() {
             if (initDone)
@@ -165,20 +163,22 @@ namespace fooTitle
         /// Checks if foobar is minimized or active and shows/hides display according to it
         /// </summary>
         private void checkFoobarMinimized() {
-            if (ShowWhen.Value != ShowWhenEnum.WhenMinimized) return;
+            if (ShowWhen.Value != ShowWhenEnum.WhenMinimized)
+                return;
 
-            if (CManagedWrapper.getInstance().IsFoobarActivated())
-                DisableFooTitle();                
-            else
-                EnableFooTitle();
+            if (CManagedWrapper.getInstance().IsFoobarActivated()) {
+                DisableFooTitle();
+            } else {
+                showControl.TryShowWhenMinimized();
+            }
         }
 
         private ConfInt positionX = new ConfInt("display/positionX", 0);
         private ConfInt positionY = new ConfInt("display/positionY", 0);
 
 
-		System.Windows.Forms.Timer timer;
-		
+        System.Windows.Forms.Timer timer;
+
         MetaDBHandle lastSong;
         Properties propsForm;
 
@@ -188,25 +188,26 @@ namespace fooTitle
             return instance;
         }
 
-		private void timerUpdate(object sender, System.EventArgs e) {
+        private void timerUpdate(object sender, System.EventArgs e) {
             if (fooTitleEnabled) {
                 // need to update all values that are calculated from formatting strings
-                CurrentSkin.UpdateGeometry(CurrentSkin.ClientRect);
+                //CurrentSkin.UpdateGeometry(CurrentSkin.ClientRect);
+                CurrentSkin.FrameUpdateGeometry(CurrentSkin.ClientRect);
                 CurrentSkin.CheckSize();
                 updateDisplay();
             }
             checkFoobarMinimized();
-		}
+        }
 
         /// <summary>
         /// Redraws the display, called every UpdateInterval miliseconds by the timer
         /// </summary>
-		private void updateDisplay() {
+        private void updateDisplay() {
             if (skin != null) {
                 skin.Draw();
                 myDisplay.FrameRedraw();
             }
-		}
+        }
 
         /// <summary>
         /// Loads skin by name
@@ -217,24 +218,24 @@ namespace fooTitle
                 // delete the old one
                 if (skin != null)
                     skin.Free();
-                skin = null;  
+                skin = null;
 
                 skin = new Skin(name);
                 skin.Init(Display);
-                
+
                 // need to tell it about the currently playing song
                 if (lastSong != null)
                     skin.OnPlaybackNewTrack(lastSong);
                 else
                     skin.OnPlaybackStop(IPlayControl.StopReason.stop_reason_user);
 
-                skin.CheckSize();
+                skin.FirstCheckSize();
             } catch (Exception e) {
                 if (skin != null)
                     skin.Free();
                 skin = null;
                 System.Windows.Forms.MessageBox.Show(
-                    String.Format("foo_title - There was an error loading skin {0}:\n {1} \n {2}", name, e.Message, e.ToString() )
+                    String.Format("foo_title - There was an error loading skin {0}:\n {1} \n {2}", name, e.Message, e.ToString())
                     , "foo_title");
             }
         }
@@ -292,7 +293,7 @@ namespace fooTitle
         /// <summary>
         /// Called by init_quit, creates form, loads skin,...
         /// </summary>
-		public void OnInit(IPlayControl a) {
+        public void OnInit(IPlayControl a) {
             Main.PlayControl = a;
 
 #if DEBU
@@ -309,16 +310,16 @@ namespace fooTitle
 
             propsForm.UpdateValues();
 
-			// init registered clients
+            // init registered clients
             OnInitDelegate temp = OnInitEvent;
             if (temp != null)
                 temp();
 
-			// start a timer updating the display
-			timer = new System.Windows.Forms.Timer();
+            // start a timer updating the display
+            timer = new System.Windows.Forms.Timer();
             timer.Interval = UpdateInterval.Value;
-			timer.Tick += new System.EventHandler(timerUpdate);
-			timer.Enabled = true;
+            timer.Tick += new System.EventHandler(timerUpdate);
+            timer.Enabled = true;
 
             // create layer factory
             myLayerFactory = new LayerFactory();
@@ -328,7 +329,7 @@ namespace fooTitle
             myGeometryFactory = new GeometryFactory();
             myGeometryFactory.SearchAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
-			// initialize the form displaying the images
+            // initialize the form displaying the images
             myDisplay = new Display(300, 22);
             myDisplay.Show();
 
@@ -351,28 +352,28 @@ namespace fooTitle
 
         public event OnQuitDelegate OnQuitEvent;
 
-		public void OnQuit() {
+        public void OnQuit() {
             OnQuitDelegate temp = OnQuitEvent;
             if (temp != null)
                 temp();
 
-			if (myDisplay != null)
-				myDisplay.Hide();
-		}
+            if (myDisplay != null)
+                myDisplay.Hide();
+        }
 
-        
+
         public event OnPlaybackNewTrackDelegate OnPlaybackNewTrackEvent;
 
-		public void OnPlaybackNewTrack(fooManagedWrapper.MetaDBHandle song) {
+        public void OnPlaybackNewTrack(fooManagedWrapper.MetaDBHandle song) {
             lastSong = song;
             sendEvent(OnPlaybackNewTrackEvent, song);
-		}
+        }
 
         public event OnPlaybackTimeDelegate OnPlaybackTimeEvent;
 
-		public void OnPlaybackTime(double time) {
+        public void OnPlaybackTime(double time) {
             sendEvent(OnPlaybackTimeEvent, time);
-		}
+        }
 
         public event OnPlaybackStopDelegate OnPlaybackStopEvent;
         public event OnPlaybackPauseDelegate OnPlaybackPauseEvent;
