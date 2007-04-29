@@ -17,6 +17,8 @@
  + BUG: it may not be possible to drag it to some other monitor
  + BUG: closing the display window with Alt-F4 makes it crash
  + BUG: setting it to Normal (instead of always on top) and dragging right after that makes it freeze...completely
+ + BUG: Toggle foo_title string is wrong in the View menu
+ + BUG: fade length precise time display doesn't work
 - cleaning the code
  - divide the Main class into several smaller classes for easier mantaince
      - one class that is the plugin itself - that receives events from foobar
