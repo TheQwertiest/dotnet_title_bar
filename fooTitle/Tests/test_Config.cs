@@ -205,6 +205,11 @@ namespace fooTitle.Tests {
         }
 
         [TestMethod]
+        public void testLabel() {
+            AssertEquals(configGui.label1.Text, "20");
+        }
+
+        [TestMethod]
         public void testMultipleValues() {
             ConfInt eCount = new ConfInt("test/eCount", 1);
             AssertExceptionThrown<ValueAlreadyExistsException>(delegate() { new ConfInt("test/eCount", 1); });
