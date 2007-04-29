@@ -161,8 +161,9 @@ namespace fooManagedWrapper {
 		bool completed;
 		array<unsigned char> ^out = gcnew array<unsigned char>(a->Length * 4);
 		enc->Convert(a->ToCharArray(), 0, a->Length, out, 0, a->Length * 4, true, charsUsed, bytesUsed, completed);
-		char *c_str = new char[bytesUsed];
+		char *c_str = new char[bytesUsed + 1];
 		System::Runtime::InteropServices::Marshal::Copy((array<unsigned char> ^)out, (int)0, (System::IntPtr)c_str, (int)bytesUsed);
+		c_str[bytesUsed] = 0;
 		pfc::string8 result(c_str);
 		delete[] c_str;
 		return result;
