@@ -280,6 +280,36 @@ namespace fooTitle.Config {
         }
     }
 
+    public class LabelWrapper : ControlWrapper {
+        protected Label label;
+
+        public LabelWrapper(Label _label, string _valueName)
+            : base(_valueName) {
+            label = _label;
+
+            if (value != null)
+                value.ReadVisit(this);
+        }
+
+        #region IConfigValueVisitor Members
+
+        public override void ReadInt(ConfInt val) {
+            label.Text = val.Value.ToString();
+        }
+
+        public override void ReadString(ConfString val) {
+            label.Text = val.Value;
+        }
+
+        public override void WriteInt(ConfInt val) {
+        }
+
+        public override void WriteString(ConfString val) {
+        }
+
+        #endregion
+    }
+
     public class AutoWrapperCreator {
         protected object instance;
         protected List<ControlWrapper> controlWrappers = new List<ControlWrapper>();
@@ -315,6 +345,8 @@ namespace fooTitle.Config {
                 controlWrappers.Add(new TrackBarWrapper((TrackBar)value, (string)value.Tag));
             } else if (f.FieldType.Equals(typeof(CheckBox))) {
                 controlWrappers.Add(new CheckBoxWrapper((CheckBox)value, (string)value.Tag));
+            } else if (f.FieldType.Equals(typeof(Label))) {
+                controlWrappers.Add(new LabelWrapper((Label)value, (string)value.Tag));
             }
         }
 
