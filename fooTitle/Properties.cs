@@ -371,6 +371,7 @@ namespace fooTitle {
             this.fadeLengthLabel.Size = new System.Drawing.Size(35, 13);
             this.fadeLengthLabel.TabIndex = 5;
             this.fadeLengthLabel.Text = "label8";
+            this.fadeLengthLabel.Tag = "display/fadeLength";
             // 
             // fadeLengthTrackBar
             // 
