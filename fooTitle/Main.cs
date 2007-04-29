@@ -189,7 +189,7 @@ namespace fooTitle {
         }
 
         private void timerUpdate(object sender, System.EventArgs e) {
-            if (fooTitleEnabled) {
+            if (fooTitleEnabled && skin != null) {
                 // need to update all values that are calculated from formatting strings
                 //CurrentSkin.UpdateGeometry(CurrentSkin.ClientRect);
                 CurrentSkin.FrameUpdateGeometry(CurrentSkin.ClientRect);
