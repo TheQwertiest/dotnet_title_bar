@@ -35,7 +35,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("")];
 [assembly:AssemblyProductAttribute("fooManagedWrapper")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) Roman Plasil 2006")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c) Roman Plasil 2008")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 
@@ -50,7 +50,7 @@ using namespace System::Security::Permissions;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 
-[assembly:AssemblyVersionAttribute("0.3.3")];
+[assembly:AssemblyVersionAttribute("0.5")];
 
 [assembly:ComVisible(false)];
 
