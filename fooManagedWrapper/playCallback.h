@@ -18,12 +18,12 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #pragma once
+
 #include "stdafx.h"
-#include <vcclr.h>
 
 namespace fooManagedWrapper {
 
-	// this class relays foobar's play callbacks to the managed components
+	//! this class relays foobar's play callbacks to the managed components
 	class CPlayCallback : public play_callback {
 	public:
 

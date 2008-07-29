@@ -25,12 +25,12 @@ using namespace System;
 namespace fooManagedWrapper
 {
 	// a managed wrapper for metadb_handle
-	public ref class MetaDBHandle 
+	public ref class CMetaDBHandle 
 	{
 	public:
-		MetaDBHandle(metadb_handle *src);
-		!MetaDBHandle();
-		~MetaDBHandle();
+		CMetaDBHandle(metadb_handle *src);
+		!CMetaDBHandle();
+		~CMetaDBHandle();
 
 		metadb_handle *GetHandle() { return handle; };
 		String ^GetPath();
@@ -40,7 +40,7 @@ namespace fooManagedWrapper
 	};
 
 	// a managed wrapper for foobar's console
-	public ref class Console {
+	public ref class CConsole {
 	public:
 		static void Error(String ^a);
 		static void Write(String ^a);
@@ -55,16 +55,16 @@ namespace fooManagedWrapper
 			stop_reason_starting_another = 2,
 			stop_reason_shutting_down = 3
 		};
-		String ^FormatTitle(MetaDBHandle ^dbHandle, String ^spec);
-		MetaDBHandle ^GetNowPlaying();
+		String ^FormatTitle(CMetaDBHandle ^dbHandle, String ^spec);
+		CMetaDBHandle ^GetNowPlaying();
 		double PlaybackGetPosition();
 		bool IsPlaying();
 	};
 
 	public ref class CPlayControl : public IPlayControl {
 	public:
-		virtual MetaDBHandle ^GetNowPlaying();
-		virtual String ^FormatTitle(MetaDBHandle ^dbHandle, String ^spec);
+		virtual CMetaDBHandle ^GetNowPlaying();
+		virtual String ^FormatTitle(CMetaDBHandle ^dbHandle, String ^spec);
 		virtual double PlaybackGetPosition();
 		virtual bool IsPlaying();
 	};
@@ -81,7 +81,7 @@ namespace fooManagedWrapper
 		void OnQuit();
 
 		// these are the play callbacks
-		void OnPlaybackNewTrack(MetaDBHandle ^h);
+		void OnPlaybackNewTrack(CMetaDBHandle ^h);
 		void OnPlaybackTime(double time);
 		void OnPlaybackPause(bool state);
 		void OnPlaybackStop(IPlayControl::StopReason reason);

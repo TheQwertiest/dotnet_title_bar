@@ -18,14 +18,16 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#pragma once
+
 #include "stdafx.h"
-#include <vcclr.h>
+#include "ComponentLoader.h"
+#include "fooServices.h"
 
 using namespace System::Collections;
 using namespace System::IO;
 
 namespace fooManagedWrapper {
-
 
 
 	// this is the main class of the plugin - created in the entrypoint
@@ -35,7 +37,7 @@ namespace fooManagedWrapper {
 		// for singleton
 		static CManagedWrapper ^instance;
 
-		ComponentLoader ^componentLoader;
+		CComponentLoader ^componentLoader;
 		// loaded .NET clients
 		TComponentClients ^componentClients;
 

@@ -19,7 +19,8 @@
 */
 
 #include "stdafx.h"
-#include <vcclr.h>
+#include "mainMenuCommands.h"
+#include "ManagedWrapper.h"
 
 
 using namespace fooManagedWrapper;

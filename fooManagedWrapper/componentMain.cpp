@@ -17,7 +17,6 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-#include <vcclr.h>
 #include "stdafx.h"
 
 
@@ -25,16 +24,8 @@ DECLARE_COMPONENT_VERSION(
 // component name
 "foo_managedWrapper",
 // component version
-"0.4",
+"0.5",
 // component description
 "foo_managedWrapper\n"
 "Loads .NET components\n"
 )
-
-
-namespace fooManagedWrapper {
-
-
-
-}
-

@@ -18,10 +18,9 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "stdafx.h"
-#include <vcclr.h>
+#include "initQuit.h"
+#include "ManagedWrapper.h"
 
-
-using namespace fooManagedWrapper;
 using namespace std;
 
 namespace fooManagedWrapper {
@@ -40,11 +39,11 @@ namespace fooManagedWrapper {
 				try {
 					cl->OnInit(playControl);
 				} catch (Exception ^e) {
-					fooManagedWrapper::Console::Error(e->ToString());
+					fooManagedWrapper::CConsole::Error(e->ToString());
 				}
 			}
 		} catch (Exception ^e) {
-			fooManagedWrapper::Console::Error(e->ToString());
+			fooManagedWrapper::CConsole::Error(e->ToString());
 		}
 
 	}
@@ -76,6 +75,7 @@ namespace fooManagedWrapper {
 		// application exit here.
 		on_quit();
 	}
+
 	static initquit_factory_t< CInitQuit > initQuit;
 
 }

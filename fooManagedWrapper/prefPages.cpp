@@ -18,8 +18,8 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "stdafx.h"
-#include <vcclr.h>
-
+#include "prefPages.h"
+#include "ManagedWrapper.h"
 
 using namespace fooManagedWrapper;
 using namespace std;
@@ -46,12 +46,13 @@ namespace fooManagedWrapper {
 		return reinterpret_cast<HWND>(form->Handle.ToPointer());
 	}
 
-	//! Retrieves name of the prefernces page to be displayed in preferences tree (static string).
+	//! Retrieves name of the preferences page to be displayed in preferences tree (static string).
 	const char * CCustomPrefPage::get_name() {
 		if (!name) {
 			const char *c = CManagedWrapper::ToCString(form->Text);
-			name = new char[strlen(c)];
-			strcpy(name, c);
+			size_t c_len = strlen(c);
+			name = new char[c_len + 1];
+			strcpy_s(name, c_len + 1, c);
 			CManagedWrapper::FreeCString(c);
 		}
 		return name;

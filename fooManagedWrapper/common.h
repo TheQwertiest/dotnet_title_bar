@@ -17,31 +17,16 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+#pragma once
 
-#include "stdafx.h"
+#include "utils.h"
+#include "fooServices.h"
+#include "ComponentLoader.h"
+#include "playCallback.h"
+#include "initQuit.h"
+#include "prefPages.h"
+#include "ManagedWrapper.h"
+#include "cfgVars.h"
+#include "Command.h"
+#include "mainMenuCommands.h"
 #include "configIOCallback.h"
-
-
-using namespace fooManagedWrapper;
-using namespace System;
-using namespace std;
-
-namespace fooManagedWrapper {
-	static service_factory_t<CConfigIO> configIOInstance;
-
-	void CConfigIO::on_read() {
-		CManagedConfigIOCallback::FireReadEvent();
-	}
-
-	void CConfigIO::on_write(bool reset) {
-		CManagedConfigIOCallback::FireWriteEvent(reset);
-	}
-
-	void CManagedConfigIOCallback::FireReadEvent() {
-		OnRead();
-	}
-
-	void CManagedConfigIOCallback::FireWriteEvent(bool reset) {
-		OnWrite(reset);
-	}
-};

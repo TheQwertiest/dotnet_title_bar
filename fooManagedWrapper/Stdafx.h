@@ -29,18 +29,7 @@
 
 
 #include "..\..\foobar2000\sdk\foobar2000.h"
-#include "../../foobar2000/SDK/component.h"
-#include "utils.h"
-#include "fooServices.h"
-#include "ComponentLoader.h"
-#include "playCallback.h"
-#include "initQuit.h"
-#include "prefPages.h"
-#include "ManagedWrapper.h"
-#include "cfgVars.h"
-#include "Command.h"
-#include "mainMenuCommands.h"
-#include "configIOCallback.h"
-
-
+#include "..\..\foobar2000\SDK\component.h"
 #include <vector>
+
+#include <vcclr.h>

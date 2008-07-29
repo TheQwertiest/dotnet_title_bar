@@ -41,6 +41,7 @@
 
 
 #pragma once
+
 #include "Stdafx.h"
 
 using namespace System;

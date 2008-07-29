@@ -18,8 +18,10 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #pragma once
+
 #include "stdafx.h"
-#include <vcclr.h>
+#include "utils.h"
+#include "playCallback.h"
 
 namespace fooManagedWrapper {
 

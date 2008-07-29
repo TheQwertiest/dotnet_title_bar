@@ -19,13 +19,13 @@
 */
 #pragma once
 #include "stdafx.h"
-#include <vcclr.h>
 
-
-using namespace fooManagedWrapper;
+using namespace System;
 
 namespace fooManagedWrapper {
 	
+	//! This class represents the base for main menu commands. Implement
+	//! this class to create your own menu command.
 	public ref class CCommand abstract {
 	public:
 		virtual void Execute() = 0;
@@ -36,3 +36,5 @@ namespace fooManagedWrapper {
 	};
 
 };
+
+using namespace fooManagedWrapper;

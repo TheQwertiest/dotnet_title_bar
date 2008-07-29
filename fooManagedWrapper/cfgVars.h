@@ -18,12 +18,12 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #pragma once
-#include "stdafx.h"
-#include <vcclr.h>
 
+#include "stdafx.h"
+#include "fooServices.h"
+#include "ManagedWrapper.h"
 
 using namespace System;
-using namespace fooManagedWrapper;
 
 namespace fooManagedWrapper {
 

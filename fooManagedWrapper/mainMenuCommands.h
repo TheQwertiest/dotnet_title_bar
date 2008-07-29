@@ -18,11 +18,11 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #pragma once
+
 #include "stdafx.h"
-#include <vcclr.h>
+#include "fooServices.h"
+#include "Command.h"
 
-
-using namespace fooManagedWrapper;
 using namespace System::Collections::Generic;
 
 namespace fooManagedWrapper {

@@ -18,13 +18,12 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #pragma once
-#include "stdafx.h"
-#include <vcclr.h>
 
+#include "stdafx.h"
 
 namespace fooManagedWrapper {
 	// config_io_callback wrapper
-	class ConfigIO : public config_io_callback {
+	class CConfigIO : public config_io_callback {
 	public:
 		virtual void on_read();
 		virtual void on_write(bool reset);

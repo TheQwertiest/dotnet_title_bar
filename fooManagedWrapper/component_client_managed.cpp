@@ -2,11 +2,9 @@
 Part of the foobar2000 0.9 SDK
 Copyright (c) 2001 - 2006, Peter Pawlowski
 Modified by Roman Plasil for foo_managedWrapper and foo_title projects
-Copyright (c) 2005, 2006 Roman Plasil
-
 */
 #include "Stdafx.h"
-#include <vcclr.h>
+#include "common.h"
 
 using namespace fooManagedWrapper;
 
@@ -122,7 +120,7 @@ extern "C"
 		g_hIns = hIns;
 		g_api = p_api;
 
-		// find out moudule path
+		// find out module path
 		TCHAR *buf = new TCHAR[300];
 		GetModuleFileName(hIns, buf, 300);
 		String ^modulePath = gcnew String(buf);
@@ -141,7 +139,7 @@ extern "C"
 BOOLEAN WINAPI TestEntry(IN HINSTANCE hDllHandle, IN DWORD     nReason,  IN LPVOID  Reserved ) {
 	// this fixes a problem with drag'n'drop
 	// thanks to FrozenSpoon for the solution :)
-	CoInitializeEx(0, COINIT_APARTMENTTHREADED);
+	//CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 	
 	if (nReason == DLL_PROCESS_DETACH) {
 		//_CrtDumpMemoryLeaks();

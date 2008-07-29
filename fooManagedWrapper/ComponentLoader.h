@@ -18,7 +18,9 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #pragma once
+
 #include "stdafx.h"
+#include "utils.h"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -27,7 +29,7 @@ namespace fooManagedWrapper {
 	
 	typedef List<IComponentClient^> TComponentClients;
 
-	public ref class ComponentLoader {
+	public ref class CComponentLoader {
 	public:
 
 		IComponentClient ^LoadComponent(String ^assemblyName);

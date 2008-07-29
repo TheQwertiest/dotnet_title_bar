@@ -18,35 +18,37 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "stdafx.h"
+#include "utils.h"
+#include "ManagedWrapper.h"
 
 using namespace fooManagedWrapper;
 using namespace System;
 using namespace pfc;
 
-MetaDBHandle::MetaDBHandle(metadb_handle *src) {
+CMetaDBHandle::CMetaDBHandle(metadb_handle *src) {
 	this->handle = src;
 }
 
-MetaDBHandle::!MetaDBHandle() {
+CMetaDBHandle::!CMetaDBHandle() {
 	handle = 0;
 }
 
-MetaDBHandle::~MetaDBHandle() {
+CMetaDBHandle::~CMetaDBHandle() {
 	handle = 0;
 }
 
-String ^MetaDBHandle::GetPath() {
+String ^CMetaDBHandle::GetPath() {
 	if (handle == NULL)
 		throw gcnew System::AccessViolationException("GetPath() called on a MetaDBHandle containing NULL handle");
 	const char *c_path = handle->get_path();
 	return gcnew String(c_path, 0, strlen(c_path), gcnew System::Text::UTF8Encoding(true, true));
 }
 
-double MetaDBHandle::GetLength() {
+double CMetaDBHandle::GetLength() {
 	return handle->get_length();
 }
 
-String ^CPlayControl::FormatTitle(MetaDBHandle ^handle, String ^spec) {
+String ^CPlayControl::FormatTitle(CMetaDBHandle ^handle, String ^spec) {
 	metadb_handle * handle_c = handle->GetHandle();
 	const char* spec_c = (const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(spec)).ToPointer();
 	string8 out;
@@ -64,12 +66,12 @@ String ^CPlayControl::FormatTitle(MetaDBHandle ^handle, String ^spec) {
 	return res;
 }
 
-MetaDBHandle ^CPlayControl::GetNowPlaying() {
+CMetaDBHandle ^CPlayControl::GetNowPlaying() {
 	static_api_ptr_t<play_control> pc;
 	metadb_handle_ptr out;
 	pc->get_now_playing(out);
 
-	MetaDBHandle ^res = gcnew MetaDBHandle(out.get_ptr());
+	CMetaDBHandle ^res = gcnew CMetaDBHandle(out.get_ptr());
 	return res;
 }
 
@@ -83,19 +85,19 @@ bool CPlayControl::IsPlaying() {
 	return pc->is_playing();
 }
 
-void fooManagedWrapper::Console::Error(String ^a) {
+void fooManagedWrapper::CConsole::Error(String ^a) {
 	const char *c_msg = CManagedWrapper::ToCString(a);
 	console::error(c_msg);
 	CManagedWrapper::FreeCString(c_msg);
 }
 
-void fooManagedWrapper::Console::Warning(String ^a) {
+void fooManagedWrapper::CConsole::Warning(String ^a) {
 	const char *c_msg = CManagedWrapper::ToCString(a);
 	console::warning(c_msg);
 	CManagedWrapper::FreeCString(c_msg);
 }
 
-void fooManagedWrapper::Console::Write(String ^a) {
+void fooManagedWrapper::CConsole::Write(String ^a) {
 	const char *c_msg = CManagedWrapper::ToCString(a);
 	console::print(c_msg);
 	CManagedWrapper::FreeCString(c_msg);

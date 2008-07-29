@@ -19,10 +19,7 @@
 */
 #pragma once
 #include "stdafx.h"
-#include <vcclr.h>
-
-
-using namespace fooManagedWrapper;
+#include "fooServices.h"
 
 namespace fooManagedWrapper {
 

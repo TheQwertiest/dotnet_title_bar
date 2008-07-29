@@ -18,6 +18,8 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "stdafx.h"
+#include "utils.h"
+#include "ManagedWrapper.h"
 
 using namespace fooManagedWrapper;
 using namespace System;
@@ -25,7 +27,7 @@ using namespace System::Reflection;
 using namespace System::IO;
 
 
-IComponentClient ^ComponentLoader::LoadComponent(System::String ^assemblyName) {
+IComponentClient ^CComponentLoader::LoadComponent(System::String ^assemblyName) {
 	Type ^iclient = fooManagedWrapper::IComponentClient::typeid;
 	Assembly ^a = Assembly::LoadFrom(assemblyName);
 
@@ -39,13 +41,13 @@ IComponentClient ^ComponentLoader::LoadComponent(System::String ^assemblyName) {
 	return nullptr;
 };
 
-IComponentClient ^ComponentLoader::createInstance(Type ^type) {
+IComponentClient ^CComponentLoader::createInstance(Type ^type) {
 	ConstructorInfo ^conInfo = type->GetConstructor(Type::EmptyTypes);
 	IComponentClient ^cl = dynamic_cast<IComponentClient ^>(conInfo->Invoke(nullptr));
 	return cl;
 }
 
-TComponentClients ^ComponentLoader::LoadComponentsInDir(System::String ^dirName, System::String ^filePrefix) {
+TComponentClients ^CComponentLoader::LoadComponentsInDir(System::String ^dirName, System::String ^filePrefix) {
 	try {
 		DirectoryInfo ^di = gcnew DirectoryInfo(dirName);
 		array<FileInfo^> ^files = di->GetFiles(filePrefix + "*.dll");
@@ -59,7 +61,7 @@ TComponentClients ^ComponentLoader::LoadComponentsInDir(System::String ^dirName,
 				msg += f->FullName;
 				msg += " error message : ";
 				msg += e->Message;
-				fooManagedWrapper::Console::Error(msg);
+				fooManagedWrapper::CConsole::Error(msg);
 				// a problem occured, ok, don't load this component
 			}
 		}
@@ -70,7 +72,7 @@ TComponentClients ^ComponentLoader::LoadComponentsInDir(System::String ^dirName,
 		msg += " error message : ";
 		msg += e->Message;
 		msg += ". You should probably run foobar2000 from the directory containing the components directory.";
-		fooManagedWrapper::Console::Error(msg);
-		return gcnew TComponentClients(); // don't cause crash
+		fooManagedWrapper::CConsole::Error(msg);
+		return gcnew TComponentClients(); // to avoid crashing
 	}
 }

@@ -18,6 +18,11 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "stdafx.h"
+#include "fooServices.h"
+#include "ComponentLoader.h"
+#include "ManagedWrapper.h"
+#include "prefPages.h"
+#include "mainMenuCommands.h"
 
 using namespace System;
 using namespace fooManagedWrapper;
@@ -69,14 +74,14 @@ namespace fooManagedWrapper {
 
 		// find and create components
 		try {
-			componentLoader = gcnew ComponentLoader();
+			componentLoader = gcnew CComponentLoader();
 			componentClients = componentLoader->LoadComponentsInDir(System::IO::Path::Combine(GetFoobarDirectory(), "components\\"), "dotnet_");
 
 			for each (IComponentClient ^cl in componentClients) {
 				cl->Create();
 			}
 		} catch (Exception ^e) {
-			fooManagedWrapper::Console::Error(e->Message);
+			fooManagedWrapper::CConsole::Error(e->Message);
 		}
 	}
 
