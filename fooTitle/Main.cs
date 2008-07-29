@@ -125,6 +125,11 @@ namespace fooTitle {
         }
 
         /// <summary>
+        /// Automatically handles reshowing foo_title if it's supposed to be always on top.
+        /// </summary>
+        protected RepeatedShowing repeatedShowing;
+
+        /// <summary>
         /// When to show foo_title: Always, never or only when foobar is minimized
         /// </summary>
         public ConfEnum<ShowWhenEnum> ShowWhen = new ConfEnum<ShowWhenEnum>("display/showWhen", ShowWhenEnum.Always);
@@ -179,7 +184,7 @@ namespace fooTitle {
 
         System.Windows.Forms.Timer timer;
 
-        MetaDBHandle lastSong;
+        CMetaDBHandle lastSong;
         Properties propsForm;
 
         // singleton
@@ -346,6 +351,9 @@ namespace fooTitle {
             if (ShowWhen.Value == ShowWhenEnum.Never)
                 DisableFooTitle();
 
+            // init reshower
+            repeatedShowing = new RepeatedShowing();
+
             initDone = true;
 
         }
@@ -364,7 +372,7 @@ namespace fooTitle {
 
         public event OnPlaybackNewTrackDelegate OnPlaybackNewTrackEvent;
 
-        public void OnPlaybackNewTrack(fooManagedWrapper.MetaDBHandle song) {
+        public void OnPlaybackNewTrack(fooManagedWrapper.CMetaDBHandle song) {
             lastSong = song;
             sendEvent(OnPlaybackNewTrackEvent, song);
         }
@@ -391,7 +399,7 @@ namespace fooTitle {
                     d.DynamicInvoke(p);
                 }
             } catch (Exception e) {
-                fooManagedWrapper.Console.Error(e.ToString());
+                fooManagedWrapper.CConsole.Error(e.ToString());
             }
         }
 

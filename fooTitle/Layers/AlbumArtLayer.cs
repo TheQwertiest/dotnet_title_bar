@@ -46,7 +46,7 @@ namespace fooTitle.Layers {
             Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(CurrentSkin_OnPlaybackNewTrackEvent);
         }
 
-        protected string findAlbumArt(MetaDBHandle song, string filenames) {
+        protected string findAlbumArt(CMetaDBHandle song, string filenames) {
             String songPath = song.GetPath();
             // remove this prefix
             if (songPath.StartsWith("file:\\"))
@@ -54,7 +54,7 @@ namespace fooTitle.Layers {
             else if (songPath.StartsWith("file://"))
                 songPath = songPath.Substring(7);
 
-            string[] extensions = new string[] { ".jpg", ".png", ".bmp", ".gif" };
+            string[] extensions = new string[] { ".jpg", ".png", ".bmp", ".gif", ".jpeg" };
             string[] splitFiles = filenames.Split(new char[] { ';' });
             string[] formattedFiles = new string[splitFiles.Length];
             int i = 0;
@@ -74,7 +74,7 @@ namespace fooTitle.Layers {
             return null;
         }
 
-        void CurrentSkin_OnPlaybackNewTrackEvent(fooManagedWrapper.MetaDBHandle song) {
+        void CurrentSkin_OnPlaybackNewTrackEvent(fooManagedWrapper.CMetaDBHandle song) {
             string fileName = findAlbumArt(song, Main.GetInstance().AlbumArtFilenames.Value);
             if (fileName != null) {
                 try {
@@ -83,7 +83,7 @@ namespace fooTitle.Layers {
                     tmp.Dispose();
                 } catch (Exception e) {
                     albumArt = null;
-                    fooManagedWrapper.Console.Warning(String.Format("Cannot open album art {0} : {1}", fileName, e.Message));
+                    fooManagedWrapper.CConsole.Warning(String.Format("Cannot open album art {0} : {1}", fileName, e.Message));
                 }
             } else {
                 albumArt = null;

@@ -94,7 +94,7 @@ namespace fooTitle
         /// <summary>
         /// The z position of the window - either always on top or on the bottom.
         /// </summary>
-        protected ConfEnum<Win32.WindowPosition> windowPosition = new ConfEnum<Win32.WindowPosition>("display/windowPosition", Win32.WindowPosition.Topmost);
+        public ConfEnum<Win32.WindowPosition> WindowPosition = new ConfEnum<Win32.WindowPosition>("display/windowPosition", Win32.WindowPosition.Topmost);
 
 		public Display(int width, int height)
 		{
@@ -111,13 +111,13 @@ namespace fooTitle
             opacity = normalOpacity.Value;
 
             normalOpacity.OnChanged += new ConfValuesManager.ValueChangedDelegate(normalOpacity_OnChanged);
-            windowPosition.OnChanged += new ConfValuesManager.ValueChangedDelegate(windowPosition_OnChanged);
-            SetWindowsPos(windowPosition.Value);
+            WindowPosition.OnChanged += new ConfValuesManager.ValueChangedDelegate(windowPosition_OnChanged);
+            SetWindowsPos(WindowPosition.Value);
 
 		}
 
         void windowPosition_OnChanged(string name) {
-           SetWindowsPos(windowPosition.Value);
+           SetWindowsPos(WindowPosition.Value);
         }
 
         private void normalOpacity_OnChanged(string name) {
@@ -182,13 +182,13 @@ namespace fooTitle
    
 #region Bottom
         void Display_Activated(object sender, EventArgs e) {
-            if (windowPosition.Value == Win32.WindowPosition.Bottom) {
+            if (WindowPosition.Value == Win32.WindowPosition.Bottom) {
                 SetWindowsPos(Win32.WindowPosition.Bottom);
             }
         }
 #pragma warning disable 0168, 219, 67
         protected override void WndProc(ref Message m) {
-            if (windowPosition.Value == Win32.WindowPosition.Bottom) {
+            if (WindowPosition.Value == Win32.WindowPosition.Bottom) {
                 const int WM_MOUSEACTIVATE = 0x21;
                 const int MA_ACTIVATE = 1;
                 const int MA_ACTIVATEANDEAT = 2;

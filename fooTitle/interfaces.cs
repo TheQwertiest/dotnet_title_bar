@@ -24,7 +24,7 @@ using fooManagedWrapper;
 namespace fooTitle {
 
     public delegate void OnPlaybackTimeDelegate(double time);
-    public delegate void OnPlaybackNewTrackDelegate(MetaDBHandle song);
+    public delegate void OnPlaybackNewTrackDelegate(CMetaDBHandle song);
     public delegate void OnQuitDelegate();
     public delegate void OnInitDelegate();
     public delegate void OnPlaybackStopDelegate(IPlayControl.StopReason reason);

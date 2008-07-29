@@ -45,6 +45,7 @@ namespace fooTitle {
         protected ConfBool beforeSongEnds = new ConfBool("showControl/beforeSongEnds", true);
         protected ConfInt onSongStartStay = new ConfInt("showControl/onSongStartStay", 5);
         protected ConfInt beforeSongEndsStay = new ConfInt("showControl/beforeSongEndsStay", 5);
+        
 
         protected Timer hideAfterSongStart = new Timer();
         private bool timeEventRegistered = false;
@@ -54,7 +55,7 @@ namespace fooTitle {
         /// </summary>
         protected bool timeToShow;
 
-        protected fooManagedWrapper.MetaDBHandle lastSong;
+        protected fooManagedWrapper.CMetaDBHandle lastSong;
         
         public ShowControl() {
             Main.GetInstance().OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(ShowControl_OnPlaybackNewTrackEvent);
@@ -173,7 +174,7 @@ namespace fooTitle {
         /// <summary>
         /// Displays foo_title when it's set to display on new song and also hides foo_title if not set
         /// </summary>
-        void ShowControl_OnPlaybackNewTrackEvent(fooManagedWrapper.MetaDBHandle song) {
+        void ShowControl_OnPlaybackNewTrackEvent(fooManagedWrapper.CMetaDBHandle song) {
             // store the song
             lastSong = song;
 

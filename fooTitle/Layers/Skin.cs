@@ -163,7 +163,7 @@ namespace fooTitle.Layers
             sendEvent(OnPlaybackTimeEvent, time);
          }
 
-        public void OnPlaybackNewTrack(MetaDBHandle song) {
+        public void OnPlaybackNewTrack(CMetaDBHandle song) {
             // pass it on
             sendEvent(OnPlaybackNewTrackEvent, song);
             CheckSize();

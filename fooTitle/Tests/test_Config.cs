@@ -42,7 +42,7 @@ namespace fooTitle.Tests {
 
             cfg.WriteVal("test/Bear", "Grizzly");
             AssertEquals(cfg.ReadVal<string>("test/Bear"), "Grizzly");
-            fooManagedWrapper.Console.Write(cfg.ToString());
+            fooManagedWrapper.CConsole.Write(cfg.ToString());
 
         }
 

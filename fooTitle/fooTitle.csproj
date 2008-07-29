@@ -149,6 +149,7 @@
     <Compile Include="Properties.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="RepeatedShowing.cs" />
     <Compile Include="SafeTabControl.cs">
       <SubType>Component</SubType>
     </Compile>

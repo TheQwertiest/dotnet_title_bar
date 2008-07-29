@@ -38,7 +38,7 @@ namespace fooTitle.Layers
             public string fontName;
         }
  
-		protected fooManagedWrapper.MetaDBHandle currentSong;
+		protected fooManagedWrapper.CMetaDBHandle currentSong;
         protected string defaultText;
 
         protected LabelPart left = new LabelPart();
@@ -156,7 +156,7 @@ namespace fooTitle.Layers
                     Int32.Parse(b, System.Globalization.NumberStyles.HexNumber)
                 );
             } catch {
-                fooManagedWrapper.Console.Warning(String.Format("Error in text layer {0}, invalid color code {1}.", this.Name, code));
+                fooManagedWrapper.CConsole.Warning(String.Format("Error in text layer {0}, invalid color code {1}.", this.Name, code));
                 return Color.Black;
             }
         }
@@ -211,7 +211,7 @@ namespace fooTitle.Layers
             return res;
 		}
 
-		public void OnPlaybackNewTrack(fooManagedWrapper.MetaDBHandle song) {
+		public void OnPlaybackNewTrack(fooManagedWrapper.CMetaDBHandle song) {
 			this.currentSong = song;
 			updateText();
 		}

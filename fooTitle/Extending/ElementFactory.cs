@@ -166,7 +166,7 @@ namespace fooTitle.Extending {
                     return float.Parse(val);
                 }
             } catch (Exception e) {
-                fooManagedWrapper.Console.Warning(e.ToString());
+                fooManagedWrapper.CConsole.Warning(e.ToString());
                 return float.Parse(def);
             }
         }
