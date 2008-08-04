@@ -51,6 +51,9 @@ using System.Runtime.CompilerServices;
 /* Changelog:
    0.7.1
      - auto restoring on top position every now and then ;)
+     - foo_managedWrapper works on Vista again
+     - foo_title no longer prevents Windows from shutting down
+     - skins are now also loaded from the user profile directory (if enabled in foobar)
   
    0.7
      - fixed disappearing fades

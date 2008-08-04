@@ -134,6 +134,14 @@ namespace fooManagedWrapper {
 		return res;
 	}
 
+	String ^CManagedWrapper::GetProfilePath() {
+		String ^result = gcnew String(core_api::get_profile_path());
+		if (result->StartsWith("file://")) {
+			result = result->Substring(7);
+		}
+		return result;
+	}
+
 	void CManagedWrapper::DoMainMenuCommand(String ^name) {
 		if (core_api::is_main_thread()) {
 			const char *c_name = ToCString(name);

@@ -44,12 +44,23 @@ namespace fooTitle {
         private bool initDone = false;
 
         private static ConfString myDataDir = new ConfString("base/dataDir", "foo_title\\");
+
         /// <summary>
-        /// Returns where the skin and other components should look for their files.
+        /// Returns the foo_title data directory in the foobar2000 application directory.
         /// </summary>
-        public static string DataDir {
+        public static string AppDataDir {
             get {
                 return Path.Combine(CManagedWrapper.getInstance().GetFoobarDirectory(), myDataDir.Value);
+            }
+        }
+
+        /// <summary>
+        /// Returns the foo_title data directory located in the foobar2000 user directory (documents and settings)
+        /// </summary>
+        public static string UserDataDir {
+            get {
+                
+                return Path.Combine(CManagedWrapper.getInstance().GetProfilePath(), myDataDir.Value);
             }
         }
 
@@ -65,15 +76,15 @@ namespace fooTitle {
         /// <summary>
         /// The name of the currently used skin. Can be changed
         /// </summary>
-        public ConfString SkinName = new ConfString("base/skinName", "white");
+        public ConfString SkinPath = new ConfString("base/skinName", "white");
 
         protected void skinNameChanged(string name) {
             if (initDone) {
                 try {
-                    loadSkin(SkinName.Value);
+                    loadSkin(SkinPath.Value);
                 } catch (Exception e) {
                     skin = null;
-                    System.Windows.Forms.MessageBox.Show("foo_title - There was an error loading skin " + SkinName.Value + ":\n" + e.Message, "foo_title");
+                    System.Windows.Forms.MessageBox.Show("foo_title - There was an error loading skin " + SkinPath.Value + ":\n" + e.Message, "foo_title");
                 }
             }
         }
@@ -120,6 +131,11 @@ namespace fooTitle {
         /// </summary>
         public Display Display {
             get {
+                if (myDisplay.IsDisposed) {
+                    // need to open the window again
+                    reinitDisplay();
+                }
+
                 return myDisplay;
             }
         }
@@ -153,8 +169,9 @@ namespace fooTitle {
 
         public void EnableFooTitle() {
             fooTitleEnabled = true;
-            if (initDone)
+            if (initDone) {
                 Display.Show();
+            }
         }
 
         public void ToggleEnabled() {
@@ -215,17 +232,38 @@ namespace fooTitle {
         }
 
         /// <summary>
-        /// Loads skin by name
+        /// When the Display window is closed for some reason and we want to
+        /// show it again, it must be re-created and reinitialized.
         /// </summary>
-        /// <param name="name">The name of the skin's directory (skins are placed in foo_title directory, each skin has it's own directory)</param>
-        private void loadSkin(string name) {
+        private void reinitDisplay() {
+            // initialize the form displaying the images
+            myDisplay = new Display(300, 22);
+            myDisplay.Show();
+
+            // load the skin
+            loadSkin(SkinPath.Value);
+
+            RestorePosition();
+        }
+
+        /// <summary>
+        /// Loads skin by from the given path. If the path is not absolute,
+        /// the application directory is used to load the skin from.
+        /// </summary>
+        /// <param name="path">The name of the skin's directory</param>
+        private void loadSkin(string path) {
             try {
                 // delete the old one
                 if (skin != null)
                     skin.Free();
                 skin = null;
 
-                skin = new Skin(name);
+                // determine the absolute path
+                string absolutePath = path;
+                if (!Path.IsPathRooted(path))
+                    absolutePath = Path.Combine(Main.AppDataDir, path);
+
+                skin = new Skin(absolutePath);
                 skin.Init(Display);
 
                 // need to tell it about the currently playing song
@@ -240,7 +278,7 @@ namespace fooTitle {
                     skin.Free();
                 skin = null;
                 System.Windows.Forms.MessageBox.Show(
-                    String.Format("foo_title - There was an error loading skin {0}:\n {1} \n {2}", name, e.Message, e.ToString())
+                    String.Format("foo_title - There was an error loading skin {0}:\n {1} \n {2}", path, e.Message, e.ToString())
                     , "foo_title");
             }
         }
@@ -334,19 +372,14 @@ namespace fooTitle {
             myGeometryFactory = new GeometryFactory();
             myGeometryFactory.SearchAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
-            // initialize the form displaying the images
-            myDisplay = new Display(300, 22);
-            myDisplay.Show();
+            // initialize the display and skin
+            reinitDisplay();
 
-            // load the skin
-            loadSkin(SkinName.Value);
-
-            RestorePosition();
 
             // register response events on some variables
             ShowWhen.OnChanged += new ConfValuesManager.ValueChangedDelegate(ShowWhen_OnChanged);
             UpdateInterval.OnChanged += new ConfValuesManager.ValueChangedDelegate(updateIntervalChanged);
-            SkinName.OnChanged += new ConfValuesManager.ValueChangedDelegate(skinNameChanged);
+            SkinPath.OnChanged += new ConfValuesManager.ValueChangedDelegate(skinNameChanged);
 
             if (ShowWhen.Value == ShowWhenEnum.Never)
                 DisableFooTitle();

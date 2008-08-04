@@ -29,9 +29,9 @@
 + implement saving of the value by implementing a custom version of cfg_var
 - profile for speed 
 - test stability
-- fooManagedWrapper
++ fooManagedWrapper
 	+ unify naming conventions
-	- make Vista compatible
+	+ make Vista compatible
 	+ recompile with the new SDK
 	
 - BUG:
@@ -42,12 +42,12 @@
 	I removed foo-title's components and re-ran the same playlist with "shutdown when noise stops" and the History playlist had been updated and remembered.
 
 	Additionally foobar (which normally remembers it's last position in terms of last active playlist and minimised/maximised etc ..), re-opened in a different playlist and position - in this case maximised, when prior to shutting down it was minimised, with foo_title "always on top". So it seems info is being lost due to the foo-title component on shutting down (whilst open).
-- BUG: foo_title is preventing Windows from shutting down
++ BUG: foo_title is preventing Windows from shutting down
 - BUG: some crashes http://www.hydrogenaudio.org/forums/index.php?showtopic=55428&hl=foo_title
 - show on stream title change
 - show on stop/pause
 - BUG: only show when minimized doesn't work
 - BUG: Only have one problem with it, everytime I start up foobar the titlebar doesn't showup until it plays through a song. Pretty much intially, when I have it minimized, it won't show anything until the first song I played from the time I started foobar is done playing. It's not that big a problem because I can just forward to the end of a song and let it show up, just a little annoying. Tryed looking through forms for answer and couldn't find anything, was wondering if I'm only one with the problem.
 - take album art from foobar if possible
-- read skins from user profile directory too
++ read skins from user profile directory too
 - buttons fading in/out when mousehovered

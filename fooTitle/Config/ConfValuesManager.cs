@@ -165,6 +165,31 @@ namespace fooTitle.Config {
                 v.Reset();
             }
         }
+
+        /// <summary>
+        /// If a value with the given name exists, returns a reference to it.
+        /// Otherwise creates a new one. Should be used when it is expected
+        /// that it will be called multiple times (one value can be created
+        /// only once).
+        /// </summary>
+        public static ConfInt CreateIntValue(string name, int _def, int _min, int _max) {
+            ConfInt existing = (ConfInt)GetInstance().GetValueByName(name);
+            if (existing != null)
+                return existing;
+
+            return new ConfInt(name, _def, _min, _max);
+        }
+
+        /// <summary>
+        /// <see cref="CreateIntValue"/>
+        /// </summary>
+        public static ConfEnum<T> CreateEnumValue<T>(string name, T _def) where T : IConvertible{
+            ConfEnum<T> existing = (ConfEnum<T>)GetInstance().GetValueByName(name);
+            if (existing != null)
+                return existing;
+
+            return new ConfEnum<T>(name, _def);
+        }
     }
 
     #endregion

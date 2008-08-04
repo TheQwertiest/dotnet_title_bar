@@ -29,14 +29,28 @@ using fooTitle.Tests;
 
 
 namespace fooTitle {
- class Properties : fooManagedWrapper.CManagedPrefPage{
- //  class Properties : System.Windows.Forms.Form {
+class Properties : fooManagedWrapper.CManagedPrefPage{
+//   class Properties : System.Windows.Forms.Form {
 
+    class SkinListEntry {
+        public string path;
+
+        public SkinListEntry(string _path) {
+            path = _path;
+        }
+
+        public override string ToString() {
+            return Path.GetFileName(path);
+        }
+    }
 
        protected AutoWrapperCreator autoWrapperCreator = new AutoWrapperCreator();
        protected RadioGroupWrapper showWhenWrapper;
        protected RadioGroupWrapper windowPositionWrapper;
-     protected RadioGroupWrapper popupShowingWrapper;
+       private GroupBox restoreTopmostBox;
+       private Label label13;
+       private CheckBox restoreTopmostCheckbox;
+       protected RadioGroupWrapper popupShowingWrapper;
 
         public Properties(Main _main)
        : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage.guid_display)
@@ -62,44 +76,32 @@ namespace fooTitle {
         }
 
 
-        protected void fillSkinList(string baseDir) {
+        protected void fillSkinList() {
             skinsList.Items.Clear();
-            foreach (string name in System.IO.Directory.GetDirectories(baseDir)) {
-                DirectoryInfo di = new DirectoryInfo(name);
-                skinsList.Items.Add(di.Name); // can't use just name, because it contains the baseDir as a prefix
+
+            // first the application directory
+            try {
+                foreach (string path in System.IO.Directory.GetDirectories(Main.AppDataDir)) {
+                    skinsList.Items.Add(new SkinListEntry(path));
+                }
+            } catch (Exception) {
+                fooManagedWrapper.CConsole.Write("Failed to read from <foobar2000 app dir>\foo_title.");
+            }
+
+            if ((Main.AppDataDir != Main.UserDataDir) && (Directory.Exists(Main.UserDataDir))) {
+                // now the user profile directory
+                foreach (string path in System.IO.Directory.GetDirectories(Main.UserDataDir)) {
+                    skinsList.Items.Add(new SkinListEntry(path));
+                }
             }
         }
 
         public void UpdateValues() {
-            fillSkinList(Main.DataDir);
-            //updateIntervalTrackBar.Value = main.UpdateInterval;
-            //albumArtFilenames.Text = main.AlbumArtFilenames;
+            fillSkinList();
 
-            /*
-            if (main.ShowWhen.Value == ShowWhenEnum.Always)
-                alwaysRadio.Checked = true;
-            else if (main.ShowWhen.Value == ShowWhenEnum.Never)
-                neverRadio.Checked = true;
-            else if (main.ShowWhen.Value == ShowWhenEnum.WhenMinimized)
-                minimizedRadio.Checked = true;
-             */
-            /*
-            normalOpacityTrackBar.Value = main.NormalOpacity;
-            overOpacityTrackBar.Value = main.OverOpacity;
-            fadeLengthTrackBar.Value = main.FadeLength;
-            fadeLengthLabel.Text = main.FadeLength.ToString() + " ms";
-            */
             Assembly myAssembly = Assembly.GetExecutingAssembly();
             versionLabel.Text = "Version: " + myAssembly.GetName().Version.ToString();
 
-            /*
-            if (main.WindowPosition == Win32.WindowPosition.Bottom)
-                onDesktopRadio.Checked = true;
-            else if (main.WindowPosition == Win32.WindowPosition.NoTopmost)
-                normalRadio.Checked = true;
-            else if (main.WindowPosition == Win32.WindowPosition.Topmost)
-                alwaysOnTopRadio.Checked = true;
-            */
         }
 
      public override bool QueryReset() {
@@ -197,6 +199,9 @@ namespace fooTitle {
             this.tabControl1 = new fooTitle.SafeTabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.restoreTopmostBox = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.restoreTopmostCheckbox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
             this.albumArtGroup.SuspendLayout();
             this.showWhenBox.SuspendLayout();
@@ -209,6 +214,7 @@ namespace fooTitle {
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.restoreTopmostBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // skinsList
@@ -370,8 +376,8 @@ namespace fooTitle {
             this.fadeLengthLabel.Name = "fadeLengthLabel";
             this.fadeLengthLabel.Size = new System.Drawing.Size(35, 13);
             this.fadeLengthLabel.TabIndex = 5;
-            this.fadeLengthLabel.Text = "label8";
             this.fadeLengthLabel.Tag = "display/fadeLength";
+            this.fadeLengthLabel.Text = "label8";
             // 
             // fadeLengthTrackBar
             // 
@@ -409,7 +415,7 @@ namespace fooTitle {
             // 
             // overOpacityTrackBar
             // 
-            this.overOpacityTrackBar.Location = new System.Drawing.Point(6, 90);
+            this.overOpacityTrackBar.Location = new System.Drawing.Point(6, 106);
             this.overOpacityTrackBar.Maximum = 255;
             this.overOpacityTrackBar.Minimum = 5;
             this.overOpacityTrackBar.Name = "overOpacityTrackBar";
@@ -422,7 +428,7 @@ namespace fooTitle {
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 74);
+            this.label6.Location = new System.Drawing.Point(9, 79);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(119, 13);
             this.label6.TabIndex = 1;
@@ -629,6 +635,7 @@ namespace fooTitle {
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.restoreTopmostBox);
             this.tabPage1.Controls.Add(this.zOrderBox);
             this.tabPage1.Controls.Add(this.versionLabel);
             this.tabPage1.Controls.Add(this.popupBox);
@@ -658,6 +665,38 @@ namespace fooTitle {
             this.tabPage2.Text = "Misc";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // restoreTopmostBox
+            // 
+            this.restoreTopmostBox.Controls.Add(this.restoreTopmostCheckbox);
+            this.restoreTopmostBox.Controls.Add(this.label13);
+            this.restoreTopmostBox.Location = new System.Drawing.Point(194, 248);
+            this.restoreTopmostBox.Name = "restoreTopmostBox";
+            this.restoreTopmostBox.Size = new System.Drawing.Size(269, 98);
+            this.restoreTopmostBox.TabIndex = 14;
+            this.restoreTopmostBox.TabStop = false;
+            this.restoreTopmostBox.Text = "Restore topmost position";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 16);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(248, 39);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "When Z-order is set to Always on top, foo_title can \r\nset itself as the foremost " +
+                "window every minute to\r\nwork around the Windows problem.";
+            // 
+            // restoreTopmostCheckbox
+            // 
+            this.restoreTopmostCheckbox.AutoSize = true;
+            this.restoreTopmostCheckbox.Location = new System.Drawing.Point(9, 62);
+            this.restoreTopmostCheckbox.Name = "restoreTopmostCheckbox";
+            this.restoreTopmostCheckbox.Size = new System.Drawing.Size(205, 17);
+            this.restoreTopmostCheckbox.TabIndex = 1;
+            this.restoreTopmostCheckbox.Tag = "display/reShowOnTop";
+            this.restoreTopmostCheckbox.Text = "Restore topmost position every minute";
+            this.restoreTopmostCheckbox.UseVisualStyleBackColor = true;
+            // 
             // Properties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -685,27 +724,13 @@ namespace fooTitle {
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.restoreTopmostBox.ResumeLayout(false);
+            this.restoreTopmostBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
         #endregion
 
-       /*
-        void onDesktopRadio_CheckedChanged(object sender, EventArgs e) {
-            if (onDesktopRadio.Checked)
-                main.WindowPosition = Win32.WindowPosition.Bottom;
-        }
-
-        void normalRadio_CheckedChanged(object sender, EventArgs e) {
-            if (normalRadio.Checked)
-                main.WindowPosition = Win32.WindowPosition.NoTopmost;
-        }
-
-        void alwaysOnTopRadio_CheckedChanged(object sender, EventArgs e) {
-            if (alwaysOnTopRadio.Checked)
-                main.WindowPosition = Win32.WindowPosition.Topmost;
-        }
-       */
 
 
         void Properties_VisibleChanged(object sender, EventArgs e) {
@@ -714,51 +739,8 @@ namespace fooTitle {
         }
 
         private void applySkinBtn_Click(object sender, EventArgs e) {
-            main.SkinName.Value = (string)skinsList.SelectedItem;
+            main.SkinPath.Value = ((SkinListEntry)skinsList.SelectedItem).path;
         }
 
-        //private void trackBar1_ValueChanged(object sender, EventArgs e) {
-        //    main.UpdateInterval = updateIntervalTrackBar.Value;
-        //}
-
-       
-       /*
-        private void albumArtFilenames_TextChanged(object sender, EventArgs e) {
-            main.AlbumArtFilenames = albumArtFilenames.Text;
-        }
-       */
-
-       /*
-        private void alwaysRadio_CheckedChanged(object sender, EventArgs e) {
-            if (alwaysRadio.Checked)
-                Main.GetInstance().ShowWhen.Value = ShowWhenEnum.Always;
-        }
-
-        void neverRadio_CheckedChanged(object sender, EventArgs e) {
-            if (neverRadio.Checked)
-                Main.GetInstance().ShowWhen.Value = ShowWhenEnum.Never;
-        }
-
-        void minimizedRadio_CheckedChanged(object sender, EventArgs e) {
-            if (minimizedRadio.Checked)
-                Main.GetInstance().ShowWhen.Value = ShowWhenEnum.WhenMinimized;
-        }
-       */
-
-
-       /*
-        private void normalOpacityTrackBar_ValueChanged(object sender, EventArgs e) {
-            main.NormalOpacity = normalOpacityTrackBar.Value;
-        }
-
-        private void overOpacityTrackBar_ValueChanged(object sender, EventArgs e) {
-            main.OverOpacity = overOpacityTrackBar.Value;
-        }
-
-        private void fadeLengthTrackBar_ValueChanged(object sender, EventArgs e) {
-            main.FadeLength = fadeLengthTrackBar.Value;
-            fadeLengthLabel.Text = fadeLengthTrackBar.Value.ToString() + " ms";
-        }
-       */
     }
 }

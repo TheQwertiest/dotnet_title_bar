@@ -139,6 +139,7 @@ extern "C"
 BOOLEAN WINAPI TestEntry(IN HINSTANCE hDllHandle, IN DWORD     nReason,  IN LPVOID  Reserved ) {
 	// this fixes a problem with drag'n'drop
 	// thanks to FrozenSpoon for the solution :)
+	// As of foobar 0.9.5.4 this seems to be no longer required and it conflicts with DirectSound in Vista
 	//CoInitializeEx(0, COINIT_APARTMENTTHREADED);
 	
 	if (nReason == DLL_PROCESS_DETACH) {

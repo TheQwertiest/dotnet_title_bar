@@ -81,6 +81,7 @@ namespace fooManagedWrapper {
 
 		// returns the path to the directory where foobar is installed
 		String ^GetFoobarDirectory();
+		String ^GetProfilePath();
 
 		// TODO provide a better implementation
 		static void DoMainMenuCommand(String ^name);

@@ -39,7 +39,7 @@ namespace fooTitle.Layers
 	{
 		XmlDocument document = new XmlDocument();
         XmlNode skin;
-        string name;
+        string path;
         public List<Layer> DynamicLayers = new List<Layer>();
         
 
@@ -48,7 +48,7 @@ namespace fooTitle.Layers
         /// </summary>
         public string SkinDirectory {
             get {
-                return Path.Combine(Main.DataDir, name);
+                return path;
             }
         }
 
@@ -60,10 +60,10 @@ namespace fooTitle.Layers
 		/// <summary>
 		/// Loads the skin from the specified xml file
 		/// </summary>
-		/// <param name="fileName">Name of the skin. This must be the same as the name of it's directory</param>
-		public Skin(string _name) : base()
+		/// <param name="path">Path to the skin directory.</param>
+		public Skin(string _path) : base()
 		{
-            name = _name;
+            path = _path;
 
 			// load the skin xml file
 			document.Load(GetSkinFilePath("skin.xml"));

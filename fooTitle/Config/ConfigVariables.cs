@@ -82,7 +82,7 @@ namespace fooTitle.Config {
 
         /// <summary>
         /// Initializes the value - registers with the manager which sends events about updating. This should be
-        /// called when the value is done setting up and can is fully usable.
+        /// called when the value is done setting up and is fully usable.
         /// </summary>
         protected void init() {
             ConfValuesManager.GetInstance().AddVal(this);

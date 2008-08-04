@@ -159,6 +159,9 @@ namespace fooTitle
             if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
                 throw new ApplicationException("The bitmap must be 32ppp with alpha-channel.");
 
+            if (this.IsDisposed)
+                return;
+
             // The idea of this is very simple,
             // 1. Create a compatible DC with screen;
             // 2. Select the bitmap with 32bpp with alpha-channel in the compatible DC;

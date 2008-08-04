@@ -40,6 +40,9 @@ namespace fooTitle
         private int dragY;
         private int opacity;
 
+        private ConfValuesManager.ValueChangedDelegate normalOpacityChangeDelegate;
+        private ConfValuesManager.ValueChangedDelegate windowPositionChangeDelegate;
+
         public class Fade {
             protected int startVal;
             protected int stopVal;
@@ -82,19 +85,19 @@ namespace fooTitle
         /// <summary>
         /// The opacity in normal state
         /// </summary>
-        protected ConfInt normalOpacity = new ConfInt("display/normalOpacity", 255, 5, 255);
+        protected ConfInt normalOpacity = ConfValuesManager.CreateIntValue("display/normalOpacity", 255, 5, 255);
         /// <summary>
         /// The opacity when the mouse is over foo_title
         /// </summary>
-        protected ConfInt overOpacity = new ConfInt("display/overOpacity", 255, 5, 255);
+        protected ConfInt overOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
         /// <summary>
         /// The length of fade between normal and over states in miliseconds
         /// </summary>
-        protected ConfInt fadeLength = new ConfInt("display/fadeLength", 100, 0, 2000);
+        protected ConfInt fadeLength = ConfValuesManager.CreateIntValue("display/fadeLength", 100, 0, 2000);
         /// <summary>
         /// The z position of the window - either always on top or on the bottom.
         /// </summary>
-        public ConfEnum<Win32.WindowPosition> WindowPosition = new ConfEnum<Win32.WindowPosition>("display/windowPosition", Win32.WindowPosition.Topmost);
+        public ConfEnum<Win32.WindowPosition> WindowPosition = ConfValuesManager.CreateEnumValue<Win32.WindowPosition>("display/windowPosition", Win32.WindowPosition.Topmost);
 
 		public Display(int width, int height)
 		{
@@ -110,8 +113,11 @@ namespace fooTitle
 
             opacity = normalOpacity.Value;
 
-            normalOpacity.OnChanged += new ConfValuesManager.ValueChangedDelegate(normalOpacity_OnChanged);
-            WindowPosition.OnChanged += new ConfValuesManager.ValueChangedDelegate(windowPosition_OnChanged);
+            normalOpacityChangeDelegate = new ConfValuesManager.ValueChangedDelegate(normalOpacity_OnChanged);
+            windowPositionChangeDelegate = new ConfValuesManager.ValueChangedDelegate(windowPosition_OnChanged);
+            normalOpacity.OnChanged += normalOpacityChangeDelegate;
+            WindowPosition.OnChanged += windowPositionChangeDelegate;
+            
             SetWindowsPos(WindowPosition.Value);
 
 		}
@@ -135,6 +141,11 @@ namespace fooTitle
 				{
 					components.Dispose();
 				}
+
+                // need to remove this from the events on the configuration values
+                normalOpacity.OnChanged -= normalOpacityChangeDelegate;
+                WindowPosition.OnChanged -= windowPositionChangeDelegate;
+
 			}
 			base.Dispose( disposing );
 		}
@@ -176,7 +187,7 @@ namespace fooTitle
         }
   
         void Display_Closing(object sender, CancelEventArgs e) {
-            e.Cancel = true;
+            //e.Cancel = true;
             Main.GetInstance().ShowWhen.Value = ShowWhenEnum.Never;
         }   
    
