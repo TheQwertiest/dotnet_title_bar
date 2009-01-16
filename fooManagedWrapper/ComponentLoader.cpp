@@ -50,10 +50,10 @@ IComponentClient ^CComponentLoader::createInstance(Type ^type) {
 TComponentClients ^CComponentLoader::LoadComponentsInDir(System::String ^dirName, System::String ^filePrefix) {
 	try {
 		DirectoryInfo ^di = gcnew DirectoryInfo(dirName);
-		array<FileInfo^> ^files = di->GetFiles(filePrefix + "*.dll");
+		array<System::IO::FileInfo^> ^files = di->GetFiles(filePrefix + "*.dll");
 
 		TComponentClients ^res = gcnew TComponentClients();
-		for each (FileInfo^ f in files) {
+		for each (System::IO::FileInfo^ f in files) {
 			try {
 				res->Add(LoadComponent(f->FullName));
 			} catch (Exception ^e) {

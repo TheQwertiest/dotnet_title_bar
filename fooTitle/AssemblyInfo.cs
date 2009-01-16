@@ -45,10 +45,14 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.7.1.*")]
-[assembly: AssemblyInformationalVersion("0.7.1")]
+[assembly: AssemblyVersion("0.7.2.*")]
+[assembly: AssemblyInformationalVersion("0.7.2")]
 
 /* Changelog:
+   0.7.2
+     - fixed a problem that foo_title would not show when it is set to only show when foobar is minimized
+     - on song start showing now takes stream title change into account
+ 
    0.7.1
      - auto restoring on top position every now and then ;)
      - foo_managedWrapper works on Vista again

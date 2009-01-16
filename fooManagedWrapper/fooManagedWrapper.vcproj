@@ -227,6 +227,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FileInfo.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\fooServices.cpp"
 				>
 			</File>
@@ -296,6 +300,10 @@
 			</File>
 			<File
 				RelativePath=".\configIOCallback.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FileInfo.h"
 				>
 			</File>
 			<File

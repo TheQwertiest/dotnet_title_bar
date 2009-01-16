@@ -32,7 +32,8 @@ namespace fooManagedWrapper {
 			static_api_ptr_t<play_callback_manager> pcm;
 			pcm->register_callback(this,
 				play_callback::flag_on_playback_new_track | play_callback::flag_on_playback_time |
-				play_callback::flag_on_playback_pause | play_callback::flag_on_playback_stop
+				play_callback::flag_on_playback_pause | play_callback::flag_on_playback_stop |
+				play_callback::flag_on_playback_dynamic_info_track
 				, false);
 		}
 		catch (const exception_service_not_found &) {
@@ -41,10 +42,12 @@ namespace fooManagedWrapper {
 	}
 
 	void CPlayCallback::on_playback_new_track(metadb_handle_ptr p_track) {
-		CMetaDBHandle ^h = gcnew CMetaDBHandle(p_track.get_ptr());
+		CMetaDBHandle ^h = gcnew CMetaDBHandle(p_track);
+		
 		for each (IComponentClient ^cl in CManagedWrapper::getInstance()) {
 			cl->OnPlaybackNewTrack(h);
 		}
+		
 	}
 
 	void CPlayCallback::on_playback_time(double p_time) {
@@ -62,6 +65,13 @@ namespace fooManagedWrapper {
 	void CPlayCallback::on_playback_stop(play_control::t_stop_reason reason) {
 		for each (IComponentClient ^cl in CManagedWrapper::getInstance()) {
 			cl->OnPlaybackStop((IPlayControl::StopReason)reason);
+		}
+	}
+
+
+	void CPlayCallback::on_playback_dynamic_info_track(const file_info &p_info) {
+		for each (IComponentClient ^cl in CManagedWrapper::getInstance()) {
+			cl->OnPlaybackDynamicInfoTrack(gcnew fooManagedWrapper::FileInfo(p_info));
 		}
 	}
 

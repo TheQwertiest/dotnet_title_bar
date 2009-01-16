@@ -188,6 +188,8 @@ namespace fooTitle {
             if (ShowWhen.Value != ShowWhenEnum.WhenMinimized)
                 return;
 
+            //CConsole.Write(String.Format("foobar activated {0}", CManagedWrapper.getInstance().IsFoobarActivated()));
+
             if (CManagedWrapper.getInstance().IsFoobarActivated()) {
                 DisableFooTitle();
             } else {
@@ -438,6 +440,12 @@ namespace fooTitle {
 
         public void OnPlaybackPause(bool state) {
             sendEvent(OnPlaybackPauseEvent, state);
+        }
+
+        public event OnPlaybackDynamicInfoTrackDelegate OnPlaybackDynamicInfoTrackEvent;
+
+        public void OnPlaybackDynamicInfoTrack(fooManagedWrapper.FileInfo fileInfo) {
+            sendEvent(OnPlaybackDynamicInfoTrackEvent, fileInfo);
         }
 
         #endregion

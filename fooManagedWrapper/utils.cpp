@@ -25,31 +25,38 @@ using namespace fooManagedWrapper;
 using namespace System;
 using namespace pfc;
 
-CMetaDBHandle::CMetaDBHandle(metadb_handle *src) {
-	this->handle = src;
+CMetaDBHandle::CMetaDBHandle(const metadb_handle_ptr &src) {
+	this->handle = new metadb_handle_ptr(src);
 }
 
 CMetaDBHandle::!CMetaDBHandle() {
-	handle = 0;
-}
+	// The GC may postpone freeing objects after foobar's services are not
+	// available, so trying to free the handle gives an assert violation.
+	// As this happens only when exiting the process, we needn't care.
+	if (!core_api::are_services_available()) return;
 
-CMetaDBHandle::~CMetaDBHandle() {
-	handle = 0;
+	if (this->handle != NULL) {
+		delete this->handle;
+		this->handle = NULL;
+	}
 }
 
 String ^CMetaDBHandle::GetPath() {
 	if (handle == NULL)
-		throw gcnew System::AccessViolationException("GetPath() called on a MetaDBHandle containing NULL handle");
-	const char *c_path = handle->get_path();
+		throw gcnew System::NullReferenceException("GetPath() called on a MetaDBHandle containing NULL handle");
+	const char *c_path = (*handle)->get_path();
 	return gcnew String(c_path, 0, strlen(c_path), gcnew System::Text::UTF8Encoding(true, true));
 }
 
 double CMetaDBHandle::GetLength() {
-	return handle->get_length();
+	return (*handle)->get_length();
 }
 
+
+
 String ^CPlayControl::FormatTitle(CMetaDBHandle ^handle, String ^spec) {
-	metadb_handle * handle_c = handle->GetHandle();
+	if (handle == nullptr) return gcnew String("abc");
+
 	const char* spec_c = (const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(spec)).ToPointer();
 	string8 out;
 
@@ -59,7 +66,7 @@ String ^CPlayControl::FormatTitle(CMetaDBHandle ^handle, String ^spec) {
 	service_ptr_t<titleformat_object> compiledScript;
 	titlecompiler->compile(compiledScript, spec_c);
 
-	pc->playback_format_title_ex(handle_c, NULL, out, compiledScript, NULL,  playback_control::display_level_all);
+	pc->playback_format_title_ex(handle->GetHandle(), NULL, out, compiledScript, NULL,  playback_control::display_level_all);
 	
 	String ^res = gcnew String(out.get_ptr(), 0, out.length(), gcnew System::Text::UTF8Encoding());
 	System::Runtime::InteropServices::Marshal::FreeHGlobal(IntPtr((void*)spec_c));
@@ -84,6 +91,8 @@ bool CPlayControl::IsPlaying() {
 	static_api_ptr_t<play_control> pc;
 	return pc->is_playing();
 }
+
+
 
 void fooManagedWrapper::CConsole::Error(String ^a) {
 	const char *c_msg = CManagedWrapper::ToCString(a);

@@ -19,24 +19,34 @@
 */
 #pragma once
 #include "Stdafx.h"
+#include "FileInfo.h"
 
 using namespace System;
 
 namespace fooManagedWrapper
 {
+	template<typename T> void safe_delete(T &ptr) {
+		if (ptr != NULL) {
+			delete ptr;
+			ptr = NULL;
+		}
+	}
+
 	// a managed wrapper for metadb_handle
 	public ref class CMetaDBHandle 
 	{
 	public:
-		CMetaDBHandle(metadb_handle *src);
+		CMetaDBHandle(const metadb_handle_ptr &src);
 		!CMetaDBHandle();
-		~CMetaDBHandle();
+		~CMetaDBHandle() { this->!CMetaDBHandle(); };
 
-		metadb_handle *GetHandle() { return handle; };
+		metadb_handle_ptr GetHandle() { return *handle; };
 		String ^GetPath();
 		double GetLength();
 	private:
-		metadb_handle *handle;
+		// metadb_handle_ptr is a smart pointer which handles reference counting, so another level of indirection
+		// is rather cumbersome, but it is required by C++/CLI
+		metadb_handle_ptr *handle;
 	};
 
 	// a managed wrapper for foobar's console
@@ -85,6 +95,7 @@ namespace fooManagedWrapper
 		void OnPlaybackTime(double time);
 		void OnPlaybackPause(bool state);
 		void OnPlaybackStop(IPlayControl::StopReason reason);
+		void OnPlaybackDynamicInfoTrack(FileInfo ^fileInfo);
 	};
 
 }

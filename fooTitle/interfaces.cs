@@ -29,6 +29,7 @@ namespace fooTitle {
     public delegate void OnInitDelegate();
     public delegate void OnPlaybackStopDelegate(IPlayControl.StopReason reason);
     public delegate void OnPlaybackPauseDelegate(bool state);
+    public delegate void OnPlaybackDynamicInfoTrackDelegate(FileInfo fileInfo);
 
 
     public interface IPlayCallbackSender {
@@ -36,6 +37,7 @@ namespace fooTitle {
         event OnPlaybackNewTrackDelegate OnPlaybackNewTrackEvent;
         event OnPlaybackStopDelegate OnPlaybackStopEvent;
         event OnPlaybackPauseDelegate OnPlaybackPauseEvent;
+        event OnPlaybackDynamicInfoTrackDelegate OnPlaybackDynamicInfoTrackEvent;
         event OnQuitDelegate OnQuitEvent;
         event OnInitDelegate OnInitEvent;
     }

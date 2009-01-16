@@ -201,6 +201,7 @@ namespace fooTitle.Layers
         public event OnInitDelegate OnInitEvent;
         public event OnPlaybackStopDelegate OnPlaybackStopEvent;
         public event OnPlaybackPauseDelegate OnPlaybackPauseEvent;
+        public event OnPlaybackDynamicInfoTrackDelegate OnPlaybackDynamicInfoTrackEvent;
 #pragma warning restore 0168, 219, 67
 
         #endregion

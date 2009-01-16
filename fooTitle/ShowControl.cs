@@ -59,7 +59,7 @@ namespace fooTitle {
         
         public ShowControl() {
             Main.GetInstance().OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(ShowControl_OnPlaybackNewTrackEvent);
-
+            Main.GetInstance().OnPlaybackDynamicInfoTrackEvent += new OnPlaybackDynamicInfoTrackDelegate(ShowControl_OnPlaybackDynamicInfoTrackEvent);
             // I don't want to receive the playback time event when before song ends is not checked
             beforeSongEnds.OnChanged += new ConfValuesManager.ValueChangedDelegate(beforeSongEnds_OnChanged);
             if (beforeSongEnds.Value)
@@ -70,7 +70,11 @@ namespace fooTitle {
 
             // init the timers
             hideAfterSongStart.Tick += new EventHandler(hideAfterSongStart_Tick);
+
+            // on start, foo_title should be probably enabled
+            doEnable();
         }
+
 
         /// <summary>
         /// When the showing option changes, check the situation and disable/enable foo_title as needed
@@ -124,6 +128,18 @@ namespace fooTitle {
             // can always hide
             Main.GetInstance().DisableFooTitle();
         }
+
+        /// <summary>
+        /// Handles showing foo_title on a start of a new song. Plans the hiding accordingly to the playPos parameter.
+        /// </summary>
+        /// <param name="playPos">The current playback position in seconds</param>
+        protected void showOnStart(double playPos) {
+            doEnable();
+
+            // plan a hide event
+            hideAfterSongStart.Interval = (int)((float)onSongStartStay.Value - playPos) * 1000;
+            hideAfterSongStart.Start();
+        }
         #endregion
 
         #region playback time event tools
@@ -162,10 +178,18 @@ namespace fooTitle {
         }
         #endregion
 
+        #region Event handling
         /// <summary>
         /// Checks time and displays foo_title when time has come
         /// </summary>
         void ShowControl_OnPlaybackTimeEvent(double time) {
+            if (lastSong == null)
+                return;
+
+            // streams
+            if (lastSong.GetLength() <= 0)
+                return;
+
             if (lastSong.GetLength() - beforeSongEndsStay.Value <= time) {
                 doEnable();
             }
@@ -190,22 +214,38 @@ namespace fooTitle {
             showOnStart(0);
         }
 
-        /// <summary>
-        /// Handles showing foo_title on a start of a new song. Plans the hiding accordingly to the playPos parameter.
-        /// </summary>
-        /// <param name="playPos">The current playback position in seconds</param>
-        protected void showOnStart(double playPos) {
-            doEnable();
+        FileInfo lastFileInfo;
 
-            // plan a hide event
-            hideAfterSongStart.Interval = (int)((float)onSongStartStay.Value - playPos) * 1000;
-            hideAfterSongStart.Start();
+        /// <summary>
+        /// Handles the dynamic info change. Checks if the file info is different from
+        /// the last one and if it is, shows foo_title. Used for displaying on
+        /// stream title change.
+        /// </summary>
+        void ShowControl_OnPlaybackDynamicInfoTrackEvent(FileInfo fileInfo) {
+            CConsole.Write("OnPlaybackDynamicInfoTrackEvent");
+
+            // if not stored yet, show
+            if (lastFileInfo == null) {
+                CConsole.Write("  No last song");
+                ShowControl_OnPlaybackNewTrackEvent(lastSong);
+                lastFileInfo = fileInfo;
+                return;
+            }
+
+            // if different, show
+            if (!FileInfo.IsMetaEqual(lastFileInfo, fileInfo)) {
+                CConsole.Write("  Different song");
+                lastFileInfo = fileInfo;
+                ShowControl_OnPlaybackNewTrackEvent(lastSong);
+            }
         }
 
         void hideAfterSongStart_Tick(object sender, EventArgs e) {
             doDisable();
             hideAfterSongStart.Stop();  
         }
+
+        #endregion
 
         /// <summary>
         /// Called by the Main class when foobar2000's window gets minimized
