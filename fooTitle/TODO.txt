@@ -1,57 +1,61 @@
 + add menu command to show up foo_title (which can be particulary useful when it's not always on top or it disappeared mysteriously)
-  + add support for adding menu commands to foo_managedWrapper
-  + test unicode in menu items = they don't work
-  + when foo_title is disabled via the menu command, it doesn't show up in the prefpage
-- prevent layers from drawing outside their clientRect, that could be probably done with Drawing.Clip or ClipRegion
- - click through - could be made .... and buttons wouldn't be click through..
- - vizualizace
- - add support for more actions for buttons, such as commands from the context menu, also the ability to specify which menu the command is in
- + scriptable values
- + show only for a while (like pretty popup)
- - option to set actions for click/doubleclick/rightclick
- + reset options button
- - maybe create the effect of reflecting glass ;)
- - extendable panels :)
- - pixel accurate button hit testing
- - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
- + BUG: it may not be possible to drag it to some other monitor
- + BUG: closing the display window with Alt-F4 makes it crash
- + BUG: setting it to Normal (instead of always on top) and dragging right after that makes it freeze...completely
- + BUG: Toggle foo_title string is wrong in the View menu
- + BUG: fade length precise time display doesn't work
-- cleaning the code
- - divide the Main class into several smaller classes for easier mantaince
-     - one class that is the plugin itself - that receives events from foobar
-                                           - that creates services such as menu commands
-     - other classes for ..
-     
 + implement saving of the value by implementing a custom version of cfg_var
++ add support for adding menu commands to foo_managedWrapper
++ test unicode in menu items = they don't work
++ when foo_title is disabled via the menu command, it doesn't show up in the prefpage
++ scriptable values
++ show only for a while (like pretty popup)
++ reset options button
++ fooManagedWrapper	
++ unify naming conventions
++ make Vista compatible
++ recompile with the new SDK
++ show on stream title change
++ read skins from user profile directory too
+
+- add support for more actions for buttons, such as commands from the context menu, also the ability to specify which menu the command is in
+- take album art from foobar if possible
+- show on stop/pause
+- some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
+- buttons fading in/out when mousehovered
+- support rotated text (at least by 90 degrees)
+- maybe create the effect of reflecting glass ;)
+- extendable panels :)
+- pixel accurate button hit testing
+- prevent layers from drawing outside their clientRect, that could be probably done with Drawing.Clip or ClipRegion
+- option to set actions for click/doubleclick/rightclick
+- click through - could be made .... and buttons wouldn't be click through..
+- vizualizace
+
 - profile for speed 
 - test stability
-+ fooManagedWrapper	
-	+ unify naming conventions
-	+ make Vista compatible
-	+ recompile with the new SDK
-	
-- BUG:
-	Possible bug with latest version of foo_title:
 
-	I'd recently begun using foo-title 0.7.0 with foobar v0.9.4.3 and when I selected "shutdown when noise stops" I noticed when I next swtiched on my PC (WinXP SP2 + .Net v.2) the History playlist had lost the recent entries played prior to shutting down. I tested it again and the same thing happened.
+optimizations:
+    - cache a smaller version of album art - resizing every frame a large album art is a huge CPU eater
 
-	I removed foo-title's components and re-ran the same playlist with "shutdown when noise stops" and the History playlist had been updated and remembered.
+cleaning the code:
+    - divide the Main class into several smaller classes for easier mantaince
+    - one class that is the plugin itself - that receives events from foobar
+    - that creates services such as menu commands
+    - other classes for ..
 
-	Additionally foobar (which normally remembers it's last position in terms of last active playlist and minimised/maximised etc ..), re-opened in a different playlist and position - in this case maximised, when prior to shutting down it was minimised, with foo_title "always on top". So it seems info is being lost due to the foo-title component on shutting down (whilst open).
-+ BUG: foo_title is preventing Windows from shutting down
-- BUG: some crashes http://www.hydrogenaudio.org/forums/index.php?showtopic=55428&hl=foo_title
-+ show on stream title change
-- show on stop/pause
-- BUG: only show when minimized doesn't work
-+ BUG: Only have one problem with it, everytime I start up foobar the titlebar doesn't showup until it plays through a song. Pretty much intially, when I have it minimized, it won't show anything until the first song I played from the time I started foobar is done playing. It's not that big a problem because I can just forward to the end of a song and let it show up, just a little annoying. Tryed looking through forms for answer and couldn't find anything, was wondering if I'm only one with the problem.
-- take album art from foobar if possible
-+ read skins from user profile directory too
-- buttons fading in/out when mousehovered
-+ BUG: Under Vista, show only when foobar is minimized doesn't work (as they say).
-0 BUG: title formatting not evaluated on foobar start
-	the problem is that when there's no song playing, titleformatting can't be evaluated. This won't be fixed, a better solution, probably involving C# scripting needs to be designed.
-- support rotated text (at least by 90 degrees)
-- BUG: Under the default settings, foo_title doesn't show upon foobar2000 start.
+
+bugs:
+    - BUG: Under the default settings, foo_title doesn't show upon foobar2000 start. (sometimes)
+    + BUG: Under Vista, show only when foobar is minimized doesn't work (as they say).
+    0 BUG: title formatting not evaluated on foobar start
+        the problem is that when there's no song playing, titleformatting can't be evaluated. This won't be fixed, a better solution, probably involving C# scripting needs to be designed.
+    - BUG: only show when minimized doesn't work
+    + BUG: Only have one problem with it, everytime I start up foobar the titlebar doesn't showup until it plays through a song. Pretty much intially, when I have it minimized, it won't show anything until the first song I played from the time I started foobar is done playing. It's not that big a problem because I can just forward to the end of a song and let it show up, just a little annoying. Tryed looking through forms for answer and couldn't find anything, was wondering if I'm only one with the problem.
+    + BUG: foo_title is preventing Windows from shutting down
+    - BUG: some crashes http://www.hydrogenaudio.org/forums/index.php?showtopic=55428&hl=foo_title
+    - BUG:
+        Possible bug with latest version of foo_title:
+        I'd recently begun using foo-title 0.7.0 with foobar v0.9.4.3 and when I selected "shutdown when noise stops" I noticed when I next swtiched on my PC (WinXP SP2 + .Net v.2) the History playlist had lost the recent entries played prior to shutting down. I tested it again and the same thing happened.
+        I removed foo-title's components and re-ran the same playlist with "shutdown when noise stops" and the History playlist had been updated and remembered.
+        Additionally foobar (which normally remembers it's last position in terms of last active playlist and minimised/maximised etc ..), re-opened in a different playlist and position - in this case maximised, when prior to shutting down it was minimised, with foo_title "always on top". So it seems info is being lost due to the foo-title component on shutting down (whilst open).
+    + BUG: it may not be possible to drag it to some other monitor
+    + BUG: closing the display window with Alt-F4 makes it crash
+    + BUG: setting it to Normal (instead of always on top) and dragging right after that makes it freeze...completely
+    + BUG: Toggle foo_title string is wrong in the View menu
+    + BUG: fade length precise time display doesn't work

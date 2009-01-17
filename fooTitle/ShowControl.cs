@@ -222,11 +222,8 @@ namespace fooTitle {
         /// stream title change.
         /// </summary>
         void ShowControl_OnPlaybackDynamicInfoTrackEvent(FileInfo fileInfo) {
-            CConsole.Write("OnPlaybackDynamicInfoTrackEvent");
-
             // if not stored yet, show
             if (lastFileInfo == null) {
-                CConsole.Write("  No last song");
                 ShowControl_OnPlaybackNewTrackEvent(lastSong);
                 lastFileInfo = fileInfo;
                 return;
@@ -234,7 +231,6 @@ namespace fooTitle {
 
             // if different, show
             if (!FileInfo.IsMetaEqual(lastFileInfo, fileInfo)) {
-                CConsole.Write("  Different song");
                 lastFileInfo = fileInfo;
                 ShowControl_OnPlaybackNewTrackEvent(lastSong);
             }

@@ -52,6 +52,8 @@ using System.Runtime.CompilerServices;
    0.7.2
      - fixed a problem that foo_title would not show when it is set to only show when foobar is minimized
      - on song start showing now takes stream title change into account
+     - metadb_handle handling is probably done better this time
+     - album art image is resized once and cached, this avoids high CPU usage with large album arts
  
    0.7.1
      - auto restoring on top position every now and then ;)

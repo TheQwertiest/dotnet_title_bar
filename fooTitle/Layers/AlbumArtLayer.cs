@@ -31,6 +31,36 @@ namespace fooTitle.Layers {
 
         protected Bitmap albumArt;
         protected Bitmap noCover;
+        /// <summary>
+        /// This is a scaled copy of albumArt. This prevents rescaling
+        /// a large bitmap every frame.
+        /// </summary>
+        protected Bitmap cachedResized;
+
+        /// <summary>
+        /// If an album art exists, returns the image of the album art. If it does
+        /// not exist, returns the no cover image. If there is a cached version of
+        /// the album art of the correct size, returns that.
+        /// </summary>
+        protected Bitmap currentImage {
+            get {
+                if (albumArt != null) {
+                    
+                    if (cachedResized != null) {
+                        if ((ClientRect.Width == cachedResized.Width) && (ClientRect.Height == cachedResized.Height))
+                            return cachedResized;
+                        else
+                            return albumArt;
+                    } else {
+                        return albumArt;
+                    }
+
+                } else {
+                    return noCover;
+                }
+
+            }
+        }
 
         public AlbumArtLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
             try {
@@ -75,6 +105,7 @@ namespace fooTitle.Layers {
         }
 
         void CurrentSkin_OnPlaybackNewTrackEvent(fooManagedWrapper.CMetaDBHandle song) {
+            cachedResized = null;
             string fileName = findAlbumArt(song, Main.GetInstance().AlbumArtFilenames.Value);
             if (fileName != null) {
                 try {
@@ -91,19 +122,30 @@ namespace fooTitle.Layers {
         }
 
 		public override void Draw() {
-            Bitmap toDraw;
-            if (albumArt != null) {
-                toDraw = albumArt;
-            } else {
-                toDraw = noCover;
-            }
+            prepareCachedImage();
+            Bitmap toDraw = this.currentImage;
 
             if (toDraw != null) {
-                Display.Canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                Display.Canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
                 Display.Canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
             }
 			base.Draw();
 		}
+
+        private void prepareCachedImage() {
+            if (albumArt == null)
+                return;
+
+            if ((cachedResized != null) && (cachedResized.Width == ClientRect.Width) && (cachedResized.Height == ClientRect.Height))
+                return;
+
+            cachedResized = new Bitmap(ClientRect.Width, ClientRect.Height);
+            using (Graphics canvas = Graphics.FromImage(cachedResized)) {
+                canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+                canvas.DrawImage(albumArt, 0, 0, ClientRect.Width, ClientRect.Height);
+            }
+
+        }
 
     }
 }
