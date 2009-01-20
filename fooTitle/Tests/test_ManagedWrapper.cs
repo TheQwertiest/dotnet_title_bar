@@ -40,5 +40,26 @@ namespace fooTitle.Tests {
             testServices.savedOnWrite.BeforeWriting += tester;
 
         }
+
+        [TestMethod]
+        public void testMainMenuPopupIterator() {
+            bool view = false, file = false, edit = false, playback = false, library=false, help=false;
+            foreach (fooManagedWrapper.CManagedMainMenuGroupPopup i in new fooManagedWrapper.CMainMenuGroupPopupEnumerator()) {
+                if (i.Name == "File")
+                    file = true;
+                if (i.Name == "Edit")
+                    edit = true;
+                if (i.Name == "View")
+                    view = true;
+                if (i.Name == "Playback")
+                    playback = true;
+                if (i.Name == "Help")
+                    help = true;
+                if (i.Name == "Library")
+                    library = true;
+            }
+
+            AssertEquals(view && file && help && library && edit && playback, true);
+        }
     }
 }

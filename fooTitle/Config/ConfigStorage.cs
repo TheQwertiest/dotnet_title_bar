@@ -102,14 +102,7 @@ namespace fooTitle.Config {
         /// Creates an instance of XmlConfigStorage and prepares it for writing and reading
         /// </summary>
         public XmlConfigStorage(fooManagedWrapper.CNotifyingCfgString _cfgEntry) {
-            /*
-            if (forTesting)
-                cfgEntry = new fooManagedWrapper.CCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 13), "<config/>");
-            else {
-                cfgEntry = new fooManagedWrapper.CNotifyingCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 12), "<config/>");
-
-            }*/
-            cfgEntry = _cfgEntry;
+             cfgEntry = _cfgEntry;
         }
 
         #region IConfig Members

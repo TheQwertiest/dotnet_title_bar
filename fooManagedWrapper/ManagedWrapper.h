@@ -75,6 +75,7 @@ namespace fooManagedWrapper {
 		// must be called on the string returned by ToCString when it's no longer needed
 		static void FreeCString(const char *a);
 		static pfc::string8 StringToPfcString(String ^a);
+		static String ^PfcStringToString(const pfc::string8 &stringToConvert);
 		
 		static _GUID ToGUID(Guid^ guid);
 		static Guid ^FromGUID(const _GUID& guid);
@@ -86,6 +87,7 @@ namespace fooManagedWrapper {
 		// TODO provide a better implementation
 		static void DoMainMenuCommand(String ^name);
 		bool IsFoobarActivated();
+		String ^GetAllCommands();
 	};
 
 };

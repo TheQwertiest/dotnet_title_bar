@@ -315,6 +315,7 @@ namespace fooTitle {
 
             // initialize menu commands
             viewMenuCommands = new ViewMenuCommands();
+
         }
 
         private void cfgEntry_BeforeWriting(CNotifyingCfgString sender) {
@@ -341,7 +342,7 @@ namespace fooTitle {
         public void OnInit(IPlayControl a) {
             Main.PlayControl = a;
 
-#if DEBU
+#if DEBUG
             // run the tests
             Tests.TestFramework t = new Tests.test_all();
             t.Run();
@@ -390,6 +391,11 @@ namespace fooTitle {
             repeatedShowing = new RepeatedShowing();
 
             initDone = true;
+
+
+            // DEBUG
+            CConsole.Write(CManagedWrapper.getInstance().GetAllCommands());
+
 
         }
 

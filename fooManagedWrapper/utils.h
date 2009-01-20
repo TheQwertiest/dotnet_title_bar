@@ -32,6 +32,8 @@ namespace fooManagedWrapper
 		}
 	}
 
+#define SAFE_DELETE(p) {if ((p) != NULL) { delete (p); (p) = NULL;};}
+
 	// a managed wrapper for metadb_handle
 	public ref class CMetaDBHandle 
 	{

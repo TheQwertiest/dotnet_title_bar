@@ -60,14 +60,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\foobar2000\shared\shared.lib ole32.lib User32.lib $(NOINHERIT)"
+				AdditionalDependencies="..\..\foobar2000\shared\shared.lib ole32.lib User32.lib shlwapi.lib $(NOINHERIT)"
 				OutputFile="C:\Devel\foobar2000\devel-0.9.4\components\foo_managedWrapper.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				ProgramDatabaseFile="$(IntDir)\vc80.pdb"
-				EntryPointSymbol="TestEntry"
+				EntryPointSymbol=""
+				BaseAddress=""
 				TargetMachine="1"
 			/>
 			<Tool
@@ -243,6 +244,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\mainMenuGroupPopup.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ManagedWrapper.cpp"
 				>
 			</File>
@@ -284,6 +289,10 @@
 			>
 			<File
 				RelativePath=".\cfgVars.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cliMenu.h"
 				>
 			</File>
 			<File

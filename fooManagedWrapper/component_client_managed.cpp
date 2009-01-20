@@ -6,6 +6,7 @@ Modified by Roman Plasil for foo_managedWrapper and foo_title projects
 #include "Stdafx.h"
 #include "common.h"
 
+
 using namespace fooManagedWrapper;
 
 // component_client internals
@@ -16,7 +17,7 @@ static bool g_services_available = false, g_initialized = false;
 
 // a global handle to the CManagedWrapper instance
 static gcroot<CManagedWrapper ^> managedWrapper;
-
+#pragma unmanaged
 
 namespace core_api
 {
@@ -112,7 +113,7 @@ namespace {
 
 static foobar2000_client_impl g_client;
 
-
+#pragma managed
 extern "C"
 {
 	__declspec(dllexport) foobar2000_client * _cdecl foobar2000_get_interface(foobar2000_api * p_api,HINSTANCE hIns)
@@ -133,26 +134,7 @@ extern "C"
 		return &g_client;
 	}
 }
-
-
 #pragma unmanaged
-BOOLEAN WINAPI TestEntry(IN HINSTANCE hDllHandle, IN DWORD     nReason,  IN LPVOID  Reserved ) {
-	// this fixes a problem with drag'n'drop
-	// thanks to FrozenSpoon for the solution :)
-	// As of foobar 0.9.5.4 this seems to be no longer required and it conflicts with DirectSound in Vista
-	//CoInitializeEx(0, COINIT_APARTMENTTHREADED);
-	
-	if (nReason == DLL_PROCESS_DETACH) {
-		//_CrtDumpMemoryLeaks();
-	} else if (nReason == DLL_PROCESS_ATTACH) {
-		//_CrtSetBreakAlloc(200);
-		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-	}
-	return true;
-}
-
-#pragma managed
-
 
 #if 0
 BOOLEAN WINAPI DllMain(IN HINSTANCE hDllHandle, IN DWORD     nReason,  IN LPVOID  Reserved )

@@ -139,6 +139,9 @@ namespace fooTitle.Layers {
             if ((cachedResized != null) && (cachedResized.Width == ClientRect.Width) && (cachedResized.Height == ClientRect.Height))
                 return;
 
+            if ((ClientRect.Width <= 0) || (ClientRect.Height <= 0))
+                return;
+
             cachedResized = new Bitmap(ClientRect.Width, ClientRect.Height);
             using (Graphics canvas = Graphics.FromImage(cachedResized)) {
                 canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;

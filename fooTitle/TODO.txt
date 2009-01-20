@@ -30,6 +30,10 @@
 - profile for speed 
 - test stability
 
+cool features:
+    - now that the buttons will have an extended action specification, it could be used to enable/disable
+      a layer which could in turn be used to create extendable panels
+
 optimizations:
     - cache a smaller version of album art - resizing every frame a large album art is a huge CPU eater
 

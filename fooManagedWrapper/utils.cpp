@@ -68,7 +68,7 @@ String ^CPlayControl::FormatTitle(CMetaDBHandle ^handle, String ^spec) {
 
 	pc->playback_format_title_ex(handle->GetHandle(), NULL, out, compiledScript, NULL,  playback_control::display_level_all);
 	
-	String ^res = gcnew String(out.get_ptr(), 0, out.length(), gcnew System::Text::UTF8Encoding());
+	String ^res = CManagedWrapper::PfcStringToString(out);
 	System::Runtime::InteropServices::Marshal::FreeHGlobal(IntPtr((void*)spec_c));
 	return res;
 }
