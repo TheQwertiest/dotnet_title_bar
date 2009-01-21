@@ -24,7 +24,7 @@
 namespace fooManagedWrapper {
 
 // this creates and registers a new menu group popup
-CManagedMainMenuGroupPopup::CManagedMainMenuGroupPopup(Guid ^guid, Guid ^parent, int priority, String ^ name) {
+CMainMenuGroupPopup::CMainMenuGroupPopup(Guid ^guid, Guid ^parent, int priority, String ^ name) {
 	CManagedWrapper::getInstance()->AddService(this);
 	const char *c_name = CManagedWrapper::ToCString(name);
 	wrapper = new mainmenu_group_popup_factory(
@@ -38,7 +38,8 @@ CManagedMainMenuGroupPopup::CManagedMainMenuGroupPopup(Guid ^guid, Guid ^parent,
 }
 
 // this constructor wraps an existing menu group popup
-CManagedMainMenuGroupPopup::CManagedMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popup> &existingPtr) {
+CMainMenuGroupPopup::CMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popup> &existingPtr) {
+	// not adding this service to the CManagedWrapper's list because we are not creating a new one
 	wrapper = NULL;
 	ptr = new service_ptr_t<mainmenu_group_popup>(existingPtr);
 }

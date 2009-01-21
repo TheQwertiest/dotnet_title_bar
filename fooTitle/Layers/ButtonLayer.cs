@@ -24,11 +24,68 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Drawing;
 using System.Windows.Forms;
+
+using naid;
+
 using fooManagedWrapper;
+using fooTitle.Extending;
+
 
 namespace fooTitle.Layers {
+
+    interface IButtonAction {
+        void Init(XmlNode node);
+        void Run();
+    };
+
+    class MainMenuAction : IButtonAction {
+        private string commandName;
+        private List<String> path;
+
+        public void Init(XmlNode node) {
+            string cmd = Element.GetNodeValue(node);
+
+            // parse the command
+            path = new List<String>(cmd.Split('/'));
+            commandName = path[path.Count - 1];
+            path.RemoveAt(path.Count - 1);
+        }
+
+        public void Run() {
+            CMainMenuGroupPopup currentMenu = null;
+            foreach (string pathPart in path) {
+                bool found = false;
+
+                foreach (CMainMenuGroupPopup menu in new CMainMenuGroupPopupEnumerator()) {
+                    bool parentMatch = (currentMenu == null) || (menu.Parent == currentMenu.MyGuid);
+                    if ((menu.Name.ToLowerInvariant() == pathPart) && parentMatch) {
+                        currentMenu = menu;
+                        found = true;
+                    }
+                }
+
+                if (!found)
+                    throw new ArgumentException(String.Format("Path to command \"{0}\" is invalid.", StringUtils.Join("/", path) + commandName));
+
+
+            }
+            
+            
+        }
+
+    };
+
+
     [LayerTypeAttribute("button")]
     class ButtonLayer : Layer{
+        // action register
+        public static Dictionary<string, Type> Actions = new Dictionary<string,Type>();
+
+        static ButtonLayer() {
+            Actions.Add("menu", typeof(MainMenuAction));
+        }
+
+        
 
         protected string myAction;
         protected Bitmap myNormalImage;

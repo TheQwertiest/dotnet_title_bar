@@ -22,6 +22,7 @@
 #include "FileInfo.h"
 
 using namespace System;
+using namespace System::Collections;
 
 namespace fooManagedWrapper
 {
@@ -98,6 +99,64 @@ namespace fooManagedWrapper
 		void OnPlaybackPause(bool state);
 		void OnPlaybackStop(IPlayControl::StopReason reason);
 		void OnPlaybackDynamicInfoTrack(FileInfo ^fileInfo);
+	};
+
+
+	template<typename FoobarType, typename ManagedType, typename RefManagedType>
+	public ref class CEnumeratorAdapter : 
+		public Generic::IEnumerator<RefManagedType>,
+		public Generic::IEnumerable<RefManagedType> {
+	private:
+		service_enum_t<FoobarType> *enumerator;
+		service_ptr_t<FoobarType> *current;
+	
+	public:
+
+		CEnumeratorAdapter() {
+			enumerator = new service_enum_t<FoobarType>();
+			current = NULL;
+		}
+
+		~CEnumeratorAdapter() {
+			SAFE_DELETE(current);
+			SAFE_DELETE(enumerator);
+		}
+
+		!CEnumeratorAdapter() {
+			this->~CEnumeratorAdapter();
+		}
+
+		virtual bool MoveNext() { return true;};
+
+		virtual void Reset() {
+			throw gcnew NotImplementedException();
+		}
+
+		virtual property ManagedType ^Current {
+			virtual ManagedType ^get() = System::Collections::Generic::IEnumerator<ManagedType^>::Current::get {
+				if (current == NULL)
+					throw gcnew InvalidOperationException("First call MoveNext before accessing the current element.");
+
+				return gcnew ManagedType(*current);
+			}
+		}
+
+		virtual property Object ^Current2 {
+			virtual Object ^get() = System::Collections::IEnumerator::Current::get {
+				return this->Current::get();
+			}
+		}
+
+
+		virtual Generic::IEnumerator<RefManagedType> ^GetEnumerator() = 
+			Collections::Generic::IEnumerable<RefManagedType>::GetEnumerator {
+				return this;
+		}
+
+		virtual Collections::IEnumerator ^GetEnumerator2() =
+			Collections::IEnumerable::GetEnumerator {
+				return this;
+		}
 	};
 
 }

@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "fooServices.h"
 #include "Command.h"
+#include "utils.h"
 
 using namespace System::Collections::Generic;
 
@@ -29,26 +30,37 @@ namespace fooManagedWrapper {
 
 	class CMainMenuCommandsFactoryWrapper;
 
-	public ref class CManagedMainMenuCommands abstract : public IFoobarService {
+	/*
+	<summary>
+		Use this class to create your own menu commands in C#.
+	</summary>
+	*/
+	public ref class CMainMenuCommandsImpl abstract : public IFoobarService {
 	private:
 		void commonInit();
 	protected:
 		CMainMenuCommandsFactoryWrapper *wrapper;
 		List<CCommand^> ^cmds;
 	public:
-		CManagedMainMenuCommands(List<CCommand^> ^_cmds);
-		CManagedMainMenuCommands();
-		virtual ~CManagedMainMenuCommands();
-		!CManagedMainMenuCommands();
+		CMainMenuCommandsImpl(List<CCommand^> ^_cmds);
+		CMainMenuCommandsImpl();
+		virtual ~CMainMenuCommandsImpl();
+		!CMainMenuCommandsImpl();
 
 		// now the prototypes for the interface methods
-		virtual unsigned int GetCommandsCount();
+		virtual property unsigned int CommandsCount {
+			unsigned int get();
+		};
 		virtual Guid GetGuid(unsigned int index);
 		virtual String ^GetName(unsigned int index);
 		virtual bool GetDescription(unsigned int index, String^ %desc);
-		virtual Guid GetCommandsParent() = 0;
+		virtual property Guid Parent {
+			Guid get() = 0;
+		};
 		virtual void Execute(unsigned int index);
-		virtual unsigned int GetCommandsSortPriority() = 0;
+		virtual property unsigned int SortPriority {
+			unsigned int get() = 0;
+		};
 		virtual bool GetDisplay(unsigned int index, String^ %text, unsigned int %flags);
 
 		static System::Guid ^file, ^view, ^edit, ^playback, ^library, ^help;
@@ -64,10 +76,10 @@ namespace fooManagedWrapper {
 
 	class CCustomMainMenuCommands : public mainmenu_commands {
 	protected:
-		gcroot<CManagedMainMenuCommands^> managedMainMenuCommands;
+		gcroot<CMainMenuCommandsImpl^> managedMainMenuCommands;
 	
 	public:
-		void SetImplementation(gcroot<CManagedMainMenuCommands ^> impl);
+		void SetImplementation(gcroot<CMainMenuCommandsImpl ^> impl);
 
 		//! Retrieves number of implemented commands. Index parameter of other methods must be in 0....command_count-1 range.
 		virtual t_uint32 get_command_count();
@@ -95,4 +107,38 @@ namespace fooManagedWrapper {
 		mainmenu_commands_factory_t< CCustomMainMenuCommands > mainMenuCommands;
 	};
 
+	/*
+	<summary>
+		This is a wrapper for mainmenu_commands, provides access to existing commands
+		from C#.
+	</summary>
+	*/
+	public ref class CMainMenuCommands {
+	private:
+		service_ptr_t<mainmenu_commands> *ptr;
+	public:
+		CMainMenuCommands(const service_ptr_t<mainmenu_commands> &_ptr);
+		virtual ~CMainMenuCommands();
+		!CMainMenuCommands() {
+			this->~CMainMenuCommands();
+		}
+
+		property Guid ^Parent {
+			Guid ^get();
+		}
+
+		property unsigned int CommandCount {
+			unsigned int get() {
+				return (*ptr)->get_command_count();
+			}
+		}
+
+		Guid ^GetCommand(unsigned int index);
+		String ^GetName(unsigned int index);
+		void Execute(unsigned int index);
+	};
+
+	public ref class CMainMenuCommandsEnumerator :
+		public CEnumeratorAdapter<mainmenu_commands, CMainMenuCommands, CMainMenuCommands^> {
+	};
 };

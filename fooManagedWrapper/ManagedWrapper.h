@@ -42,7 +42,7 @@ namespace fooManagedWrapper {
 		TComponentClients ^componentClients;
 
 		// list of created services
-		// it's used to prevent the services to be destroyed by the GC before the component quits
+		// it's used to prevent the services from being destroyed by the GC before the component quits
 		// because foobar2000 wouldn't like that
 		List<IFoobarService^> ^services;
 

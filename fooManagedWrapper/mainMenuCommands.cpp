@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "mainMenuCommands.h"
 #include "ManagedWrapper.h"
+#include "utils.h"
 
 
 using namespace fooManagedWrapper;
@@ -30,16 +31,16 @@ using namespace System::Text;
 
 namespace fooManagedWrapper {
 
-	CManagedMainMenuCommands::CManagedMainMenuCommands(List<CCommand ^> ^_cmds) {
+	CMainMenuCommandsImpl::CMainMenuCommandsImpl(List<CCommand ^> ^_cmds) {
 		commonInit();
 		cmds = _cmds;
 	};
 
-	CManagedMainMenuCommands::CManagedMainMenuCommands() {
+	CMainMenuCommandsImpl::CMainMenuCommandsImpl() {
 		commonInit();
 	}
 
-	void CManagedMainMenuCommands::commonInit() {
+	void CMainMenuCommandsImpl::commonInit() {
 		cmds = gcnew List<CCommand ^>();
 		CManagedWrapper::getInstance()->AddService(this);
 
@@ -47,44 +48,44 @@ namespace fooManagedWrapper {
 		wrapper->mainMenuCommands.get_static_instance().SetImplementation(this);
 	}
 
-	CManagedMainMenuCommands::!CManagedMainMenuCommands() {
-		this->~CManagedMainMenuCommands();
+	CMainMenuCommandsImpl::!CMainMenuCommandsImpl() {
+		this->~CMainMenuCommandsImpl();
 	}
 
-	CManagedMainMenuCommands::~CManagedMainMenuCommands() {
+	CMainMenuCommandsImpl::~CMainMenuCommandsImpl() {
 		delete wrapper;
 	}
 
-	unsigned int CManagedMainMenuCommands::GetCommandsCount() {
+	unsigned int CMainMenuCommandsImpl::CommandsCount::get() {
 		return cmds->Count;
 	}
 
-	Guid CManagedMainMenuCommands::GetGuid(unsigned int index) {
+	Guid CMainMenuCommandsImpl::GetGuid(unsigned int index) {
 		return cmds[index]->GetGuid();
 	}
 
-	String ^CManagedMainMenuCommands::GetName(unsigned int index) {
+	String ^CMainMenuCommandsImpl::GetName(unsigned int index) {
 		return cmds[index]->GetName();
 	}
 
-	bool CManagedMainMenuCommands::GetDescription(unsigned int index, String ^ %desc) {
+	bool CMainMenuCommandsImpl::GetDescription(unsigned int index, String ^ %desc) {
 		return cmds[index]->GetDescription(desc);
 	}
 
-	void CManagedMainMenuCommands::Execute(unsigned int index) {
+	void CMainMenuCommandsImpl::Execute(unsigned int index) {
 		return cmds[index]->Execute();
 	}
 
-	bool CManagedMainMenuCommands::GetDisplay(unsigned int index, String ^ %text, unsigned int %flags) {
+	bool CMainMenuCommandsImpl::GetDisplay(unsigned int index, String ^ %text, unsigned int %flags) {
 		return cmds[index]->GetDisplay(text, flags);
 	}
 
-	void CCustomMainMenuCommands::SetImplementation(gcroot<CManagedMainMenuCommands ^> impl) {
+	void CCustomMainMenuCommands::SetImplementation(gcroot<CMainMenuCommandsImpl ^> impl) {
 		managedMainMenuCommands = impl;
 	}
 
 	t_uint32 CCustomMainMenuCommands::get_command_count() {
-		return managedMainMenuCommands->GetCommandsCount();
+		return managedMainMenuCommands->CommandsCount;
 	}
 
 	GUID CCustomMainMenuCommands::get_command(t_uint32 p_index) {
@@ -103,7 +104,7 @@ namespace fooManagedWrapper {
 	}
 
 	GUID CCustomMainMenuCommands::get_parent() {
-		return CManagedWrapper::ToGUID(managedMainMenuCommands->GetCommandsParent());
+		return CManagedWrapper::ToGUID(managedMainMenuCommands->Parent);
 	}
 
 	void CCustomMainMenuCommands::execute(t_uint32 p_index, service_ptr_t<service_base> p_callback) {
@@ -111,7 +112,7 @@ namespace fooManagedWrapper {
 	}
 
 	unsigned int CCustomMainMenuCommands::get_sort_priority() {
-		return managedMainMenuCommands->GetCommandsSortPriority();
+		return managedMainMenuCommands->SortPriority;
 	}
 	
 	bool CCustomMainMenuCommands::get_display(t_uint32 p_index,pfc::string_base & p_text,t_uint32 & p_flags) {
@@ -119,6 +120,34 @@ namespace fooManagedWrapper {
 		bool res = managedMainMenuCommands->GetDisplay(p_index, str, p_flags);
 		p_text = CManagedWrapper::StringToPfcString(str);
 		return res;
+	}
+
+
+
+	CMainMenuCommands::CMainMenuCommands(const service_ptr_t<mainmenu_commands> &_ptr) {
+		this->ptr = new service_ptr_t<mainmenu_commands>(_ptr);
+	}
+
+	CMainMenuCommands::~CMainMenuCommands() {
+		SAFE_DELETE(ptr);
+	}
+
+	String ^CMainMenuCommands::GetName(unsigned int index) {
+		pfc::string8 pfcName;
+		(*ptr)->get_name(index, pfcName);
+		return CManagedWrapper::PfcStringToString(pfcName);
+	}
+
+	Guid ^CMainMenuCommands::Parent::get() {
+		return CManagedWrapper::FromGUID((*ptr)->get_parent());
+	}
+
+	Guid ^CMainMenuCommands::GetCommand(unsigned int index) {
+		return CManagedWrapper::FromGUID((*ptr)->get_command(index));
+	}
+
+	void CMainMenuCommands::Execute(unsigned int index) {
+		(*ptr)->execute(index, NULL);
 	}
 
 };

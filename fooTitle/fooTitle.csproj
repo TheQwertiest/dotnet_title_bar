@@ -194,6 +194,10 @@
       <Project>{58632F25-43CD-4C57-8FD4-CD85BBC9BEF6}</Project>
       <Name>fooManagedWrapper</Name>
     </ProjectReference>
+    <ProjectReference Include="..\naid\naid.csproj">
+      <Project>{3D5EF8EC-20FC-4D9E-8D84-4726ACD45F93}</Project>
+      <Name>naid</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="TODO.txt" />

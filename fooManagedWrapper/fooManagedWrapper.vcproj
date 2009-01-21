@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="fooManagedWrapper"
 	ProjectGUID="{58632F25-43CD-4C57-8FD4-CD85BBC9BEF6}"
 	RootNamespace="fooManagedWrapper"

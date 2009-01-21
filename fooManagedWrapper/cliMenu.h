@@ -31,22 +31,22 @@ using namespace System::Collections::Generic;
 
 namespace fooManagedWrapper {
 
-	public ref class CManagedMainMenuGroupPopup : public IFoobarService {
+	public ref class CMainMenuGroupPopup : public IFoobarService {
 	private:
 		mainmenu_group_popup_factory *wrapper;
 		service_ptr_t<mainmenu_group_popup> *ptr;
 	public:
 		// this creates and registers a new menu group popup
-		CManagedMainMenuGroupPopup(Guid ^guid, Guid ^parent, int priority, String ^ name);
+		CMainMenuGroupPopup(Guid ^guid, Guid ^parent, int priority, String ^ name);
 
 		// this constructor wraps an existing menu group popup
-		CManagedMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popup> &existingPtr);
+		CMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popup> &existingPtr);
 
-		!CManagedMainMenuGroupPopup() {
-			this->~CManagedMainMenuGroupPopup();
+		!CMainMenuGroupPopup() {
+			this->~CMainMenuGroupPopup();
 		}
 
-		~CManagedMainMenuGroupPopup() {
+		~CMainMenuGroupPopup() {
 			SAFE_DELETE(ptr);
 			SAFE_DELETE(wrapper);
 		}
@@ -73,9 +73,10 @@ namespace fooManagedWrapper {
 
 	};
 
+
 	public ref class CMainMenuGroupPopupEnumerator :
-		public System::Collections::Generic::IEnumerator<CManagedMainMenuGroupPopup^>,
-		public Generic::IEnumerable<CManagedMainMenuGroupPopup^> {
+		public System::Collections::Generic::IEnumerator<CMainMenuGroupPopup^>,
+		public Generic::IEnumerable<CMainMenuGroupPopup^> {
 	private:
 		service_enum_t<mainmenu_group> *enumerator;
 		service_ptr_t<mainmenu_group_popup> *current;
@@ -100,12 +101,12 @@ namespace fooManagedWrapper {
 			throw gcnew NotImplementedException();
 		}
 
-		virtual property CManagedMainMenuGroupPopup ^Current {
-			virtual CManagedMainMenuGroupPopup ^get() = System::Collections::Generic::IEnumerator<CManagedMainMenuGroupPopup^>::Current::get {
+		virtual property CMainMenuGroupPopup ^Current {
+			virtual CMainMenuGroupPopup ^get() = System::Collections::Generic::IEnumerator<CMainMenuGroupPopup^>::Current::get {
 				if (current == NULL)
 					throw gcnew InvalidOperationException("First call MoveNext before accessing the current element.");
 
-				return gcnew CManagedMainMenuGroupPopup(*current);
+				return gcnew CMainMenuGroupPopup(*current);
 			}
 		}
 
@@ -116,8 +117,8 @@ namespace fooManagedWrapper {
 		}
 
 
-		virtual Generic::IEnumerator<CManagedMainMenuGroupPopup^> ^GetEnumerator() = 
-			Collections::Generic::IEnumerable<CManagedMainMenuGroupPopup^>::GetEnumerator {
+		virtual Generic::IEnumerator<CMainMenuGroupPopup^> ^GetEnumerator() = 
+			Collections::Generic::IEnumerable<CMainMenuGroupPopup^>::GetEnumerator {
 				return this;
 		}
 

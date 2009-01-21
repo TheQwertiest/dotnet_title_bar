@@ -65,12 +65,12 @@ namespace fooManagedWrapper {
 		CManagedPrefPage::guid_media_library= FromGUID(preferences_page::guid_media_library);
 
 		// and the guids for mainmenu groups 
-		CManagedMainMenuCommands::file = FromGUID(mainmenu_groups::file);
-		CManagedMainMenuCommands::view = FromGUID(mainmenu_groups::view);
-		CManagedMainMenuCommands::edit = FromGUID(mainmenu_groups::edit);
-		CManagedMainMenuCommands::playback = FromGUID(mainmenu_groups::playback);
-		CManagedMainMenuCommands::library = FromGUID(mainmenu_groups::library);
-		CManagedMainMenuCommands::help = FromGUID(mainmenu_groups::help);
+		CMainMenuCommandsImpl::file = FromGUID(mainmenu_groups::file);
+		CMainMenuCommandsImpl::view = FromGUID(mainmenu_groups::view);
+		CMainMenuCommandsImpl::edit = FromGUID(mainmenu_groups::edit);
+		CMainMenuCommandsImpl::playback = FromGUID(mainmenu_groups::playback);
+		CMainMenuCommandsImpl::library = FromGUID(mainmenu_groups::library);
+		CMainMenuCommandsImpl::help = FromGUID(mainmenu_groups::help);
 
 		// find and create components
 		try {
