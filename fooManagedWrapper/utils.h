@@ -101,44 +101,30 @@ namespace fooManagedWrapper
 		void OnPlaybackDynamicInfoTrack(FileInfo ^fileInfo);
 	};
 
-
-	template<typename FoobarType, typename ManagedType, typename RefManagedType>
-	public ref class CEnumeratorAdapter : 
+	template<typename FoobarType, typename RefManagedType>
+	public ref class CEnumeratorAdapterBase abstract:
 		public Generic::IEnumerator<RefManagedType>,
 		public Generic::IEnumerable<RefManagedType> {
-	private:
+	protected:
 		service_enum_t<FoobarType> *enumerator;
-		service_ptr_t<FoobarType> *current;
-	
-	public:
 
-		CEnumeratorAdapter() {
+	public:
+		CEnumeratorAdapterBase() {
 			enumerator = new service_enum_t<FoobarType>();
-			current = NULL;
 		}
 
-		~CEnumeratorAdapter() {
-			SAFE_DELETE(current);
+		~CEnumeratorAdapterBase() {
 			SAFE_DELETE(enumerator);
 		}
-
-		!CEnumeratorAdapter() {
-			this->~CEnumeratorAdapter();
-		}
-
-		virtual bool MoveNext() { return true;};
 
 		virtual void Reset() {
 			throw gcnew NotImplementedException();
 		}
 
-		virtual property ManagedType ^Current {
-			virtual ManagedType ^get() = System::Collections::Generic::IEnumerator<ManagedType^>::Current::get {
-				if (current == NULL)
-					throw gcnew InvalidOperationException("First call MoveNext before accessing the current element.");
+		virtual bool MoveNext() = 0;
 
-				return gcnew ManagedType(*current);
-			}
+		virtual property RefManagedType Current {
+			virtual RefManagedType get() = 0;
 		}
 
 		virtual property Object ^Current2 {
@@ -157,6 +143,49 @@ namespace fooManagedWrapper
 			Collections::IEnumerable::GetEnumerator {
 				return this;
 		}
+
+	};
+
+	template<typename FoobarType, typename ManagedType, typename RefManagedType>
+	public ref class CEnumeratorAdapter :
+		public CEnumeratorAdapterBase<FoobarType, RefManagedType> {
+	private:
+		service_ptr_t<FoobarType> *current;
+	
+	public:
+
+		CEnumeratorAdapter() {
+			current = NULL;
+		}
+
+		virtual ~CEnumeratorAdapter() {
+			SAFE_DELETE(current);
+		}
+
+		!CEnumeratorAdapter() {
+			this->~CEnumeratorAdapter();
+		}
+
+		const service_ptr_t<FoobarType> &GetCurrent() {
+			return *current;
+		}
+
+		virtual bool MoveNext() override {
+			if (current == NULL)
+				current = new service_ptr_t<FoobarType>();
+
+			return enumerator->next(*current);
+		};
+
+		virtual property ManagedType ^Current {
+			virtual ManagedType ^get() override = System::Collections::Generic::IEnumerator<ManagedType^>::Current::get {
+				if (current == NULL)
+					throw gcnew InvalidOperationException("First call MoveNext before accessing the current element.");
+
+				return gcnew ManagedType(*current);
+			}
+		}
+		
 	};
 
 }

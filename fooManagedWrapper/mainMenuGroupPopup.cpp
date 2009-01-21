@@ -47,14 +47,14 @@ CMainMenuGroupPopup::CMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popu
 
 
 bool CMainMenuGroupPopupEnumerator::MoveNext() {
-	service_ptr_t<mainmenu_group> i;
+	if (castCurrent == NULL)
+		castCurrent = new service_ptr_t<mainmenu_group_popup>();
 
-	if (current == NULL)
-		current = new service_ptr_t<mainmenu_group_popup>();
+	service_ptr_t<mainmenu_group> i;
 
 	do {
 		if (!enumerator->next(i)) return false;
-	} while (!i->service_query_t<mainmenu_group_popup>(*current));
+	} while (!i->service_query_t<mainmenu_group_popup>(*castCurrent));
 
 	return true;
 

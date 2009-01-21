@@ -200,6 +200,13 @@ namespace fooManagedWrapper {
 						pfc::string8 pfcName;
 						ppp->get_display_string(pfcName);
 						res += PfcStringToString(pfcName);
+						res += ":";
+
+						res += FromGUID(ppp->get_guid())->ToString();
+						res += " <<< ";
+						res += FromGUID(ppp->get_parent())->ToString();
+
+						res += "\n";
 					}
 				}
 
@@ -210,7 +217,7 @@ namespace fooManagedWrapper {
 		return (*UIControlInstance).get_ptr()->is_visible();
 	}
 
-
+/*
 	union CharToBytes {
 		unsigned int netChar;
 		struct {
@@ -218,7 +225,7 @@ namespace fooManagedWrapper {
 			unsigned char second;
 		} bytes;
 	};
-
+*/
 	pfc::string8 CManagedWrapper::StringToPfcString(String ^a) {
 		Encoder ^enc = Encoding::UTF8->GetEncoder();
 		int charsUsed, bytesUsed;

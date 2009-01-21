@@ -61,5 +61,18 @@ namespace fooTitle.Tests {
 
             AssertEquals(view && file && help && library && edit && playback, true);
         }
+
+        [TestMethod]
+        public void testMainMenuCommandsIterator() {
+            bool found = true;
+            foreach (fooManagedWrapper.CMainMenuCommands cmds in new fooManagedWrapper.CMainMenuCommandsEnumerator()) {
+                for (uint i = 0; i < cmds.CommandCount; i++) {
+                    if (cmds.GetName(i) == "Preferences")
+                        found = true;
+                }
+            }
+
+            AssertEquals(found, true);
+        }
     }
 }

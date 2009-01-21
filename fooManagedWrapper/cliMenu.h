@@ -75,56 +75,29 @@ namespace fooManagedWrapper {
 
 
 	public ref class CMainMenuGroupPopupEnumerator :
-		public System::Collections::Generic::IEnumerator<CMainMenuGroupPopup^>,
-		public Generic::IEnumerable<CMainMenuGroupPopup^> {
+		public CEnumeratorAdapterBase<mainmenu_group, CMainMenuGroupPopup^> {
 	private:
-		service_enum_t<mainmenu_group> *enumerator;
-		service_ptr_t<mainmenu_group_popup> *current;
+		typedef CEnumeratorAdapterBase<mainmenu_group, CMainMenuGroupPopup^> BaseType;
+		service_ptr_t<mainmenu_group_popup> *castCurrent;
 	public:
 		CMainMenuGroupPopupEnumerator() {
-			enumerator = new service_enum_t<mainmenu_group>();
-			current = NULL;
+			castCurrent = NULL;
 		}
 
 		~CMainMenuGroupPopupEnumerator() {
-			SAFE_DELETE(current);
-			SAFE_DELETE(enumerator);
+			SAFE_DELETE(castCurrent);
 		}
 
-		!CMainMenuGroupPopupEnumerator() {
-			this->~CMainMenuGroupPopupEnumerator();
-		}
+		virtual bool MoveNext() override;
 
-		virtual bool MoveNext();
-
-		virtual void Reset() {
-			throw gcnew NotImplementedException();
-		}
 
 		virtual property CMainMenuGroupPopup ^Current {
-			virtual CMainMenuGroupPopup ^get() = System::Collections::Generic::IEnumerator<CMainMenuGroupPopup^>::Current::get {
-				if (current == NULL)
+			virtual CMainMenuGroupPopup ^get() override = System::Collections::Generic::IEnumerator<CMainMenuGroupPopup^>::Current::get {
+				if (castCurrent == NULL)
 					throw gcnew InvalidOperationException("First call MoveNext before accessing the current element.");
 
-				return gcnew CMainMenuGroupPopup(*current);
+				return gcnew CMainMenuGroupPopup(*castCurrent);
 			}
-		}
-
-		virtual property Object ^Current2 {
-			virtual Object ^get() = System::Collections::IEnumerator::Current::get {
-				return this->Current::get();
-			}
-		}
-
-
-		virtual Generic::IEnumerator<CMainMenuGroupPopup^> ^GetEnumerator() = 
-			Collections::Generic::IEnumerable<CMainMenuGroupPopup^>::GetEnumerator {
-				return this;
-		}
-
-		virtual Collections::IEnumerator ^GetEnumerator2() =
-			Collections::IEnumerable::GetEnumerator {
-				return this;
 		}
 		
 	};

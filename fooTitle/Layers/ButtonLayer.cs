@@ -41,34 +41,61 @@ namespace fooTitle.Layers {
     class MainMenuAction : IButtonAction {
         private string commandName;
         private List<String> path;
+        private string originalCmd;
 
-        public void Init(XmlNode node) {
-            string cmd = Element.GetNodeValue(node);
+        public MainMenuAction(string cmd) {
+            readCommand(cmd);
+        }
 
-            // parse the command
+        private void readCommand(string cmd) {
+            originalCmd = cmd;
             path = new List<String>(cmd.Split('/'));
             commandName = path[path.Count - 1];
             path.RemoveAt(path.Count - 1);
         }
 
+        public void Init(XmlNode node) {
+            string cmd = Element.GetNodeValue(node);
+
+            readCommand(cmd);
+        }
+
         public void Run() {
             CMainMenuGroupPopup currentMenu = null;
+
             foreach (string pathPart in path) {
                 bool found = false;
 
                 foreach (CMainMenuGroupPopup menu in new CMainMenuGroupPopupEnumerator()) {
+                    CConsole.Write(String.Format("{0}: {1} <- {2}", menu.Name, menu.MyGuid, menu.Parent));
+
                     bool parentMatch = (currentMenu == null) || (menu.Parent == currentMenu.MyGuid);
-                    if ((menu.Name.ToLowerInvariant() == pathPart) && parentMatch) {
+                    if ((menu.Name.ToLowerInvariant() == pathPart.ToLowerInvariant()) && parentMatch) {
                         currentMenu = menu;
                         found = true;
                     }
                 }
 
                 if (!found)
-                    throw new ArgumentException(String.Format("Path to command \"{0}\" is invalid.", StringUtils.Join("/", path) + commandName));
-
-
+                    throw new ArgumentException(String.Format("Path to command \"{0}\" is invalid.", originalCmd));
             }
+
+            // now find the command
+            foreach (CMainMenuCommands cmds in new CMainMenuCommandsEnumerator()) {
+                if (cmds.Parent == currentMenu.MyGuid) {
+                    for (uint i = 0; i < cmds.CommandCount; i++) {
+                        if (cmds.GetName(i) == commandName) {
+                            cmds.Execute(i);
+                            return;
+
+                        }
+                    }
+
+                }
+            }
+
+            throw new ArgumentException(String.Format("Path to command \"{0}\" is invalid.", originalCmd));
+            
             
             
         }
@@ -125,8 +152,12 @@ namespace fooTitle.Layers {
         void OnMouseUp(object sender, MouseEventArgs e) {
             mouseDown = false;
 
-            if (mouseOn)
+            if (mouseOn) {
                 CManagedWrapper.DoMainMenuCommand(myAction);
+                MainMenuAction x = new MainMenuAction("Playback/Order/Random");
+                x.Run();
+                
+            }
         }
 
         void OnMouseDown(object sender, MouseEventArgs e) {
