@@ -39,19 +39,15 @@ namespace fooTitle.Layers {
     };
 
     class MainMenuAction : IButtonAction {
-        private string commandName;
-        private List<String> path;
         private string originalCmd;
-
-        public MainMenuAction(string cmd) {
-            readCommand(cmd);
-        }
+        private CMainMenuCommands cmds;
+        private uint commandIndex;
 
         private void readCommand(string cmd) {
             originalCmd = cmd;
-            path = new List<String>(cmd.Split('/'));
-            commandName = path[path.Count - 1];
-            path.RemoveAt(path.Count - 1);
+
+            if (!MainMenuUtils.FindCommandByPath(cmd, out cmds, out commandIndex))
+                throw new ArgumentException(String.Format("Command {0} not found.", cmd));
         }
 
         public void Init(XmlNode node) {
@@ -61,45 +57,20 @@ namespace fooTitle.Layers {
         }
 
         public void Run() {
-            CMainMenuGroupPopup currentMenu = null;
-/*
-            foreach (string pathPart in path) {
-                bool found = false;
+            cmds.Execute(commandIndex);
+        }
+    };
 
-                foreach (CMainMenuGroupPopup menu in new CMainMenuGroupPopupEnumerator()) {
-                    CConsole.Write(String.Format("{0}: {1} <- {2}", menu.Name, menu.MyGuid, menu.Parent));
+    class LegacyMainMenuCommand : IButtonAction {
+        private string commandName;
 
-                    bool parentMatch = (currentMenu == null) || (menu.Parent == currentMenu.MyGuid);
-                    if ((menu.Name.ToLowerInvariant() == pathPart.ToLowerInvariant()) && parentMatch) {
-                        currentMenu = menu;
-                        found = true;
-                    }
-                }
-
-                if (!found)
-                    throw new ArgumentException(String.Format("Path to command \"{0}\" is invalid.", originalCmd));
-            }
-
-            // now find the command
-            foreach (CMainMenuCommands cmds in new CMainMenuCommandsEnumerator()) {
-                if (cmds.Parent == currentMenu.MyGuid) {
-                    for (uint i = 0; i < cmds.CommandCount; i++) {
-                        if (cmds.GetName(i) == commandName) {
-                            cmds.Execute(i);
-                            return;
-
-                        }
-                    }
-
-                }
-            }
-
-            throw new ArgumentException(String.Format("Path to command \"{0}\" is invalid.", originalCmd));
-            
-            */
-            
+        public void Init(XmlNode node) {
+            commandName = Element.GetNodeValue(node);
         }
 
+        public void Run() {
+            CManagedWrapper.DoMainMenuCommand(commandName);
+        }
     };
 
 
@@ -114,7 +85,6 @@ namespace fooTitle.Layers {
 
         
 
-        protected string myAction;
         protected Bitmap myNormalImage;
         protected Bitmap myOverImage;
         protected Bitmap myDownImage;
@@ -122,10 +92,11 @@ namespace fooTitle.Layers {
         protected bool mouseOn;
         protected bool mouseDown;
 
+        private ICollection<IButtonAction> actions;
+
         public ButtonLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
             XmlNode contents = GetFirstChildByName(node, "contents");
-            XmlNode action = GetFirstChildByName(contents, "action");
-            myAction = GetNodeValue(action);
+            readActions(contents);
             
             XmlNode img;
             img = GetFirstChildByName(contents, "normalImg");
@@ -153,10 +124,10 @@ namespace fooTitle.Layers {
             mouseDown = false;
 
             if (mouseOn) {
-                CManagedWrapper.DoMainMenuCommand(myAction);
-                MainMenuAction x = new MainMenuAction("Playback/Order/Random");
-                x.Run();
-                
+                // run all actions
+                foreach (IButtonAction action in actions) {
+                    action.Run();
+                }
             }
         }
 
@@ -184,6 +155,38 @@ namespace fooTitle.Layers {
             
             Display.Canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
             base.Draw();
+        }
+
+        private void readActions(XmlNode node) {
+            actions = new List<IButtonAction>();
+
+            foreach (XmlNode child in node.ChildNodes) {
+                if (child.Name != "action")
+                    continue;
+
+                string type = GetAttributeValue(child, "type", null);
+                if (type == null) {
+                    
+                    IButtonAction newAction = new LegacyMainMenuCommand();
+                    newAction.Init(child);
+                    actions.Add(newAction);
+                } else {
+
+                    Type actionClass;
+                    if (!Actions.TryGetValue(type, out actionClass)) {
+                        throw new ArgumentException(String.Format("No button action type {0} is registered.", type));
+                    } else {
+                        IButtonAction newAction = naid.ReflectionUtils.ConstructParameterless<IButtonAction>(actionClass);
+                        newAction.Init(child);
+                        actions.Add(newAction);
+                    }
+
+                }
+                    
+
+
+
+            }
         }
 
 
