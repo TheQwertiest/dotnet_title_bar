@@ -50,6 +50,8 @@ using System.Runtime.CompilerServices;
 
 /* Changelog:
    0.7.2
+     - foo_managedWrapper supports creating mainmenu popups
+     - foo_managedWrapper supports enumerating mainmenu commands, mainmenu groups and popups
      - fixed a problem that foo_title would not show when it is set to only show when foobar is minimized
      - on song start showing now takes stream title change into account
      - metadb_handle handling is probably done better this time

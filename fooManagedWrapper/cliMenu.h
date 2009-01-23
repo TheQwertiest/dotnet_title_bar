@@ -31,10 +31,39 @@ using namespace System::Collections::Generic;
 
 namespace fooManagedWrapper {
 
-	public ref class CMainMenuGroupPopup : public IFoobarService {
+	// This does not yet support creating a group from the managed code.
+	// Only wrapping is supported.
+	public ref class CMainMenuGroup : public IFoobarService {
+	protected:
+		service_ptr_t<mainmenu_group> *ptr;
+
+		CMainMenuGroup() { ptr = NULL; };
+
+	public:
+		CMainMenuGroup(const service_ptr_t<mainmenu_group> &existingPtr);
+		virtual ~CMainMenuGroup();
+
+		!CMainMenuGroup() {
+			this->~CMainMenuGroup();
+		}
+
+		property Guid MyGuid {
+			Guid get() {
+				return safe_cast<Guid>(CManagedWrapper::FromGUID((*ptr)->get_guid()));
+			}
+		}
+
+		property Guid Parent {
+			Guid get() {
+				return safe_cast<Guid>(CManagedWrapper::FromGUID((*ptr)->get_parent()));
+			}
+		}
+	};
+
+	public ref class CMainMenuGroupPopup : public CMainMenuGroup {
 	private:
 		mainmenu_group_popup_factory *wrapper;
-		service_ptr_t<mainmenu_group_popup> *ptr;
+		service_ptr_t<mainmenu_group_popup> *castPtr;
 	public:
 		// this creates and registers a new menu group popup
 		CMainMenuGroupPopup(Guid ^guid, Guid ^parent, int priority, String ^ name);
@@ -42,61 +71,36 @@ namespace fooManagedWrapper {
 		// this constructor wraps an existing menu group popup
 		CMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popup> &existingPtr);
 
-		!CMainMenuGroupPopup() {
-			this->~CMainMenuGroupPopup();
-		}
-
-		~CMainMenuGroupPopup() {
-			SAFE_DELETE(ptr);
+		virtual ~CMainMenuGroupPopup() {
 			SAFE_DELETE(wrapper);
+			SAFE_DELETE(castPtr);
 		}
 
 		property String ^Name {
 			String ^get() {
 				pfc::string8 pfcName;
-				(*ptr)->get_display_string(pfcName);
+				(*castPtr)->get_display_string(pfcName);
 				return CManagedWrapper::PfcStringToString(pfcName);
 			};
 		}
-
-		property Guid ^MyGuid {
-			Guid ^get() {
-				return CManagedWrapper::FromGUID((*ptr)->get_guid());
-			}
-		}
-
-		property Guid ^Parent {
-			Guid ^get() {
-				return CManagedWrapper::FromGUID((*ptr)->get_parent());
-			}
-		}
-
 	};
 
 
-	public ref class CMainMenuGroupPopupEnumerator :
-		public CEnumeratorAdapterBase<mainmenu_group, CMainMenuGroupPopup^> {
-	private:
-		typedef CEnumeratorAdapterBase<mainmenu_group, CMainMenuGroupPopup^> BaseType;
-		service_ptr_t<mainmenu_group_popup> *castCurrent;
+	public ref class CMainMenuGroupEnumerator :
+		public CEnumeratorAdapter<mainmenu_group, CMainMenuGroup, CMainMenuGroup^> {
 	public:
-		CMainMenuGroupPopupEnumerator() {
-			castCurrent = NULL;
-		}
-
-		~CMainMenuGroupPopupEnumerator() {
-			SAFE_DELETE(castCurrent);
-		}
-
-		virtual bool MoveNext() override;
-
-
-		virtual property CMainMenuGroupPopup ^Current {
-			virtual CMainMenuGroupPopup ^get() override = System::Collections::Generic::IEnumerator<CMainMenuGroupPopup^>::Current::get {
-				if (castCurrent == NULL)
+		virtual property CMainMenuGroup ^Current {
+			virtual CMainMenuGroup ^get() override = System::Collections::Generic::IEnumerator<CMainMenuGroup^>::Current::get {
+				if (GetCurrent() == NULL)
 					throw gcnew InvalidOperationException("First call MoveNext before accessing the current element.");
 
-				return gcnew CMainMenuGroupPopup(*castCurrent);
+				// try to cast
+				service_ptr_t<mainmenu_group_popup> castCurrent;
+				if (GetCurrent()->service_query_t<mainmenu_group_popup>(castCurrent)) {
+					return gcnew CMainMenuGroupPopup(castCurrent);
+				} else {
+					return gcnew CMainMenuGroup(GetCurrent());
+				}
 			}
 		}
 		

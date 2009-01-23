@@ -143,6 +143,7 @@
     <Compile Include="Main.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MainMenuUtils.cs" />
     <Compile Include="PerPixelAlphaForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -170,6 +171,7 @@
     <Compile Include="Tests\test_ConfigGUI.Designer.cs">
       <DependentUpon>test_ConfigGUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tests\test_MainMenuUtils.cs" />
     <Compile Include="Tests\test_ManagedWrapper.cs" />
     <Compile Include="ViewMenuCommands.cs" />
     <EmbeddedResource Include="Display.resx">

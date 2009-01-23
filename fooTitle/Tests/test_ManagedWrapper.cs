@@ -44,7 +44,11 @@ namespace fooTitle.Tests {
         [TestMethod]
         public void testMainMenuPopupIterator() {
             bool view = false, file = false, edit = false, playback = false, library=false, help=false;
-            foreach (fooManagedWrapper.CMainMenuGroupPopup i in new fooManagedWrapper.CMainMenuGroupPopupEnumerator()) {
+            foreach (fooManagedWrapper.CMainMenuGroup group in new fooManagedWrapper.CMainMenuGroupEnumerator()) {
+                fooManagedWrapper.CMainMenuGroupPopup i = group as fooManagedWrapper.CMainMenuGroupPopup;
+                if (i == null)
+                    continue;
+
                 if (i.Name == "File")
                     file = true;
                 if (i.Name == "Edit")

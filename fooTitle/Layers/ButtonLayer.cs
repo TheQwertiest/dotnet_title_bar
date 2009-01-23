@@ -62,7 +62,7 @@ namespace fooTitle.Layers {
 
         public void Run() {
             CMainMenuGroupPopup currentMenu = null;
-
+/*
             foreach (string pathPart in path) {
                 bool found = false;
 
@@ -96,7 +96,7 @@ namespace fooTitle.Layers {
 
             throw new ArgumentException(String.Format("Path to command \"{0}\" is invalid.", originalCmd));
             
-            
+            */
             
         }
 

@@ -138,8 +138,8 @@ namespace fooManagedWrapper {
 		return CManagedWrapper::PfcStringToString(pfcName);
 	}
 
-	Guid ^CMainMenuCommands::Parent::get() {
-		return CManagedWrapper::FromGUID((*ptr)->get_parent());
+	Guid CMainMenuCommands::Parent::get() {
+		return safe_cast<Guid>(CManagedWrapper::FromGUID((*ptr)->get_parent()));
 	}
 
 	Guid ^CMainMenuCommands::GetCommand(unsigned int index) {

@@ -23,6 +23,15 @@
 
 namespace fooManagedWrapper {
 
+CMainMenuGroup::CMainMenuGroup(const service_ptr_t<mainmenu_group> &existingPtr) {
+	ptr = new service_ptr_t<mainmenu_group>(existingPtr);
+}
+
+CMainMenuGroup::~CMainMenuGroup() {
+	SAFE_DELETE(ptr);
+}
+
+
 // this creates and registers a new menu group popup
 CMainMenuGroupPopup::CMainMenuGroupPopup(Guid ^guid, Guid ^parent, int priority, String ^ name) {
 	CManagedWrapper::getInstance()->AddService(this);
@@ -34,30 +43,16 @@ CMainMenuGroupPopup::CMainMenuGroupPopup(Guid ^guid, Guid ^parent, int priority,
 		c_name);
 	CManagedWrapper::FreeCString(c_name);
 
-	ptr = new service_ptr_t<mainmenu_group_popup>(&wrapper->get_static_instance());
+	ptr = new service_ptr_t<mainmenu_group>(&wrapper->get_static_instance());
+	castPtr = new service_ptr_t<mainmenu_group_popup>(&wrapper->get_static_instance());
 }
 
 // this constructor wraps an existing menu group popup
-CMainMenuGroupPopup::CMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popup> &existingPtr) {
+CMainMenuGroupPopup::CMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popup> &existingPtr) :
+	CMainMenuGroup(existingPtr) {
 	// not adding this service to the CManagedWrapper's list because we are not creating a new one
 	wrapper = NULL;
-	ptr = new service_ptr_t<mainmenu_group_popup>(existingPtr);
-}
-
-
-
-bool CMainMenuGroupPopupEnumerator::MoveNext() {
-	if (castCurrent == NULL)
-		castCurrent = new service_ptr_t<mainmenu_group_popup>();
-
-	service_ptr_t<mainmenu_group> i;
-
-	do {
-		if (!enumerator->next(i)) return false;
-	} while (!i->service_query_t<mainmenu_group_popup>(*castCurrent));
-
-	return true;
-
+	castPtr = new service_ptr_t<mainmenu_group_popup>(existingPtr);
 }
 
 };

@@ -28,6 +28,7 @@ namespace fooTitle.Tests {
             // create the test list
             this.AddTest(new test_Config());
             this.AddTest(new test_ManagedWrapper());
+            this.AddTest(new test_MainMenuUtils());
         }
 
     }

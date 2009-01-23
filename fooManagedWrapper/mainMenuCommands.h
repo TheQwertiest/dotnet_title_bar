@@ -123,8 +123,8 @@ namespace fooManagedWrapper {
 			this->~CMainMenuCommands();
 		}
 
-		property Guid ^Parent {
-			Guid ^get();
+		property Guid Parent {
+			Guid get();
 		}
 
 		property unsigned int CommandCount {
