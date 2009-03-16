@@ -106,4 +106,33 @@ namespace fooManagedWrapper {
 		
 	};
 
+
+	// ------------------------------------------------------------------------------
+	public ref class CContextMenuItem : public IFoobarService {
+	private:
+		service_ptr_t<contextmenu_item> *ptr;
+
+	public:
+		CContextMenuItem(const service_ptr_t<contextmenu_item> &existingPtr);
+
+		virtual ~CContextMenuItem() {
+			SAFE_DELETE(ptr);
+		}
+
+		String ^GetName(unsigned int index);
+		String ^GetDefaultPath(unsigned int index);
+
+		property unsigned int Count {
+			unsigned int get() {
+				return (*ptr)->get_num_items();
+			}
+		}
+
+	};
+
+	public ref class CContextMenuItemEnumerator:
+		public CEnumeratorAdapter<contextmenu_item, CContextMenuItem, CContextMenuItem^> {
+	};
+
+
 };

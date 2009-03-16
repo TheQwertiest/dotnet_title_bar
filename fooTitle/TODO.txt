@@ -14,6 +14,8 @@
 + read skins from user profile directory too
 
 - add support for more actions for buttons, such as commands from the context menu, also the ability to specify which menu the command is in
+	- context menu items
+	- dynamic context menu items
 - take album art from foobar if possible
 - show on stop/pause
 - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
@@ -35,7 +37,7 @@ cool features:
       a layer which could in turn be used to create extendable panels
 
 optimizations:
-    - cache a smaller version of album art - resizing every frame a large album art is a huge CPU eater
+    + cache a smaller version of album art - resizing every frame a large album art is a huge CPU eater
 
 cleaning the code:
     - divide the Main class into several smaller classes for easier mantaince

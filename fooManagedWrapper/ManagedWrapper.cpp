@@ -158,57 +158,29 @@ namespace fooManagedWrapper {
 	String ^CManagedWrapper::GetAllCommands() {
 		String ^res = gcnew String(">");
 
-		service_enum_t<mainmenu_commands> e;
-		service_ptr_t<mainmenu_commands> ptr;
-		pfc::string8_fastalloc temp;
-		while(e.next(ptr)) {
-			const t_uint32 count = ptr->get_command_count();
-			for(t_uint32 n=0;n<count;n++) {
-				ptr->get_name(n,temp);
+		service_enum_t<contextmenu_item> ec;
 
-				String ^guid = FromGUID(ptr->get_command(n))->ToString();
-				res += guid + ": ";
-				res += gcnew String(temp.get_ptr());
-				res += " <- ";
+		service_ptr_t<contextmenu_item> ptr;
+		while (ec.next(ptr)) {
+			unsigned int count = ptr->get_num_items();
 
-				GUID parent = ptr->get_parent();
-				res += FromGUID(parent)->ToString();
+			for (unsigned int i = 0 ; i < count; i++) {
+				pfc::string8 str;
+				ptr->get_item_name(i, str);
 
-				
-				/*
-				pfc::string8 parentName;
-				t_uint32 index;
-				service_ptr_t<mainmenu_commands> parentPtr;
-				menu_item_resolver::g_resolve_main_command(parent, parentPtr, index);
-				
-				if (parentPtr.is_valid()) {
-					parentPtr->get_name(index, parentName);
-					res += gcnew String(parentName.get_ptr());
-				}
-*/
+				res += PfcStringToString(str);
+				res += " ";
+
+				ptr->get_item_default_path(i, str);
+
+				res += PfcStringToString(str);
 				res += "\n";
-
 			}
+
 		}
-				
-				service_enum_t<mainmenu_group> pe;
-				service_ptr_t<mainmenu_group> pp;
-				while (pe.next(pp)) {
-					service_ptr_t<mainmenu_group_popup> ppp;
-					if (pp->service_query_t<mainmenu_group_popup>(ppp)) {
-					
-						pfc::string8 pfcName;
-						ppp->get_display_string(pfcName);
-						res += PfcStringToString(pfcName);
-						res += ":";
 
-						res += FromGUID(ppp->get_guid())->ToString();
-						res += " <<< ";
-						res += FromGUID(ppp->get_parent())->ToString();
 
-						res += "\n";
-					}
-				}
+
 
 		return res;
 	}

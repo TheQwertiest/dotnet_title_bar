@@ -39,5 +39,18 @@ namespace fooTitle.Tests {
             AssertEquals(MainMenuUtils.FindCommandByPath("Playback/Order/Random/nocommand", out cmds, out index), false);
             AssertEquals(MainMenuUtils.FindCommandByPath("Playback/Order/nocommand", out cmds, out index), false);
         }
+
+        [TestMethod]
+        public void testContextMenuItemEnum() {
+            bool found = false;
+            foreach (CContextMenuItem item in new CContextMenuItemEnumerator()) {
+                for (uint i = 0; i < item.Count; i++) {
+                    if (item.GetName(i) == "Properties")
+                        found = true;
+                }
+            }
+
+            AssertEquals(true, found);
+        }
     }
 }
