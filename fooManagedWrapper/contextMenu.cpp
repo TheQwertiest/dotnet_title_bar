@@ -38,4 +38,17 @@ namespace fooManagedWrapper {
 		(*ptr)->get_item_default_path(index, str);
 		return CManagedWrapper::PfcStringToString(str);
 	}
+	
+	void CContextMenuItem::ExecuteOnPlaylist(unsigned int index) {
+		metadb_handle_list temp;
+		static_api_ptr_t<playlist_manager> api;
+		api->activeplaylist_get_selected_items(temp);
+		(*ptr)->item_execute_simple(index, pfc::guid_null, temp, contextmenu_item::caller_undefined);
+	}
+
+	void CContextMenuItem::ExecuteOnNowPlaying(unsigned int index) {
+		metadb_handle_ptr item;
+		if (!static_api_ptr_t<playback_control>()->get_now_playing(item)) return;//not playing
+		(*ptr)->item_execute_simple(index, pfc::guid_null, pfc::list_single_ref_t<metadb_handle_ptr>(item), contextmenu_item::caller_undefined);
+	}
 };

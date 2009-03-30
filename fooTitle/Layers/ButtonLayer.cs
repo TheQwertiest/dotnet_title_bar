@@ -61,6 +61,39 @@ namespace fooTitle.Layers {
         }
     };
 
+    class ContextMenuAction : IButtonAction {
+        enum Context {
+            Playlist,
+            NowPlaying
+        }
+        private Context context;
+        private CContextMenuItem cmds;
+        private uint commandIndex;
+
+        public void Init(XmlNode node) {
+            if (Element.GetAttributeValue(node, "context", "nowplaying").ToLowerInvariant() == "nowplaying") {
+                context = Context.NowPlaying;
+            } else {
+                context = Context.Playlist;
+            }
+
+            string path = Element.GetNodeValue(node);
+            if (!ContextMenuUtils.FindContextCommandByDefaultPath(path, out cmds, out commandIndex))
+                throw new ArgumentException(String.Format("Contextmenu command {0} not found.", path));
+        }
+
+        public void Run() {
+            if (cmds == null)
+                return;
+
+            if (context == Context.Playlist) {
+                cmds.ExecuteOnPlaylist(commandIndex);
+            } else if (context == Context.NowPlaying) {
+                cmds.ExecuteOnNowPlaying(commandIndex);
+            }
+        }
+    }
+    
     class LegacyMainMenuCommand : IButtonAction {
         private string commandName;
 
@@ -81,6 +114,7 @@ namespace fooTitle.Layers {
 
         static ButtonLayer() {
             Actions.Add("menu", typeof(MainMenuAction));
+            Actions.Add("contextmenu", typeof(ContextMenuAction));
         }
 
         

@@ -45,6 +45,11 @@ cleaning the code:
     - that creates services such as menu commands
     - other classes for ..
 
+popup:
+	- sometimes when foo_title shows on track title change, it shows the old name for a second
+	  (happened with streaming)
+	- a fade-in/fade-out would be nicer
+	- when mouse is on the window, it does not disappear
 
 bugs:
     - BUG: Under the default settings, foo_title doesn't show upon foobar2000 start. (sometimes)

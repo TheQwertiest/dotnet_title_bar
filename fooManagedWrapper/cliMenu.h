@@ -108,6 +108,8 @@ namespace fooManagedWrapper {
 
 
 	// ------------------------------------------------------------------------------
+	// Wrapper for context menu commands. Creating a new command is not yet supported.
+	// Dynamic submenus are not supported.
 	public ref class CContextMenuItem : public IFoobarService {
 	private:
 		service_ptr_t<contextmenu_item> *ptr;
@@ -121,6 +123,8 @@ namespace fooManagedWrapper {
 
 		String ^GetName(unsigned int index);
 		String ^GetDefaultPath(unsigned int index);
+		void ExecuteOnPlaylist(unsigned int index);
+		void ExecuteOnNowPlaying(unsigned int index);
 
 		property unsigned int Count {
 			unsigned int get() {

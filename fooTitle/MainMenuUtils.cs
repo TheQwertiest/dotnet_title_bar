@@ -84,7 +84,7 @@ namespace fooTitle {
         /// </summary>
         /// <param name="path">
         /// The menu popup names from the top level down to the command name, 
-        /// by slashes.separated. For example 'Playback/Order/Random'.
+        /// separated by slashes. For example 'Playback/Order/Random'.
         /// </param>
         /// <param name="commands">If found, returns the commands containing the command.</param>
         /// <param name="index">Index of found command in commands.</param>
