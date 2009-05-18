@@ -52,5 +52,17 @@ namespace fooTitle.Tests {
 
             AssertEquals(true, found);
         }
+
+        [TestMethod]
+        public void testFindContextMenu() {
+            CContextMenuItem cmds;
+            Guid guid;
+            AssertEquals(ContextMenuUtils.FindContextCommandByDefaultPath("Playback Statistics/Rating/1", out cmds, out guid), true);
+            AssertEquals(ContextMenuUtils.FindContextCommandByDefaultPath("Playback Statistics/Rating/2", out cmds, out guid), true);
+            AssertEquals(ContextMenuUtils.FindContextCommandByDefaultPath("Playback Statistics/Rating/5", out cmds, out guid), true);
+
+            AssertEquals(ContextMenuUtils.FindContextCommandByDefaultPath("Open Containing Folder", out cmds, out guid), true);
+            
+        }
     }
 }

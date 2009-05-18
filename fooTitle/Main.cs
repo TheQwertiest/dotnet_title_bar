@@ -392,11 +392,6 @@ namespace fooTitle {
 
             initDone = true;
 
-
-            // DEBUG
-            CConsole.Write(CManagedWrapper.getInstance().GetAllCommands());
-
-
         }
 
         public event OnQuitDelegate OnQuitEvent;

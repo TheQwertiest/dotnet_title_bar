@@ -44,6 +44,8 @@ cleaning the code:
     - one class that is the plugin itself - that receives events from foobar
     - that creates services such as menu commands
     - other classes for ..
+    - clean up code of fooManagedWrapper (pref pages, CManagedWrapper)
+		- and commenting to use doxygen probably
 
 popup:
 	- sometimes when foo_title shows on track title change, it shows the old name for a second

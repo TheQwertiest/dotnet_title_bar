@@ -152,22 +152,34 @@ namespace fooTitle.Config {
 
         public virtual int Value {
             set {
-                if (((value > max) && (val == max)) || ((value < min) && (val == min)) ||
-                (value == val))
-                    return; // nothing new
-
-                if (value > max)
-                    val = max;
-                else if (value < min)
-                    val = min;
-                else
-                    val = value;
-
-                fireOnChanged();
+                if (setValue(value))
+                    fireOnChanged();
             }
             get {
                 return val;
             }
+        }
+
+        /// <summary>
+        /// Sets the new value and returns true if update event should be raised.
+        /// </summary>
+        private bool setValue(int value) {
+            if (((value > max) && (val == max)) || ((value < min) && (val == min)) || (value == val))
+                return false; // nothing new
+
+            if (value > max)
+                val = max;
+            else if (value < min)
+                val = min;
+            else
+                val = value;
+
+            return true;
+        }
+
+        public void ForceUpdate(int newVal) {
+            setValue(newVal);
+            fireOnChanged();
         }
 
         /// <summary>
@@ -256,6 +268,11 @@ namespace fooTitle.Config {
                     fireOnChanged();
                 }
             }
+        }
+
+        public void ForceUpdate(string newVal) {
+            val = newVal;
+            fireOnChanged();
         }
 
         public override void SaveTo(IConfigStorage to) {

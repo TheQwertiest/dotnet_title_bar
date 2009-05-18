@@ -739,7 +739,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
         }
 
         private void applySkinBtn_Click(object sender, EventArgs e) {
-            main.SkinPath.Value = ((SkinListEntry)skinsList.SelectedItem).path;
+            main.SkinPath.ForceUpdate(((SkinListEntry)skinsList.SelectedItem).path);
         }
 
     }

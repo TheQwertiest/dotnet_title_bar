@@ -126,6 +126,10 @@ namespace fooManagedWrapper {
 		void ExecuteOnPlaylist(unsigned int index);
 		void ExecuteOnNowPlaying(unsigned int index);
 
+		Nullable<Guid> FindDynamicCommand(unsigned int itemToSearch, String ^path);
+		void ExecuteOnPlaylist(Guid ^cmd);
+		void ExecuteOnNowPlaying(Guid ^cmd);
+
 		property unsigned int Count {
 			unsigned int get() {
 				return (*ptr)->get_num_items();

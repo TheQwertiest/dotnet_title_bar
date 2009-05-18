@@ -68,7 +68,7 @@ namespace fooTitle.Layers {
         }
         private Context context;
         private CContextMenuItem cmds;
-        private uint commandIndex;
+        private Guid commandGuid;
 
         public void Init(XmlNode node) {
             if (Element.GetAttributeValue(node, "context", "nowplaying").ToLowerInvariant() == "nowplaying") {
@@ -78,7 +78,7 @@ namespace fooTitle.Layers {
             }
 
             string path = Element.GetNodeValue(node);
-            if (!ContextMenuUtils.FindContextCommandByDefaultPath(path, out cmds, out commandIndex))
+            if (!ContextMenuUtils.FindContextCommandByDefaultPath(path, out cmds, out commandGuid))
                 throw new ArgumentException(String.Format("Contextmenu command {0} not found.", path));
         }
 
@@ -87,9 +87,9 @@ namespace fooTitle.Layers {
                 return;
 
             if (context == Context.Playlist) {
-                cmds.ExecuteOnPlaylist(commandIndex);
+                cmds.ExecuteOnPlaylist(commandGuid);
             } else if (context == Context.NowPlaying) {
-                cmds.ExecuteOnNowPlaying(commandIndex);
+                cmds.ExecuteOnNowPlaying(commandGuid);
             }
         }
     }

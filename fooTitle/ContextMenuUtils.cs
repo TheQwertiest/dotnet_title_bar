@@ -29,9 +29,10 @@ namespace fooTitle {
         
         /// <summary>
         /// Tries to find a contextmenu command given by its default path. Use
-        /// forward slashes '/' to separate categories.
+        /// forward slashes '/' to separate categories. Supports also dynamically
+        /// generated menu items.
         /// </summary>
-        public static bool FindContextCommandByDefaultPath(string path, out CContextMenuItem commands, out uint index) {
+        public static bool FindContextCommandByDefaultPath(string path, out CContextMenuItem commands, out Guid id) {
             foreach (CContextMenuItem cmds in new CContextMenuItemEnumerator()) {
                 for (uint i = 0; i < cmds.Count; i++) {
                     
@@ -40,16 +41,26 @@ namespace fooTitle {
                         currentPath = cmds.GetDefaultPath(i) + '/' + currentPath;
                     }
 
-                    if (path.ToLowerInvariant() == currentPath.ToLowerInvariant()) {
-                        commands = cmds;
-                        index = i;
-                        return true;
+                    if (path.StartsWith(currentPath, StringComparison.OrdinalIgnoreCase)) {
+                        string rest;
+                        if (path.Length > currentPath.Length) {
+                            rest = path.Substring(currentPath.Length + 1);
+                        } else {
+                            rest = "";
+                        }
+
+                        Guid? cmdId = cmds.FindDynamicCommand(i, rest);
+                        if (cmdId.HasValue) {
+                            id = cmdId.Value;
+                            commands = cmds;
+                            return true;
+                        }
                     }
                 }
             }
 
             commands = null;
-            index = 0;
+            id = new Guid();
             return false;
         }
     }
