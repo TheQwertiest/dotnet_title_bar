@@ -82,7 +82,8 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             // first the application directory
             try {
                 foreach (string path in System.IO.Directory.GetDirectories(Main.AppDataDir)) {
-                    skinsList.Items.Add(new SkinListEntry(path));
+                    string relativePath = System.IO.Path.GetFileName(path);
+                    skinsList.Items.Add(new SkinListEntry(relativePath));
                 }
             } catch (Exception) {
                 fooManagedWrapper.CConsole.Write("Failed to read from <foobar2000 app dir>\foo_title.");

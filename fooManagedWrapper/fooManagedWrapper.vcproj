@@ -122,7 +122,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;H:\Devel\foobar2000\foobar-0.9\foobar2000\foobar2000_component_client&quot;"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -140,11 +140,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\foobar2000\shared\shared.lib ole32.lib User32.lib $(NOINHERIT)"
+				AdditionalDependencies="..\..\foobar2000\shared\shared.lib ole32.lib User32.lib shlwapi.lib $(NOINHERIT)"
 				OutputFile="C:\Devel\foobar2000\devel-0.9.4\components\foo_managedWrapper.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
-				EntryPointSymbol="TestEntry"
+				EntryPointSymbol=""
 				TargetMachine="1"
 			/>
 			<Tool
