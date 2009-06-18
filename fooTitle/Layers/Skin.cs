@@ -193,6 +193,14 @@ namespace fooTitle.Layers
             }
         }
 
+        protected static void sendEventCatch(Object _event, params Object[] p) {
+            try {
+                sendEvent(_event, p);
+            } catch (Exception e) {
+                MessageBox.Show(e.ToString(), "Error");
+            }
+        }
+
         #region IPlayCallbackSender Members
 #pragma warning disable 0168, 219, 67
         public event OnPlaybackTimeDelegate OnPlaybackTimeEvent;
@@ -230,32 +238,21 @@ namespace fooTitle.Layers
             loadLayers(skin);
             geometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)geometry).Width, ((AbsoluteGeometry)geometry).Height));
         }
-
+        
         void display_MouseUp(object sender, MouseEventArgs e) {
-            MouseEventHandler temp = OnMouseUp;
-            if (temp != null) {
-                temp(sender, e);
-            }
+            sendEventCatch(OnMouseUp, sender, e);
         }
 
         void display_MouseDown(object sender, MouseEventArgs e) {
-            MouseEventHandler temp = OnMouseDown;
-            if (temp != null) {
-                temp(sender, e);
-            }
+            sendEventCatch(OnMouseDown, sender, e);
         }
 
         void display_MouseMove(object sender, MouseEventArgs e) {
-            MouseEventHandler temp = OnMouseMove;
-            if (temp != null) {
-                temp(sender, e);
-            }
+            sendEventCatch(OnMouseMove, sender, e);
         }
 
         void display_MouseLeave(object sender, EventArgs e) {
-            EventHandler temp = OnMouseLeave;
-            if (temp != null)
-                temp(sender, e);
+            sendEventCatch(OnMouseLeave, sender, e);
         }
 
 

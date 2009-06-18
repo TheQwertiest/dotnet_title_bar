@@ -25,20 +25,33 @@ using fooManagedWrapper;
 using naid;
 
 namespace fooTitle {
+
     public class ContextMenuUtils {
-        
+
         /// <summary>
         /// Tries to find a contextmenu command given by its default path. Use
         /// forward slashes '/' to separate categories. Supports also dynamically
         /// generated menu items.
         /// </summary>
-        public static bool FindContextCommandByDefaultPath(string path, out CContextMenuItem commands, out Guid id) {
+        public static bool FindContextCommandByDefaultPath(
+            string path, Context context, out CContextMenuItem commands, out Guid id, out uint index,
+            out bool dynamic) {
+
             foreach (CContextMenuItem cmds in new CContextMenuItemEnumerator()) {
                 for (uint i = 0; i < cmds.Count; i++) {
                     
                     string currentPath = cmds.GetName(i);
                     if (!String.IsNullOrEmpty(cmds.GetDefaultPath(i))) {
                         currentPath = cmds.GetDefaultPath(i) + '/' + currentPath;
+                    }
+
+                    if (path == currentPath) {
+                        id = new Guid();
+                        index = i;
+                        dynamic = false;
+                        commands = cmds;
+                        return true;
+
                     }
 
                     if (path.StartsWith(currentPath, StringComparison.OrdinalIgnoreCase)) {
@@ -49,10 +62,12 @@ namespace fooTitle {
                             rest = "";
                         }
 
-                        Guid? cmdId = cmds.FindDynamicCommand(i, rest);
+                        Guid? cmdId = cmds.FindDynamicCommand(i, rest, context);
                         if (cmdId.HasValue) {
                             id = cmdId.Value;
                             commands = cmds;
+                            index = i;
+                            dynamic = true;
                             return true;
                         }
                     }
@@ -61,6 +76,8 @@ namespace fooTitle {
 
             commands = null;
             id = new Guid();
+            index = 0;
+            dynamic = false;
             return false;
         }
     }

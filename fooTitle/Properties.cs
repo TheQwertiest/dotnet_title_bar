@@ -740,6 +740,10 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
         }
 
         private void applySkinBtn_Click(object sender, EventArgs e) {
+            if (skinsList.SelectedItem == null) {
+                return;
+            }
+
             main.SkinPath.ForceUpdate(((SkinListEntry)skinsList.SelectedItem).path);
         }
 

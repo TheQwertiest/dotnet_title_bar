@@ -12,10 +12,10 @@
 + recompile with the new SDK
 + show on stream title change
 + read skins from user profile directory too
++ add support for more actions for buttons, such as commands from the context menu, also the ability to specify which menu the command is in
+	+ context menu items
+	+ dynamic context menu items
 
-- add support for more actions for buttons, such as commands from the context menu, also the ability to specify which menu the command is in
-	- context menu items
-	- dynamic context menu items
 - take album art from foobar if possible
 - show on stop/pause
 - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable

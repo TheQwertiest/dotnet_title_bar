@@ -188,4 +188,8 @@ namespace fooManagedWrapper
 		
 	};
 
+	public enum class Context {
+		NowPlaying,
+		Playlist
+	};
 }

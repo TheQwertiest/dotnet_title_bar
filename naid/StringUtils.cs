@@ -22,7 +22,6 @@ namespace naid {
 
             return builder.ToString();
         }
-
     }
 
 }

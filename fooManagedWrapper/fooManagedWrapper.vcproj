@@ -324,6 +324,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IClient.h"
+				>
+			</File>
+			<File
 				RelativePath=".\initQuit.h"
 				>
 			</File>

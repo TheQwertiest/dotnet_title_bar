@@ -21,6 +21,7 @@ using System;
 using System.Xml;
 using System.Drawing;
 using fooManagedWrapper;
+using naid;
 
 namespace fooTitle.Layers
 {
@@ -163,10 +164,10 @@ namespace fooTitle.Layers
 
 		public override void Draw() {
             Display.Canvas.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-            if (left.formatted != null)
+            if (!string.IsNullOrEmpty(left.formatted))
                 Display.Canvas.DrawString(left.formatted, left.font, new SolidBrush(left.color), ClientRect.X, ClientRect.Y);
 
-            if (right.formatted != null) {
+            if (!string.IsNullOrEmpty(right.formatted)) {
                 StringFormat rightFormat = new StringFormat();
                 rightFormat.Alignment = StringAlignment.Far;
                 Display.Canvas.DrawString(right.formatted, right.font, new SolidBrush(right.color), ClientRect, rightFormat);

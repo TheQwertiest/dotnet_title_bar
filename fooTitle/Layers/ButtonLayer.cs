@@ -62,14 +62,10 @@ namespace fooTitle.Layers {
     };
 
     class ContextMenuAction : IButtonAction {
-        enum Context {
-            Playlist,
-            NowPlaying
-        }
-        private Context context;
-        private CContextMenuItem cmds;
-        private Guid commandGuid;
 
+        private Context context;
+        private string cmdPath;
+        
         public void Init(XmlNode node) {
             if (Element.GetAttributeValue(node, "context", "nowplaying").ToLowerInvariant() == "nowplaying") {
                 context = Context.NowPlaying;
@@ -77,20 +73,28 @@ namespace fooTitle.Layers {
                 context = Context.Playlist;
             }
 
-            string path = Element.GetNodeValue(node);
-            if (!ContextMenuUtils.FindContextCommandByDefaultPath(path, out cmds, out commandGuid))
-                throw new ArgumentException(String.Format("Contextmenu command {0} not found.", path));
-        }
+            cmdPath = Element.GetNodeValue(node);
+         }
 
         public void Run() {
-            if (cmds == null)
+            if (string.IsNullOrEmpty(cmdPath))
                 return;
 
-            if (context == Context.Playlist) {
-                cmds.ExecuteOnPlaylist(commandGuid);
-            } else if (context == Context.NowPlaying) {
-                cmds.ExecuteOnNowPlaying(commandGuid);
+            Guid commandGuid;
+            CContextMenuItem cmds;
+            uint index;
+            bool dynamic;
+
+            if (!ContextMenuUtils.FindContextCommandByDefaultPath(cmdPath, context, out cmds, out commandGuid, out index, out dynamic))
+                throw new ArgumentException(String.Format("Contextmenu command {0} not found.", cmdPath));
+
+            if (dynamic) {
+                cmds.Execute(index, commandGuid, context);
+            } else {
+                cmds.Execute(index, context);
             }
+
+            
         }
     }
     

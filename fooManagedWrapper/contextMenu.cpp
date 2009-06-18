@@ -39,17 +39,27 @@ namespace fooManagedWrapper {
 		return CManagedWrapper::PfcStringToString(str);
 	}
 	
-	void CContextMenuItem::ExecuteOnPlaylist(unsigned int index) {
-		metadb_handle_list temp;
-		static_api_ptr_t<playlist_manager> api;
-		api->activeplaylist_get_selected_items(temp);
-		(*ptr)->item_execute_simple(index, pfc::guid_null, temp, contextmenu_item::caller_undefined);
+	metadb_handle_list CContextMenuItem::getContext(Context context) {
+		if (context == Context::NowPlaying) {
+			metadb_handle_ptr item;
+			if (!static_api_ptr_t<playback_control>()->get_now_playing(item)) {
+				return pfc::list_t<metadb_handle_ptr>();
+			}
+			return pfc::list_single_ref_t<metadb_handle_ptr>(item);
+		} else {
+			metadb_handle_list res;
+			static_api_ptr_t<playlist_manager> api;
+			api->activeplaylist_get_selected_items(res);
+			return res;
+		}
 	}
 
-	void CContextMenuItem::ExecuteOnNowPlaying(unsigned int index) {
-		metadb_handle_ptr item;
-		if (!static_api_ptr_t<playback_control>()->get_now_playing(item)) return;//not playing
-		(*ptr)->item_execute_simple(index, pfc::guid_null, pfc::list_single_ref_t<metadb_handle_ptr>(item), contextmenu_item::caller_undefined);
+	void CContextMenuItem::Execute(unsigned int index, Context context) {
+		(*ptr)->item_execute_simple(index, pfc::guid_null, this->getContext(context), contextmenu_item::caller_undefined);
+	}
+
+	void CContextMenuItem::Execute(unsigned int index, Guid ^cmd, Context context) {
+		(*ptr)->item_execute_simple(index, CManagedWrapper::ToGUID(cmd), this->getContext(context), contextmenu_item::caller_undefined);
 	}
 
 	/** 
@@ -58,65 +68,63 @@ namespace fooManagedWrapper {
 		@param path is a slash separated list of nodes relative to the starting
 					command. If empty, the GUID of the item itself is returned.
 					This allows to use the same code for dynamic and static commands.
+		@param context In which context to search the item (should be the same as the context in which we run it).
 		@return Returns the GUID if found or null.
 	*/
-	Nullable<Guid> CContextMenuItem::FindDynamicCommand(unsigned int itemToSearch, String ^path) {
-		metadb_handle_list_cref data = pfc::list_t<metadb_handle_ptr>();
-		contextmenu_item_node_root *root = (*ptr)->instantiate_item(itemToSearch, data, contextmenu_item::caller_undefined);
-		contextmenu_item_node *current = root;
-		
-		pfc::string8 str;
-		current->get_description(str);
-		console::info(str);
+	Nullable<Guid> CContextMenuItem::FindDynamicCommand(unsigned int itemToSearch, String ^path, Context context) {
+		metadb_handle_list_cref data = this->getContext(context);
 
+		pfc::ptrholder_t<contextmenu_item_node_root> root = (*ptr)->instantiate_item(itemToSearch, data, contextmenu_item::caller_active_playlist);
+		contextmenu_item_node *current = root.get_ptr();
+		if (current == NULL) {
+			return Nullable<Guid>();
+		}
+		/*
+		// DEBUG
+		pfc::string8 str;
+		unsigned int x;
+		current->get_display_data(str, x, data, contextmenu_item::caller_undefined);
+		int typ = current->get_type();
+		int pop = contextmenu_item_node::TYPE_POPUP;
+		int cmd = contextmenu_item_node::TYPE_COMMAND;
+
+		console::info(str);
+*/
 		// search only if there's is some path. Otherwise current command is what we want.
 		if (path != String::Empty) {
 			cli::array<__wchar_t> ^separators = gcnew cli::array<__wchar_t>(1);
 			separators->SetValue(L'/', 0);
 			cli::array<String^> ^parts = path->Split(separators);
 
-			// traverse
-			pfc::string8 str;
-			unsigned int displayflags;
-
-			for each (String ^part in parts) {
-				bool found = false;
-
-				for (unsigned int i = 0; i < current->get_children_count(); i++) {
-					contextmenu_item_node *next = current->get_child(i);
-					next->get_display_data(str, displayflags, data, contextmenu_item::caller_undefined);
-				
-					if (CManagedWrapper::PfcStringToString(str)->ToLowerInvariant() == part->ToLowerInvariant()) {
-						current = next;
-						found = true;
-						break; // goto next part
-					}
-				}
-
-				if (!found) return Nullable<Guid>();
-			}
-			
-			// construct result
-			Guid ^res = CManagedWrapper::FromGUID(current->get_guid());
-			SAFE_DELETE(root);
-			return Nullable<Guid>(res);
+			return this->recFindDynamicCmd(current, parts, 0, data);
 
 		} else {
 			return Nullable<Guid>(CManagedWrapper::FromGUID((*ptr)->get_item_guid(itemToSearch)));
 		}
 	}
 
-	void CContextMenuItem::ExecuteOnPlaylist(Guid ^cmd) {
-		metadb_handle_list temp;
-		static_api_ptr_t<playlist_manager> api;
-		api->activeplaylist_get_selected_items(temp);
-		// maybe we should provide correct command index here... but it works this way now
-		(*ptr)->item_execute_simple(-1, CManagedWrapper::ToGUID(cmd), temp, contextmenu_item::caller_undefined);
+	Nullable<Guid> CContextMenuItem::recFindDynamicCmd(contextmenu_item_node *node, cli::array<String^> ^parts, int firstPart, metadb_handle_list_cref data) {
+		if (this->nameMatches(node, parts[firstPart], data)) {
+
+			if (firstPart == parts->Length - 1) {
+				return Nullable<Guid>(CManagedWrapper::FromGUID(node->get_guid()));
+			} else {
+				for (unsigned int i = 0; i < node->get_children_count(); i++) {
+					Nullable<Guid> found = this->recFindDynamicCmd(node->get_child(i), parts, firstPart + 1, data);
+					if (found.HasValue) return found;
+				}
+			}
+		}
+
+		return Nullable<Guid>();
 	}
 
-	void CContextMenuItem::ExecuteOnNowPlaying(Guid ^cmd) {
-		metadb_handle_ptr item;
-		if (!static_api_ptr_t<playback_control>()->get_now_playing(item)) return;//not playing
-		(*ptr)->item_execute_simple(-1, CManagedWrapper::ToGUID(cmd), pfc::list_single_ref_t<metadb_handle_ptr>(item), contextmenu_item::caller_undefined);
+	bool CContextMenuItem::nameMatches(contextmenu_item_node *node, String ^name, metadb_handle_list_cref data) {
+		unsigned int displayflags;
+		pfc::string8 str;
+		node->get_display_data(str, displayflags, data, contextmenu_item::caller_undefined);
+
+		return (CManagedWrapper::PfcStringToString(str)->ToLowerInvariant() == name->ToLowerInvariant());
 	}
+
 };

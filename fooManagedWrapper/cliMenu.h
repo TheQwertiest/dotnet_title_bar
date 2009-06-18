@@ -114,6 +114,9 @@ namespace fooManagedWrapper {
 	private:
 		service_ptr_t<contextmenu_item> *ptr;
 
+		Nullable<Guid> recFindDynamicCmd(contextmenu_item_node *node, cli::array<String^> ^parts, int firstPart, metadb_handle_list_cref data);
+		bool nameMatches(contextmenu_item_node *node, String ^name, metadb_handle_list_cref data);
+		metadb_handle_list getContext(Context context);
 	public:
 		CContextMenuItem(const service_ptr_t<contextmenu_item> &existingPtr);
 
@@ -123,12 +126,10 @@ namespace fooManagedWrapper {
 
 		String ^GetName(unsigned int index);
 		String ^GetDefaultPath(unsigned int index);
-		void ExecuteOnPlaylist(unsigned int index);
-		void ExecuteOnNowPlaying(unsigned int index);
+		void Execute(unsigned int index, Context context);
 
-		Nullable<Guid> FindDynamicCommand(unsigned int itemToSearch, String ^path);
-		void ExecuteOnPlaylist(Guid ^cmd);
-		void ExecuteOnNowPlaying(Guid ^cmd);
+		Nullable<Guid> FindDynamicCommand(unsigned int itemToSearch, String ^path, Context context);
+		void Execute(unsigned int index, Guid ^cmd, Context context);
 
 		property unsigned int Count {
 			unsigned int get() {
