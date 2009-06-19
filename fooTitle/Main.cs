@@ -342,7 +342,7 @@ namespace fooTitle {
         public void OnInit(IPlayControl a) {
             Main.PlayControl = a;
 
-#if DEBUG
+#if DEBU
             // run the tests
             Tests.TestFramework t = new Tests.test_all();
             t.Run();

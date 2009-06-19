@@ -136,6 +136,14 @@ namespace fooTitle.Extending {
             throw new System.Xml.XmlException(String.Format("Node {0} not found under {1}", name, where.Name));
         }
 
+        public static XmlNode GetFirstChildByNameOrNull(XmlNode where, string name) {
+            foreach (XmlNode i in where)
+                if (i.Name == name)
+                    return i;
+
+            return null;
+        }
+
         public static string GetNodeValue(XmlNode a) {
             return a.InnerText.Trim(new char[] { ' ', '\n', '\r', '\t' });
         }

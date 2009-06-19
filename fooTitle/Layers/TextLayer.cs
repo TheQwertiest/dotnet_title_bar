@@ -22,6 +22,7 @@ using System.Xml;
 using System.Drawing;
 using fooManagedWrapper;
 using naid;
+using System.Drawing.Drawing2D;
 
 namespace fooTitle.Layers
 {
@@ -46,12 +47,14 @@ namespace fooTitle.Layers
         protected LabelPart right = new LabelPart();
 
 		protected int space;
+        protected int angle;
 
 		public TextLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
             XmlNode contents = GetFirstChildByName(node, "contents");
 			
 			// read the spacing
 			space = Int32.Parse(GetAttributeValue(contents, "spacing", "20"));
+            angle = Int32.Parse(GetAttributeValue(contents, "angle", "0"));
 
             // read the default font
             LabelPart empty = new LabelPart();
@@ -163,18 +166,52 @@ namespace fooTitle.Layers
         }
 
 		public override void Draw() {
-            Display.Canvas.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-            if (!string.IsNullOrEmpty(left.formatted))
-                Display.Canvas.DrawString(left.formatted, left.font, new SolidBrush(left.color), ClientRect.X, ClientRect.Y);
+            Matrix oldTransform = Display.Canvas.Transform;
+
+            Rectangle bounds = calcRotatedBounds();
+
+            Display.Canvas.TranslateTransform(-bounds.X, -bounds.Y);
+            Display.Canvas.TranslateTransform(ClientRect.X, ClientRect.Y);
+
+            Display.Canvas.RotateTransform(angle);
+            
+            straightDraw(Display.Canvas);
+            Display.Canvas.Transform = oldTransform;
+
+			base.Draw();
+		}
+
+        /// <summary>
+        /// Draws at 0,0. Transformation into ClientRect is handled outside.
+        /// </summary>
+        private void straightDraw(Graphics g) {
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+            float leftWidth = 0;
+            if (!string.IsNullOrEmpty(left.formatted)) {
+                leftWidth = Display.Canvas.MeasureString(left.formatted, left.font).Width;
+                g.DrawString(left.formatted, left.font, new SolidBrush(left.color), 0, 0);
+            }
 
             if (!string.IsNullOrEmpty(right.formatted)) {
                 StringFormat rightFormat = new StringFormat();
                 rightFormat.Alignment = StringAlignment.Far;
-                Display.Canvas.DrawString(right.formatted, right.font, new SolidBrush(right.color), ClientRect, rightFormat);
-            }
+                //g.DrawString(right.formatted, right.font, new SolidBrush(right.color), space + leftWidth, 0);
+                
+                // the text is right-aligned, so we must take the size of client rect into account. But
+                // the text can be also rotated, so we must consider different sizes. This will probably
+                // not work very well for arbitrary angles, but is ok for 90*n.
+                Rectangle drawInto = new Rectangle();
+                if ((angle < 45 || angle > (360 - 45)) || (angle > (180 - 45) && angle < (180 + 45))) {
+                    drawInto.Width = ClientRect.Width;
+                    drawInto.Height = ClientRect.Height;
+                } else {
+                    drawInto.Width = ClientRect.Height;
+                    drawInto.Height = ClientRect.Width;
+                }
+                g.DrawString(right.formatted, right.font, new SolidBrush(right.color), drawInto, rightFormat);
 
-			base.Draw();
-		}
+            }
+        }
 
 		protected virtual void updateText() {
             LabelPart[] parts = new LabelPart[2];
@@ -185,7 +222,7 @@ namespace fooTitle.Layers
             right.formatted = "";
 
             for (int i = 0; i < 2; i++ ) {
-                if (parts[i].text != null) {
+                if (!string.IsNullOrEmpty(parts[i].text)) {
                     if (currentSong != null) {
                         parts[i].formatted = Main.PlayControl.FormatTitle(currentSong, parts[i].text);
                     }
@@ -194,23 +231,62 @@ namespace fooTitle.Layers
 		}
 
 		public override Size GetMinimalSize() {
+            return geometry.GetMinimalSize(Display, calcRotatedBounds().Size);
+		}
+
+        /// <returns>
+        /// Size of text, not rotated.
+        /// </returns>
+        private Size calcStraightSize() {
             float width = 0;
-            if (left.formatted != null)
+            if (!string.IsNullOrEmpty(left.formatted))
                 width += Display.Canvas.MeasureString(left.formatted, left.font).Width;
-			if (right.formatted != null)
+            if (!string.IsNullOrEmpty(right.formatted)) {
                 width += Display.Canvas.MeasureString(right.formatted, right.font).Width;
-			width += space;
+                width += space;
+            }
 
             int height = 0;
-            if (left.formatted != null)
+            if (!string.IsNullOrEmpty(left.formatted))
                 height = (int)Display.Canvas.MeasureString(left.formatted, left.font).Height;
-            if (right.formatted != null)
+            if (!string.IsNullOrEmpty(right.formatted))
                 height = Math.Max(height, (int)Display.Canvas.MeasureString(right.formatted, right.font).Height);
 
+            return new Size((int)width, (int)height);
+/*
             Size minimal = geometry.GetMinimalSize(Display, new Size((int)width, height));
             Size res = new Size(Math.Max((int)width, minimal.Width), Math.Max(height, minimal.Height));
-            return res;
-		}
+ * */
+        }
+
+        private Rectangle calcRotatedBounds() {
+            Size size = calcStraightSize();
+            Matrix transform = new Matrix();
+            transform.Rotate(angle);
+            Point[] boundPoints = new Point[] {
+                new Point(0,0),
+                new Point(size.Width, 0),
+                new Point(size.Width, size.Height),
+                new Point(0, size.Height)
+            };
+            transform.TransformPoints(boundPoints);
+
+            Rectangle result = new Rectangle();
+
+            foreach (Point p in boundPoints) {
+                if (p.X < result.X)
+                    RectUtils.SetLeft(ref result, p.X);
+                if (p.X > result.Right)
+                    RectUtils.SetRight(ref result, p.X);
+                if (p.Y < result.Y)
+                    RectUtils.SetTop(ref result, p.Y);
+                if (p.Y > result.Bottom)
+                    RectUtils.SetBottom(ref result, p.Y);
+            }
+
+            return result;
+        }
+
 
 		public void OnPlaybackNewTrack(fooManagedWrapper.CMetaDBHandle song) {
 			this.currentSong = song;

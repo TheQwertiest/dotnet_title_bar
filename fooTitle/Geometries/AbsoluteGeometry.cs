@@ -118,7 +118,7 @@ namespace fooTitle.Geometries {
             myPosition.Y = (int)GetNumberFromAttribute(position, "y", "0");
 
             // read align
-            if (position.Attributes.GetNamedItem("align").Value == "right")
+            if (GetAttributeValue(position, "align", "left") == "right")
                 myAlign = AlignType.Right;
             else
                 myAlign = AlignType.Left;

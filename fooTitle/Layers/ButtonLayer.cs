@@ -86,7 +86,7 @@ namespace fooTitle.Layers {
             bool dynamic;
 
             if (!ContextMenuUtils.FindContextCommandByDefaultPath(cmdPath, context, out cmds, out commandGuid, out index, out dynamic))
-                throw new ArgumentException(String.Format("Contextmenu command {0} not found.", cmdPath));
+               CConsole.Warning(String.Format("Contextmenu command {0} not found.", cmdPath));
 
             if (dynamic) {
                 cmds.Execute(index, commandGuid, context);
@@ -137,14 +137,20 @@ namespace fooTitle.Layers {
             readActions(contents);
             
             XmlNode img;
-            img = GetFirstChildByName(contents, "normalImg");
-            myNormalImage = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(img.Attributes.GetNamedItem("src").Value));
+            img = GetFirstChildByNameOrNull(contents, "normalImg");
+            if (img != null) {
+                myNormalImage = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(img.Attributes.GetNamedItem("src").Value));
+            }
 
-            img = GetFirstChildByName(contents, "overImg");
-            myOverImage = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(img.Attributes.GetNamedItem("src").Value));
+            img = GetFirstChildByNameOrNull(contents, "overImg");
+            if (img != null) {
+                myOverImage = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(img.Attributes.GetNamedItem("src").Value));
+            }
 
-            img = GetFirstChildByName(contents, "downImg");
-            myDownImage = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(img.Attributes.GetNamedItem("src").Value));
+            img = GetFirstChildByNameOrNull(contents, "downImg");
+            if (img != null) {
+                myDownImage = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(img.Attributes.GetNamedItem("src").Value));
+            }
 
             // register mouse events
             Main.GetInstance().CurrentSkin.OnMouseMove += new MouseEventHandler(OnMouseMove);
@@ -190,8 +196,10 @@ namespace fooTitle.Layers {
                 toDraw = myOverImage;
             else
                 toDraw = myNormalImage;
-            
-            Display.Canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
+
+            if (toDraw != null) {
+                Display.Canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
+            }
             base.Draw();
         }
 
