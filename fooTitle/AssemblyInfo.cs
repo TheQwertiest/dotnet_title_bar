@@ -50,7 +50,7 @@ using System.Runtime.CompilerServices;
 
 /* Changelog:
    0.7.2
-     - 
+     - re-loading skin just by clicking Apply skin
      - rotated text
      - foo_managedWrapper supports creating mainmenu popups
      - foo_managedWrapper supports enumerating mainmenu commands, mainmenu groups and popups

@@ -75,6 +75,13 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             autoWrapperCreator.CreateWrappers(this);
         }
 
+        protected void addSkin(string path) {
+            SkinListEntry current = new SkinListEntry(path);
+            skinsList.Items.Add(current);
+            if (path == main.SkinPath.Value) {
+                skinsList.SelectedItem = current;
+            }
+        }
 
         protected void fillSkinList() {
             skinsList.Items.Clear();
@@ -83,7 +90,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             try {
                 foreach (string path in System.IO.Directory.GetDirectories(Main.AppDataDir)) {
                     string relativePath = System.IO.Path.GetFileName(path);
-                    skinsList.Items.Add(new SkinListEntry(relativePath));
+                    addSkin(relativePath);
                 }
             } catch (Exception) {
                 fooManagedWrapper.CConsole.Write("Failed to read from <foobar2000 app dir>\foo_title.");
@@ -92,7 +99,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             if ((Main.AppDataDir != Main.UserDataDir) && (Directory.Exists(Main.UserDataDir))) {
                 // now the user profile directory
                 foreach (string path in System.IO.Directory.GetDirectories(Main.UserDataDir)) {
-                    skinsList.Items.Add(new SkinListEntry(path));
+                    addSkin(path);
                 }
             }
         }

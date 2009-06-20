@@ -184,7 +184,7 @@ namespace fooTitle.Layers
         /// <summary>
         /// Draws at 0,0. Transformation into ClientRect is handled outside.
         /// </summary>
-        private void straightDraw(Graphics g) {
+        protected virtual void straightDraw(Graphics g) {
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
             float leftWidth = 0;
             if (!string.IsNullOrEmpty(left.formatted)) {
@@ -200,14 +200,9 @@ namespace fooTitle.Layers
                 // the text is right-aligned, so we must take the size of client rect into account. But
                 // the text can be also rotated, so we must consider different sizes. This will probably
                 // not work very well for arbitrary angles, but is ok for 90*n.
+                float farEdge = getFarPointInClientRect(angle);
                 Rectangle drawInto = new Rectangle();
-                if ((angle < 45 || angle > (360 - 45)) || (angle > (180 - 45) && angle < (180 + 45))) {
-                    drawInto.Width = ClientRect.Width;
-                    drawInto.Height = ClientRect.Height;
-                } else {
-                    drawInto.Width = ClientRect.Height;
-                    drawInto.Height = ClientRect.Width;
-                }
+                drawInto.Width = (int)farEdge;
                 g.DrawString(right.formatted, right.font, new SolidBrush(right.color), drawInto, rightFormat);
 
             }
@@ -287,6 +282,20 @@ namespace fooTitle.Layers
             return result;
         }
 
+        /// <returns>
+        /// Returns how much space is there in the client rect when we draw the text
+        /// under given angle.
+        /// </returns>
+        /// <remarks>
+        /// Only works correctly for 90*n.
+        /// </remarks>
+        protected float getFarPointInClientRect(int _angle) {
+            if ((_angle < 45 || _angle > (360 - 45)) || (_angle > (180 - 45) && _angle < (180 + 45))) {
+                return ClientRect.Width;
+            } else {
+                return ClientRect.Height;
+            }
+        }
 
 		public void OnPlaybackNewTrack(fooManagedWrapper.CMetaDBHandle song) {
 			this.currentSong = song;

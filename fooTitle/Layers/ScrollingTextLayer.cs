@@ -72,28 +72,30 @@ namespace fooTitle.Layers {
             }
         }
 
-        public override void Draw() {
+        protected override void straightDraw(Graphics g) {
+ 	
             // first move the text
             long now = System.DateTime.Now.Ticks;
             long deltaTime = now - lastUpdate;
-            float textWidth = display.Canvas.MeasureString(left.formatted, left.font).Width;
+            float textWidth = g.MeasureString(left.formatted, left.font).Width;
+            float farPoint = this.getFarPointInClientRect(this.angle);
             float drawAt = 0;
             
-            if (textWidth <= ClientRect.Width) {  // no need to move, it's too short
+            if (textWidth <= farPoint) {  // no need to move, it's too short
                 xpos = 0;
                 if (align == Align.Left) {
                     drawAt = 0;
                 } else if (align == Align.Center) {
-                    drawAt = (ClientRect.Width - textWidth) / 2;
+                    drawAt = (farPoint - textWidth) / 2;
                 } else if (align == Align.Right) {
-                    drawAt = ClientRect.Width - textWidth;
+                    drawAt = farPoint - textWidth;
                 }
             } else if (!paused) {
                 xpos += direction * speed * ((float)deltaTime / 10000000F);
-                if (xpos >= textWidth - ClientRect.Width) {
+                if (xpos >= textWidth - farPoint) {
                     // reached the right end
                     direction = -1;
-                    xpos = textWidth - ClientRect.Width;
+                    xpos = textWidth - farPoint;
                     paused = true;
                 } else if (xpos <= 0) {
                     // reached the left end
@@ -105,7 +107,7 @@ namespace fooTitle.Layers {
 
             // then draw it
             if (textImage != null) {
-                Display.Canvas.DrawImage(textImage, (int)(ClientRect.X + drawAt), ClientRect.Y, new RectangleF((int)xpos, 0, (int)ClientRect.Width, textImage.Height), GraphicsUnit.Pixel);
+                g.DrawImage(textImage, (int)(drawAt), 0, new RectangleF((int)xpos, 0, (int)farPoint, textImage.Height), GraphicsUnit.Pixel);
             }
 
             if (!paused) {
@@ -116,8 +118,6 @@ namespace fooTitle.Layers {
                     paused = false;
                 }
             }
-
-            drawSubLayers();
         }
 
         /// <summary>
