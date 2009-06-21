@@ -131,9 +131,11 @@ namespace fooTitle {
         /// </summary>
         public Display Display {
             get {
-                if (myDisplay.IsDisposed) {
-                    // need to open the window again
-                    reinitDisplay();
+                if ((myDisplay != null) && myDisplay.IsDisposed) {
+                    if (skin != null)
+                        skin.Free();
+                    skin = null;
+                    myDisplay = null;
                 }
 
                 return myDisplay;
@@ -240,12 +242,19 @@ namespace fooTitle {
         private void reinitDisplay() {
             // initialize the form displaying the images
             myDisplay = new Display(300, 22);
+            myDisplay.Closing -=  new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
+            myDisplay.Closing += new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
             myDisplay.Show();
 
-            // load the skin
-            loadSkin(SkinPath.Value);
-
             RestorePosition();
+        }
+
+        void myDisplay_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            myDisplay.Closing -= new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
+            if (skin != null)
+                skin.Free();
+            skin = null;
+            myDisplay = null;
         }
 
         /// <summary>
@@ -264,6 +273,10 @@ namespace fooTitle {
                 string absolutePath = path;
                 if (!Path.IsPathRooted(path))
                     absolutePath = Path.Combine(Main.AppDataDir, path);
+
+                if (this.Display == null) {
+                    reinitDisplay();
+                }
 
                 skin = new Skin(absolutePath);
                 skin.Init(Display);
@@ -288,10 +301,12 @@ namespace fooTitle {
         protected ViewMenuCommands viewMenuCommands;
         protected ShowControl showControl;
 
+#if DEBUG
         public IConfigStorage Config;
         public IConfigStorage TestConfig;
 
         public Tests.TestServices TestServicesInstance;
+#endif
 
         public void Create() {
             instance = this;
@@ -377,7 +392,7 @@ namespace fooTitle {
 
             // initialize the display and skin
             reinitDisplay();
-
+            loadSkin(SkinPath.Value);
 
             // register response events on some variables
             ShowWhen.OnChanged += new ConfValuesManager.ValueChangedDelegate(ShowWhen_OnChanged);
@@ -401,8 +416,8 @@ namespace fooTitle {
             if (temp != null)
                 temp();
 
-            if (myDisplay != null)
-                myDisplay.Hide();
+            if (Display != null)
+                Display.Hide();
         }
 
 

@@ -175,7 +175,6 @@ namespace fooTitle
             this.MouseEnter += new EventHandler(Display_MouseEnter);
             this.MouseLeave += new EventHandler(Display_MouseLeave);
             this.Activated += new EventHandler(Display_Activated);
-            this.Closing += new CancelEventHandler(Display_Closing);
 		}
 
 		#endregion
@@ -186,11 +185,6 @@ namespace fooTitle
             Canvas.Clear(Color.Transparent);
         }
   
-        void Display_Closing(object sender, CancelEventArgs e) {
-            //e.Cancel = true;
-            Main.GetInstance().ShowWhen.Value = ShowWhenEnum.Never;
-        }   
-   
 #region Bottom
         void Display_Activated(object sender, EventArgs e) {
             if (WindowPosition.Value == Win32.WindowPosition.Bottom) {

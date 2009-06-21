@@ -15,12 +15,13 @@
 + add support for more actions for buttons, such as commands from the context menu, also the ability to specify which menu the command is in
 	+ context menu items
 	+ dynamic context menu items
++ support rotated text (at least by 90 degrees)
 
+- evaluate titleformatting on start, pause, stop
 - take album art from foobar if possible
 - show on stop/pause
 - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
 - buttons fading in/out when mousehovered
-- support rotated text (at least by 90 degrees)
 - maybe create the effect of reflecting glass ;)
 - extendable panels :)
 - pixel accurate button hit testing
@@ -54,6 +55,9 @@ popup:
 	- when mouse is on the window, it does not disappear
 
 bugs:
+	+ BUG: When foobar2000 is taken down by Windows shutdown, foo_title sets itself to disabled.
+		Must handle Display's form OnClose better...
+		according to stack overflow, I don't need to remember the delegate, it's ok to just do -= using the same code as in +=
     - BUG: Under the default settings, foo_title doesn't show upon foobar2000 start. (sometimes)
     + BUG: Under Vista, show only when foobar is minimized doesn't work (as they say).
     0 BUG: title formatting not evaluated on foobar start
