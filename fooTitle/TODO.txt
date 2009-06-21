@@ -16,10 +16,11 @@
 	+ context menu items
 	+ dynamic context menu items
 + support rotated text (at least by 90 degrees)
++ show on stop/pause
 
-- evaluate titleformatting on start, pause, stop
+0 evaluate titleformatting on start, pause, stop
+  the problem is that when there's no song playing, titleformatting can't be evaluated. This won't be fixed, a better solution, probably involving C# scripting needs to be designed.
 - take album art from foobar if possible
-- show on stop/pause
 - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
 - buttons fading in/out when mousehovered
 - maybe create the effect of reflecting glass ;)
@@ -58,10 +59,7 @@ bugs:
 	+ BUG: When foobar2000 is taken down by Windows shutdown, foo_title sets itself to disabled.
 		Must handle Display's form OnClose better...
 		according to stack overflow, I don't need to remember the delegate, it's ok to just do -= using the same code as in +=
-    - BUG: Under the default settings, foo_title doesn't show upon foobar2000 start. (sometimes)
     + BUG: Under Vista, show only when foobar is minimized doesn't work (as they say).
-    0 BUG: title formatting not evaluated on foobar start
-        the problem is that when there's no song playing, titleformatting can't be evaluated. This won't be fixed, a better solution, probably involving C# scripting needs to be designed.
     - BUG: only show when minimized doesn't work
     + BUG: Only have one problem with it, everytime I start up foobar the titlebar doesn't showup until it plays through a song. Pretty much intially, when I have it minimized, it won't show anything until the first song I played from the time I started foobar is done playing. It's not that big a problem because I can just forward to the end of a song and let it show up, just a little annoying. Tryed looking through forms for answer and couldn't find anything, was wondering if I'm only one with the problem.
     + BUG: foo_title is preventing Windows from shutting down

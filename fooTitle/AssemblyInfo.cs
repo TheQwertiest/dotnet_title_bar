@@ -45,11 +45,13 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.7.2.*")]
-[assembly: AssemblyInformationalVersion("0.7.2")]
+[assembly: AssemblyVersion("0.8.*")]
+[assembly: AssemblyInformationalVersion("0.8")]
 
 /* Changelog:
-   0.7.2
+   0.8
+     - option to show foo_title when playback is stopped/paused (when not set to show always)
+     - fixed show n seconds after song start when changing song
      - re-loading skin just by clicking Apply skin
      - rotated text
      - foo_managedWrapper supports creating mainmenu popups

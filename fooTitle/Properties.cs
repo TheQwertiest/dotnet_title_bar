@@ -30,7 +30,7 @@ using fooTitle.Tests;
 
 namespace fooTitle {
 class Properties : fooManagedWrapper.CManagedPrefPage{
-//   class Properties : System.Windows.Forms.Form {
+  // class Properties : System.Windows.Forms.Form {
 
     class SkinListEntry {
         public string path;
@@ -50,6 +50,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
        private GroupBox restoreTopmostBox;
        private Label label13;
        private CheckBox restoreTopmostCheckbox;
+       private CheckBox showWhenNotPlayingCheckbox;
        protected RadioGroupWrapper popupShowingWrapper;
 
         public Properties(Main _main)
@@ -206,10 +207,11 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.allTheTimeRadio = new System.Windows.Forms.RadioButton();
             this.tabControl1 = new fooTitle.SafeTabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.restoreTopmostBox = new System.Windows.Forms.GroupBox();
-            this.label13 = new System.Windows.Forms.Label();
             this.restoreTopmostCheckbox = new System.Windows.Forms.CheckBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.showWhenNotPlayingCheckbox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
             this.albumArtGroup.SuspendLayout();
             this.showWhenBox.SuspendLayout();
@@ -221,8 +223,8 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.popupBox.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
             this.restoreTopmostBox.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // skinsList
@@ -507,6 +509,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             // 
             // popupBox
             // 
+            this.popupBox.Controls.Add(this.showWhenNotPlayingCheckbox);
             this.popupBox.Controls.Add(this.label11);
             this.popupBox.Controls.Add(this.label12);
             this.popupBox.Controls.Add(this.beforeSongEndsStayTextBox);
@@ -520,7 +523,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.popupBox.Controls.Add(this.allTheTimeRadio);
             this.popupBox.Location = new System.Drawing.Point(194, 65);
             this.popupBox.Name = "popupBox";
-            this.popupBox.Size = new System.Drawing.Size(269, 177);
+            this.popupBox.Size = new System.Drawing.Size(269, 239);
             this.popupBox.TabIndex = 13;
             this.popupBox.TabStop = false;
             this.popupBox.Text = "Popup";
@@ -593,10 +596,10 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.onSongStartCheckbox.AutoSize = true;
             this.onSongStartCheckbox.Location = new System.Drawing.Point(21, 78);
             this.onSongStartCheckbox.Name = "onSongStartCheckbox";
-            this.onSongStartCheckbox.Size = new System.Drawing.Size(89, 17);
+            this.onSongStartCheckbox.Size = new System.Drawing.Size(182, 17);
             this.onSongStartCheckbox.TabIndex = 3;
             this.onSongStartCheckbox.Tag = "showControl/onSongStart";
-            this.onSongStartCheckbox.Text = "On song start";
+            this.onSongStartCheckbox.Text = "On song start / track title change";
             this.onSongStartCheckbox.UseVisualStyleBackColor = true;
             // 
             // label8
@@ -661,6 +664,38 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.tabPage1.Text = "Appearance";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // restoreTopmostBox
+            // 
+            this.restoreTopmostBox.Controls.Add(this.restoreTopmostCheckbox);
+            this.restoreTopmostBox.Controls.Add(this.label13);
+            this.restoreTopmostBox.Location = new System.Drawing.Point(194, 310);
+            this.restoreTopmostBox.Name = "restoreTopmostBox";
+            this.restoreTopmostBox.Size = new System.Drawing.Size(269, 95);
+            this.restoreTopmostBox.TabIndex = 14;
+            this.restoreTopmostBox.TabStop = false;
+            this.restoreTopmostBox.Text = "Restore topmost position";
+            // 
+            // restoreTopmostCheckbox
+            // 
+            this.restoreTopmostCheckbox.AutoSize = true;
+            this.restoreTopmostCheckbox.Location = new System.Drawing.Point(9, 62);
+            this.restoreTopmostCheckbox.Name = "restoreTopmostCheckbox";
+            this.restoreTopmostCheckbox.Size = new System.Drawing.Size(205, 17);
+            this.restoreTopmostCheckbox.TabIndex = 1;
+            this.restoreTopmostCheckbox.Tag = "display/reShowOnTop";
+            this.restoreTopmostCheckbox.Text = "Restore topmost position every minute";
+            this.restoreTopmostCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 16);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(248, 39);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "When Z-order is set to Always on top, foo_title can \r\nset itself as the foremost " +
+                "window every minute to\r\nwork around the Windows problem.";
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.albumArtGroup);
@@ -673,37 +708,16 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.tabPage2.Text = "Misc";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // restoreTopmostBox
+            // showWhenNotPlayingCheckbox
             // 
-            this.restoreTopmostBox.Controls.Add(this.restoreTopmostCheckbox);
-            this.restoreTopmostBox.Controls.Add(this.label13);
-            this.restoreTopmostBox.Location = new System.Drawing.Point(194, 248);
-            this.restoreTopmostBox.Name = "restoreTopmostBox";
-            this.restoreTopmostBox.Size = new System.Drawing.Size(269, 98);
-            this.restoreTopmostBox.TabIndex = 14;
-            this.restoreTopmostBox.TabStop = false;
-            this.restoreTopmostBox.Text = "Restore topmost position";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 16);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(248, 39);
-            this.label13.TabIndex = 0;
-            this.label13.Text = "When Z-order is set to Always on top, foo_title can \r\nset itself as the foremost " +
-                "window every minute to\r\nwork around the Windows problem.";
-            // 
-            // restoreTopmostCheckbox
-            // 
-            this.restoreTopmostCheckbox.AutoSize = true;
-            this.restoreTopmostCheckbox.Location = new System.Drawing.Point(9, 62);
-            this.restoreTopmostCheckbox.Name = "restoreTopmostCheckbox";
-            this.restoreTopmostCheckbox.Size = new System.Drawing.Size(205, 17);
-            this.restoreTopmostCheckbox.TabIndex = 1;
-            this.restoreTopmostCheckbox.Tag = "display/reShowOnTop";
-            this.restoreTopmostCheckbox.Text = "Restore topmost position every minute";
-            this.restoreTopmostCheckbox.UseVisualStyleBackColor = true;
+            this.showWhenNotPlayingCheckbox.AutoSize = true;
+            this.showWhenNotPlayingCheckbox.Location = new System.Drawing.Point(21, 176);
+            this.showWhenNotPlayingCheckbox.Name = "showWhenNotPlayingCheckbox";
+            this.showWhenNotPlayingCheckbox.Size = new System.Drawing.Size(136, 17);
+            this.showWhenNotPlayingCheckbox.TabIndex = 21;
+            this.showWhenNotPlayingCheckbox.Tag = "showControl/showWhenNotPlaying";
+            this.showWhenNotPlayingCheckbox.Text = "Show when not playing";
+            this.showWhenNotPlayingCheckbox.UseVisualStyleBackColor = true;
             // 
             // Properties
             // 
@@ -731,9 +745,9 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
             this.restoreTopmostBox.ResumeLayout(false);
             this.restoreTopmostBox.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

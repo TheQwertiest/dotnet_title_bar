@@ -45,28 +45,33 @@ namespace fooTitle {
         protected ConfBool beforeSongEnds = new ConfBool("showControl/beforeSongEnds", true);
         protected ConfInt onSongStartStay = new ConfInt("showControl/onSongStartStay", 5);
         protected ConfInt beforeSongEndsStay = new ConfInt("showControl/beforeSongEndsStay", 5);
+        protected ConfBool showWhenNotPlaying = new ConfBool("showControl/showWhenNotPlaying", false);
         
 
         protected Timer hideAfterSongStart = new Timer();
         private bool timeEventRegistered = false;
+        private Main main;
 
-        /// <summary>
-        /// Set to true when it's time when foo_title should be displayed - such as the 5 seconds after the start of playback
-        /// </summary>
-        protected bool timeToShow;
+
 
         protected fooManagedWrapper.CMetaDBHandle lastSong;
         
         public ShowControl() {
-            Main.GetInstance().OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(ShowControl_OnPlaybackNewTrackEvent);
-            Main.GetInstance().OnPlaybackDynamicInfoTrackEvent += new OnPlaybackDynamicInfoTrackDelegate(ShowControl_OnPlaybackDynamicInfoTrackEvent);
+            main = Main.GetInstance();
+
+            main.OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(ShowControl_OnPlaybackNewTrackEvent);
+            main.OnPlaybackDynamicInfoTrackEvent += new OnPlaybackDynamicInfoTrackDelegate(ShowControl_OnPlaybackDynamicInfoTrackEvent);
+            main.OnPlaybackPauseEvent += new OnPlaybackPauseDelegate(main_OnPlaybackPauseEvent);
+            main.OnPlaybackStopEvent += new OnPlaybackStopDelegate(main_OnPlaybackStopEvent);
+
             // I don't want to receive the playback time event when before song ends is not checked
             beforeSongEnds.OnChanged += new ConfValuesManager.ValueChangedDelegate(beforeSongEnds_OnChanged);
             if (beforeSongEnds.Value)
                 registerTimeEvent();
 
-            // enable foo_title back when restrictions are turned off
+            // react to settings change
             popupShowing.OnChanged += new ConfValuesManager.ValueChangedDelegate(popupShowing_OnChanged);
+            showWhenNotPlaying.OnChanged += new ConfValuesManager.ValueChangedDelegate(showWhenNotPlaying_OnChanged);
 
             // init the timers
             hideAfterSongStart.Tick += new EventHandler(hideAfterSongStart_Tick);
@@ -75,31 +80,15 @@ namespace fooTitle {
             doEnable();
         }
 
-
         /// <summary>
         /// When the showing option changes, check the situation and disable/enable foo_title as needed
         /// </summary>
         void popupShowing_OnChanged(string name) {
-            if (popupShowing.Value == PopupShowing.AllTheTime)
-                doEnable();
-            else {
-                if (!Main.PlayControl.IsPlaying()) {
-                    // just hide it
-                    doDisable();
-                    return;
-                }
+            showByCriteria();
+        }
 
-                // check time
-                double pos = Main.PlayControl.PlaybackGetPosition();
-                
-                if ((pos < onSongStartStay.Value) && (onSongStart.Value)) {
-                    showOnStart(pos);
-                } else if ((lastSong.GetLength() - beforeSongEndsStay.Value <= pos) && (beforeSongEnds.Value)){
-                    doEnable();
-                } else {
-                    doDisable();
-                }
-            }
+        void showWhenNotPlaying_OnChanged(string name) {
+            showByCriteria();
         }
 
         #region Showing and hiding functions
@@ -108,25 +97,21 @@ namespace fooTitle {
         /// Should be called from functions that check if it's time to show
         /// </summary>
         protected void doEnable() {
-            timeToShow = true;
-
-            if (Main.GetInstance().ShowWhen.Value == ShowWhenEnum.WhenMinimized) {
+            if (main.ShowWhen.Value == ShowWhenEnum.WhenMinimized) {
                 // can show only if minimized
                 if (!CManagedWrapper.getInstance().IsFoobarActivated())
-                    Main.GetInstance().EnableFooTitle();
-            } else if (Main.GetInstance().ShowWhen.Value == ShowWhenEnum.Never) {
+                    main.EnableFooTitle();
+            } else if (main.ShowWhen.Value == ShowWhenEnum.Never) {
                 // nothing
             } else {
                 // can show it freely
-                Main.GetInstance().EnableFooTitle();
+                main.EnableFooTitle();
             }
         }
 
         protected void doDisable() {
-            timeToShow = false;
-
             // can always hide
-            Main.GetInstance().DisableFooTitle();
+            main.DisableFooTitle();
         }
 
         /// <summary>
@@ -138,6 +123,7 @@ namespace fooTitle {
 
             // plan a hide event
             hideAfterSongStart.Interval = (int)((float)onSongStartStay.Value - playPos) * 1000;
+            hideAfterSongStart.Stop(); // without this the timer is not reset and fires in the old planned time
             hideAfterSongStart.Start();
         }
         #endregion
@@ -150,7 +136,7 @@ namespace fooTitle {
             if (timeEventRegistered)
                 return;
 
-            Main.GetInstance().OnPlaybackTimeEvent += new OnPlaybackTimeDelegate(ShowControl_OnPlaybackTimeEvent);
+            main.OnPlaybackTimeEvent += new OnPlaybackTimeDelegate(ShowControl_OnPlaybackTimeEvent);
             timeEventRegistered = true;
         }
 
@@ -161,7 +147,7 @@ namespace fooTitle {
             if (!timeEventRegistered)
                 return;
 
-            Main.GetInstance().OnPlaybackTimeEvent -= new OnPlaybackTimeDelegate(ShowControl_OnPlaybackTimeEvent);
+            main.OnPlaybackTimeEvent -= new OnPlaybackTimeDelegate(ShowControl_OnPlaybackTimeEvent);
             timeEventRegistered = false;
         }
 
@@ -236,11 +222,70 @@ namespace fooTitle {
             }
         }
 
-        void hideAfterSongStart_Tick(object sender, EventArgs e) {
-            doDisable();
-            hideAfterSongStart.Stop();  
+
+        void main_OnPlaybackStopEvent(IPlayControl.StopReason reason) {
+            showByCriteria();
         }
 
+        void main_OnPlaybackPauseEvent(bool state) {
+            if (state) {
+                // leave hiding it for a later time
+                hideAfterSongStart.Stop();
+            } else if (songStartSat()) {
+                // re-plan hiding
+                showOnStart(Main.PlayControl.PlaybackGetPosition());
+            }
+            showByCriteria();
+        }
+
+        void hideAfterSongStart_Tick(object sender, EventArgs e) {
+            doDisable();
+            hideAfterSongStart.Stop();
+        }
+
+        #endregion
+
+        #region Criteria satisfaction queries
+
+        /// <summary>
+        /// Returns true if foo_title should be shown according to the timing criteria - n seconds after song start
+        /// and that criteria is enabled.
+        /// </summary>
+        protected bool songStartSat() {
+            double pos = Main.PlayControl.PlaybackGetPosition();
+            return ((pos < onSongStartStay.Value) && onSongStart.Value && (popupShowing.Value == PopupShowing.OnlySometimes));
+        }
+
+        /// <summary>
+        /// Returns true if it should be shown before song end and that criteria is enabled.
+        /// </summary>
+        /// <returns></returns>
+        protected bool beforeSongEndSat() {
+            double pos = Main.PlayControl.PlaybackGetPosition();
+            return ((lastSong.GetLength() - beforeSongEndsStay.Value <= pos) && beforeSongEnds.Value && (popupShowing.Value == PopupShowing.OnlySometimes));
+        }
+
+        /// <summary>
+        /// Returns true if foo_title is displayed because nothing is playing and showWhenNotPlaying is enabled.
+        /// </summary>
+        protected bool notPlayingSat() {
+            IPlayControl pc = Main.PlayControl;
+            return (!pc.IsPlaying() || pc.IsPaused()) && showWhenNotPlaying.Value && (popupShowing.Value == PopupShowing.OnlySometimes);
+        }
+
+
+        /// <summary>
+        /// Evaluates current state of criteria and shows or hides foo_title.
+        /// </summary>
+        protected void showByCriteria() {
+            if (songStartSat()) {
+                showOnStart(Main.PlayControl.PlaybackGetPosition());
+            } else if ((popupShowing.Value == PopupShowing.AllTheTime) || beforeSongEndSat() || notPlayingSat()) {
+                doEnable();
+            } else {
+                doDisable();
+            }
+        }
         #endregion
 
         /// <summary>
@@ -248,9 +293,12 @@ namespace fooTitle {
         /// Should check if foo_title should be enabled
         /// </summary>
         public void TryShowWhenMinimized() {
-            if (timeToShow) {
-                Main.GetInstance().EnableFooTitle();
-            }
+            /*
+            if (songStartSat() && beforeSongEndSat()) {
+                main.EnableFooTitle();
+            }*/
+
+            showByCriteria();
         }
     }
 }

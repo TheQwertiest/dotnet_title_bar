@@ -92,6 +92,10 @@ bool CPlayControl::IsPlaying() {
 	return pc->is_playing();
 }
 
+bool CPlayControl::IsPaused() {
+	static_api_ptr_t<play_control> pc;
+	return pc->is_paused();
+}
 
 
 void fooManagedWrapper::CConsole::Error(String ^a) {

@@ -72,6 +72,7 @@ namespace fooManagedWrapper
 		CMetaDBHandle ^GetNowPlaying();
 		double PlaybackGetPosition();
 		bool IsPlaying();
+		bool IsPaused();
 	};
 
 	public ref class CPlayControl : public IPlayControl {
@@ -80,6 +81,7 @@ namespace fooManagedWrapper
 		virtual String ^FormatTitle(CMetaDBHandle ^dbHandle, String ^spec);
 		virtual double PlaybackGetPosition();
 		virtual bool IsPlaying();
+		virtual bool IsPaused();
 	};
 
 
