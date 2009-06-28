@@ -125,8 +125,8 @@ namespace fooTitle.Layers {
         /// GetMinimalSize implementation
         /// </summary>
         /// <returns>the same as Layer.GetMinimialSize()</returns>
-        public override System.Drawing.Size GetMinimalSize() {
-            return geometry.GetMinimalSize(Display, defaultGetMinimalSize());
+        protected override System.Drawing.Size getMinimalSizeImpl() {
+            return geometry.GetMinimalSize(Display, getContentSize());
         }
 
         /// <summary>

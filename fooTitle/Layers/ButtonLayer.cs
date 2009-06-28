@@ -110,6 +110,50 @@ namespace fooTitle.Layers {
         }
     };
 
+    class ToggleAction : IButtonAction {
+        private string target;
+
+        private enum Kind {
+            Toggle,
+            Enable,
+            Disable
+        }
+        private Kind only;
+
+        public void Init(XmlNode node) {
+            target = Element.GetAttributeValue(node, "target", "");
+
+            string _only = Element.GetAttributeValue(node, "only", "toggle").ToLowerInvariant();
+            if (_only == "enable")
+                only = Kind.Enable;
+            else if (_only == "toggle")
+                only = Kind.Toggle;
+            else if (_only == "disable")
+                only = Kind.Disable;
+        }
+
+        public void Run() {
+            Layer root = LayerTools.FindLayerByName(Main.GetInstance().CurrentSkin, target);
+            if (root == null) {
+                CConsole.Write(string.Format("Enable action couldn't find layer {0}.", target));
+                return;
+            }
+
+            bool enable = true;
+            if (only == Kind.Disable) {
+                enable = false;
+            } else if (only == Kind.Toggle) {
+                enable = !root.Enabled;
+            }
+
+            LayerTools.EnableLayer(root, enable);
+            
+        }
+
+
+
+    };
+
 
     [LayerTypeAttribute("button")]
     class ButtonLayer : Layer{
@@ -119,6 +163,7 @@ namespace fooTitle.Layers {
         static ButtonLayer() {
             Actions.Add("menu", typeof(MainMenuAction));
             Actions.Add("contextmenu", typeof(ContextMenuAction));
+            Actions.Add("toggle", typeof(ToggleAction));
         }
 
         
@@ -167,6 +212,9 @@ namespace fooTitle.Layers {
         void OnMouseUp(object sender, MouseEventArgs e) {
             mouseDown = false;
 
+            if (!Enabled)
+                return;
+
             if (mouseOn) {
                 // run all actions
                 foreach (IButtonAction action in actions) {
@@ -188,7 +236,7 @@ namespace fooTitle.Layers {
         }
 
 
-        public override void Draw() {
+        protected override void drawImpl() {
             Bitmap toDraw;
             if (mouseDown)
                 toDraw = myDownImage;
@@ -200,7 +248,6 @@ namespace fooTitle.Layers {
             if (toDraw != null) {
                 Display.Canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
             }
-            base.Draw();
         }
 
         private void readActions(XmlNode node) {
@@ -228,9 +275,6 @@ namespace fooTitle.Layers {
                     }
 
                 }
-                    
-
-
 
             }
         }

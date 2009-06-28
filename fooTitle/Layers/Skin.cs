@@ -112,9 +112,9 @@ namespace fooTitle.Layers
 			}
 		}
 
-        public override Size GetMinimalSize() {
+        protected override Size getMinimalSizeImpl() {
             // don't ask geometry..
-            return defaultGetMinimalSize();
+            return getContentSize();
         }
 
         /// <summary>
@@ -144,8 +144,7 @@ namespace fooTitle.Layers
         /// <param name="parentRect">parent rectangle - the geometry should fit in it</param>
         public void FrameUpdateGeometry(Rectangle parentRect) {
             foreach (Layer l in DynamicLayers) {
-                //l.UpdateGeometry(l.ParentLayer.ClientRect);
-                l.UpdateThisLayerGeometry(l.ParentLayer.ClientRect);
+                 l.UpdateThisLayerGeometry(l.ParentLayer.ClientRect);
             }
         }
 

@@ -74,3 +74,6 @@ bugs:
     + BUG: setting it to Normal (instead of always on top) and dragging right after that makes it freeze...completely
     + BUG: Toggle foo_title string is wrong in the View menu
     + BUG: fade length precise time display doesn't work
+    - BUG: tedka kdyz mam nastaveno show jen kdyz je foobar minimalizovan, tak po minimalizovani se foo-title neukaze
+    - BUG: to orezavani textu, v Book of Heavy Metal mi to urizlo l	
+	+ BUG: enabled state musi jit nastavit ve skinu

@@ -93,7 +93,7 @@ namespace fooTitle.Layers
             prepareRepeatImage();
         }
 
-		public override void Draw() {
+		protected override void drawImpl() {
 			int left = getLeftImageWidth();  // where the center image starts (rel. to layer)
 			int right = getRightImageStart(); // where the center image ends (rel. to layer)
 			if (leftImage != null) {
@@ -105,9 +105,6 @@ namespace fooTitle.Layers
 			if (rightImage != null) {
 				Display.Canvas.DrawImage(rightImage, ClientRect.X + right, ClientRect.Y, rightImage.Width, ClientRect.Height);
 			}
-
-			base.Draw();
-
 		}
 
         private int getRightImageStart() {

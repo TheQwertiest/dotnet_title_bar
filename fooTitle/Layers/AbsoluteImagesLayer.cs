@@ -47,12 +47,11 @@ namespace fooTitle.Layers
 			images.Add(b);
 		}
 
-		public override void Draw() {
+		protected override void drawImpl() {
 			foreach (Bitmap b in images){ 
 				Display.Canvas.DrawImage(b, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
 			}
 
-			base.Draw();
 		}
 
 	}

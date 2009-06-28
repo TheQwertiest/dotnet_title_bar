@@ -23,6 +23,7 @@ using System.Xml.XPath;
 using System.Collections;
 using System.Drawing;
 using fooTitle.Geometries;
+using System.Collections.Generic;
 
 
 namespace fooTitle.Layers
@@ -68,10 +69,26 @@ namespace fooTitle.Layers
             }
         }
 
+        private bool enabled = true;
+        public bool Enabled {
+            get {
+                return enabled;
+            }
+            set {
+                enabled = value;
+            }
+        }
+
+        public ICollection<Layer> SubLayers {
+            get {
+                return layers;
+            }
+        }
+
         protected Geometry geometry;
 		
 		protected ArrayList images = new ArrayList();
-		protected ArrayList layers = new ArrayList();
+		protected List<Layer> layers = new List<Layer>();
 
         public Layer ParentLayer;
 
@@ -81,6 +98,7 @@ namespace fooTitle.Layers
 			// read name and type
 			myName = node.Attributes.GetNamedItem("name").Value;
 			myType = node.Attributes.GetNamedItem("type").Value;
+            Enabled = GetAttributeValue(node, "enabled", "true").ToLowerInvariant() == "true";
 
             // create the geometry
             foreach (XmlNode child in node.ChildNodes) {
@@ -141,22 +159,43 @@ namespace fooTitle.Layers
 
         }
 
-		public virtual void Draw() {
+        /// <summary>
+        /// Draws the layer.
+        /// </summary>
+		public void Draw() {
+            if (!Enabled)
+                return;
+
+            drawImpl();
             drawSubLayers();
 		}
+
+        /// <summary>
+        /// Subclasses of Layer should override this method to perform any drawing.
+        /// </summary>
+        protected virtual void drawImpl() {}
 
         /// <summary>
         /// This function calculates the minimal width for itself and sublayers to fit into.
         /// </summary>
         /// <returns>Returns the minimal width required to fit the sublayers and self's content</returns>
-		public virtual Size GetMinimalSize() {
-            return geometry.GetMinimalSize(Display, defaultGetMinimalSize());
+		public Size GetMinimalSize() {
+            if (!Enabled) {
+                return new Size(0, 0);
+            } else {
+                return getMinimalSizeImpl();
+                
+            }
+        }
+
+        protected virtual Size getMinimalSizeImpl() {
+            return geometry.GetMinimalSize(Display, getContentSize());
         }
 
         /// <summary>
         /// This calculates the size of this's content. Does not take geometry into account.
         /// </summary>
-        protected Size defaultGetMinimalSize() {
+        protected Size getContentSize() {
             Size minSize = new Size(0, 0);
             foreach (Layer i in layers) {
                 Size layerSize = i.GetMinimalSize();
@@ -165,7 +204,6 @@ namespace fooTitle.Layers
                 if (i.Position.Y + layerSize.Height > minSize.Height)
                     minSize.Height = i.Position.Y + layerSize.Height;
             }
-            // return geometry.GetMinimalSize(Display, minSize);
             return minSize;
         }
 	}

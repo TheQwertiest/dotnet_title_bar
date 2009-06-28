@@ -48,13 +48,12 @@ namespace fooTitle.Layers
 			images.Add(b);
 		}
 
-		public override void Draw() {
+        protected override void drawImpl() {
 			Display.Canvas.DrawImage((Bitmap)images[curFrame], ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
 
 			curFrame ++;
 			if (curFrame >= images.Count) 
 				curFrame = 0;
-			base.Draw();
 		}
 	}
 }

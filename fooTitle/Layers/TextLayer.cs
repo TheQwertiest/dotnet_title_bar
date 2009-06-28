@@ -165,7 +165,7 @@ namespace fooTitle.Layers
             }
         }
 
-		public override void Draw() {
+		protected override void drawImpl() {
             Matrix oldTransform = Display.Canvas.Transform;
 
             Rectangle bounds = calcRotatedBounds();
@@ -177,8 +177,6 @@ namespace fooTitle.Layers
             
             straightDraw(Display.Canvas);
             Display.Canvas.Transform = oldTransform;
-
-			base.Draw();
 		}
 
         /// <summary>
@@ -225,7 +223,7 @@ namespace fooTitle.Layers
             }
 		}
 
-		public override Size GetMinimalSize() {
+		protected override Size getMinimalSizeImpl() {
             return geometry.GetMinimalSize(Display, calcRotatedBounds().Size);
 		}
 
@@ -248,10 +246,6 @@ namespace fooTitle.Layers
                 height = Math.Max(height, (int)Display.Canvas.MeasureString(right.formatted, right.font).Height);
 
             return new Size((int)width, (int)height);
-/*
-            Size minimal = geometry.GetMinimalSize(Display, new Size((int)width, height));
-            Size res = new Size(Math.Max((int)width, minimal.Width), Math.Max(height, minimal.Height));
- * */
         }
 
         private Rectangle calcRotatedBounds() {

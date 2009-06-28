@@ -121,7 +121,7 @@ namespace fooTitle.Layers {
             }
         }
 
-		public override void Draw() {
+		protected override void drawImpl() {
             prepareCachedImage();
             Bitmap toDraw = this.currentImage;
 
@@ -129,7 +129,6 @@ namespace fooTitle.Layers {
                 Display.Canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
                 Display.Canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
             }
-			base.Draw();
 		}
 
         private void prepareCachedImage() {
