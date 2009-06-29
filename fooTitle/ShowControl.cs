@@ -122,7 +122,7 @@ namespace fooTitle {
             doEnable();
 
             // plan a hide event
-            hideAfterSongStart.Interval = (int)((float)onSongStartStay.Value - playPos) * 1000;
+            hideAfterSongStart.Interval = (int)(((float)onSongStartStay.Value - playPos) * 1000);
             hideAfterSongStart.Stop(); // without this the timer is not reset and fires in the old planned time
             hideAfterSongStart.Start();
         }

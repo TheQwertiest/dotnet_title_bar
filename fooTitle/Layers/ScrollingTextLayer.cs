@@ -136,7 +136,7 @@ namespace fooTitle.Layers {
             base.updateText();
             if (left.formatted != null) {
                 SizeF textSize = Main.GetInstance().Display.Canvas.MeasureString(left.formatted, left.font);
-                textImage = new Bitmap(Math.Max(10, (int)textSize.Width), Math.Max(10, (int)textSize.Height), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                textImage = new Bitmap(Math.Max(10, (int)Math.Ceiling(textSize.Width)), Math.Max(10, (int)Math.Ceiling(textSize.Height)), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                 textCanvas = Graphics.FromImage(textImage);
                 textCanvas.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
                 textCanvas.DrawString(left.formatted, left.font, new SolidBrush(left.color), new PointF(0, 0));
