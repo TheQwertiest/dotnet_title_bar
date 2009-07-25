@@ -157,6 +157,17 @@ namespace fooTitle.Layers
             return Path.Combine(SkinDirectory, fileName);
         }
 
+        /// <summary>
+        /// Creates a Bitmap from a file located in the skin folder. Use this to prevent the
+        /// file from being locked all the time.
+        /// </summary>
+        public Bitmap GetSkinImage(string fileName) {
+            using (FileStream stream = new FileStream(GetSkinFilePath(fileName), FileMode.Open)) {
+                Bitmap tmp = new Bitmap(stream);
+                return tmp.Clone() as Bitmap;
+            }
+        }
+
         public void OnPlaybackTime(double time) {
             // pass it on
             sendEvent(OnPlaybackTimeEvent, time);

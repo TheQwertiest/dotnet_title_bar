@@ -301,12 +301,10 @@ namespace fooTitle {
         protected ViewMenuCommands viewMenuCommands;
         protected ShowControl showControl;
 
-#if DEBUG
         public IConfigStorage Config;
         public IConfigStorage TestConfig;
 
         public Tests.TestServices TestServicesInstance;
-#endif
 
         public void Create() {
             instance = this;

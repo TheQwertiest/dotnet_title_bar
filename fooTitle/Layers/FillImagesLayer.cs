@@ -48,7 +48,7 @@ namespace fooTitle.Layers
 		protected void addImage(XPathNavigator node) {
 			string src = node.GetAttribute("src", "");
 			string position = node.GetAttribute("position", "");
-			Bitmap b = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(src));
+			Bitmap b = Main.GetInstance().CurrentSkin.GetSkinImage(src);
 			if (position == "left") {
 				leftImage = b;
 			} else if (position == "center") {

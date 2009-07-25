@@ -10,7 +10,7 @@
     </ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
-    <AssemblyName>dotnet_title</AssemblyName>
+    <AssemblyName>dotnet_title_release</AssemblyName>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
@@ -209,7 +209,6 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>ilmerge /t:library /out:dotnet_title.dll dotnet_title_release.dll naid.dll nunit.framework.dll</PostBuildEvent>
   </PropertyGroup>
 </Project>

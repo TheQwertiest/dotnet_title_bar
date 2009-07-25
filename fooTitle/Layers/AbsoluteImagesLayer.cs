@@ -43,7 +43,7 @@ namespace fooTitle.Layers
 
 		protected void addImage(XPathNavigator node) {
 			string src = node.GetAttribute("src", "");
-			Bitmap b = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(src));
+			Bitmap b = Main.GetInstance().CurrentSkin.GetSkinImage(src);
 			images.Add(b);
 		}
 

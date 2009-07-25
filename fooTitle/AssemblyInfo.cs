@@ -50,6 +50,8 @@ using System.Runtime.CompilerServices;
 
 /* Changelog:
    0.8
+     - two new skins ;)
+     - images are no longer locked - simplifies skin development
      - option to show foo_title when playback is stopped/paused (when not set to show always)
      - fixed show n seconds after song start when changing song
      - re-loading skin just by clicking Apply skin

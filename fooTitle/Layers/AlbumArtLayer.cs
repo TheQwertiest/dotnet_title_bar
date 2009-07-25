@@ -67,8 +67,7 @@ namespace fooTitle.Layers {
                 XmlNode contents = GetFirstChildByName(node, "contents");
                 XmlNode NoAlbumArt = GetFirstChildByName(contents, "NoAlbumArt");
                 string name = GetNodeValue(NoAlbumArt);
-                string noCoverPath = Main.GetInstance().CurrentSkin.GetSkinFilePath(name);
-                noCover = new Bitmap(noCoverPath);
+                noCover = Main.GetInstance().CurrentSkin.GetSkinImage(name);
             } catch (Exception) {
                 noCover = null;
             }

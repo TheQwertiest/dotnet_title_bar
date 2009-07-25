@@ -184,17 +184,17 @@ namespace fooTitle.Layers {
             XmlNode img;
             img = GetFirstChildByNameOrNull(contents, "normalImg");
             if (img != null) {
-                myNormalImage = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(img.Attributes.GetNamedItem("src").Value));
+                myNormalImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attributes.GetNamedItem("src").Value);
             }
 
             img = GetFirstChildByNameOrNull(contents, "overImg");
             if (img != null) {
-                myOverImage = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(img.Attributes.GetNamedItem("src").Value));
+                myOverImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attributes.GetNamedItem("src").Value);
             }
 
             img = GetFirstChildByNameOrNull(contents, "downImg");
             if (img != null) {
-                myDownImage = new Bitmap(Main.GetInstance().CurrentSkin.GetSkinFilePath(img.Attributes.GetNamedItem("src").Value));
+                myDownImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attributes.GetNamedItem("src").Value);
             }
 
             // register mouse events
