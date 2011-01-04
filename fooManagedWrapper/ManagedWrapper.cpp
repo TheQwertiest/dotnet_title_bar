@@ -75,7 +75,7 @@ namespace fooManagedWrapper {
 		// find and create components
 		try {
 			componentLoader = gcnew CComponentLoader();
-			componentClients = componentLoader->LoadComponentsInDir(System::IO::Path::Combine(GetFoobarDirectory(), "components\\"), "dotnet_");
+			componentClients = componentLoader->LoadComponentsInDir(GetModuleDirectory(), "dotnet_");
 
 			for each (IComponentClient ^cl in componentClients) {
 				cl->Create();
@@ -127,11 +127,8 @@ namespace fooManagedWrapper {
 			guid.Data4[ 6 ], guid.Data4[ 7 ] );
 	}
 
-	
-	String ^CManagedWrapper::GetFoobarDirectory() {
-		String ^res = System::IO::Path::GetDirectoryName(modulePath);
-		res = res->Substring(0, res->Length - 10);
-		return res;
+	String ^CManagedWrapper::GetModuleDirectory() {
+		return System::IO::Path::GetDirectoryName(modulePath);
 	}
 
 	String ^CManagedWrapper::GetProfilePath() {
@@ -189,15 +186,6 @@ namespace fooManagedWrapper {
 		return (*UIControlInstance).get_ptr()->is_visible();
 	}
 
-/*
-	union CharToBytes {
-		unsigned int netChar;
-		struct {
-			unsigned char first;
-			unsigned char second;
-		} bytes;
-	};
-*/
 	pfc::string8 CManagedWrapper::StringToPfcString(String ^a) {
 		Encoder ^enc = Encoding::UTF8->GetEncoder();
 		int charsUsed, bytesUsed;

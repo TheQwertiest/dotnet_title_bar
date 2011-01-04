@@ -9,15 +9,14 @@ Modified by Roman Plasil for foo_managedWrapper and foo_title projects
 
 using namespace fooManagedWrapper;
 
-// component_client internals
+
 static HINSTANCE g_hIns;
+
 static pfc::string_simple g_name,g_full_path;
+
 static bool g_services_available = false, g_initialized = false;
 
 
-// a global handle to the CManagedWrapper instance
-static gcroot<CManagedWrapper ^> managedWrapper;
-#pragma unmanaged
 
 namespace core_api
 {
@@ -29,14 +28,15 @@ namespace core_api
 
 	HWND get_main_window()
 	{
-		return g_api->get_main_window();
+		PFC_ASSERT( g_foobar2000_api != NULL );
+		return g_foobar2000_api->get_main_window();
 	}
-	pcchar get_my_file_name()
+	const char* get_my_file_name()
 	{
 		return g_name;
 	}
 
-	pcchar get_my_full_path()
+	const char* get_my_full_path()
 	{
 		return g_full_path;
 	}
@@ -47,40 +47,48 @@ namespace core_api
 	}
 	bool assert_main_thread()
 	{
-		return (g_services_available && g_api) ? g_api->assert_main_thread() : true;
+		return (g_services_available && g_foobar2000_api) ? g_foobar2000_api->assert_main_thread() : true;
 	}
 
 	void ensure_main_thread() {
-		if (!assert_main_thread()) throw exception_wrong_thread();
+		if (!is_main_thread()) uBugCheck();
 	}
 
 	bool is_main_thread()
 	{
-		return (g_services_available && g_api) ? g_api->is_main_thread() : true;
+		return (g_services_available && g_foobar2000_api) ? g_foobar2000_api->is_main_thread() : true;
 	}
-	pcchar get_profile_path()
+	const char* get_profile_path()
 	{
-		return (g_services_available && g_api) ? g_api->get_profile_path() : 0;
+		PFC_ASSERT( g_foobar2000_api != NULL );
+		return g_foobar2000_api->get_profile_path();
 	}
 
 	bool is_shutting_down()
 	{
-		return (g_services_available && g_api) ? g_api->is_shutting_down() : g_initialized;
+		return (g_services_available && g_foobar2000_api) ? g_foobar2000_api->is_shutting_down() : g_initialized;
 	}
 	bool is_initializing()
 	{
-		return (g_services_available && g_api) ? g_api->is_initializing() : !g_initialized;
+		return (g_services_available && g_foobar2000_api) ? g_foobar2000_api->is_initializing() : !g_initialized;
+	}
+	bool is_portable_mode_enabled() {
+		PFC_ASSERT( g_foobar2000_api != NULL );
+		return g_foobar2000_api->is_portable_mode_enabled();
+	}
+
+	bool is_quiet_mode_enabled() {
+		PFC_ASSERT( g_foobar2000_api != NULL );
+		return g_foobar2000_api->is_quiet_mode_enabled();
 	}
 }
 
 namespace {
-	class foobar2000_client_impl : public foobar2000_client
+	class foobar2000_client_impl : public foobar2000_client, private foobar2000_component_globals
 	{
 	public:
 		t_uint32 get_version() {return FOOBAR2000_CLIENT_VERSION;}
-		pservice_factory_base get_service_list() {
-			return service_factory_base::__internal__list;
-		}
+		pservice_factory_base get_service_list() {return service_factory_base::__internal__list;}
 
 		void get_config(stream_writer * p_stream,abort_callback & p_abort) {
 			cfg_var::config_write_file(p_stream,p_abort);
@@ -107,7 +115,6 @@ namespace {
 			return false;
 #endif
 		}
-		
 	};
 }
 
@@ -119,7 +126,7 @@ extern "C"
 	__declspec(dllexport) foobar2000_client * _cdecl foobar2000_get_interface(foobar2000_api * p_api,HINSTANCE hIns)
 	{
 		g_hIns = hIns;
-		g_api = p_api;
+		g_foobar2000_api = p_api;
 
 		// find out module path
 		TCHAR *buf = new TCHAR[300];
@@ -128,30 +135,10 @@ extern "C"
 		delete[] buf;
 
 		// this is to allow creating of IFoobarService's before the component is initialized
-		managedWrapper = gcnew CManagedWrapper();
+		CManagedWrapper ^managedWrapper = gcnew CManagedWrapper();
 		managedWrapper->Start(modulePath);
 
 		return &g_client;
 	}
 }
 #pragma unmanaged
-
-#if 0
-BOOLEAN WINAPI DllMain(IN HINSTANCE hDllHandle, IN DWORD     nReason,  IN LPVOID  Reserved )
-{
-    BOOLEAN bSuccess = TRUE;
-
-    switch ( nReason ) {
-        case DLL_PROCESS_ATTACH:
-
-            DisableThreadLibraryCalls( hDllHandle );
-
-            break;
-
-        case DLL_PROCESS_DETACH:
-
-            break;
-    }
-	return TRUE;
-}
-#endif

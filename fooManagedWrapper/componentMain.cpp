@@ -24,7 +24,7 @@ DECLARE_COMPONENT_VERSION(
 // component name
 "foo_managedWrapper",
 // component version
-"0.5",
+"0.5.1",
 // component description
 "foo_managedWrapper\n"
 "Loads .NET components\n"

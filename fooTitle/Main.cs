@@ -46,15 +46,6 @@ namespace fooTitle {
         private static ConfString myDataDir = new ConfString("base/dataDir", "foo_title\\");
 
         /// <summary>
-        /// Returns the foo_title data directory in the foobar2000 application directory.
-        /// </summary>
-        public static string AppDataDir {
-            get {
-                return Path.Combine(CManagedWrapper.getInstance().GetFoobarDirectory(), myDataDir.Value);
-            }
-        }
-
-        /// <summary>
         /// Returns the foo_title data directory located in the foobar2000 user directory (documents and settings)
         /// </summary>
         public static string UserDataDir {
@@ -76,7 +67,7 @@ namespace fooTitle {
         /// <summary>
         /// The name of the currently used skin. Can be changed
         /// </summary>
-        public ConfString SkinPath = new ConfString("base/skinName", "white");
+        public ConfString SkinPath = new ConfString("base/skinName", null);
 
         protected void skinNameChanged(string name) {
             if (initDone) {
@@ -269,16 +260,15 @@ namespace fooTitle {
                     skin.Free();
                 skin = null;
 
-                // determine the absolute path
-                string absolutePath = path;
-                if (!Path.IsPathRooted(path))
-                    absolutePath = Path.Combine(Main.AppDataDir, path);
-
                 if (this.Display == null) {
                     reinitDisplay();
                 }
 
-                skin = new Skin(absolutePath);
+                if (path == null) {
+                    path = Path.Combine(UserDataDir, "white");
+                }
+
+                skin = new Skin(path);
                 skin.Init(Display);
 
                 // need to tell it about the currently playing song

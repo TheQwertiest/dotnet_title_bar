@@ -162,7 +162,7 @@ namespace fooTitle.Layers
         /// file from being locked all the time.
         /// </summary>
         public Bitmap GetSkinImage(string fileName) {
-            using (FileStream stream = new FileStream(GetSkinFilePath(fileName), FileMode.Open)) {
+            using (FileStream stream = new FileStream(GetSkinFilePath(fileName), FileMode.Open, FileAccess.Read)) {
                 Bitmap tmp = new Bitmap(stream);
                 return tmp.Clone() as Bitmap;
             }

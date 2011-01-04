@@ -45,12 +45,18 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.8.*")]
-[assembly: AssemblyInformationalVersion("0.8")]
+[assembly: AssemblyVersion("0.8.1.*")]
+[assembly: AssemblyInformationalVersion("0.8.1")]
 
 /* Changelog:
+   0.8.1
+     - compatibility with foobar2000 1.1
+     - all files are now in the user profile directory as there is no reliable way to do it otherwise
+ 
    0.8
      - two new skins ;)
+     - buttons can enable/disable parts of the skin
+     - buttons can use context menu commands 
      - images are no longer locked - simplifies skin development
      - option to show foo_title when playback is stopped/paused (when not set to show always)
      - fixed show n seconds after song start when changing song

@@ -75,3 +75,4 @@ bugs:
     + BUG: Toggle foo_title string is wrong in the View menu
     + BUG: fade length precise time display doesn't work
 	+ BUG: enabled state musi jit nastavit ve skinu
+    - BUG: Album art layer does not work for files played from zip

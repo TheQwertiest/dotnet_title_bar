@@ -87,21 +87,13 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
         protected void fillSkinList() {
             skinsList.Items.Clear();
 
-            // first the application directory
             try {
-                foreach (string path in System.IO.Directory.GetDirectories(Main.AppDataDir)) {
-                    string relativePath = System.IO.Path.GetFileName(path);
-                    addSkin(relativePath);
-                }
-            } catch (Exception) {
-                fooManagedWrapper.CConsole.Write("Failed to read from <foobar2000 app dir>\foo_title.");
-            }
 
-            if ((Main.AppDataDir != Main.UserDataDir) && (Directory.Exists(Main.UserDataDir))) {
-                // now the user profile directory
                 foreach (string path in System.IO.Directory.GetDirectories(Main.UserDataDir)) {
                     addSkin(path);
                 }
+            } catch (Exception) {
+                fooManagedWrapper.CConsole.Write(String.Format("Failed to read from {0}.", Main.UserDataDir));
             }
         }
 

@@ -80,9 +80,8 @@ namespace fooManagedWrapper {
 		static _GUID ToGUID(Guid^ guid);
 		static Guid ^FromGUID(const _GUID& guid);
 
-		// returns the path to the directory where foobar is installed
-		String ^GetFoobarDirectory();
 		String ^GetProfilePath();
+		String ^GetModuleDirectory();
 
 		// TODO provide a better implementation
 		static void DoMainMenuCommand(String ^name);
