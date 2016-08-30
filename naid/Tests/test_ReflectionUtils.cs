@@ -25,9 +25,9 @@ namespace naid.Tests {
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void test_ConstructParameterless_exc() {
-            ReflectionUtils.ConstructParameterless<ReflB>(typeof(ReflB));
+            Assert.That(() => ReflectionUtils.ConstructParameterless<ReflB>(typeof(ReflB)),
+                Throws.TypeOf<InvalidOperationException>());
         }
     }
 }

@@ -51,9 +51,9 @@ namespace naid.Tests {
         }
 
         [Test]
-        [ExpectedException(typeof(NullReferenceException))]
         public void test_exc_on_find_null() {
-            intCollection.Find(null);
+            Assert.That(() => intCollection.Find(null),
+                Throws.TypeOf<NullReferenceException>());
         }
 
         [Test]

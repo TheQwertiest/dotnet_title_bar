@@ -99,7 +99,7 @@ namespace fooManagedWrapper {
 			return this->recFindDynamicCmd(current, parts, 0, data);
 
 		} else {
-			return Nullable<Guid>(CManagedWrapper::FromGUID((*ptr)->get_item_guid(itemToSearch)));
+			return Nullable<Guid>((Guid)CManagedWrapper::FromGUID((*ptr)->get_item_guid(itemToSearch)));
 		}
 	}
 
@@ -107,7 +107,7 @@ namespace fooManagedWrapper {
 		if (this->nameMatches(node, parts[firstPart], data)) {
 
 			if (firstPart == parts->Length - 1) {
-				return Nullable<Guid>(CManagedWrapper::FromGUID(node->get_guid()));
+				return Nullable<Guid>((Guid)CManagedWrapper::FromGUID(node->get_guid()));
 			} else {
 				for (unsigned int i = 0; i < node->get_children_count(); i++) {
 					Nullable<Guid> found = this->recFindDynamicCmd(node->get_child(i), parts, firstPart + 1, data);
