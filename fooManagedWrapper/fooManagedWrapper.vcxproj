@@ -91,7 +91,6 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>..\..\foobar2000\shared\shared.lib;ole32.lib;User32.lib;shlwapi.lib</AdditionalDependencies>
-      <OutputFile>$(OutDir)foo_managedWrapper.dll</OutputFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
       <TargetMachine>MachineX86</TargetMachine>

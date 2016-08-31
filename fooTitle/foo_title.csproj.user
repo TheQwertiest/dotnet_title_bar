@@ -62,4 +62,14 @@
     </StartWorkingDirectory>
     <StartWithIE>false</StartWithIE>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <StartProgram>D:\Projects\f2k_components\foobar2000_portable\foobar2000.exe</StartProgram>
+    <StartWithIE>true</StartWithIE>
+    <StartAction>Program</StartAction>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <StartProgram>D:\Projects\f2k_components\foobar2000_portable\foobar2000.exe</StartProgram>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
 </Project>
