@@ -75,45 +75,18 @@ namespace fooTitle.Layers {
             Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(CurrentSkin_OnPlaybackNewTrackEvent);
         }
 
-        protected string findAlbumArt(CMetaDBHandle song, string filenames) {
-            String songPath = song.GetPath();
-            // remove this prefix
-            if (songPath.StartsWith("file:\\"))
-                songPath = songPath.Substring(6);
-            else if (songPath.StartsWith("file://"))
-                songPath = songPath.Substring(7);
-
-            string[] extensions = new string[] { ".jpg", ".png", ".bmp", ".gif", ".jpeg" };
-            string[] splitFiles = filenames.Split(new char[] { ';' });
-            string[] formattedFiles = new string[splitFiles.Length];
-            int i = 0;
-            foreach (string f in splitFiles) {
-                formattedFiles[i] = Main.PlayControl.FormatTitle(song, f);
-                i++;
-            }
-
-            foreach (string f in formattedFiles) {
-                foreach (string ext in extensions) {
-                    String path = Path.Combine(Path.GetDirectoryName(songPath), f + ext);
-                    if (File.Exists(path))
-                        return path;
-                }
-            }
-
-            return null;
-        }
-
         void CurrentSkin_OnPlaybackNewTrackEvent(fooManagedWrapper.CMetaDBHandle song) {
             cachedResized = null;
-            string fileName = findAlbumArt(song, Main.GetInstance().AlbumArtFilenames.Value);
-            if (fileName != null) {
+            Bitmap artwork = song.GetArtworkBitmap();
+            if (artwork != null) {
                 try {
-                    Bitmap tmp = new Bitmap(fileName);
+                    Bitmap tmp = artwork;
                     albumArt = new Bitmap(tmp);
                     tmp.Dispose();
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     albumArt = null;
-                    fooManagedWrapper.CConsole.Warning(String.Format("Cannot open album art {0} : {1}", fileName, e.Message));
+                    fooManagedWrapper.CConsole.Warning(String.Format("Cannot open album art {0} : {1}", song.GetPath(), e.Message));
                 }
             } else {
                 albumArt = null;
@@ -140,10 +113,16 @@ namespace fooTitle.Layers {
             if ((ClientRect.Width <= 0) || (ClientRect.Height <= 0))
                 return;
 
+            float scale = Math.Min((float)ClientRect.Width / albumArt.Width, (float)ClientRect.Height / albumArt.Height);
+            float scaledWidth = (albumArt.Width * scale);
+            float scaledHeight = (albumArt.Height * scale);
             cachedResized = new Bitmap(ClientRect.Width, ClientRect.Height);
             using (Graphics canvas = Graphics.FromImage(cachedResized)) {
                 canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-                canvas.DrawImage(albumArt, 0, 0, ClientRect.Width, ClientRect.Height);
+                if (noCover != null) {
+                    canvas.DrawImage(noCover, 0, 0, ClientRect.Width, ClientRect.Height);
+                }
+                canvas.DrawImage(albumArt, (ClientRect.Width - scaledWidth) / 2, (ClientRect.Height - scaledHeight) / 2, scaledWidth, scaledHeight);
             }
 
         }

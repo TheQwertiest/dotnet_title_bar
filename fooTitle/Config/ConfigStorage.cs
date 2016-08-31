@@ -119,7 +119,9 @@ namespace fooTitle.Config {
                 configRoot.AppendChild(el);
             }
             ((XmlElement)el).SetAttribute("id", name);
-            el.InnerText = value.ToString();
+            if (value != null) {
+                el.InnerText = value.ToString();
+            }
         }
 
         public object ReadVal<T>(string name) {

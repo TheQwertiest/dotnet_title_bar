@@ -52,7 +52,53 @@ double CMetaDBHandle::GetLength() {
 	return (*handle)->get_length();
 }
 
+Bitmap ^CMetaDBHandle::GetArtworkBitmap() {
+	static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
+	abort_callback_dummy cb_abort;
 
+	pfc::list_t<GUID> guids;
+	guids.add_item(album_art_ids::cover_front);
+
+	album_art_extractor_instance_v2::ptr artwork_api_v2;
+	artwork_api_v2 = p_album_art_manager_v2->open(pfc::list_single_ref_t<metadb_handle_ptr>(*handle), guids, cb_abort);
+
+	boolean b_found = false;
+	album_art_data_ptr data;
+	try {
+		data = artwork_api_v2->query(album_art_ids::cover_front, cb_abort);
+		b_found = true;
+	}
+	catch (const exception_aborted &) {}
+	catch (exception_io_not_found const &) {}
+	catch (exception_io const &e) {
+		console::formatter formatter;
+		formatter << "Requested Album Art entry could not be retrieved: " << e.what();
+	}
+
+	if (!b_found) {
+		try {
+			auto p_extractor = p_album_art_manager_v2->open_stub(cb_abort);
+			data = p_extractor->query(album_art_ids::cover_front, cb_abort);
+			b_found = true;
+		}
+		catch (const exception_aborted &) {}
+		catch (exception_io_not_found const &) {}
+		catch (exception_io const &e) {
+			console::formatter formatter;
+			formatter << "Requested Album Art entry could not be retrieved: " << e.what();
+		}
+	}
+
+	if (b_found && data.is_valid()) {
+		System::IO::UnmanagedMemoryStream ^stream = gcnew System::IO::UnmanagedMemoryStream((unsigned char*)data->get_ptr(), data->get_size());
+		Bitmap ^bmp = gcnew Bitmap(stream);
+		delete stream;
+		data.release();
+		return bmp;
+	}
+
+	return nullptr;
+}
 
 String ^CPlayControl::FormatTitle(CMetaDBHandle ^handle, String ^spec) {
 	if (handle == nullptr) return gcnew String("abc");

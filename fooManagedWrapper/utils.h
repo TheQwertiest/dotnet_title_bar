@@ -23,6 +23,7 @@
 
 using namespace System;
 using namespace System::Collections;
+using namespace System::Drawing;
 
 namespace fooManagedWrapper
 {
@@ -46,6 +47,7 @@ namespace fooManagedWrapper
 		metadb_handle_ptr GetHandle() { return *handle; };
 		String ^GetPath();
 		double GetLength();
+		Bitmap ^GetArtworkBitmap();
 	private:
 		// metadb_handle_ptr is a smart pointer which handles reference counting, so another level of indirection
 		// is rather cumbersome, but it is required by C++/CLI

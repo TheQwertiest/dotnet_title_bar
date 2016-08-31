@@ -35,7 +35,7 @@
     </StartArguments>
     <StartPage>
     </StartPage>
-    <StartProgram>C:\Software\foobar2000-1.1\foobar2000.exe</StartProgram>
+    <StartProgram>D:\Projects\f2k_components\foobar2000_portable\foobar2000.exe</StartProgram>
     <StartURL>
     </StartURL>
     <StartWorkingDirectory>
@@ -45,7 +45,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <EnableASPDebugging>false</EnableASPDebugging>
     <EnableASPXDebugging>false</EnableASPXDebugging>
-    <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
     <EnableSQLServerDebugging>false</EnableSQLServerDebugging>
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
     <RemoteDebugMachine>

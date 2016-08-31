@@ -29,8 +29,8 @@ using fooTitle.Tests;
 
 
 namespace fooTitle {
-class Properties : fooManagedWrapper.CManagedPrefPage{
-  // class Properties : System.Windows.Forms.Form {
+class Properties : fooManagedWrapper.CManagedPrefPage {
+//class Properties : System.Windows.Forms.Form {
 
     class SkinListEntry {
         public string path;
@@ -186,6 +186,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.normalRadio = new System.Windows.Forms.RadioButton();
             this.alwaysOnTopRadio = new System.Windows.Forms.RadioButton();
             this.popupBox = new System.Windows.Forms.GroupBox();
+            this.showWhenNotPlayingCheckbox = new System.Windows.Forms.CheckBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.beforeSongEndsStayTextBox = new System.Windows.Forms.TextBox();
@@ -203,7 +204,6 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.restoreTopmostCheckbox = new System.Windows.Forms.CheckBox();
             this.label13 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.showWhenNotPlayingCheckbox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
             this.albumArtGroup.SuspendLayout();
             this.showWhenBox.SuspendLayout();
@@ -244,7 +244,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.updateIntervalTrackBar.Maximum = 500;
             this.updateIntervalTrackBar.Minimum = 50;
             this.updateIntervalTrackBar.Name = "updateIntervalTrackBar";
-            this.updateIntervalTrackBar.Size = new System.Drawing.Size(182, 40);
+            this.updateIntervalTrackBar.Size = new System.Drawing.Size(182, 45);
             this.updateIntervalTrackBar.SmallChange = 10;
             this.updateIntervalTrackBar.TabIndex = 2;
             this.updateIntervalTrackBar.Tag = "display/updateInterval";
@@ -271,13 +271,14 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             // 
             // albumArtFilenames
             // 
-            this.albumArtFilenames.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.albumArtFilenames.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.albumArtFilenames.Location = new System.Drawing.Point(6, 32);
             this.albumArtFilenames.Name = "albumArtFilenames";
             this.albumArtFilenames.Size = new System.Drawing.Size(231, 20);
             this.albumArtFilenames.TabIndex = 5;
             this.albumArtFilenames.Tag = "skin/albumArtFilenames";
+            this.albumArtFilenames.Enabled = false;
             // 
             // label3
             // 
@@ -295,8 +296,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(230, 39);
             this.label4.TabIndex = 7;
-            this.label4.Text = "Enter the names of possible album art images \r\nwithout extensions, separated by s" +
-                "emicolons.\r\nIt\'s possible to use foobar title formatting strings.";
+            this.label4.Text = "This setting is disabled. Please use the built-in\r\nfoobar2000 album art manager. :)";
             // 
             // albumArtGroup
             // 
@@ -388,7 +388,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.fadeLengthTrackBar.Maximum = 2000;
             this.fadeLengthTrackBar.Name = "fadeLengthTrackBar";
             this.fadeLengthTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.fadeLengthTrackBar.Size = new System.Drawing.Size(40, 110);
+            this.fadeLengthTrackBar.Size = new System.Drawing.Size(45, 110);
             this.fadeLengthTrackBar.SmallChange = 10;
             this.fadeLengthTrackBar.TabIndex = 3;
             this.fadeLengthTrackBar.Tag = "display/fadeLength";
@@ -409,7 +409,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.normalOpacityTrackBar.Maximum = 255;
             this.normalOpacityTrackBar.Minimum = 5;
             this.normalOpacityTrackBar.Name = "normalOpacityTrackBar";
-            this.normalOpacityTrackBar.Size = new System.Drawing.Size(104, 40);
+            this.normalOpacityTrackBar.Size = new System.Drawing.Size(104, 45);
             this.normalOpacityTrackBar.TabIndex = 3;
             this.normalOpacityTrackBar.Tag = "display/normalOpacity";
             this.normalOpacityTrackBar.TickFrequency = 16;
@@ -421,7 +421,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.overOpacityTrackBar.Maximum = 255;
             this.overOpacityTrackBar.Minimum = 5;
             this.overOpacityTrackBar.Name = "overOpacityTrackBar";
-            this.overOpacityTrackBar.Size = new System.Drawing.Size(104, 40);
+            this.overOpacityTrackBar.Size = new System.Drawing.Size(104, 45);
             this.overOpacityTrackBar.TabIndex = 2;
             this.overOpacityTrackBar.Tag = "display/overOpacity";
             this.overOpacityTrackBar.TickFrequency = 16;
@@ -519,6 +519,17 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.popupBox.TabIndex = 13;
             this.popupBox.TabStop = false;
             this.popupBox.Text = "Popup";
+            // 
+            // showWhenNotPlayingCheckbox
+            // 
+            this.showWhenNotPlayingCheckbox.AutoSize = true;
+            this.showWhenNotPlayingCheckbox.Location = new System.Drawing.Point(21, 176);
+            this.showWhenNotPlayingCheckbox.Name = "showWhenNotPlayingCheckbox";
+            this.showWhenNotPlayingCheckbox.Size = new System.Drawing.Size(136, 17);
+            this.showWhenNotPlayingCheckbox.TabIndex = 21;
+            this.showWhenNotPlayingCheckbox.Tag = "showControl/showWhenNotPlaying";
+            this.showWhenNotPlayingCheckbox.Text = "Show when not playing";
+            this.showWhenNotPlayingCheckbox.UseVisualStyleBackColor = true;
             // 
             // label11
             // 
@@ -686,7 +697,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.label13.Size = new System.Drawing.Size(248, 39);
             this.label13.TabIndex = 0;
             this.label13.Text = "When Z-order is set to Always on top, foo_title can \r\nset itself as the foremost " +
-                "window every minute to\r\nwork around the Windows problem.";
+    "window every minute to\r\nwork around the Windows problem.";
             // 
             // tabPage2
             // 
@@ -699,17 +710,6 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Misc";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // showWhenNotPlayingCheckbox
-            // 
-            this.showWhenNotPlayingCheckbox.AutoSize = true;
-            this.showWhenNotPlayingCheckbox.Location = new System.Drawing.Point(21, 176);
-            this.showWhenNotPlayingCheckbox.Name = "showWhenNotPlayingCheckbox";
-            this.showWhenNotPlayingCheckbox.Size = new System.Drawing.Size(136, 17);
-            this.showWhenNotPlayingCheckbox.TabIndex = 21;
-            this.showWhenNotPlayingCheckbox.Tag = "showControl/showWhenNotPlaying";
-            this.showWhenNotPlayingCheckbox.Text = "Show when not playing";
-            this.showWhenNotPlayingCheckbox.UseVisualStyleBackColor = true;
             // 
             // Properties
             // 
@@ -759,6 +759,5 @@ class Properties : fooManagedWrapper.CManagedPrefPage{
 
             main.SkinPath.ForceUpdate(((SkinListEntry)skinsList.SelectedItem).path);
         }
-
     }
 }
