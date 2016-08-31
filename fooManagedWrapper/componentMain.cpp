@@ -22,10 +22,13 @@
 
 DECLARE_COMPONENT_VERSION(
 // component name
-"foo_managedWrapper",
+"Managed Wrapper (.NET)",
 // component version
-"0.5.1",
+"0.7.0",
 // component description
 "foo_managedWrapper\n"
-"Loads .NET components\n"
+"Loads .NET components\n\n"
+"(c) 2005-2006 Roman Plasil\n\n"
+"Updated by Miha Lepej\n"
+"https://github.com/LepkoQQ/foo_title"
 )

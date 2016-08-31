@@ -45,10 +45,13 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.8.1.*")]
-[assembly: AssemblyInformationalVersion("0.8.1")]
+[assembly: AssemblyVersion("0.9.0.*")]
+[assembly: AssemblyInformationalVersion("0.9.0")]
 
 /* Changelog:
+   0.9.0+
+     - See: https://github.com/LepkoQQ/foo_title
+
    0.8.1
      - compatibility with foobar2000 1.1
      - all files are now in the user profile directory as there is no reliable way to do it otherwise
