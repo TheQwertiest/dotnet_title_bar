@@ -175,6 +175,7 @@ namespace fooTitle.Extending {
                 }
             } catch (Exception e) {
                 fooManagedWrapper.CConsole.Warning(e.ToString());
+                fooManagedWrapper.CConsole.Warning(val);
                 return float.Parse(def);
             }
         }

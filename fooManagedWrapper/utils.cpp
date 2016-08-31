@@ -112,7 +112,7 @@ String ^CPlayControl::FormatTitle(CMetaDBHandle ^handle, String ^spec) {
 	service_ptr_t<titleformat_object> compiledScript;
 	titlecompiler->compile(compiledScript, spec_c);
 
-	pc->playback_format_title_ex(handle->GetHandle(), NULL, out, compiledScript, NULL,  playback_control::display_level_all);
+	pc->playback_format_title_ex(handle->GetHandle(), NULL, out, compiledScript, NULL, playback_control::display_level_all);
 	
 	String ^res = CManagedWrapper::PfcStringToString(out);
 	System::Runtime::InteropServices::Marshal::FreeHGlobal(IntPtr((void*)spec_c));
