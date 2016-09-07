@@ -18,17 +18,13 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using System.IO;
 using System.Xml;
 using fooManagedWrapper;
 
 namespace fooTitle.Layers {
     [LayerTypeAttribute("album-art")]
     class AlbumArtLayer : Layer {
-
         protected Bitmap albumArt;
         protected Bitmap noCover;
         /// <summary>
@@ -45,7 +41,6 @@ namespace fooTitle.Layers {
         protected Bitmap currentImage {
             get {
                 if (albumArt != null) {
-                    
                     if (cachedResized != null) {
                         if ((ClientRect.Width == cachedResized.Width) && (ClientRect.Height == cachedResized.Height))
                             return cachedResized;
@@ -54,11 +49,9 @@ namespace fooTitle.Layers {
                     } else {
                         return albumArt;
                     }
-
                 } else {
                     return noCover;
                 }
-
             }
         }
 
@@ -76,9 +69,10 @@ namespace fooTitle.Layers {
             Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += new OnPlaybackTimeDelegate(CurrentSkin_OnPlaybackTimeEvent);
         }
 
-        void LoadArtwork(fooManagedWrapper.CMetaDBHandle song) {
-            if (TimesCheckedArtwork > 0 && albumArt != null) return;
-            fooManagedWrapper.CConsole.Write(String.Format("Checking album art."));
+        void LoadArtwork(CMetaDBHandle song) {
+            if (TimesCheckedArtwork > 0 && albumArt != null)
+                return;
+            CConsole.Write(String.Format("Checking album art."));
             cachedResized = null;
             Bitmap artwork = song.GetArtworkBitmap();
             if (artwork != null) {
@@ -86,10 +80,9 @@ namespace fooTitle.Layers {
                     Bitmap tmp = artwork;
                     albumArt = new Bitmap(tmp);
                     tmp.Dispose();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     albumArt = null;
-                    fooManagedWrapper.CConsole.Warning(String.Format("Cannot open album art {0} : {1}", song.GetPath(), e.Message));
+                    CConsole.Warning(String.Format("Cannot open album art {0} : {1}", song.GetPath(), e.Message));
                 }
             } else {
                 albumArt = null;
@@ -98,21 +91,19 @@ namespace fooTitle.Layers {
 
         protected int TimesCheckedArtwork = 0;
 
-        void CurrentSkin_OnPlaybackTimeEvent(double time)
-        {
-            if (time % 10 == 0 && TimesCheckedArtwork < 2)
-            {
+        void CurrentSkin_OnPlaybackTimeEvent(double time) {
+            if (time % 10 == 0 && TimesCheckedArtwork < 2) {
                 TimesCheckedArtwork++;
                 LoadArtwork(Main.PlayControl.GetNowPlaying());
             }
         }
 
-        void CurrentSkin_OnPlaybackNewTrackEvent(fooManagedWrapper.CMetaDBHandle song) {
+        void CurrentSkin_OnPlaybackNewTrackEvent(CMetaDBHandle song) {
             TimesCheckedArtwork = 0;
             LoadArtwork(song);
         }
 
-		protected override void drawImpl() {
+        protected override void drawImpl() {
             prepareCachedImage();
             Bitmap toDraw = this.currentImage;
 
@@ -120,7 +111,7 @@ namespace fooTitle.Layers {
                 Display.Canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
                 Display.Canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
             }
-		}
+        }
 
         private void prepareCachedImage() {
             if (albumArt == null)
@@ -143,8 +134,6 @@ namespace fooTitle.Layers {
                 }
                 canvas.DrawImage(albumArt, (ClientRect.Width - scaledWidth) / 2, (ClientRect.Height - scaledHeight) / 2, scaledWidth, scaledHeight);
             }
-
         }
-
     }
 }
