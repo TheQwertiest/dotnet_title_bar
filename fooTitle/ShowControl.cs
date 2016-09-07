@@ -46,7 +46,7 @@ namespace fooTitle {
         protected ConfInt onSongStartStay = new ConfInt("showControl/onSongStartStay", 5, 0, int.MaxValue);
         protected ConfInt beforeSongEndsStay = new ConfInt("showControl/beforeSongEndsStay", 5, 0, int.MaxValue);
         protected ConfBool showWhenNotPlaying = new ConfBool("showControl/showWhenNotPlaying", false);
-        
+
 
         protected Timer hideAfterSongStart = new Timer();
         private bool timeEventRegistered = false;
@@ -55,7 +55,7 @@ namespace fooTitle {
 
 
         protected fooManagedWrapper.CMetaDBHandle lastSong;
-        
+
         public ShowControl() {
             main = Main.GetInstance();
 
@@ -180,7 +180,7 @@ namespace fooTitle {
                 doEnable();
             }
         }
-        
+
         /// <summary>
         /// Displays foo_title when it's set to display on new song and also hides foo_title if not set
         /// </summary>
@@ -188,7 +188,7 @@ namespace fooTitle {
             // store the song
             lastSong = song;
 
-            if (popupShowing.Value != PopupShowing.OnlySometimes) 
+            if (popupShowing.Value != PopupShowing.OnlySometimes)
                 return;   // no need to do anything
             if (!onSongStart.Value) {
                 // hide foo_title when the previous song has ended

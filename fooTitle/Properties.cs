@@ -62,6 +62,11 @@ namespace fooTitle {
         private Label artLoadEveryLabelRight;
         private NumericUpDown artLoadEveryNumber;
         private Label artLoadEveryLabelLeft;
+        private GroupBox groupBox3;
+        private Button openSkinDirBtn;
+        private GroupBox groupBox2;
+        private Label label3;
+        private Label label1;
         protected RadioGroupWrapper popupShowingWrapper;
 
         public Properties(Main _main)
@@ -136,8 +141,6 @@ namespace fooTitle {
         private System.Windows.Forms.ListBox skinsList;
         private System.Windows.Forms.Button applySkinBtn;
         private System.Windows.Forms.TrackBar updateIntervalTrackBar;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox showWhenBox;
         private System.Windows.Forms.RadioButton neverRadio;
         private System.Windows.Forms.RadioButton minimizedRadio;
@@ -167,8 +170,6 @@ namespace fooTitle {
             this.skinsList = new System.Windows.Forms.ListBox();
             this.applySkinBtn = new System.Windows.Forms.Button();
             this.updateIntervalTrackBar = new System.Windows.Forms.TrackBar();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.showWhenBox = new System.Windows.Forms.GroupBox();
             this.neverRadio = new System.Windows.Forms.RadioButton();
             this.minimizedRadio = new System.Windows.Forms.RadioButton();
@@ -215,6 +216,11 @@ namespace fooTitle {
             this.artLoadEveryLabelRight = new System.Windows.Forms.Label();
             this.artLoadEveryNumber = new System.Windows.Forms.NumericUpDown();
             this.artLoadEveryLabelLeft = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.openSkinDirBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
             this.showWhenBox.SuspendLayout();
             this.opacityOpts.SuspendLayout();
@@ -223,6 +229,8 @@ namespace fooTitle {
             ((System.ComponentModel.ISupportInitialize)(this.overOpacityTrackBar)).BeginInit();
             this.zOrderBox.SuspendLayout();
             this.popupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.beforeSongEndsStayTextBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.onSongStartStayTextBox)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.restoreTopmostBox.SuspendLayout();
@@ -230,21 +238,23 @@ namespace fooTitle {
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).BeginInit();
+            this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // skinsList
             // 
             this.skinsList.FormattingEnabled = true;
-            this.skinsList.Location = new System.Drawing.Point(6, 26);
+            this.skinsList.Location = new System.Drawing.Point(6, 19);
             this.skinsList.Name = "skinsList";
-            this.skinsList.Size = new System.Drawing.Size(182, 160);
+            this.skinsList.Size = new System.Drawing.Size(214, 147);
             this.skinsList.TabIndex = 0;
             // 
             // applySkinBtn
             // 
-            this.applySkinBtn.Location = new System.Drawing.Point(6, 192);
+            this.applySkinBtn.Location = new System.Drawing.Point(6, 172);
             this.applySkinBtn.Name = "applySkinBtn";
-            this.applySkinBtn.Size = new System.Drawing.Size(182, 23);
+            this.applySkinBtn.Size = new System.Drawing.Size(104, 23);
             this.applySkinBtn.TabIndex = 1;
             this.applySkinBtn.Text = "Apply skin";
             this.applySkinBtn.UseVisualStyleBackColor = true;
@@ -252,35 +262,18 @@ namespace fooTitle {
             // 
             // updateIntervalTrackBar
             // 
+            this.updateIntervalTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.updateIntervalTrackBar.LargeChange = 100;
-            this.updateIntervalTrackBar.Location = new System.Drawing.Point(194, 19);
+            this.updateIntervalTrackBar.Location = new System.Drawing.Point(6, 32);
             this.updateIntervalTrackBar.Maximum = 500;
             this.updateIntervalTrackBar.Minimum = 50;
             this.updateIntervalTrackBar.Name = "updateIntervalTrackBar";
-            this.updateIntervalTrackBar.Size = new System.Drawing.Size(182, 45);
+            this.updateIntervalTrackBar.Size = new System.Drawing.Size(200, 45);
             this.updateIntervalTrackBar.SmallChange = 10;
             this.updateIntervalTrackBar.TabIndex = 2;
             this.updateIntervalTrackBar.Tag = "display/updateInterval";
             this.updateIntervalTrackBar.TickFrequency = 50;
             this.updateIntervalTrackBar.Value = 50;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(191, 3);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Update interval:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 3);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(76, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Installed skins:";
             // 
             // showWhenBox
             // 
@@ -511,9 +504,9 @@ namespace fooTitle {
             this.popupBox.Controls.Add(this.onSongStartCheckbox);
             this.popupBox.Controls.Add(this.onlyWhenRadio);
             this.popupBox.Controls.Add(this.allTheTimeRadio);
-            this.popupBox.Location = new System.Drawing.Point(238, 65);
+            this.popupBox.Location = new System.Drawing.Point(238, 96);
             this.popupBox.Name = "popupBox";
-            this.popupBox.Size = new System.Drawing.Size(225, 239);
+            this.popupBox.Size = new System.Drawing.Size(225, 188);
             this.popupBox.TabIndex = 13;
             this.popupBox.TabStop = false;
             this.popupBox.Text = "Show Popup";
@@ -638,16 +631,13 @@ namespace fooTitle {
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.groupBox3);
+            this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.restoreTopmostBox);
             this.tabPage1.Controls.Add(this.zOrderBox);
             this.tabPage1.Controls.Add(this.versionLabel);
             this.tabPage1.Controls.Add(this.popupBox);
-            this.tabPage1.Controls.Add(this.applySkinBtn);
-            this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.updateIntervalTrackBar);
             this.tabPage1.Controls.Add(this.showWhenBox);
-            this.tabPage1.Controls.Add(this.skinsList);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -789,6 +779,59 @@ namespace fooTitle {
             this.artLoadEveryLabelLeft.TabIndex = 0;
             this.artLoadEveryLabelLeft.Text = "Every";
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.updateIntervalTrackBar);
+            this.groupBox2.Controls.Add(this.label1);
+            this.groupBox2.Location = new System.Drawing.Point(238, 6);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(225, 84);
+            this.groupBox2.TabIndex = 15;
+            this.groupBox2.TabStop = false;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(163, 16);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.TabIndex = 8;
+            this.label3.Tag = "display/updateInterval";
+            this.label3.Text = "label8";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 16);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(82, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Update interval:";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.openSkinDirBtn);
+            this.groupBox3.Controls.Add(this.skinsList);
+            this.groupBox3.Controls.Add(this.applySkinBtn);
+            this.groupBox3.Location = new System.Drawing.Point(6, 6);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(226, 206);
+            this.groupBox3.TabIndex = 16;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Installed skins";
+            // 
+            // openSkinDirBtn
+            // 
+            this.openSkinDirBtn.Location = new System.Drawing.Point(116, 172);
+            this.openSkinDirBtn.Name = "openSkinDirBtn";
+            this.openSkinDirBtn.Size = new System.Drawing.Size(104, 23);
+            this.openSkinDirBtn.TabIndex = 2;
+            this.openSkinDirBtn.Text = "Open directory";
+            this.openSkinDirBtn.UseVisualStyleBackColor = true;
+            this.openSkinDirBtn.Click += new System.EventHandler(this.openSkinDirBtn_Click);
+            // 
             // Properties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -810,6 +853,8 @@ namespace fooTitle {
             this.zOrderBox.PerformLayout();
             this.popupBox.ResumeLayout(false);
             this.popupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.beforeSongEndsStayTextBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.onSongStartStayTextBox)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -820,6 +865,9 @@ namespace fooTitle {
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).EndInit();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -838,6 +886,14 @@ namespace fooTitle {
             }
 
             main.SkinPath.ForceUpdate(((SkinListEntry)skinsList.SelectedItem).path);
+        }
+
+        private void openSkinDirBtn_Click(object sender, EventArgs e) {
+            try {
+                System.Diagnostics.Process.Start(Main.UserDataDir);
+            } catch (Exception ex) {
+                MessageBox.Show("foo_title - There was an error opening directory " + Main.UserDataDir + ":\n" + ex.Message, "foo_title");
+            }
         }
     }
 }
