@@ -43,8 +43,8 @@ namespace fooTitle {
         protected ConfEnum<PopupShowing> popupShowing = new ConfEnum<PopupShowing>("showControl/popupShowing", PopupShowing.AllTheTime);
         protected ConfBool onSongStart = new ConfBool("showControl/onSongStart", true);
         protected ConfBool beforeSongEnds = new ConfBool("showControl/beforeSongEnds", true);
-        protected ConfInt onSongStartStay = new ConfInt("showControl/onSongStartStay", 5);
-        protected ConfInt beforeSongEndsStay = new ConfInt("showControl/beforeSongEndsStay", 5);
+        protected ConfInt onSongStartStay = new ConfInt("showControl/onSongStartStay", 5, 0, int.MaxValue);
+        protected ConfInt beforeSongEndsStay = new ConfInt("showControl/beforeSongEndsStay", 5, 0, int.MaxValue);
         protected ConfBool showWhenNotPlaying = new ConfBool("showControl/showWhenNotPlaying", false);
         
 

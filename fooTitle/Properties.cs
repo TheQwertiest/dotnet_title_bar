@@ -129,10 +129,10 @@ namespace fooTitle {
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox beforeSongEndsStayTextBox;
+        private System.Windows.Forms.NumericUpDown beforeSongEndsStayTextBox;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox onSongStartStayTextBox;
+        private System.Windows.Forms.NumericUpDown onSongStartStayTextBox;
         private System.Windows.Forms.ListBox skinsList;
         private System.Windows.Forms.Button applySkinBtn;
         private System.Windows.Forms.TrackBar updateIntervalTrackBar;
@@ -158,7 +158,6 @@ namespace fooTitle {
         private System.Windows.Forms.GroupBox popupBox;
         private System.Windows.Forms.RadioButton onlyWhenRadio;
         private System.Windows.Forms.RadioButton allTheTimeRadio;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox beforeSongEndsCheckbox;
         private System.Windows.Forms.CheckBox onSongStartCheckbox;
 
@@ -193,13 +192,12 @@ namespace fooTitle {
             this.showWhenNotPlayingCheckbox = new System.Windows.Forms.CheckBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.beforeSongEndsStayTextBox = new System.Windows.Forms.TextBox();
+            this.beforeSongEndsStayTextBox = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.onSongStartStayTextBox = new System.Windows.Forms.TextBox();
+            this.onSongStartStayTextBox = new System.Windows.Forms.NumericUpDown();
             this.beforeSongEndsCheckbox = new System.Windows.Forms.CheckBox();
             this.onSongStartCheckbox = new System.Windows.Forms.CheckBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.onlyWhenRadio = new System.Windows.Forms.RadioButton();
             this.allTheTimeRadio = new System.Windows.Forms.RadioButton();
             this.tabControl1 = new fooTitle.SafeTabControl();
@@ -511,20 +509,19 @@ namespace fooTitle {
             this.popupBox.Controls.Add(this.onSongStartStayTextBox);
             this.popupBox.Controls.Add(this.beforeSongEndsCheckbox);
             this.popupBox.Controls.Add(this.onSongStartCheckbox);
-            this.popupBox.Controls.Add(this.label8);
             this.popupBox.Controls.Add(this.onlyWhenRadio);
             this.popupBox.Controls.Add(this.allTheTimeRadio);
-            this.popupBox.Location = new System.Drawing.Point(194, 65);
+            this.popupBox.Location = new System.Drawing.Point(238, 65);
             this.popupBox.Name = "popupBox";
-            this.popupBox.Size = new System.Drawing.Size(269, 239);
+            this.popupBox.Size = new System.Drawing.Size(225, 239);
             this.popupBox.TabIndex = 13;
             this.popupBox.TabStop = false;
-            this.popupBox.Text = "Popup";
+            this.popupBox.Text = "Show Popup";
             // 
             // showWhenNotPlayingCheckbox
             // 
             this.showWhenNotPlayingCheckbox.AutoSize = true;
-            this.showWhenNotPlayingCheckbox.Location = new System.Drawing.Point(21, 176);
+            this.showWhenNotPlayingCheckbox.Location = new System.Drawing.Point(16, 163);
             this.showWhenNotPlayingCheckbox.Name = "showWhenNotPlayingCheckbox";
             this.showWhenNotPlayingCheckbox.Size = new System.Drawing.Size(136, 17);
             this.showWhenNotPlayingCheckbox.TabIndex = 21;
@@ -535,7 +532,7 @@ namespace fooTitle {
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(127, 153);
+            this.label11.Location = new System.Drawing.Point(120, 137);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(47, 13);
             this.label11.TabIndex = 20;
@@ -544,7 +541,7 @@ namespace fooTitle {
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(22, 153);
+            this.label12.Location = new System.Drawing.Point(16, 137);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(28, 13);
             this.label12.TabIndex = 19;
@@ -552,7 +549,7 @@ namespace fooTitle {
             // 
             // beforeSongEndsStayTextBox
             // 
-            this.beforeSongEndsStayTextBox.Location = new System.Drawing.Point(56, 150);
+            this.beforeSongEndsStayTextBox.Location = new System.Drawing.Point(50, 134);
             this.beforeSongEndsStayTextBox.Name = "beforeSongEndsStayTextBox";
             this.beforeSongEndsStayTextBox.Size = new System.Drawing.Size(65, 20);
             this.beforeSongEndsStayTextBox.TabIndex = 18;
@@ -561,7 +558,7 @@ namespace fooTitle {
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(127, 104);
+            this.label10.Location = new System.Drawing.Point(120, 88);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(47, 13);
             this.label10.TabIndex = 17;
@@ -570,7 +567,7 @@ namespace fooTitle {
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(22, 104);
+            this.label9.Location = new System.Drawing.Point(16, 88);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(28, 13);
             this.label9.TabIndex = 16;
@@ -578,7 +575,7 @@ namespace fooTitle {
             // 
             // onSongStartStayTextBox
             // 
-            this.onSongStartStayTextBox.Location = new System.Drawing.Point(56, 101);
+            this.onSongStartStayTextBox.Location = new System.Drawing.Point(50, 85);
             this.onSongStartStayTextBox.Name = "onSongStartStayTextBox";
             this.onSongStartStayTextBox.Size = new System.Drawing.Size(65, 20);
             this.onSongStartStayTextBox.TabIndex = 15;
@@ -587,7 +584,7 @@ namespace fooTitle {
             // beforeSongEndsCheckbox
             // 
             this.beforeSongEndsCheckbox.AutoSize = true;
-            this.beforeSongEndsCheckbox.Location = new System.Drawing.Point(21, 127);
+            this.beforeSongEndsCheckbox.Location = new System.Drawing.Point(16, 114);
             this.beforeSongEndsCheckbox.Name = "beforeSongEndsCheckbox";
             this.beforeSongEndsCheckbox.Size = new System.Drawing.Size(109, 17);
             this.beforeSongEndsCheckbox.TabIndex = 14;
@@ -598,7 +595,7 @@ namespace fooTitle {
             // onSongStartCheckbox
             // 
             this.onSongStartCheckbox.AutoSize = true;
-            this.onSongStartCheckbox.Location = new System.Drawing.Point(21, 78);
+            this.onSongStartCheckbox.Location = new System.Drawing.Point(16, 65);
             this.onSongStartCheckbox.Name = "onSongStartCheckbox";
             this.onSongStartCheckbox.Size = new System.Drawing.Size(182, 17);
             this.onSongStartCheckbox.TabIndex = 3;
@@ -606,19 +603,10 @@ namespace fooTitle {
             this.onSongStartCheckbox.Text = "On song start / track title change";
             this.onSongStartCheckbox.UseVisualStyleBackColor = true;
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 16);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(63, 13);
-            this.label8.TabIndex = 2;
-            this.label8.Text = "Show when";
-            // 
             // onlyWhenRadio
             // 
             this.onlyWhenRadio.AutoSize = true;
-            this.onlyWhenRadio.Location = new System.Drawing.Point(9, 55);
+            this.onlyWhenRadio.Location = new System.Drawing.Point(6, 42);
             this.onlyWhenRadio.Name = "onlyWhenRadio";
             this.onlyWhenRadio.Size = new System.Drawing.Size(75, 17);
             this.onlyWhenRadio.TabIndex = 1;
@@ -630,12 +618,12 @@ namespace fooTitle {
             // 
             this.allTheTimeRadio.AutoSize = true;
             this.allTheTimeRadio.Checked = true;
-            this.allTheTimeRadio.Location = new System.Drawing.Point(9, 32);
+            this.allTheTimeRadio.Location = new System.Drawing.Point(6, 19);
             this.allTheTimeRadio.Name = "allTheTimeRadio";
-            this.allTheTimeRadio.Size = new System.Drawing.Size(76, 17);
+            this.allTheTimeRadio.Size = new System.Drawing.Size(58, 17);
             this.allTheTimeRadio.TabIndex = 0;
             this.allTheTimeRadio.TabStop = true;
-            this.allTheTimeRadio.Text = "All the time";
+            this.allTheTimeRadio.Text = "Always";
             this.allTheTimeRadio.UseVisualStyleBackColor = true;
             // 
             // tabControl1
