@@ -29,28 +29,28 @@ using fooTitle.Tests;
 
 
 namespace fooTitle {
-class Properties : fooManagedWrapper.CManagedPrefPage {
-//class Properties : System.Windows.Forms.Form {
+    class Properties : fooManagedWrapper.CManagedPrefPage {
+        //class Properties : System.Windows.Forms.Form {
 
-    class SkinListEntry {
-        public string path;
+        class SkinListEntry {
+            public string path;
 
-        public SkinListEntry(string _path) {
-            path = _path;
+            public SkinListEntry(string _path) {
+                path = _path;
+            }
+
+            public override string ToString() {
+                return Path.GetFileName(path);
+            }
         }
 
-        public override string ToString() {
-            return Path.GetFileName(path);
-        }
-    }
-
-       protected AutoWrapperCreator autoWrapperCreator = new AutoWrapperCreator();
-       protected RadioGroupWrapper showWhenWrapper;
-       protected RadioGroupWrapper windowPositionWrapper;
-       private GroupBox restoreTopmostBox;
-       private Label label13;
-       private CheckBox restoreTopmostCheckbox;
-       private CheckBox showWhenNotPlayingCheckbox;
+        protected AutoWrapperCreator autoWrapperCreator = new AutoWrapperCreator();
+        protected RadioGroupWrapper showWhenWrapper;
+        protected RadioGroupWrapper windowPositionWrapper;
+        private GroupBox restoreTopmostBox;
+        private Label label13;
+        private CheckBox restoreTopmostCheckbox;
+        private CheckBox showWhenNotPlayingCheckbox;
         private Label opacityNormalLabel;
         private Label opacityMouseOverLabel;
         private GroupBox groupBox1;
@@ -65,8 +65,7 @@ class Properties : fooManagedWrapper.CManagedPrefPage {
         protected RadioGroupWrapper popupShowingWrapper;
 
         public Properties(Main _main)
-       : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage.guid_display)
-        {
+       : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage.guid_display) {
             main = _main;
             InitializeComponent();
 
@@ -116,13 +115,13 @@ class Properties : fooManagedWrapper.CManagedPrefPage {
 
         }
 
-     public override bool QueryReset() {
-         return true;
-     }
+        public override bool QueryReset() {
+            return true;
+        }
 
-     public override void Reset() {
-         ConfValuesManager.GetInstance().Reset();
-     }
+        public override void Reset() {
+            ConfValuesManager.GetInstance().Reset();
+        }
 
         #region Windows Form Designer generated code
         private SafeTabControl tabControl1;

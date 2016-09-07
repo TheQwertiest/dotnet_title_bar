@@ -137,7 +137,7 @@ namespace fooTitle.Config {
 
             value.WriteVisit(this);
         }
-        
+
 
         /// <summary>
         /// This method sets tick frequency and large/small change values of the trackbar
@@ -187,7 +187,7 @@ namespace fooTitle.Config {
 
             value.WriteVisit(this);
         }
-        
+
         #region IConfigValueVisitor Members
 
         public override void ReadInt(ConfInt val) {

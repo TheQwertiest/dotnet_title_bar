@@ -112,7 +112,7 @@ namespace fooTitle.Layers {
             float scale = Math.Min((float)ClientRect.Width / artOrStub.Width, (float)ClientRect.Height / artOrStub.Height);
             float scaledWidth = artOrStub.Width * scale;
             float scaledHeight = artOrStub.Height * scale;
-            
+
             using (Graphics canvas = Graphics.FromImage(cachedResized)) {
                 canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
                 if (noCover != null) {
