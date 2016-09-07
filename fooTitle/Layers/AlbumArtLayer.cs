@@ -73,9 +73,12 @@ namespace fooTitle.Layers {
             }
 
             Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(CurrentSkin_OnPlaybackNewTrackEvent);
+            Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += new OnPlaybackTimeDelegate(CurrentSkin_OnPlaybackTimeEvent);
         }
 
-        void CurrentSkin_OnPlaybackNewTrackEvent(fooManagedWrapper.CMetaDBHandle song) {
+        void LoadArtwork(fooManagedWrapper.CMetaDBHandle song) {
+            if (TimesCheckedArtwork > 0 && albumArt != null) return;
+            fooManagedWrapper.CConsole.Write(String.Format("Checking album art."));
             cachedResized = null;
             Bitmap artwork = song.GetArtworkBitmap();
             if (artwork != null) {
@@ -91,6 +94,22 @@ namespace fooTitle.Layers {
             } else {
                 albumArt = null;
             }
+        }
+
+        protected int TimesCheckedArtwork = 0;
+
+        void CurrentSkin_OnPlaybackTimeEvent(double time)
+        {
+            if (time % 10 == 0 && TimesCheckedArtwork < 2)
+            {
+                TimesCheckedArtwork++;
+                LoadArtwork(Main.PlayControl.GetNowPlaying());
+            }
+        }
+
+        void CurrentSkin_OnPlaybackNewTrackEvent(fooManagedWrapper.CMetaDBHandle song) {
+            TimesCheckedArtwork = 0;
+            LoadArtwork(song);
         }
 
 		protected override void drawImpl() {
