@@ -169,6 +169,40 @@ namespace fooTitle.Config {
         #endregion
     }
 
+    public class NumericUpDownWrapper : ControlWrapper, IConfigValueVisitor {
+        protected NumericUpDown numericUpDown;
+
+        public NumericUpDownWrapper(NumericUpDown _numericUpDown, string _valueName)
+            : base(_valueName) {
+            numericUpDown = _numericUpDown;
+            numericUpDown.ValueChanged += new EventHandler(numericUpDown_ValueChanged);
+
+            if (value != null)
+                value.ReadVisit(this);
+        }
+
+        void numericUpDown_ValueChanged(object sender, EventArgs e) {
+            if (value == null)
+                return;
+
+            value.WriteVisit(this);
+        }
+        
+        #region IConfigValueVisitor Members
+
+        public override void ReadInt(ConfInt val) {
+            numericUpDown.Minimum = val.Min;
+            numericUpDown.Maximum = val.Max;
+            numericUpDown.Value = val.Value;
+        }
+
+        public override void WriteInt(ConfInt val) {
+            val.Value = (int)numericUpDown.Value;
+        }
+
+        #endregion
+    }
+
     /// <summary>
     /// This class binds a group of radio buttons to an integer value. The radio buttons
     /// need to be in a group and only one of them may be checked at a time. Use the AddRadioButton
@@ -347,6 +381,8 @@ namespace fooTitle.Config {
                 controlWrappers.Add(new CheckBoxWrapper((CheckBox)value, (string)value.Tag));
             } else if (f.FieldType.Equals(typeof(Label))) {
                 controlWrappers.Add(new LabelWrapper((Label)value, (string)value.Tag));
+            } else if (f.FieldType.Equals(typeof(NumericUpDown))) {
+                controlWrappers.Add(new NumericUpDownWrapper((NumericUpDown)value, (string)value.Tag));
             }
         }
 

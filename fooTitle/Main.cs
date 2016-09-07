@@ -18,14 +18,11 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Drawing;
-using System.Collections;
 using System.IO;
 
 using fooManagedWrapper;
 using fooTitle.Layers;
 using fooTitle.Geometries;
-using fooTitle;
 using fooTitle.Config;
 
 
@@ -50,7 +47,6 @@ namespace fooTitle {
         /// </summary>
         public static string UserDataDir {
             get {
-                
                 return Path.Combine(CManagedWrapper.getInstance().GetProfilePath(), myDataDir.Value);
             }
         }
@@ -89,12 +85,6 @@ namespace fooTitle {
                 return skin;
             }
         }
-
-        /// <summary>
-        /// A semicolon separated list of possible filenames (without extension) for album art. 
-        /// May contain formatting strings.
-        /// </summary>
-        public ConfString AlbumArtFilenames = new ConfString("skin/albumArtFilenames", "folder");
 
         private LayerFactory myLayerFactory;
         /// <summary>
@@ -193,6 +183,14 @@ namespace fooTitle {
         private ConfInt positionX = new ConfInt("display/positionX", 0);
         private ConfInt positionY = new ConfInt("display/positionY", 0);
 
+        private ConfInt artLoadEvery = new ConfInt("display/artLoadEvery", 10, 1, int.MaxValue);
+        private ConfInt artLoadMaxTimes = new ConfInt("display/artLoadMaxTimes", 2, -1, int.MaxValue);
+        public int ArtReloadFreq {
+            get { return artLoadEvery.Value; }
+        }
+        public int ArtReloadMax {
+            get { return artLoadMaxTimes.Value; }
+        }
 
         System.Windows.Forms.Timer timer;
 
@@ -233,7 +231,7 @@ namespace fooTitle {
         private void reinitDisplay() {
             // initialize the form displaying the images
             myDisplay = new Display(300, 22);
-            myDisplay.Closing -=  new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
+            myDisplay.Closing -= new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
             myDisplay.Closing += new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
             myDisplay.Show();
 

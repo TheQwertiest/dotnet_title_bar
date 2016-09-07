@@ -26,34 +26,14 @@ namespace fooTitle.Layers {
     [LayerTypeAttribute("album-art")]
     class AlbumArtLayer : Layer {
         protected Bitmap albumArt;
+        protected Bitmap albumArtStub;
         protected Bitmap noCover;
         /// <summary>
         /// This is a scaled copy of albumArt. This prevents rescaling
         /// a large bitmap every frame.
         /// </summary>
         protected Bitmap cachedResized;
-
-        /// <summary>
-        /// If an album art exists, returns the image of the album art. If it does
-        /// not exist, returns the no cover image. If there is a cached version of
-        /// the album art of the correct size, returns that.
-        /// </summary>
-        protected Bitmap currentImage {
-            get {
-                if (albumArt != null) {
-                    if (cachedResized != null) {
-                        if ((ClientRect.Width == cachedResized.Width) && (ClientRect.Height == cachedResized.Height))
-                            return cachedResized;
-                        else
-                            return albumArt;
-                    } else {
-                        return albumArt;
-                    }
-                } else {
-                    return noCover;
-                }
-            }
-        }
+        private int timesCheckedArtwork = 0;
 
         public AlbumArtLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
             try {
@@ -69,71 +49,79 @@ namespace fooTitle.Layers {
             Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += new OnPlaybackTimeDelegate(CurrentSkin_OnPlaybackTimeEvent);
         }
 
-        void LoadArtwork(CMetaDBHandle song) {
-            if (TimesCheckedArtwork > 0 && albumArt != null)
-                return;
-            CConsole.Write(String.Format("Checking album art."));
-            cachedResized = null;
-            Bitmap artwork = song.GetArtworkBitmap();
+        private void LoadArtwork(CMetaDBHandle song) {
+            CConsole.Write(String.Format("Loading album art... "));
+            Bitmap artwork = song.GetArtworkBitmap(false);
             if (artwork != null) {
                 try {
-                    Bitmap tmp = artwork;
-                    albumArt = new Bitmap(tmp);
-                    tmp.Dispose();
+                    albumArt = new Bitmap(artwork);
+                    artwork.Dispose();
                 } catch (Exception e) {
                     albumArt = null;
                     CConsole.Warning(String.Format("Cannot open album art {0} : {1}", song.GetPath(), e.Message));
                 }
-            } else {
-                albumArt = null;
+            }
+            Bitmap artworkStub = song.GetArtworkBitmap(true);
+            if (artworkStub != null) {
+                try {
+                    albumArtStub = new Bitmap(artworkStub);
+                    artworkStub.Dispose();
+                } catch (Exception e) {
+                    albumArtStub = null;
+                    CConsole.Warning(String.Format("Cannot open album art stub {0} : {1}", song.GetPath(), e.Message));
+                }
             }
         }
 
-        protected int TimesCheckedArtwork = 0;
-
         void CurrentSkin_OnPlaybackTimeEvent(double time) {
-            if (time % 10 == 0 && TimesCheckedArtwork < 2) {
-                TimesCheckedArtwork++;
+            if (albumArt == null && time % Main.GetInstance().ArtReloadFreq == 0 && (timesCheckedArtwork < Main.GetInstance().ArtReloadMax || Main.GetInstance().ArtReloadMax == -1)) {
+                timesCheckedArtwork++;
                 LoadArtwork(Main.PlayControl.GetNowPlaying());
             }
         }
 
         void CurrentSkin_OnPlaybackNewTrackEvent(CMetaDBHandle song) {
-            TimesCheckedArtwork = 0;
+            timesCheckedArtwork = 0;
+            albumArt = null;
+            albumArtStub = null;
+            cachedResized = null;
             LoadArtwork(song);
         }
 
         protected override void drawImpl() {
-            prepareCachedImage();
-            Bitmap toDraw = this.currentImage;
-
+            Bitmap toDraw = prepareCachedImage();
             if (toDraw != null) {
                 Display.Canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
                 Display.Canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
             }
         }
 
-        private void prepareCachedImage() {
-            if (albumArt == null)
-                return;
+        private Bitmap prepareCachedImage() {
+            if (ClientRect.Width <= 0 || ClientRect.Height <= 0)
+                return null;
 
-            if ((cachedResized != null) && (cachedResized.Width == ClientRect.Width) && (cachedResized.Height == ClientRect.Height))
-                return;
+            if (cachedResized != null && cachedResized.Width == ClientRect.Width && cachedResized.Height == ClientRect.Height)
+                return cachedResized;
 
-            if ((ClientRect.Width <= 0) || (ClientRect.Height <= 0))
-                return;
+            if (albumArt == null && albumArtStub == null)
+                return noCover;
 
-            float scale = Math.Min((float)ClientRect.Width / albumArt.Width, (float)ClientRect.Height / albumArt.Height);
-            float scaledWidth = (albumArt.Width * scale);
-            float scaledHeight = (albumArt.Height * scale);
+            Bitmap artOrStub = albumArt != null ? albumArt : albumArtStub;
             cachedResized = new Bitmap(ClientRect.Width, ClientRect.Height);
+
+            float scale = Math.Min((float)ClientRect.Width / artOrStub.Width, (float)ClientRect.Height / artOrStub.Height);
+            float scaledWidth = artOrStub.Width * scale;
+            float scaledHeight = artOrStub.Height * scale;
+            
             using (Graphics canvas = Graphics.FromImage(cachedResized)) {
                 canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
                 if (noCover != null) {
                     canvas.DrawImage(noCover, 0, 0, ClientRect.Width, ClientRect.Height);
                 }
-                canvas.DrawImage(albumArt, (ClientRect.Width - scaledWidth) / 2, (ClientRect.Height - scaledHeight) / 2, scaledWidth, scaledHeight);
+                canvas.DrawImage(artOrStub, (ClientRect.Width - scaledWidth) / 2, (ClientRect.Height - scaledHeight) / 2, scaledWidth, scaledHeight);
             }
+
+            return cachedResized;
         }
     }
 }

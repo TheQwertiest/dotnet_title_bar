@@ -47,7 +47,7 @@ namespace fooManagedWrapper
 		metadb_handle_ptr GetHandle() { return *handle; };
 		String ^GetPath();
 		double GetLength();
-		Bitmap ^GetArtworkBitmap();
+		Bitmap ^GetArtworkBitmap(Boolean get_stub);
 	private:
 		// metadb_handle_ptr is a smart pointer which handles reference counting, so another level of indirection
 		// is rather cumbersome, but it is required by C++/CLI
