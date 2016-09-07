@@ -47,8 +47,6 @@ namespace fooTitle {
         protected AutoWrapperCreator autoWrapperCreator = new AutoWrapperCreator();
         protected RadioGroupWrapper showWhenWrapper;
         protected RadioGroupWrapper windowPositionWrapper;
-        private GroupBox restoreTopmostBox;
-        private Label label13;
         private CheckBox restoreTopmostCheckbox;
         private CheckBox showWhenNotPlayingCheckbox;
         private Label opacityNormalLabel;
@@ -186,6 +184,7 @@ namespace fooTitle {
             this.label5 = new System.Windows.Forms.Label();
             this.versionLabel = new System.Windows.Forms.Label();
             this.zOrderBox = new System.Windows.Forms.GroupBox();
+            this.restoreTopmostCheckbox = new System.Windows.Forms.CheckBox();
             this.onDesktopRadio = new System.Windows.Forms.RadioButton();
             this.normalRadio = new System.Windows.Forms.RadioButton();
             this.alwaysOnTopRadio = new System.Windows.Forms.RadioButton();
@@ -203,9 +202,11 @@ namespace fooTitle {
             this.allTheTimeRadio = new System.Windows.Forms.RadioButton();
             this.tabControl1 = new fooTitle.SafeTabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.restoreTopmostBox = new System.Windows.Forms.GroupBox();
-            this.restoreTopmostCheckbox = new System.Windows.Forms.CheckBox();
-            this.label13 = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.openSkinDirBtn = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label15 = new System.Windows.Forms.Label();
@@ -216,11 +217,6 @@ namespace fooTitle {
             this.artLoadEveryLabelRight = new System.Windows.Forms.Label();
             this.artLoadEveryNumber = new System.Windows.Forms.NumericUpDown();
             this.artLoadEveryLabelLeft = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.openSkinDirBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
             this.showWhenBox.SuspendLayout();
             this.opacityOpts.SuspendLayout();
@@ -233,13 +229,12 @@ namespace fooTitle {
             ((System.ComponentModel.ISupportInitialize)(this.onSongStartStayTextBox)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.restoreTopmostBox.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).BeginInit();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // skinsList
@@ -247,12 +242,12 @@ namespace fooTitle {
             this.skinsList.FormattingEnabled = true;
             this.skinsList.Location = new System.Drawing.Point(6, 19);
             this.skinsList.Name = "skinsList";
-            this.skinsList.Size = new System.Drawing.Size(214, 147);
+            this.skinsList.Size = new System.Drawing.Size(214, 225);
             this.skinsList.TabIndex = 0;
             // 
             // applySkinBtn
             // 
-            this.applySkinBtn.Location = new System.Drawing.Point(6, 172);
+            this.applySkinBtn.Location = new System.Drawing.Point(6, 249);
             this.applySkinBtn.Name = "applySkinBtn";
             this.applySkinBtn.Size = new System.Drawing.Size(104, 23);
             this.applySkinBtn.TabIndex = 1;
@@ -280,17 +275,17 @@ namespace fooTitle {
             this.showWhenBox.Controls.Add(this.neverRadio);
             this.showWhenBox.Controls.Add(this.minimizedRadio);
             this.showWhenBox.Controls.Add(this.alwaysRadio);
-            this.showWhenBox.Location = new System.Drawing.Point(6, 218);
+            this.showWhenBox.Location = new System.Drawing.Point(6, 290);
             this.showWhenBox.Name = "showWhenBox";
-            this.showWhenBox.Size = new System.Drawing.Size(182, 86);
+            this.showWhenBox.Size = new System.Drawing.Size(226, 89);
             this.showWhenBox.TabIndex = 9;
             this.showWhenBox.TabStop = false;
-            this.showWhenBox.Text = "foo_title is enabled when";
+            this.showWhenBox.Text = "Enabled";
             // 
             // neverRadio
             // 
             this.neverRadio.AutoSize = true;
-            this.neverRadio.Location = new System.Drawing.Point(6, 63);
+            this.neverRadio.Location = new System.Drawing.Point(6, 65);
             this.neverRadio.Name = "neverRadio";
             this.neverRadio.Size = new System.Drawing.Size(54, 17);
             this.neverRadio.TabIndex = 2;
@@ -301,7 +296,7 @@ namespace fooTitle {
             // minimizedRadio
             // 
             this.minimizedRadio.AutoSize = true;
-            this.minimizedRadio.Location = new System.Drawing.Point(6, 41);
+            this.minimizedRadio.Location = new System.Drawing.Point(6, 42);
             this.minimizedRadio.Name = "minimizedRadio";
             this.minimizedRadio.Size = new System.Drawing.Size(169, 17);
             this.minimizedRadio.TabIndex = 1;
@@ -440,7 +435,7 @@ namespace fooTitle {
             // versionLabel
             // 
             this.versionLabel.AutoSize = true;
-            this.versionLabel.Location = new System.Drawing.Point(3, 408);
+            this.versionLabel.Location = new System.Drawing.Point(9, 393);
             this.versionLabel.Name = "versionLabel";
             this.versionLabel.Size = new System.Drawing.Size(35, 13);
             this.versionLabel.TabIndex = 11;
@@ -448,20 +443,33 @@ namespace fooTitle {
             // 
             // zOrderBox
             // 
+            this.zOrderBox.Controls.Add(this.restoreTopmostCheckbox);
             this.zOrderBox.Controls.Add(this.onDesktopRadio);
             this.zOrderBox.Controls.Add(this.normalRadio);
             this.zOrderBox.Controls.Add(this.alwaysOnTopRadio);
-            this.zOrderBox.Location = new System.Drawing.Point(6, 310);
+            this.zOrderBox.Location = new System.Drawing.Point(238, 290);
             this.zOrderBox.Name = "zOrderBox";
-            this.zOrderBox.Size = new System.Drawing.Size(182, 95);
+            this.zOrderBox.Size = new System.Drawing.Size(225, 125);
             this.zOrderBox.TabIndex = 12;
             this.zOrderBox.TabStop = false;
-            this.zOrderBox.Text = "Z-order";
+            this.zOrderBox.Text = "Position";
+            // 
+            // restoreTopmostCheckbox
+            // 
+            this.restoreTopmostCheckbox.AutoSize = true;
+            this.restoreTopmostCheckbox.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.restoreTopmostCheckbox.Location = new System.Drawing.Point(16, 42);
+            this.restoreTopmostCheckbox.Name = "restoreTopmostCheckbox";
+            this.restoreTopmostCheckbox.Size = new System.Drawing.Size(205, 30);
+            this.restoreTopmostCheckbox.TabIndex = 1;
+            this.restoreTopmostCheckbox.Tag = "display/reShowOnTop";
+            this.restoreTopmostCheckbox.Text = "Restore topmost position every minute\r\nto work around the Windows problem.";
+            this.restoreTopmostCheckbox.UseVisualStyleBackColor = true;
             // 
             // onDesktopRadio
             // 
             this.onDesktopRadio.AutoSize = true;
-            this.onDesktopRadio.Location = new System.Drawing.Point(6, 65);
+            this.onDesktopRadio.Location = new System.Drawing.Point(6, 101);
             this.onDesktopRadio.Name = "onDesktopRadio";
             this.onDesktopRadio.Size = new System.Drawing.Size(80, 17);
             this.onDesktopRadio.TabIndex = 2;
@@ -472,7 +480,7 @@ namespace fooTitle {
             // normalRadio
             // 
             this.normalRadio.AutoSize = true;
-            this.normalRadio.Location = new System.Drawing.Point(6, 42);
+            this.normalRadio.Location = new System.Drawing.Point(6, 78);
             this.normalRadio.Name = "normalRadio";
             this.normalRadio.Size = new System.Drawing.Size(58, 17);
             this.normalRadio.TabIndex = 1;
@@ -633,7 +641,6 @@ namespace fooTitle {
             // 
             this.tabPage1.Controls.Add(this.groupBox3);
             this.tabPage1.Controls.Add(this.groupBox2);
-            this.tabPage1.Controls.Add(this.restoreTopmostBox);
             this.tabPage1.Controls.Add(this.zOrderBox);
             this.tabPage1.Controls.Add(this.versionLabel);
             this.tabPage1.Controls.Add(this.popupBox);
@@ -646,37 +653,58 @@ namespace fooTitle {
             this.tabPage1.Text = "Appearance";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // restoreTopmostBox
+            // groupBox3
             // 
-            this.restoreTopmostBox.Controls.Add(this.restoreTopmostCheckbox);
-            this.restoreTopmostBox.Controls.Add(this.label13);
-            this.restoreTopmostBox.Location = new System.Drawing.Point(194, 310);
-            this.restoreTopmostBox.Name = "restoreTopmostBox";
-            this.restoreTopmostBox.Size = new System.Drawing.Size(269, 95);
-            this.restoreTopmostBox.TabIndex = 14;
-            this.restoreTopmostBox.TabStop = false;
-            this.restoreTopmostBox.Text = "Restore topmost position";
+            this.groupBox3.Controls.Add(this.openSkinDirBtn);
+            this.groupBox3.Controls.Add(this.skinsList);
+            this.groupBox3.Controls.Add(this.applySkinBtn);
+            this.groupBox3.Location = new System.Drawing.Point(6, 6);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(226, 278);
+            this.groupBox3.TabIndex = 16;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Installed skins";
             // 
-            // restoreTopmostCheckbox
+            // openSkinDirBtn
             // 
-            this.restoreTopmostCheckbox.AutoSize = true;
-            this.restoreTopmostCheckbox.Location = new System.Drawing.Point(9, 62);
-            this.restoreTopmostCheckbox.Name = "restoreTopmostCheckbox";
-            this.restoreTopmostCheckbox.Size = new System.Drawing.Size(205, 17);
-            this.restoreTopmostCheckbox.TabIndex = 1;
-            this.restoreTopmostCheckbox.Tag = "display/reShowOnTop";
-            this.restoreTopmostCheckbox.Text = "Restore topmost position every minute";
-            this.restoreTopmostCheckbox.UseVisualStyleBackColor = true;
+            this.openSkinDirBtn.Location = new System.Drawing.Point(116, 249);
+            this.openSkinDirBtn.Name = "openSkinDirBtn";
+            this.openSkinDirBtn.Size = new System.Drawing.Size(104, 23);
+            this.openSkinDirBtn.TabIndex = 2;
+            this.openSkinDirBtn.Text = "Open directory";
+            this.openSkinDirBtn.UseVisualStyleBackColor = true;
+            this.openSkinDirBtn.Click += new System.EventHandler(this.openSkinDirBtn_Click);
             // 
-            // label13
+            // groupBox2
             // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 16);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(248, 39);
-            this.label13.TabIndex = 0;
-            this.label13.Text = "When Z-order is set to Always on top, foo_title can \r\nset itself as the foremost " +
-    "window every minute to\r\nwork around the Windows problem.";
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.updateIntervalTrackBar);
+            this.groupBox2.Controls.Add(this.label1);
+            this.groupBox2.Location = new System.Drawing.Point(238, 6);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(225, 84);
+            this.groupBox2.TabIndex = 15;
+            this.groupBox2.TabStop = false;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(163, 16);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.TabIndex = 8;
+            this.label3.Tag = "display/updateInterval";
+            this.label3.Text = "label8";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 16);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(82, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Update interval:";
             // 
             // tabPage2
             // 
@@ -779,59 +807,6 @@ namespace fooTitle {
             this.artLoadEveryLabelLeft.TabIndex = 0;
             this.artLoadEveryLabelLeft.Text = "Every";
             // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.updateIntervalTrackBar);
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(238, 6);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(225, 84);
-            this.groupBox2.TabIndex = 15;
-            this.groupBox2.TabStop = false;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(163, 16);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Tag = "display/updateInterval";
-            this.label3.Text = "label8";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Update interval:";
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.openSkinDirBtn);
-            this.groupBox3.Controls.Add(this.skinsList);
-            this.groupBox3.Controls.Add(this.applySkinBtn);
-            this.groupBox3.Location = new System.Drawing.Point(6, 6);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(226, 206);
-            this.groupBox3.TabIndex = 16;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Installed skins";
-            // 
-            // openSkinDirBtn
-            // 
-            this.openSkinDirBtn.Location = new System.Drawing.Point(116, 172);
-            this.openSkinDirBtn.Name = "openSkinDirBtn";
-            this.openSkinDirBtn.Size = new System.Drawing.Size(104, 23);
-            this.openSkinDirBtn.TabIndex = 2;
-            this.openSkinDirBtn.Text = "Open directory";
-            this.openSkinDirBtn.UseVisualStyleBackColor = true;
-            this.openSkinDirBtn.Click += new System.EventHandler(this.openSkinDirBtn_Click);
-            // 
             // Properties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -858,16 +833,14 @@ namespace fooTitle {
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            this.restoreTopmostBox.ResumeLayout(false);
-            this.restoreTopmostBox.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
