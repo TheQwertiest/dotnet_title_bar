@@ -262,7 +262,7 @@ namespace fooTitle {
         /// <returns></returns>
         protected bool beforeSongEndSat() {
             double pos = Main.PlayControl.PlaybackGetPosition();
-            return ((lastSong.GetLength() - beforeSongEndsStay.Value <= pos) && beforeSongEnds.Value && (popupShowing.Value == PopupShowing.OnlySometimes));
+            return lastSong != null && ((lastSong.GetLength() - beforeSongEndsStay.Value <= pos) && beforeSongEnds.Value && (popupShowing.Value == PopupShowing.OnlySometimes));
         }
 
         /// <summary>
