@@ -26,9 +26,9 @@ namespace fooTitle.Tests {
     class test_all : fooTitle.Tests.TestList{
         public test_all() {
             // create the test list
-            this.AddTest(new test_Config());
-            this.AddTest(new test_ManagedWrapper());
-            this.AddTest(new test_MainMenuUtils());
+            //this.AddTest(new test_Config());
+            //this.AddTest(new test_ManagedWrapper());
+            //this.AddTest(new test_MainMenuUtils());
         }
 
     }

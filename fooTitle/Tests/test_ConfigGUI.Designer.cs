@@ -1,3 +1,4 @@
+#if false
 namespace fooTitle.Tests {
     partial class test_ConfigGUI {
         /// <summary>
@@ -271,3 +272,4 @@ namespace fooTitle.Tests {
         public System.Windows.Forms.Label label1;
     }
 }
+#endif
