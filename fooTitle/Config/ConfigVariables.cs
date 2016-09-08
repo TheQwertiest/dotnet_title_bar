@@ -18,12 +18,6 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
-
-using fooTitle.Tests;
-
 
 namespace fooTitle.Config {
 
@@ -96,7 +90,7 @@ namespace fooTitle.Config {
             ConfValuesManager.GetInstance().RemoveVal(this);
             OnChanged = null;
         }
-        
+
         /// <summary>
         /// Invoked when the value changes
         /// </summary>
@@ -115,7 +109,7 @@ namespace fooTitle.Config {
         /// </summary>
         /// <param name="to">The storage to write this value to </param>
         public abstract void SaveTo(IConfigStorage to);
-        
+
         /// <summary>
         /// Implement this method to provide a way to load the value of this class from a storage
         /// </summary>
@@ -137,6 +131,8 @@ namespace fooTitle.Config {
         /// Resets the value of this variable to the default
         /// </summary>
         public abstract void Reset();
+
+        public abstract bool HasChanged();
     }
     #endregion
 
@@ -149,6 +145,7 @@ namespace fooTitle.Config {
         protected int val;
         protected int def;
         protected int min, max;
+        protected int saved;
 
         public virtual int Value {
             set {
@@ -200,8 +197,7 @@ namespace fooTitle.Config {
             }
         }
 
-        public ConfInt(string _name, int _def)
-            : base(_name) {
+        public ConfInt(string _name, int _def) : base(_name) {
             def = _def;
             val = def;
 
@@ -211,8 +207,7 @@ namespace fooTitle.Config {
             init();
         }
 
-        public ConfInt(string _name, int _def, int _min, int _max)
-            : base(_name) {
+        public ConfInt(string _name, int _def, int _min, int _max) : base(_name) {
             def = _def;
             val = def;
 
@@ -224,12 +219,15 @@ namespace fooTitle.Config {
 
         public override void SaveTo(IConfigStorage to) {
             to.WriteVal(name, val);
+            saved = val;
         }
 
         public override void LoadFrom(IConfigStorage from) {
             object res = from.ReadVal<int>(name);
-            if (res != null)
+            if (res != null) {
                 Value = (int)res;
+                saved = Value;
+            }
         }
 
         public override void ReadVisit(IConfigValueVisitor visitor) {
@@ -243,14 +241,18 @@ namespace fooTitle.Config {
         public override void Reset() {
             Value = def;
         }
+
+        public override bool HasChanged() {
+            return Value != saved;
+        }
     }
 
     public class ConfString : ConfValue {
         protected string def;
         protected string val;
+        protected string saved;
 
-        public ConfString(string _name, string _def)
-            : base(_name) {
+        public ConfString(string _name, string _def) : base(_name) {
             def = _def;
             val = _def;
 
@@ -277,12 +279,15 @@ namespace fooTitle.Config {
 
         public override void SaveTo(IConfigStorage to) {
             to.WriteVal(Name, Value);
+            saved = Value;
         }
 
         public override void LoadFrom(IConfigStorage from) {
             object res = from.ReadVal<string>(Name);
-            if (res != null)
+            if (res != null) {
                 Value = (string)res;
+                saved = Value;
+            }
         }
 
         public override void ReadVisit(IConfigValueVisitor visitor) {
@@ -296,11 +301,14 @@ namespace fooTitle.Config {
         public override void Reset() {
             Value = def;
         }
+
+        public override bool HasChanged() {
+            return Value != saved;
+        }
     }
 
     public class ConfEnum<T> : ConfInt where T : IConvertible {
-        public ConfEnum(string _name, T _def)
-            : base(_name, System.Convert.ToInt32(_def)) {
+        public ConfEnum(string _name, T _def) : base(_name, System.Convert.ToInt32(_def)) {
             min = 0;
         }
 
@@ -315,15 +323,14 @@ namespace fooTitle.Config {
     }
 
     public class ConfBool : ConfInt {
-        public ConfBool(string _name, bool _def)
-            : base(_name, _def?1:0) {
+        public ConfBool(string _name, bool _def) : base(_name, _def ? 1 : 0) {
             min = 0;
             max = 1;
         }
 
         public new bool Value {
             set {
-                base.Value = value?1:0;
+                base.Value = value ? 1 : 0;
             }
             get {
                 return base.Value != 0;

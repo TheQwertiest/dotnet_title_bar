@@ -137,7 +137,7 @@
     <ClCompile Include="mainMenuGroupPopup.cpp" />
     <ClCompile Include="ManagedWrapper.cpp" />
     <ClCompile Include="playCallback.cpp" />
-    <ClCompile Include="prefPages.cpp" />
+    <ClCompile Include="prefPages_v3.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -158,7 +158,7 @@
     <ClInclude Include="mainMenuCommands.h" />
     <ClInclude Include="ManagedWrapper.h" />
     <ClInclude Include="playCallback.h" />
-    <ClInclude Include="prefPages.h" />
+    <ClInclude Include="prefPages_v3.h" />
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

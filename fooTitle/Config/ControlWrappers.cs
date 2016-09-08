@@ -17,23 +17,23 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-
 using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Reflection;
 
-
-using fooTitle.Config;
+using fooManagedWrapper;
 
 namespace fooTitle.Config {
 
     public abstract class ControlWrapper : IConfigValueVisitor {
         protected string valueName;
         protected ConfValue value;
+        protected CManagedPrefPage_v3 parent;
 
-        public ControlWrapper(string _valueName) {
+        public ControlWrapper(string _valueName, CManagedPrefPage_v3 _parent) {
             valueName = _valueName;
+            parent = _parent;
 
             associateValue();
             //ConfValuesManager.GetInstance().OnValueChanged += new ConfValuesManager.ValueChangedDelegate(onValueChanged);
@@ -54,6 +54,7 @@ namespace fooTitle.Config {
 
         protected virtual void onValueChanged(string name) {
             value.ReadVisit(this);
+            parent.OnChange();
         }
 
         protected void onValueCreated(string name) {
@@ -77,8 +78,7 @@ namespace fooTitle.Config {
     public class TextBoxWrapper : ControlWrapper, IConfigValueVisitor {
         protected TextBox textBox;
 
-        public TextBoxWrapper(TextBox _textBox, string _valueName)
-            : base(_valueName) {
+        public TextBoxWrapper(TextBox _textBox, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
             textBox = _textBox;
 
             // register onChange event
@@ -122,8 +122,7 @@ namespace fooTitle.Config {
     public class TrackBarWrapper : ControlWrapper, IConfigValueVisitor {
         protected TrackBar trackBar;
 
-        public TrackBarWrapper(TrackBar _trackBar, string _valueName)
-            : base(_valueName) {
+        public TrackBarWrapper(TrackBar _trackBar, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
             trackBar = _trackBar;
             trackBar.ValueChanged += new EventHandler(trackBar_ValueChanged);
 
@@ -172,8 +171,7 @@ namespace fooTitle.Config {
     public class NumericUpDownWrapper : ControlWrapper, IConfigValueVisitor {
         protected NumericUpDown numericUpDown;
 
-        public NumericUpDownWrapper(NumericUpDown _numericUpDown, string _valueName)
-            : base(_valueName) {
+        public NumericUpDownWrapper(NumericUpDown _numericUpDown, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
             numericUpDown = _numericUpDown;
             numericUpDown.ValueChanged += new EventHandler(numericUpDown_ValueChanged);
 
@@ -212,10 +210,7 @@ namespace fooTitle.Config {
         protected List<RadioButton> radioButtons = new List<RadioButton>();
         protected int checkedIndex = 0;
 
-        public RadioGroupWrapper(string _valueName)
-            : base(_valueName) {
-
-        }
+        public RadioGroupWrapper(string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) { }
 
         /// <summary>
         /// Adds a radiobutton to the group. The order in which radiobuttons are added matters
@@ -287,8 +282,7 @@ namespace fooTitle.Config {
     public class CheckBoxWrapper : ControlWrapper {
         protected CheckBox checkBox;
 
-        public CheckBoxWrapper(CheckBox _checkBox, string _valueName)
-            : base(_valueName) {
+        public CheckBoxWrapper(CheckBox _checkBox, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
             checkBox = _checkBox;
 
             // register onChange event
@@ -317,8 +311,7 @@ namespace fooTitle.Config {
     public class LabelWrapper : ControlWrapper {
         protected Label label;
 
-        public LabelWrapper(Label _label, string _valueName)
-            : base(_valueName) {
+        public LabelWrapper(Label _label, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
             label = _label;
 
             if (value != null)
@@ -335,24 +328,20 @@ namespace fooTitle.Config {
             label.Text = val.Value;
         }
 
-        public override void WriteInt(ConfInt val) {
-        }
+        public override void WriteInt(ConfInt val) { }
 
-        public override void WriteString(ConfString val) {
-        }
+        public override void WriteString(ConfString val) { }
 
         #endregion
     }
 
     public class AutoWrapperCreator {
-        protected object instance;
+        protected CManagedPrefPage_v3 instance;
         protected List<ControlWrapper> controlWrappers = new List<ControlWrapper>();
 
-        public AutoWrapperCreator() {
+        public AutoWrapperCreator() { }
 
-        }
-
-        public void CreateWrappers(object _instance) {
+        public void CreateWrappers(CManagedPrefPage_v3 _instance) {
             instance = _instance;
             Type formType = instance.GetType();
 
@@ -367,22 +356,21 @@ namespace fooTitle.Config {
                     continue;
                 if (value.Tag == null)
                     continue;
-                createWrapper(f, value);
+                createWrapper(f, value, instance);
             }
         }
 
-        protected void createWrapper(FieldInfo f, Control value) {
-
+        protected void createWrapper(FieldInfo f, Control value, CManagedPrefPage_v3 parent) {
             if (f.FieldType.Equals(typeof(TextBox))) {
-                controlWrappers.Add(new TextBoxWrapper((TextBox)value, (string)value.Tag));
+                controlWrappers.Add(new TextBoxWrapper((TextBox)value, (string)value.Tag, parent));
             } else if (f.FieldType.Equals(typeof(TrackBar))) {
-                controlWrappers.Add(new TrackBarWrapper((TrackBar)value, (string)value.Tag));
+                controlWrappers.Add(new TrackBarWrapper((TrackBar)value, (string)value.Tag, parent));
             } else if (f.FieldType.Equals(typeof(CheckBox))) {
-                controlWrappers.Add(new CheckBoxWrapper((CheckBox)value, (string)value.Tag));
+                controlWrappers.Add(new CheckBoxWrapper((CheckBox)value, (string)value.Tag, parent));
             } else if (f.FieldType.Equals(typeof(Label))) {
-                controlWrappers.Add(new LabelWrapper((Label)value, (string)value.Tag));
+                controlWrappers.Add(new LabelWrapper((Label)value, (string)value.Tag, parent));
             } else if (f.FieldType.Equals(typeof(NumericUpDown))) {
-                controlWrappers.Add(new NumericUpDownWrapper((NumericUpDown)value, (string)value.Tag));
+                controlWrappers.Add(new NumericUpDownWrapper((NumericUpDown)value, (string)value.Tag, parent));
             }
         }
 

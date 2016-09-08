@@ -24,7 +24,7 @@
 #include "ComponentLoader.h"
 #include "playCallback.h"
 #include "initQuit.h"
-#include "prefPages.h"
+#include "prefPages_v3.h"
 #include "ManagedWrapper.h"
 #include "cfgVars.h"
 #include "Command.h"

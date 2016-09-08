@@ -133,7 +133,6 @@ namespace fooTitle {
         /// </summary>
         public ConfEnum<ShowWhenEnum> ShowWhen = new ConfEnum<ShowWhenEnum>("display/showWhen", ShowWhenEnum.Always);
         void ShowWhen_OnChanged(string name) {
-
             if (ShowWhen.Value == ShowWhenEnum.Always)
                 EnableFooTitle();
             else if (ShowWhen.Value == ShowWhenEnum.Never)
@@ -305,7 +304,6 @@ namespace fooTitle {
 
             // create a notifying string value for saving the configuration
             CNotifyingCfgString cfgEntry = new CNotifyingCfgString(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 13), "<config/>");
-            cfgEntry.BeforeWriting += new CNotifyingCfgString.BeforeWritingDelegate(cfgEntry_BeforeWriting);
 
             // create the configuration manager
             Config = new XmlConfigStorage(cfgEntry);
@@ -316,12 +314,6 @@ namespace fooTitle {
 
             // initialize menu commands
             viewMenuCommands = new ViewMenuCommands();
-
-        }
-
-        private void cfgEntry_BeforeWriting(CNotifyingCfgString sender) {
-            ConfValuesManager.GetInstance().SaveTo(Config);
-
         }
 
         public void SavePosition() {
@@ -342,8 +334,7 @@ namespace fooTitle {
         /// </summary>
         public void OnInit(IPlayControl a) {
             Main.PlayControl = a;
-
-#if DEBU
+#if false
             // run the tests
             Tests.TestFramework t = new Tests.test_all();
             t.Run();
@@ -352,8 +343,6 @@ namespace fooTitle {
             Config.Load();
             ConfValuesManager.GetInstance().LoadFrom(Config);
             ConfValuesManager.GetInstance().SetStorage(Config);
-
-
 
             propsForm.UpdateValues();
 
@@ -392,7 +381,6 @@ namespace fooTitle {
             repeatedShowing = new RepeatedShowing();
 
             initDone = true;
-
         }
 
         public event OnQuitDelegate OnQuitEvent;
@@ -427,7 +415,6 @@ namespace fooTitle {
                 lastSong = null;
             sendEvent(OnPlaybackStopEvent, reason);
         }
-
 
         protected void sendEvent(Object _event, params Object[] p) {
             try {

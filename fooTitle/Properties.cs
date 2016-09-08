@@ -18,19 +18,27 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
 using fooTitle.Config;
-using fooTitle.Tests;
-
 
 namespace fooTitle {
-    class Properties : fooManagedWrapper.CManagedPrefPage {
+    class Properties : fooManagedWrapper.CManagedPrefPage_v3 {
         //class Properties : System.Windows.Forms.Form {
+
+        public override void Reset() {
+            ConfValuesManager.GetInstance().Reset();
+        }
+
+        public override void Apply() {
+            ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
+        }
+
+        public override bool HasChanged() {
+            return ConfValuesManager.GetInstance().HasChanged();
+        }
 
         class SkinListEntry {
             public string path;
@@ -67,22 +75,21 @@ namespace fooTitle {
         private Label label1;
         protected RadioGroupWrapper popupShowingWrapper;
 
-        public Properties(Main _main)
-       : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage.guid_display) {
+        public Properties(Main _main) : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage_v3.guid_display) {
             main = _main;
             InitializeComponent();
 
-            showWhenWrapper = new RadioGroupWrapper("display/showWhen");
+            showWhenWrapper = new RadioGroupWrapper("display/showWhen", this);
             showWhenWrapper.AddRadioButton(alwaysRadio);
             showWhenWrapper.AddRadioButton(minimizedRadio);
             showWhenWrapper.AddRadioButton(neverRadio);
 
-            windowPositionWrapper = new RadioGroupWrapper("display/windowPosition");
+            windowPositionWrapper = new RadioGroupWrapper("display/windowPosition", this);
             windowPositionWrapper.AddRadioButton(alwaysOnTopRadio);
             windowPositionWrapper.AddRadioButton(onDesktopRadio);
             windowPositionWrapper.AddRadioButton(normalRadio);
 
-            popupShowingWrapper = new RadioGroupWrapper("showControl/popupShowing");
+            popupShowingWrapper = new RadioGroupWrapper("showControl/popupShowing", this);
             popupShowingWrapper.AddRadioButton(allTheTimeRadio);
             popupShowingWrapper.AddRadioButton(onlyWhenRadio);
 
@@ -101,7 +108,6 @@ namespace fooTitle {
             skinsList.Items.Clear();
 
             try {
-
                 foreach (string path in System.IO.Directory.GetDirectories(Main.UserDataDir)) {
                     addSkin(path);
                 }
@@ -115,15 +121,10 @@ namespace fooTitle {
 
             Assembly myAssembly = Assembly.GetExecutingAssembly();
             versionLabel.Text = "Version: " + myAssembly.GetName().Version.ToString();
-
         }
 
-        public override bool QueryReset() {
-            return true;
-        }
-
-        public override void Reset() {
-            ConfValuesManager.GetInstance().Reset();
+        public void DiscardChanges() {
+            ConfValuesManager.GetInstance().LoadFrom(Main.GetInstance().Config);
         }
 
         #region Windows Form Designer generated code
@@ -809,13 +810,14 @@ namespace fooTitle {
             // 
             // Properties
             // 
+            this.HandleCreated += new EventHandler(Properties_HandleCreated);
+            this.HandleDestroyed += new System.EventHandler(Properties_HandleDestroyed);
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(501, 501);
             this.Controls.Add(this.tabControl1);
             this.Name = "Properties";
             this.Text = "foo_title";
-            this.VisibleChanged += new System.EventHandler(this.Properties_VisibleChanged);
             ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).EndInit();
             this.showWhenBox.ResumeLayout(false);
             this.showWhenBox.PerformLayout();
@@ -842,15 +844,15 @@ namespace fooTitle {
             ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).EndInit();
             this.ResumeLayout(false);
-
         }
         #endregion
 
+        private void Properties_HandleCreated(object sender, EventArgs e) {
+            UpdateValues();
+        }
 
-
-        void Properties_VisibleChanged(object sender, EventArgs e) {
-            if (Visible)
-                UpdateValues();
+        private void Properties_HandleDestroyed(object sender, EventArgs e) {
+            DiscardChanges();
         }
 
         private void applySkinBtn_Click(object sender, EventArgs e) {
@@ -859,6 +861,7 @@ namespace fooTitle {
             }
 
             main.SkinPath.ForceUpdate(((SkinListEntry)skinsList.SelectedItem).path);
+            OnChange(); // If the control is not wrapped in a ControlWrapper we need to manualy call OnChange
         }
 
         private void openSkinDirBtn_Click(object sender, EventArgs e) {

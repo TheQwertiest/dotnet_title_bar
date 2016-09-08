@@ -208,9 +208,7 @@
     <Compile Include="Tests\TestServices.cs" />
     <Compile Include="Tests\test_all.cs" />
     <Compile Include="Tests\test_Config.cs" />
-    <Compile Include="Tests\test_ConfigGUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Tests\test_ConfigGUI.cs" />
     <Compile Include="Tests\test_ConfigGUI.Designer.cs">
       <DependentUpon>test_ConfigGUI.cs</DependentUpon>
     </Compile>

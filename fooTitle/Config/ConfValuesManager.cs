@@ -17,14 +17,8 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Reflection;
-
-
-using fooTitle.Config;
 
 namespace fooTitle.Config {
     #region Exceptions
@@ -137,7 +131,6 @@ namespace fooTitle.Config {
         /// </summary>
         public void LoadFrom(IConfigStorage from) {
             foreach (ConfValue v in values) {
-
                 v.LoadFrom(from);
             }
         }
@@ -166,6 +159,15 @@ namespace fooTitle.Config {
             }
         }
 
+        public bool HasChanged() {
+            foreach (ConfValue v in values) {
+                if (v.HasChanged()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// If a value with the given name exists, returns a reference to it.
         /// Otherwise creates a new one. Should be used when it is expected
@@ -183,7 +185,7 @@ namespace fooTitle.Config {
         /// <summary>
         /// <see cref="CreateIntValue"/>
         /// </summary>
-        public static ConfEnum<T> CreateEnumValue<T>(string name, T _def) where T : IConvertible{
+        public static ConfEnum<T> CreateEnumValue<T>(string name, T _def) where T : IConvertible {
             ConfEnum<T> existing = (ConfEnum<T>)GetInstance().GetValueByName(name);
             if (existing != null)
                 return existing;

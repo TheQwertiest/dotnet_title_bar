@@ -1,27 +1,27 @@
 /*
-    Copyright 2005 - 2006 Roman Plasil
+	Copyright 2005 - 2006 Roman Plasil
 	http://foo-title.sourceforge.net
-    This file is part of foo_title.
+	This file is part of foo_title.
 
-    foo_title is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation; either version 2.1 of the License, or
-    (at your option) any later version.
+	foo_title is free software; you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation; either version 2.1 of the License, or
+	(at your option) any later version.
 
-    foo_title is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+	foo_title is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with foo_title; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+	You should have received a copy of the GNU Lesser General Public License
+	along with foo_title; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "stdafx.h"
 #include "fooServices.h"
 #include "ComponentLoader.h"
 #include "ManagedWrapper.h"
-#include "prefPages.h"
+#include "prefPages_v3.h"
 #include "mainMenuCommands.h"
 
 using namespace System;
@@ -43,7 +43,6 @@ namespace fooManagedWrapper {
 	}
 
 	CManagedWrapper::!CManagedWrapper() {
-
 		if (UIControlInstance)
 			delete UIControlInstance;
 		UIControlInstance = NULL;
@@ -53,16 +52,16 @@ namespace fooManagedWrapper {
 		modulePath = _modulePath;
 
 		// fill in the guids for prefpages
-		CManagedPrefPage::guid_root = FromGUID(preferences_page::guid_root);
-		CManagedPrefPage::guid_hidden = FromGUID(preferences_page::guid_hidden);
-		CManagedPrefPage::guid_tools= FromGUID(preferences_page::guid_tools);
-		CManagedPrefPage::guid_core= FromGUID(preferences_page::guid_core);
-		CManagedPrefPage::guid_display= FromGUID(preferences_page::guid_display);
-		CManagedPrefPage::guid_playback= FromGUID(preferences_page::guid_playback);
-		CManagedPrefPage::guid_visualisations= FromGUID(preferences_page::guid_visualisations);
-		CManagedPrefPage::guid_input= FromGUID(preferences_page::guid_input);
-		CManagedPrefPage::guid_tag_writing= FromGUID(preferences_page::guid_tag_writing);
-		CManagedPrefPage::guid_media_library= FromGUID(preferences_page::guid_media_library);
+		CManagedPrefPage_v3::guid_root = FromGUID(preferences_page::guid_root);
+		CManagedPrefPage_v3::guid_hidden = FromGUID(preferences_page::guid_hidden);
+		CManagedPrefPage_v3::guid_tools = FromGUID(preferences_page::guid_tools);
+		CManagedPrefPage_v3::guid_core = FromGUID(preferences_page::guid_core);
+		CManagedPrefPage_v3::guid_display = FromGUID(preferences_page::guid_display);
+		CManagedPrefPage_v3::guid_playback = FromGUID(preferences_page::guid_playback);
+		CManagedPrefPage_v3::guid_visualisations = FromGUID(preferences_page::guid_visualisations);
+		CManagedPrefPage_v3::guid_input = FromGUID(preferences_page::guid_input);
+		CManagedPrefPage_v3::guid_tag_writing = FromGUID(preferences_page::guid_tag_writing);
+		CManagedPrefPage_v3::guid_media_library = FromGUID(preferences_page::guid_media_library);
 
 		// and the guids for mainmenu groups 
 		CMainMenuCommandsImpl::file = FromGUID(mainmenu_groups::file);
@@ -114,17 +113,17 @@ namespace fooManagedWrapper {
 
 	_GUID CManagedWrapper::ToGUID(Guid^ guid) {
 		array<Byte>^ guidData = guid->ToByteArray();
-		pin_ptr<Byte> data = &(guidData[ 0 ]);
+		pin_ptr<Byte> data = &(guidData[0]);
 
 		return *(_GUID *)data;
 	}
 
 	Guid ^CManagedWrapper::FromGUID(const _GUID& guid) {
-		return gcnew Guid( guid.Data1, guid.Data2, guid.Data3, 
-			guid.Data4[ 0 ], guid.Data4[ 1 ], 
-			guid.Data4[ 2 ], guid.Data4[ 3 ], 
-			guid.Data4[ 4 ], guid.Data4[ 5 ], 
-			guid.Data4[ 6 ], guid.Data4[ 7 ] );
+		return gcnew Guid(guid.Data1, guid.Data2, guid.Data3,
+			guid.Data4[0], guid.Data4[1],
+			guid.Data4[2], guid.Data4[3],
+			guid.Data4[4], guid.Data4[5],
+			guid.Data4[6], guid.Data4[7]);
 	}
 
 	String ^CManagedWrapper::GetModuleDirectory() {
@@ -149,7 +148,6 @@ namespace fooManagedWrapper {
 		} else {
 			pfc::crash();
 		}
-		 
 	}
 
 	String ^CManagedWrapper::GetAllCommands() {
@@ -161,7 +159,7 @@ namespace fooManagedWrapper {
 		while (ec.next(ptr)) {
 			unsigned int count = ptr->get_num_items();
 
-			for (unsigned int i = 0 ; i < count; i++) {
+			for (unsigned int i = 0; i < count; i++) {
 				pfc::string8 str;
 				ptr->get_item_name(i, str);
 
@@ -175,9 +173,6 @@ namespace fooManagedWrapper {
 			}
 
 		}
-
-
-
 
 		return res;
 	}
@@ -203,5 +198,4 @@ namespace fooManagedWrapper {
 	String ^CManagedWrapper::PfcStringToString(const pfc::string8 &stringToConvert) {
 		return gcnew String(stringToConvert.get_ptr(), 0, stringToConvert.get_length(), gcnew System::Text::UTF8Encoding());
 	}
-
 };
