@@ -31,11 +31,18 @@ namespace fooTitle.Layers {
 
     interface IButtonAction {
         void Init(XmlNode node);
-        void Run(MouseButtons button);
+        void Run(MouseButtons button, int delta);
     };
+
+    enum ScrollDirection {
+        UP,
+        DOWN,
+        NONE,
+    }
 
     abstract class ButtonAction : IButtonAction {
         protected MouseButtons button;
+        protected ScrollDirection scrollDir;
 
         private static MouseButtons stringToButton(string b) {
             switch (b) {
@@ -55,11 +62,37 @@ namespace fooTitle.Layers {
             }
         }
 
-        public virtual void Init(XmlNode node) {
-            this.button = stringToButton(Element.GetAttributeValue(node, "button", "all").ToLowerInvariant());
+        private static ScrollDirection stringToDir(string d) {
+            switch (d) {
+                case "up":
+                    return ScrollDirection.UP;
+                case "down":
+                    return ScrollDirection.DOWN;
+                case "none":
+                default:
+                    return ScrollDirection.NONE;
+            }
         }
 
-        public abstract void Run(MouseButtons button);
+        public virtual void Init(XmlNode node) {
+            button = stringToButton(Element.GetAttributeValue(node, "button", "all").ToLowerInvariant());
+            scrollDir = stringToDir(Element.GetAttributeValue(node, "scroll", "none").ToLowerInvariant());
+            if (button != MouseButtons.None && scrollDir != ScrollDirection.NONE) {
+                throw new ArgumentException("You can't specify both 'button' and 'wheel' attributes on an action tag!");
+            }
+        }
+
+        public abstract void Run(MouseButtons button, int delta);
+
+        protected bool shouldRun(MouseButtons button, int delta) {
+            if (this.scrollDir != ScrollDirection.NONE) {
+                return (scrollDir == ScrollDirection.UP && delta > 0) || (scrollDir == ScrollDirection.DOWN && delta < 0);
+            }
+            if (this.button != MouseButtons.None && this.button != button) {
+                return false;
+            }
+            return true;
+        }
     }
 
     class MainMenuAction : ButtonAction {
@@ -80,8 +113,8 @@ namespace fooTitle.Layers {
             readCommand(cmd);
         }
 
-        public override void Run(MouseButtons button) {
-            if (this.button != MouseButtons.None && this.button != button) {
+        public override void Run(MouseButtons button, int delta) {
+            if (!shouldRun(button, delta)) {
                 return;
             }
             cmds.Execute(commandIndex);
@@ -103,8 +136,8 @@ namespace fooTitle.Layers {
             cmdPath = Element.GetNodeValue(node);
         }
 
-        public override void Run(MouseButtons button) {
-            if (this.button != MouseButtons.None && this.button != button) {
+        public override void Run(MouseButtons button, int delta) {
+            if (!shouldRun(button, delta)) {
                 return;
             }
             if (string.IsNullOrEmpty(cmdPath)) {
@@ -136,8 +169,8 @@ namespace fooTitle.Layers {
             commandName = Element.GetNodeValue(node);
         }
 
-        public override void Run(MouseButtons button) {
-            if (this.button != MouseButtons.None && this.button != button) {
+        public override void Run(MouseButtons button, int delta) {
+            if (!shouldRun(button, delta)) {
                 return;
             }
             CManagedWrapper.DoMainMenuCommand(commandName);
@@ -167,8 +200,8 @@ namespace fooTitle.Layers {
                 only = Kind.Disable;
         }
 
-        public override void Run(MouseButtons button) {
-            if (this.button != MouseButtons.None && this.button != button) {
+        public override void Run(MouseButtons button, int delta) {
+            if (!shouldRun(button, delta)) {
                 return;
             }
             Layer root = LayerTools.FindLayerByName(Main.GetInstance().CurrentSkin, target);
@@ -231,24 +264,28 @@ namespace fooTitle.Layers {
             // register mouse events
             Main.GetInstance().CurrentSkin.OnMouseMove += new MouseEventHandler(OnMouseMove);
             Main.GetInstance().CurrentSkin.OnMouseDown += new MouseEventHandler(OnMouseDown);
-            Main.GetInstance().CurrentSkin.OnMouseUp += new MouseEventHandler(OnMouseUp);
+            Main.GetInstance().CurrentSkin.OnMouseUp += new MouseEventHandler(OnMouseUpOrWheel);
             Main.GetInstance().CurrentSkin.OnMouseLeave += new EventHandler(OnMouseLeave);
+            Main.GetInstance().CurrentSkin.OnMouseWheel += new MouseEventHandler(OnMouseUpOrWheel);
         }
 
         void OnMouseLeave(object sender, EventArgs e) {
             mouseOn = false;
         }
 
-        void OnMouseUp(object sender, MouseEventArgs e) {
-            mouseDown = false;
+        void OnMouseUpOrWheel(object sender, MouseEventArgs e) {
+            if (e.Delta == 0) {
+                mouseDown = false;
+            }
 
-            if (!Enabled)
+            if (!Enabled) {
                 return;
+            }
 
             if (mouseOn) {
                 // run all actions
                 foreach (IButtonAction action in actions) {
-                    action.Run(e.Button);
+                    action.Run(e.Button, e.Delta);
                 }
             }
         }

@@ -30,18 +30,15 @@ using fooTitle.Geometries;
 using System.Windows.Forms;
 
 
-namespace fooTitle.Layers
-{
-	/// <summary>
-	/// Loads itself from an xml file and handles all drawing.
-	/// </summary>
-	public class Skin : Layer,  IPlayCallbackSender
-	{
-		XmlDocument document = new XmlDocument();
+namespace fooTitle.Layers {
+    /// <summary>
+    /// Loads itself from an xml file and handles all drawing.
+    /// </summary>
+    public class Skin : Layer, IPlayCallbackSender {
+        XmlDocument document = new XmlDocument();
         XmlNode skin;
         string path;
         public List<Layer> DynamicLayers = new List<Layer>();
-        
 
         /// <summary>
         /// Returns the directory of the skin. Can be used for loading images and other data files.
@@ -57,24 +54,23 @@ namespace fooTitle.Layers
         private OnPlaybackPauseDelegate onPauseRegistered;
         private OnPlaybackStopDelegate onStopRegistered;
 
-		/// <summary>
-		/// Loads the skin from the specified xml file
-		/// </summary>
-		/// <param name="path">Path to the skin directory.</param>
-		public Skin(string _path) : base()
-		{
+        /// <summary>
+        /// Loads the skin from the specified xml file
+        /// </summary>
+        /// <param name="path">Path to the skin directory.</param>
+        public Skin(string _path) : base() {
             path = _path;
 
-			// load the skin xml file
-			document.Load(GetSkinFilePath("skin.xml"));
+            // load the skin xml file
+            document.Load(GetSkinFilePath("skin.xml"));
 
-			// read the xml document for the basic properties
-			skin = document.GetElementsByTagName("skin").Item(0);
+            // read the xml document for the basic properties
+            skin = document.GetElementsByTagName("skin").Item(0);
 
             int width = Int32.Parse(skin.Attributes.GetNamedItem("width").Value);
             int height = Int32.Parse(skin.Attributes.GetNamedItem("height").Value);
-            geometry = new AbsoluteGeometry(new Rectangle(0, 0, width, height), width, height, new Point(0,0), AlignType.Left);
-			
+            geometry = new AbsoluteGeometry(new Rectangle(0, 0, width, height), width, height, new Point(0, 0), AlignType.Left);
+
             // register to main for playback events
             onNewTrackRegistered = new OnPlaybackNewTrackDelegate(OnPlaybackNewTrack);
             onTimeRegistered = new OnPlaybackTimeDelegate(OnPlaybackTime);
@@ -84,7 +80,7 @@ namespace fooTitle.Layers
             Main.GetInstance().OnPlaybackTimeEvent += onTimeRegistered;
             Main.GetInstance().OnPlaybackPauseEvent += onPauseRegistered;
             Main.GetInstance().OnPlaybackStopEvent += onStopRegistered;
-		}
+        }
 
         /// <summary>
         /// Call to free this skin (unregistering events, unregistering layer events,...)
@@ -98,19 +94,20 @@ namespace fooTitle.Layers
             display.MouseUp -= mouseUpReg;
             display.MouseDown -= mouseDownReg;
             display.MouseMove -= mouseMoveReg;
+            display.MouseWheel -= mouseWheelReg;
         }
 
-		/// <summary>
-		/// Resizes the skin and all layers, but not the form.
-		/// </summary>
-		/// <param name="newSize">The new size the skin should have</param>
-		public void Resize(Size newSize) {
-			((AbsoluteGeometry)geometry).Width = newSize.Width;
+        /// <summary>
+        /// Resizes the skin and all layers, but not the form.
+        /// </summary>
+        /// <param name="newSize">The new size the skin should have</param>
+        public void Resize(Size newSize) {
+            ((AbsoluteGeometry)geometry).Width = newSize.Width;
             ((AbsoluteGeometry)geometry).Height = newSize.Height;
-			foreach (Layer l in layers ) {
-				l.UpdateGeometry(ClientRect);
-			}
-		}
+            foreach (Layer l in layers) {
+                l.UpdateGeometry(ClientRect);
+            }
+        }
 
         protected override Size getMinimalSizeImpl() {
             // don't ask geometry..
@@ -144,7 +141,7 @@ namespace fooTitle.Layers
         /// <param name="parentRect">parent rectangle - the geometry should fit in it</param>
         public void FrameUpdateGeometry(Rectangle parentRect) {
             foreach (Layer l in DynamicLayers) {
-                 l.UpdateThisLayerGeometry(l.ParentLayer.ClientRect);
+                l.UpdateThisLayerGeometry(l.ParentLayer.ClientRect);
             }
         }
 
@@ -171,7 +168,7 @@ namespace fooTitle.Layers
         public void OnPlaybackTime(double time) {
             // pass it on
             sendEvent(OnPlaybackTimeEvent, time);
-         }
+        }
 
         public void OnPlaybackNewTrack(CMetaDBHandle song) {
             // pass it on
@@ -221,15 +218,15 @@ namespace fooTitle.Layers
         public event OnPlaybackPauseDelegate OnPlaybackPauseEvent;
         public event OnPlaybackDynamicInfoTrackDelegate OnPlaybackDynamicInfoTrackEvent;
 #pragma warning restore 0168, 219, 67
-
         #endregion
 
         public event MouseEventHandler OnMouseMove;
         public event MouseEventHandler OnMouseDown;
         public event MouseEventHandler OnMouseUp;
         public event EventHandler OnMouseLeave;
+        public event MouseEventHandler OnMouseWheel;
 
-        protected MouseEventHandler mouseMoveReg, mouseDownReg, mouseUpReg;
+        protected MouseEventHandler mouseMoveReg, mouseDownReg, mouseUpReg, mouseWheelReg;
         protected EventHandler mouseLeaveReg;
 
         public void Init(Display _display) {
@@ -244,11 +241,13 @@ namespace fooTitle.Layers
             display.MouseUp += mouseUpReg;
             mouseLeaveReg = new EventHandler(display_MouseLeave);
             display.MouseLeave += mouseLeaveReg;
+            mouseWheelReg = new MouseEventHandler(display_MouseWheel);
+            display.MouseWheel += mouseWheelReg;
 
             loadLayers(skin);
             geometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)geometry).Width, ((AbsoluteGeometry)geometry).Height));
         }
-        
+
         void display_MouseUp(object sender, MouseEventArgs e) {
             sendEventCatch(OnMouseUp, sender, e);
         }
@@ -265,6 +264,8 @@ namespace fooTitle.Layers
             sendEventCatch(OnMouseLeave, sender, e);
         }
 
-
+        void display_MouseWheel(object sender, EventArgs e) {
+            sendEventCatch(OnMouseWheel, sender, e);
+        }
     }
 }
