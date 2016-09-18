@@ -201,16 +201,20 @@ namespace fooTitle {
 
         #region Dragging
         private void Display_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-            dragging = true;
-            dragX = e.X;
-            dragY = e.Y;
+            if (Main.GetInstance().CanDragDisplay) {
+                dragging = true;
+                dragX = e.X;
+                dragY = e.Y;
+            }
         }
 
         private void Display_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
-            dragging = false;
+            if (dragging) {
+                dragging = false;
 
-            // save position
-            Main.GetInstance().SavePosition();
+                // save position
+                Main.GetInstance().SavePosition();
+            }
         }
 
         private void Display_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {

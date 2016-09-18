@@ -33,6 +33,12 @@ namespace fooTitle {
         Never
     }
 
+    public enum EnableDragging {
+        ALWAYS,
+        WHEN_PROPERTIES_OPEN,
+        NEVER,
+    }
+
     public class Main : IComponentClient, IPlayCallbackSender {
         public static IPlayControl PlayControl;
         /// <summary>
@@ -142,6 +148,21 @@ namespace fooTitle {
             }
         }
 
+        private ConfEnum<EnableDragging> DraggingEnabled = new ConfEnum<EnableDragging>("display/enableDragging", EnableDragging.ALWAYS);
+        public bool CanDragDisplay {
+            get {
+                switch (DraggingEnabled.Value) {
+                    case EnableDragging.ALWAYS:
+                        return true;
+                    case EnableDragging.WHEN_PROPERTIES_OPEN:
+                        return Properties.IsOpen;
+                    case EnableDragging.NEVER:
+                    default:
+                        return false;
+                }
+            }
+        }
+
         protected bool fooTitleEnabled = true;
         public void DisableFooTitle() {
             if (initDone)
@@ -181,6 +202,13 @@ namespace fooTitle {
 
         private ConfInt positionX = new ConfInt("display/positionX", 0);
         private ConfInt positionY = new ConfInt("display/positionY", 0);
+        public void positionX_Changed(string name) {
+            Display.Left = positionX.Value;
+        }
+        public void positionY_Changed(string name) {
+            Display.Top = positionY.Value;
+        }
+
         private ConfBool edgeSnap = new ConfBool("display/edgeSnap", true);
         public bool edgeSnapEnabled {
             get { return edgeSnap.Value; }
@@ -323,6 +351,10 @@ namespace fooTitle {
         public void SavePosition() {
             positionX.Value = Display.Left;
             positionY.Value = Display.Top;
+
+            if (DraggingEnabled.Value == EnableDragging.ALWAYS && !Properties.IsOpen) {
+                ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
+            }
         }
 
         public void RestorePosition() {
@@ -377,6 +409,8 @@ namespace fooTitle {
             ShowWhen.OnChanged += new ConfValuesManager.ValueChangedDelegate(ShowWhen_OnChanged);
             UpdateInterval.OnChanged += new ConfValuesManager.ValueChangedDelegate(updateIntervalChanged);
             SkinPath.OnChanged += new ConfValuesManager.ValueChangedDelegate(skinNameChanged);
+            positionX.OnChanged += new ConfValuesManager.ValueChangedDelegate(positionX_Changed);
+            positionY.OnChanged += new ConfValuesManager.ValueChangedDelegate(positionY_Changed);
 
             if (ShowWhen.Value == ShowWhenEnum.Never)
                 DisableFooTitle();

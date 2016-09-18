@@ -80,7 +80,12 @@ namespace fooTitle {
         private NumericUpDown posXnumbox;
         private Label label8;
         private Label label2;
+        private GroupBox groupBox5;
+        private RadioButton enableDraggingPropsOpenRadio;
+        private RadioButton enableDraggingAlwaysRadio;
         protected RadioGroupWrapper popupShowingWrapper;
+        private RadioButton enableDraggingNeverRadio;
+        protected RadioGroupWrapper enableDraggingWrapper;
 
         public Properties(Main _main) : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage_v3.guid_display) {
             main = _main;
@@ -99,6 +104,11 @@ namespace fooTitle {
             popupShowingWrapper = new RadioGroupWrapper("showControl/popupShowing", this);
             popupShowingWrapper.AddRadioButton(allTheTimeRadio);
             popupShowingWrapper.AddRadioButton(onlyWhenRadio);
+
+            enableDraggingWrapper = new RadioGroupWrapper("display/enableDragging", this);
+            enableDraggingWrapper.AddRadioButton(enableDraggingAlwaysRadio);
+            enableDraggingWrapper.AddRadioButton(enableDraggingPropsOpenRadio);
+            enableDraggingWrapper.AddRadioButton(enableDraggingNeverRadio);
 
             autoWrapperCreator.CreateWrappers(this);
         }
@@ -216,6 +226,16 @@ namespace fooTitle {
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.enableDraggingPropsOpenRadio = new System.Windows.Forms.RadioButton();
+            this.enableDraggingAlwaysRadio = new System.Windows.Forms.RadioButton();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.edgeSnapCheckBox = new System.Windows.Forms.CheckBox();
+            this.posYnumbox = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
+            this.posXnumbox = new System.Windows.Forms.NumericUpDown();
+            this.label8 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label15 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -225,13 +245,7 @@ namespace fooTitle {
             this.artLoadEveryLabelRight = new System.Windows.Forms.Label();
             this.artLoadEveryNumber = new System.Windows.Forms.NumericUpDown();
             this.artLoadEveryLabelLeft = new System.Windows.Forms.Label();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.posYnumbox = new System.Windows.Forms.NumericUpDown();
-            this.label4 = new System.Windows.Forms.Label();
-            this.posXnumbox = new System.Windows.Forms.NumericUpDown();
-            this.label8 = new System.Windows.Forms.Label();
-            this.edgeSnapCheckBox = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.enableDraggingNeverRadio = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
             this.showWhenBox.SuspendLayout();
             this.opacityOpts.SuspendLayout();
@@ -247,12 +261,13 @@ namespace fooTitle {
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).BeginInit();
+            this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.posYnumbox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.posXnumbox)).BeginInit();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).BeginInit();
             this.SuspendLayout();
             // 
             // skinsList
@@ -726,6 +741,7 @@ namespace fooTitle {
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Controls.Add(this.opacityOpts);
@@ -736,6 +752,110 @@ namespace fooTitle {
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Misc";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.enableDraggingNeverRadio);
+            this.groupBox5.Controls.Add(this.enableDraggingPropsOpenRadio);
+            this.groupBox5.Controls.Add(this.enableDraggingAlwaysRadio);
+            this.groupBox5.Location = new System.Drawing.Point(238, 290);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(225, 90);
+            this.groupBox5.TabIndex = 13;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Enable Dragging";
+            // 
+            // enableDraggingPropsOpenRadio
+            // 
+            this.enableDraggingPropsOpenRadio.AutoSize = true;
+            this.enableDraggingPropsOpenRadio.Location = new System.Drawing.Point(6, 42);
+            this.enableDraggingPropsOpenRadio.Name = "enableDraggingPropsOpenRadio";
+            this.enableDraggingPropsOpenRadio.Size = new System.Drawing.Size(198, 17);
+            this.enableDraggingPropsOpenRadio.TabIndex = 15;
+            this.enableDraggingPropsOpenRadio.TabStop = true;
+            this.enableDraggingPropsOpenRadio.Text = "Only when these properties are open";
+            this.enableDraggingPropsOpenRadio.UseVisualStyleBackColor = true;
+            // 
+            // enableDraggingAlwaysRadio
+            // 
+            this.enableDraggingAlwaysRadio.AutoSize = true;
+            this.enableDraggingAlwaysRadio.Location = new System.Drawing.Point(6, 19);
+            this.enableDraggingAlwaysRadio.Name = "enableDraggingAlwaysRadio";
+            this.enableDraggingAlwaysRadio.Size = new System.Drawing.Size(58, 17);
+            this.enableDraggingAlwaysRadio.TabIndex = 14;
+            this.enableDraggingAlwaysRadio.TabStop = true;
+            this.enableDraggingAlwaysRadio.Text = "Always";
+            this.enableDraggingAlwaysRadio.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label2);
+            this.groupBox4.Controls.Add(this.edgeSnapCheckBox);
+            this.groupBox4.Controls.Add(this.posYnumbox);
+            this.groupBox4.Controls.Add(this.label4);
+            this.groupBox4.Controls.Add(this.posXnumbox);
+            this.groupBox4.Controls.Add(this.label8);
+            this.groupBox4.Location = new System.Drawing.Point(238, 180);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(225, 104);
+            this.groupBox4.TabIndex = 12;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Position";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.label2.Location = new System.Drawing.Point(6, 71);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(195, 26);
+            this.label2.TabIndex = 13;
+            this.label2.Text = "If edge snapping is enable you can hold\r\nCTRL to disable it while dragging.";
+            // 
+            // edgeSnapCheckBox
+            // 
+            this.edgeSnapCheckBox.AutoSize = true;
+            this.edgeSnapCheckBox.Location = new System.Drawing.Point(9, 51);
+            this.edgeSnapCheckBox.Name = "edgeSnapCheckBox";
+            this.edgeSnapCheckBox.Size = new System.Drawing.Size(132, 17);
+            this.edgeSnapCheckBox.TabIndex = 12;
+            this.edgeSnapCheckBox.Tag = "display/edgeSnap";
+            this.edgeSnapCheckBox.Text = "Enable edge snapping";
+            this.edgeSnapCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // posYnumbox
+            // 
+            this.posYnumbox.Location = new System.Drawing.Point(137, 24);
+            this.posYnumbox.Name = "posYnumbox";
+            this.posYnumbox.Size = new System.Drawing.Size(65, 20);
+            this.posYnumbox.TabIndex = 11;
+            this.posYnumbox.Tag = "display/positionY";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(114, 26);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(17, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Y:";
+            // 
+            // posXnumbox
+            // 
+            this.posXnumbox.Location = new System.Drawing.Point(29, 24);
+            this.posXnumbox.Name = "posXnumbox";
+            this.posXnumbox.Size = new System.Drawing.Size(65, 20);
+            this.posXnumbox.TabIndex = 9;
+            this.posXnumbox.Tag = "display/positionX";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 26);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(17, 13);
+            this.label8.TabIndex = 8;
+            this.label8.Text = "X:";
             // 
             // groupBox1
             // 
@@ -826,75 +946,16 @@ namespace fooTitle {
             this.artLoadEveryLabelLeft.TabIndex = 0;
             this.artLoadEveryLabelLeft.Text = "Every";
             // 
-            // groupBox4
+            // enableDraggingNeverRadio
             // 
-            this.groupBox4.Controls.Add(this.label2);
-            this.groupBox4.Controls.Add(this.edgeSnapCheckBox);
-            this.groupBox4.Controls.Add(this.posYnumbox);
-            this.groupBox4.Controls.Add(this.label4);
-            this.groupBox4.Controls.Add(this.posXnumbox);
-            this.groupBox4.Controls.Add(this.label8);
-            this.groupBox4.Location = new System.Drawing.Point(238, 180);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(225, 186);
-            this.groupBox4.TabIndex = 12;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Position";
-            // 
-            // posYnumbox
-            // 
-            this.posYnumbox.Location = new System.Drawing.Point(137, 24);
-            this.posYnumbox.Name = "posYnumbox";
-            this.posYnumbox.Size = new System.Drawing.Size(65, 20);
-            this.posYnumbox.TabIndex = 11;
-            this.posYnumbox.Tag = "display/positionY";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(114, 26);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(17, 13);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "Y:";
-            // 
-            // posXnumbox
-            // 
-            this.posXnumbox.Location = new System.Drawing.Point(29, 24);
-            this.posXnumbox.Name = "posXnumbox";
-            this.posXnumbox.Size = new System.Drawing.Size(65, 20);
-            this.posXnumbox.TabIndex = 9;
-            this.posXnumbox.Tag = "display/positionX";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 26);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(17, 13);
-            this.label8.TabIndex = 8;
-            this.label8.Text = "X:";
-            // 
-            // edgeSnapCheckBox
-            // 
-            this.edgeSnapCheckBox.AutoSize = true;
-            this.edgeSnapCheckBox.Location = new System.Drawing.Point(9, 51);
-            this.edgeSnapCheckBox.Name = "edgeSnapCheckBox";
-            this.edgeSnapCheckBox.Size = new System.Drawing.Size(132, 17);
-            this.edgeSnapCheckBox.TabIndex = 12;
-            this.edgeSnapCheckBox.Tag = "display/edgeSnap";
-            this.edgeSnapCheckBox.Text = "Enable edge snapping";
-            this.edgeSnapCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.label2.Location = new System.Drawing.Point(6, 71);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(195, 26);
-            this.label2.TabIndex = 13;
-            this.label2.Text = "If edge snapping is enable you can hold\r\nCTRL to disable it while dragging.";
+            this.enableDraggingNeverRadio.AutoSize = true;
+            this.enableDraggingNeverRadio.Location = new System.Drawing.Point(6, 65);
+            this.enableDraggingNeverRadio.Name = "enableDraggingNeverRadio";
+            this.enableDraggingNeverRadio.Size = new System.Drawing.Size(54, 17);
+            this.enableDraggingNeverRadio.TabIndex = 16;
+            this.enableDraggingNeverRadio.TabStop = true;
+            this.enableDraggingNeverRadio.Text = "Never";
+            this.enableDraggingNeverRadio.UseVisualStyleBackColor = true;
             // 
             // Properties
             // 
@@ -927,25 +988,34 @@ namespace fooTitle {
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.tabPage2.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).EndInit();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.posYnumbox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.posXnumbox)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).EndInit();
             this.ResumeLayout(false);
 
         }
         #endregion
 
+        private static bool hasHandle = false;
+        public static bool IsOpen {
+            get { return hasHandle; }
+        }
+
         private void Properties_HandleCreated(object sender, EventArgs e) {
             UpdateValues();
+            hasHandle = true;
         }
 
         private void Properties_HandleDestroyed(object sender, EventArgs e) {
             DiscardChanges();
+            hasHandle = false;
         }
 
         private void applySkinBtn_Click(object sender, EventArgs e) {
