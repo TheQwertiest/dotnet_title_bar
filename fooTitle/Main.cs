@@ -326,6 +326,8 @@ namespace fooTitle {
         public Tests.TestServices TestServicesInstance;
 
         public void Create() {
+            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+
             instance = this;
 
             // create the property sheet form
