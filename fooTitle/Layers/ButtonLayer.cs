@@ -19,13 +19,9 @@
 */
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml;
-using System.Xml.XPath;
 using System.Drawing;
 using System.Windows.Forms;
-
-using naid;
 
 using fooManagedWrapper;
 using fooTitle.Extending;
@@ -35,10 +31,38 @@ namespace fooTitle.Layers {
 
     interface IButtonAction {
         void Init(XmlNode node);
-        void Run();
+        void Run(MouseButtons button);
     };
 
-    class MainMenuAction : IButtonAction {
+    abstract class ButtonAction : IButtonAction {
+        protected MouseButtons button;
+
+        private static MouseButtons stringToButton(string b) {
+            switch (b) {
+                case "left":
+                    return MouseButtons.Left;
+                case "right":
+                    return MouseButtons.Right;
+                case "middle":
+                    return MouseButtons.Middle;
+                case "back":
+                    return MouseButtons.XButton1;
+                case "forward":
+                    return MouseButtons.XButton2;
+                case "all":
+                default:
+                    return MouseButtons.None;
+            }
+        }
+
+        public virtual void Init(XmlNode node) {
+            this.button = stringToButton(Element.GetAttributeValue(node, "button", "all").ToLowerInvariant());
+        }
+
+        public abstract void Run(MouseButtons button);
+    }
+
+    class MainMenuAction : ButtonAction {
         private string originalCmd;
         private CMainMenuCommands cmds;
         private uint commandIndex;
@@ -50,23 +74,26 @@ namespace fooTitle.Layers {
                 throw new ArgumentException(String.Format("Command {0} not found.", cmd));
         }
 
-        public void Init(XmlNode node) {
+        public override void Init(XmlNode node) {
+            base.Init(node);
             string cmd = Element.GetNodeValue(node);
-
             readCommand(cmd);
         }
 
-        public void Run() {
+        public override void Run(MouseButtons button) {
+            if (this.button != MouseButtons.None && this.button != button) {
+                return;
+            }
             cmds.Execute(commandIndex);
         }
     };
 
-    class ContextMenuAction : IButtonAction {
-
+    class ContextMenuAction : ButtonAction {
         private Context context;
         private string cmdPath;
-        
-        public void Init(XmlNode node) {
+
+        public override void Init(XmlNode node) {
+            base.Init(node);
             if (Element.GetAttributeValue(node, "context", "nowplaying").ToLowerInvariant() == "nowplaying") {
                 context = Context.NowPlaying;
             } else {
@@ -74,43 +101,50 @@ namespace fooTitle.Layers {
             }
 
             cmdPath = Element.GetNodeValue(node);
-         }
+        }
 
-        public void Run() {
-            if (string.IsNullOrEmpty(cmdPath))
+        public override void Run(MouseButtons button) {
+            if (this.button != MouseButtons.None && this.button != button) {
                 return;
+            }
+            if (string.IsNullOrEmpty(cmdPath)) {
+                return;
+            }
 
             Guid commandGuid;
             CContextMenuItem cmds;
             uint index;
             bool dynamic;
 
-            if (!ContextMenuUtils.FindContextCommandByDefaultPath(cmdPath, context, out cmds, out commandGuid, out index, out dynamic))
-               CConsole.Warning(String.Format("Contextmenu command {0} not found.", cmdPath));
+            if (!ContextMenuUtils.FindContextCommandByDefaultPath(cmdPath, context, out cmds, out commandGuid, out index, out dynamic)) {
+                CConsole.Warning(String.Format("Contextmenu command {0} not found.", cmdPath));
+            }
 
             if (dynamic) {
                 cmds.Execute(index, commandGuid, context);
             } else {
                 cmds.Execute(index, context);
             }
-
-            
         }
     }
-    
-    class LegacyMainMenuCommand : IButtonAction {
+
+    class LegacyMainMenuCommand : ButtonAction {
         private string commandName;
 
-        public void Init(XmlNode node) {
+        public override void Init(XmlNode node) {
+            base.Init(node);
             commandName = Element.GetNodeValue(node);
         }
 
-        public void Run() {
+        public override void Run(MouseButtons button) {
+            if (this.button != MouseButtons.None && this.button != button) {
+                return;
+            }
             CManagedWrapper.DoMainMenuCommand(commandName);
         }
     };
 
-    class ToggleAction : IButtonAction {
+    class ToggleAction : ButtonAction {
         private string target;
 
         private enum Kind {
@@ -120,7 +154,8 @@ namespace fooTitle.Layers {
         }
         private Kind only;
 
-        public void Init(XmlNode node) {
+        public override void Init(XmlNode node) {
+            base.Init(node);
             target = Element.GetAttributeValue(node, "target", "");
 
             string _only = Element.GetAttributeValue(node, "only", "toggle").ToLowerInvariant();
@@ -132,7 +167,10 @@ namespace fooTitle.Layers {
                 only = Kind.Disable;
         }
 
-        public void Run() {
+        public override void Run(MouseButtons button) {
+            if (this.button != MouseButtons.None && this.button != button) {
+                return;
+            }
             Layer root = LayerTools.FindLayerByName(Main.GetInstance().CurrentSkin, target);
             if (root == null) {
                 CConsole.Write(string.Format("Enable action couldn't find layer {0}.", target));
@@ -147,26 +185,19 @@ namespace fooTitle.Layers {
             }
 
             LayerTools.EnableLayer(root, enable);
-            
         }
-
-
-
     };
 
-
     [LayerTypeAttribute("button")]
-    class ButtonLayer : Layer{
+    class ButtonLayer : Layer {
         // action register
-        public static Dictionary<string, Type> Actions = new Dictionary<string,Type>();
+        public static Dictionary<string, Type> Actions = new Dictionary<string, Type>();
 
         static ButtonLayer() {
             Actions.Add("menu", typeof(MainMenuAction));
             Actions.Add("contextmenu", typeof(ContextMenuAction));
             Actions.Add("toggle", typeof(ToggleAction));
         }
-
-        
 
         protected Bitmap myNormalImage;
         protected Bitmap myOverImage;
@@ -180,7 +211,7 @@ namespace fooTitle.Layers {
         public ButtonLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
             XmlNode contents = GetFirstChildByName(node, "contents");
             readActions(contents);
-            
+
             XmlNode img;
             img = GetFirstChildByNameOrNull(contents, "normalImg");
             if (img != null) {
@@ -202,11 +233,10 @@ namespace fooTitle.Layers {
             Main.GetInstance().CurrentSkin.OnMouseDown += new MouseEventHandler(OnMouseDown);
             Main.GetInstance().CurrentSkin.OnMouseUp += new MouseEventHandler(OnMouseUp);
             Main.GetInstance().CurrentSkin.OnMouseLeave += new EventHandler(OnMouseLeave);
-
         }
 
         void OnMouseLeave(object sender, EventArgs e) {
-            mouseOn = false;            
+            mouseOn = false;
         }
 
         void OnMouseUp(object sender, MouseEventArgs e) {
@@ -218,7 +248,7 @@ namespace fooTitle.Layers {
             if (mouseOn) {
                 // run all actions
                 foreach (IButtonAction action in actions) {
-                    action.Run();
+                    action.Run(e.Button);
                 }
             }
         }
@@ -259,12 +289,10 @@ namespace fooTitle.Layers {
 
                 string type = GetAttributeValue(child, "type", null);
                 if (type == null) {
-                    
                     IButtonAction newAction = new LegacyMainMenuCommand();
                     newAction.Init(child);
                     actions.Add(newAction);
                 } else {
-
                     Type actionClass;
                     if (!Actions.TryGetValue(type, out actionClass)) {
                         throw new ArgumentException(String.Format("No button action type {0} is registered.", type));
@@ -273,12 +301,8 @@ namespace fooTitle.Layers {
                         newAction.Init(child);
                         actions.Add(newAction);
                     }
-
                 }
-
             }
         }
-
-
     }
 }
