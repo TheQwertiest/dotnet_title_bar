@@ -181,6 +181,10 @@ namespace fooTitle {
 
         private ConfInt positionX = new ConfInt("display/positionX", 0);
         private ConfInt positionY = new ConfInt("display/positionY", 0);
+        private ConfBool edgeSnap = new ConfBool("display/edgeSnap", true);
+        public bool edgeSnapEnabled {
+            get { return edgeSnap.Value; }
+        }
 
         private ConfInt artLoadEvery = new ConfInt("display/artLoadEvery", 10, 1, int.MaxValue);
         private ConfInt artLoadMaxTimes = new ConfInt("display/artLoadMaxTimes", 2, -1, int.MaxValue);

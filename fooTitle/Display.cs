@@ -225,7 +225,7 @@ namespace fooTitle {
 
         // snapping
         private int doSnapping(int pos, int size, int border, int oppositeBorder) {
-            if ((Control.ModifierKeys & Keys.Control) == 0) {
+            if (Main.GetInstance().edgeSnapEnabled && (Control.ModifierKeys & Keys.Control) == 0) {
                 int borderDist = Math.Abs(pos - border);
                 int oppositeBorderDist = Math.Abs(pos + size - oppositeBorder);
                 if (borderDist < SnapDist || oppositeBorderDist < SnapDist) {

@@ -73,6 +73,13 @@ namespace fooTitle {
         private GroupBox groupBox2;
         private Label label3;
         private Label label1;
+        private GroupBox groupBox4;
+        private CheckBox edgeSnapCheckBox;
+        private NumericUpDown posYnumbox;
+        private Label label4;
+        private NumericUpDown posXnumbox;
+        private Label label8;
+        private Label label2;
         protected RadioGroupWrapper popupShowingWrapper;
 
         public Properties(Main _main) : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage_v3.guid_display) {
@@ -218,6 +225,13 @@ namespace fooTitle {
             this.artLoadEveryLabelRight = new System.Windows.Forms.Label();
             this.artLoadEveryNumber = new System.Windows.Forms.NumericUpDown();
             this.artLoadEveryLabelLeft = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.posYnumbox = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
+            this.posXnumbox = new System.Windows.Forms.NumericUpDown();
+            this.label8 = new System.Windows.Forms.Label();
+            this.edgeSnapCheckBox = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
             this.showWhenBox.SuspendLayout();
             this.opacityOpts.SuspendLayout();
@@ -236,6 +250,9 @@ namespace fooTitle {
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).BeginInit();
+            this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.posYnumbox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.posXnumbox)).BeginInit();
             this.SuspendLayout();
             // 
             // skinsList
@@ -709,6 +726,7 @@ namespace fooTitle {
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Controls.Add(this.opacityOpts);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
@@ -808,16 +826,86 @@ namespace fooTitle {
             this.artLoadEveryLabelLeft.TabIndex = 0;
             this.artLoadEveryLabelLeft.Text = "Every";
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label2);
+            this.groupBox4.Controls.Add(this.edgeSnapCheckBox);
+            this.groupBox4.Controls.Add(this.posYnumbox);
+            this.groupBox4.Controls.Add(this.label4);
+            this.groupBox4.Controls.Add(this.posXnumbox);
+            this.groupBox4.Controls.Add(this.label8);
+            this.groupBox4.Location = new System.Drawing.Point(238, 180);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(225, 186);
+            this.groupBox4.TabIndex = 12;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Position";
+            // 
+            // posYnumbox
+            // 
+            this.posYnumbox.Location = new System.Drawing.Point(137, 24);
+            this.posYnumbox.Name = "posYnumbox";
+            this.posYnumbox.Size = new System.Drawing.Size(65, 20);
+            this.posYnumbox.TabIndex = 11;
+            this.posYnumbox.Tag = "display/positionY";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(114, 26);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(17, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Y:";
+            // 
+            // posXnumbox
+            // 
+            this.posXnumbox.Location = new System.Drawing.Point(29, 24);
+            this.posXnumbox.Name = "posXnumbox";
+            this.posXnumbox.Size = new System.Drawing.Size(65, 20);
+            this.posXnumbox.TabIndex = 9;
+            this.posXnumbox.Tag = "display/positionX";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 26);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(17, 13);
+            this.label8.TabIndex = 8;
+            this.label8.Text = "X:";
+            // 
+            // edgeSnapCheckBox
+            // 
+            this.edgeSnapCheckBox.AutoSize = true;
+            this.edgeSnapCheckBox.Location = new System.Drawing.Point(9, 51);
+            this.edgeSnapCheckBox.Name = "edgeSnapCheckBox";
+            this.edgeSnapCheckBox.Size = new System.Drawing.Size(132, 17);
+            this.edgeSnapCheckBox.TabIndex = 12;
+            this.edgeSnapCheckBox.Tag = "display/edgeSnap";
+            this.edgeSnapCheckBox.Text = "Enable edge snapping";
+            this.edgeSnapCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.label2.Location = new System.Drawing.Point(6, 71);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(195, 26);
+            this.label2.TabIndex = 13;
+            this.label2.Text = "If edge snapping is enable you can hold\r\nCTRL to disable it while dragging.";
+            // 
             // Properties
             // 
-            this.HandleCreated += new EventHandler(Properties_HandleCreated);
-            this.HandleDestroyed += new System.EventHandler(Properties_HandleDestroyed);
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(501, 501);
             this.Controls.Add(this.tabControl1);
             this.Name = "Properties";
             this.Text = "foo_title";
+            this.HandleCreated += new System.EventHandler(this.Properties_HandleCreated);
+            this.HandleDestroyed += new System.EventHandler(this.Properties_HandleDestroyed);
             ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).EndInit();
             this.showWhenBox.ResumeLayout(false);
             this.showWhenBox.PerformLayout();
@@ -843,7 +931,12 @@ namespace fooTitle {
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).EndInit();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.posYnumbox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.posXnumbox)).EndInit();
             this.ResumeLayout(false);
+
         }
         #endregion
 
