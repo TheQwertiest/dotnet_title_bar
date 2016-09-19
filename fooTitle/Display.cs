@@ -260,11 +260,11 @@ namespace fooTitle {
         }
 
         void Display_MouseLeave(object sender, EventArgs e) {
-            opacityFade = new Fade(overOpacity.Value, normalOpacity.Value, fadeLength.Value);
+            opacityFade = new Fade(opacity, normalOpacity.Value, fadeLength.Value);
         }
 
         void Display_MouseEnter(object sender, EventArgs e) {
-            opacityFade = new Fade(normalOpacity.Value, overOpacity.Value, fadeLength.Value);
+            opacityFade = new Fade(opacity, overOpacity.Value, fadeLength.Value);
         }
 
         public void SetNormalOpacity(int value) {
