@@ -1,3 +1,4 @@
+#if false
 /*
     Copyright 2005 - 2006 Roman Plasil
 	http://foo-title.sourceforge.net
@@ -182,3 +183,4 @@ namespace fooTitle.Extending {
     }
 
 };
+#endif
