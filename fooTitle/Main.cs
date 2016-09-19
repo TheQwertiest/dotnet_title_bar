@@ -60,7 +60,7 @@ namespace fooTitle {
         /// <summary>
         /// How often the display should be redrawn
         /// </summary>
-        private ConfInt UpdateInterval = new ConfInt("display/updateInterval", 100, 50, 500);
+        private ConfInt UpdateInterval = new ConfInt("display/updateInterval", 100, 16, 1000);
         protected void updateIntervalChanged(string name) {
             if (initDone)
                 timer.Interval = UpdateInterval.Value;

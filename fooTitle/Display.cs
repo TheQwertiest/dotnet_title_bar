@@ -98,8 +98,6 @@ namespace fooTitle {
         public Display(int width, int height) {
             InitializeComponent();
 
-            this.Icon = fooManagedWrapper.CManagedWrapper.getInstance().GetMainIcon();
-
             canvasBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Canvas = Graphics.FromImage(canvasBitmap);
             Canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
@@ -155,6 +153,7 @@ namespace fooTitle {
             this.ClientSize = new System.Drawing.Size(480, 96);
             this.ControlBox = false;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = fooManagedWrapper.CManagedWrapper.getInstance().GetMainIcon();
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Display";

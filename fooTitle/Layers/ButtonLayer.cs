@@ -78,7 +78,7 @@ namespace fooTitle.Layers {
             button = stringToButton(Element.GetAttributeValue(node, "button", "all").ToLowerInvariant());
             scrollDir = stringToDir(Element.GetAttributeValue(node, "scroll", "none").ToLowerInvariant());
             if (button != MouseButtons.None && scrollDir != ScrollDirection.NONE) {
-                throw new ArgumentException("You can't specify both 'button' and 'wheel' attributes on an action tag!");
+                throw new ArgumentException("You can't specify both 'button' and 'scroll' attributes on an action tag!");
             }
         }
 

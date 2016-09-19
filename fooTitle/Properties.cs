@@ -773,7 +773,7 @@ namespace fooTitle {
             this.enableDraggingPropsOpenRadio.Size = new System.Drawing.Size(198, 17);
             this.enableDraggingPropsOpenRadio.TabIndex = 15;
             this.enableDraggingPropsOpenRadio.TabStop = true;
-            this.enableDraggingPropsOpenRadio.Text = "Only when these properties are open";
+            this.enableDraggingPropsOpenRadio.Text = "Only when these preferences are open";
             this.enableDraggingPropsOpenRadio.UseVisualStyleBackColor = true;
             // 
             // enableDraggingAlwaysRadio
@@ -810,7 +810,7 @@ namespace fooTitle {
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(195, 26);
             this.label2.TabIndex = 13;
-            this.label2.Text = "If edge snapping is enable you can hold\r\nCTRL to disable it while dragging.";
+            this.label2.Text = "If edge snapping is enabled you can hold\r\nCTRL to disable it while dragging.";
             // 
             // edgeSnapCheckBox
             // 
