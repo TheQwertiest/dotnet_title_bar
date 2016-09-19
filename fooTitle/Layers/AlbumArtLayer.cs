@@ -47,6 +47,7 @@ namespace fooTitle.Layers {
 
             Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(CurrentSkin_OnPlaybackNewTrackEvent);
             Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += new OnPlaybackTimeDelegate(CurrentSkin_OnPlaybackTimeEvent);
+            Main.GetInstance().CurrentSkin.OnPlaybackStopEvent += new OnPlaybackStopDelegate(CurrentSkin_OnPlaybackStopEvent);
         }
 
         private void LoadArtwork(CMetaDBHandle song) {
@@ -70,6 +71,15 @@ namespace fooTitle.Layers {
                     albumArtStub = null;
                     CConsole.Warning(String.Format("Cannot open album art stub {0} : {1}", song.GetPath(), e.Message));
                 }
+            }
+        }
+
+        void CurrentSkin_OnPlaybackStopEvent(IPlayControl.StopReason reason) {
+            if (reason != IPlayControl.StopReason.stop_reason_starting_another) {
+                timesCheckedArtwork = 0;
+                albumArt = null;
+                albumArtStub = null;
+                cachedResized = null;
             }
         }
 
