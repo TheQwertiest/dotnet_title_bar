@@ -181,6 +181,11 @@ namespace fooManagedWrapper {
 		return (*UIControlInstance).get_ptr()->is_visible();
 	}
 
+	Icon ^CManagedWrapper::GetMainIcon() {
+		HICON hIcon = (*UIControlInstance).get_ptr()->get_main_icon();
+		return Icon::FromHandle((IntPtr)hIcon);
+	}
+
 	pfc::string8 CManagedWrapper::StringToPfcString(String ^a) {
 		Encoder ^enc = Encoding::UTF8->GetEncoder();
 		int charsUsed, bytesUsed;

@@ -1,23 +1,22 @@
 /*
-    Copyright 2005 - 2006 Roman Plasil
+	Copyright 2005 - 2006 Roman Plasil
 	http://foo-title.sourceforge.net
-    This file is part of foo_title.
+	This file is part of foo_title.
 
-    foo_title is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation; either version 2.1 of the License, or
-    (at your option) any later version.
+	foo_title is free software; you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation; either version 2.1 of the License, or
+	(at your option) any later version.
 
-    foo_title is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+	foo_title is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with foo_title; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+	You should have received a copy of the GNU Lesser General Public License
+	along with foo_title; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-
 #pragma once
 
 #include "stdafx.h"
@@ -28,12 +27,9 @@ using namespace System::Collections;
 using namespace System::IO;
 
 namespace fooManagedWrapper {
-
-
 	// this is the main class of the plugin - created in the entrypoint
 	public ref class CManagedWrapper : System::Collections::IEnumerable {
 	protected:
-		
 		// for singleton
 		static CManagedWrapper ^instance;
 
@@ -54,7 +50,7 @@ namespace fooManagedWrapper {
 		CManagedWrapper();
 		~CManagedWrapper();
 		!CManagedWrapper();
-		
+
 		// this loads all .netcomponents and calls their Create() method
 		// the parameter is require for this to know the directory where are the .netcomponents
 		void Start(String ^_modulePath);
@@ -76,7 +72,7 @@ namespace fooManagedWrapper {
 		static void FreeCString(const char *a);
 		static pfc::string8 StringToPfcString(String ^a);
 		static String ^PfcStringToString(const pfc::string8 &stringToConvert);
-		
+
 		static _GUID ToGUID(Guid^ guid);
 		static Guid ^FromGUID(const _GUID& guid);
 
@@ -86,7 +82,7 @@ namespace fooManagedWrapper {
 		// TODO provide a better implementation
 		static void DoMainMenuCommand(String ^name);
 		bool IsFoobarActivated();
+		Icon ^GetMainIcon();
 		String ^GetAllCommands();
 	};
-
 };

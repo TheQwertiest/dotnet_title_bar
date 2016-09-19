@@ -98,6 +98,8 @@ namespace fooTitle {
         public Display(int width, int height) {
             InitializeComponent();
 
+            this.Icon = fooManagedWrapper.CManagedWrapper.getInstance().GetMainIcon();
+
             canvasBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Canvas = Graphics.FromImage(canvasBitmap);
             Canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
