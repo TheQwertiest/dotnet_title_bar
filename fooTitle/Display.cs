@@ -195,6 +195,11 @@ namespace fooTitle {
                 }
             }
 
+            const int WM_CLOSE = 0x0010;
+            if (m.Msg == WM_CLOSE) {
+                return;
+            }
+
             base.WndProc(ref m);
         }
 #pragma warning restore 0168, 219, 67
