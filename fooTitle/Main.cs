@@ -129,6 +129,8 @@ namespace fooTitle {
             }
         }
 
+        public ToolTipDisplay ttd;
+
         /// <summary>
         /// Automatically handles reshowing foo_title if it's supposed to be always on top.
         /// </summary>
@@ -407,6 +409,8 @@ namespace fooTitle {
             reinitDisplay();
             loadSkin(SkinPath.Value);
 
+            ttd = new ToolTipDisplay();
+
             // register response events on some variables
             ShowWhen.OnChanged += new ConfValuesManager.ValueChangedDelegate(ShowWhen_OnChanged);
             UpdateInterval.OnChanged += new ConfValuesManager.ValueChangedDelegate(updateIntervalChanged);
@@ -432,6 +436,10 @@ namespace fooTitle {
 
             if (Display != null)
                 Display.Hide();
+
+            if (ttd != null) {
+                ttd.Hide();
+            }
         }
 
 

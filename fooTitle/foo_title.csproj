@@ -214,6 +214,9 @@
     </Compile>
     <Compile Include="Tests\test_MainMenuUtils.cs" />
     <Compile Include="Tests\test_ManagedWrapper.cs" />
+    <Compile Include="ToolTipDisplay.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="ViewMenuCommands.cs" />
     <EmbeddedResource Include="Display.resx">
       <DependentUpon>Display.cs</DependentUpon>
@@ -230,6 +233,9 @@
     <EmbeddedResource Include="Tests\test_ConfigGUI.resx">
       <SubType>Designer</SubType>
       <DependentUpon>test_ConfigGUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ToolTipDisplay.resx">
+      <DependentUpon>ToolTipDisplay.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

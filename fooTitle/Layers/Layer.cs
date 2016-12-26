@@ -19,34 +19,32 @@
 */
 using System;
 using System.Xml;
-using System.Xml.XPath;
 using System.Collections;
 using System.Drawing;
+using System.Windows.Forms;
 using fooTitle.Geometries;
 using System.Collections.Generic;
 
 
-namespace fooTitle.Layers
-{
-	/// <summary>
-	/// Layers exist in a hiaerchical structure
-	/// </summary>
+namespace fooTitle.Layers {
+    /// <summary>
+    /// Layers exist in a hiaerchical structure
+    /// </summary>
     [LayerTypeAttribute("empty")]
-	public class Layer : fooTitle.Extending.Element
-	{
-		private string myName;
-		public string Name {
-			get {
-				return myName;
-			}
-		}
+    public class Layer : fooTitle.Extending.Element {
+        private string myName;
+        public string Name {
+            get {
+                return myName;
+            }
+        }
 
-		private string myType;
-		public string Type {
-			get {
-				return myType;
-			}
-		}
+        private string myType;
+        public string Type {
+            get {
+                return myType;
+            }
+        }
 
         public Point Position {
             get {
@@ -54,11 +52,11 @@ namespace fooTitle.Layers
             }
         }
 
-		public virtual System.Drawing.Rectangle ClientRect {
-			get {
+        public virtual System.Drawing.Rectangle ClientRect {
+            get {
                 return geometry.ClientRect;
-			}
-		}
+            }
+        }
         protected Display display;
         protected Display Display {
             get {
@@ -86,18 +84,73 @@ namespace fooTitle.Layers
         }
 
         protected Geometry geometry;
-		
-		protected ArrayList images = new ArrayList();
-		protected List<Layer> layers = new List<Layer>();
+
+        protected ArrayList images = new ArrayList();
+        protected List<Layer> layers = new List<Layer>();
 
         public Layer ParentLayer;
 
-		public Layer(Rectangle parentRect, XmlNode node) {
-			XPathNavigator nav = node.CreateNavigator();
+        private bool isTopToolTipLayer = false;
 
-			// read name and type
-			myName = node.Attributes.GetNamedItem("name").Value;
-			myType = node.Attributes.GetNamedItem("type").Value;
+        private bool isMouseOver = false;
+        public bool IsMouseOver { get { return isMouseOver; } }
+
+        private bool hasToolTip = false;
+        public bool HasToolTip { get { return hasToolTip; } }
+
+        Timer toolTipTimer;
+        string toolTipText;
+        bool isTooltipShowing = false;
+
+        private void delayToolTip() {
+            if (toolTipTimer != null) {
+                toolTipTimer.Start();
+            }
+        }
+
+        private void showToolTip() {
+            if (toolTipTimer != null) {
+                toolTipTimer.Stop();
+            }
+            Main.GetInstance().ttd.SetText(Extending.Element.GetStringFromExpression(toolTipText, null));
+            Main.GetInstance().ttd.SetWindowsPos(Win32.WindowPosition.Topmost);
+            Main.GetInstance().ttd.Show();
+            isTooltipShowing = true;
+        }
+
+        private void updateToolTip() {
+            if (isTooltipShowing) {
+                Main.GetInstance().ttd.SetText(Extending.Element.GetStringFromExpression(toolTipText, null));
+            }
+        }
+
+        private void removeToolTip(bool force) {
+            if (toolTipTimer != null) {
+                toolTipTimer.Stop();
+            }
+            if (isTooltipShowing) {
+                Main.GetInstance().ttd.Hide();
+                isTooltipShowing = false;
+            }
+        }
+
+        private void toolTipTimer_OnTick(object sender, EventArgs e) {
+            showToolTip();
+        }
+
+        public Layer(Rectangle parentRect, XmlNode node) {
+            XmlNode contents = GetFirstChildByName(node, "contents");
+            toolTipText = GetAttributeValue(contents, "tooltip", null);
+            if (toolTipText != null) {
+                hasToolTip = true;
+                toolTipTimer = new Timer();
+                toolTipTimer.Interval = 500;
+                toolTipTimer.Tick += new EventHandler(toolTipTimer_OnTick);
+            }
+
+            // read name and type
+            myName = node.Attributes.GetNamedItem("name").Value;
+            myType = node.Attributes.GetNamedItem("type").Value;
             Enabled = GetAttributeValue(node, "enabled", "true").ToLowerInvariant() == "true";
 
             // create the geometry
@@ -111,23 +164,51 @@ namespace fooTitle.Layers
                 }
             }
 
-			UpdateGeometry(parentRect);
-		}
+            UpdateGeometry(parentRect);
 
-		protected Layer() {
+            Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += new OnPlaybackTimeDelegate(OnPlaybackTime);
+            Main.GetInstance().CurrentSkin.OnMouseMove += new MouseEventHandler(OnMouseMove);
+            Main.GetInstance().CurrentSkin.OnMouseLeave += new EventHandler(OnMouseLeave);
+        }
 
-		}
+        protected Layer() { }
 
-		protected virtual void loadLayers(XmlNode node) {
-			foreach (XmlNode i in node.ChildNodes) {
-				if (i.Name == "layer") 
-					addLayer(i);
-			}
-		}
+        private void OnPlaybackTime(double time) {
+            if (isTooltipShowing) {
+                updateToolTip();
+            }
+        }
 
-		private void addLayer(XmlNode node) {
-			Layer layer = null;
-			string type = node.Attributes.GetNamedItem("type").InnerText;
+        private void OnMouseLeave(object sender, EventArgs e) {
+            isMouseOver = false;
+            removeToolTip(true);
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e) {
+            bool wasMouseOver = isMouseOver;
+            isMouseOver = (e.X >= ClientRect.Left) && (e.X <= ClientRect.Right) && (e.Y >= ClientRect.Top) && (e.Y <= ClientRect.Bottom);
+
+            bool wasTopToolTipLayer = isTopToolTipLayer;
+            isTopToolTipLayer = Main.GetInstance().CurrentSkin.TopToolTipLayer == this;
+
+            if (!wasTopToolTipLayer && isTopToolTipLayer) {
+                delayToolTip();
+            }
+            if (wasTopToolTipLayer && !isTopToolTipLayer) {
+                removeToolTip(false);
+            }
+        }
+
+        protected virtual void loadLayers(XmlNode node) {
+            foreach (XmlNode i in node.ChildNodes) {
+                if (i.Name == "layer")
+                    addLayer(i);
+            }
+        }
+
+        private void addLayer(XmlNode node) {
+            Layer layer = null;
+            string type = node.Attributes.GetNamedItem("type").InnerText;
 
             layer = Main.GetInstance().LayerFactory.CreateLayer(type, this.ClientRect, node);
 
@@ -137,16 +218,16 @@ namespace fooTitle.Layers
                 layer.loadLayers(node);
                 layers.Add(layer);
             }
-		}
+        }
 
-		public virtual void UpdateGeometry(Rectangle parentRect) {
+        public virtual void UpdateGeometry(Rectangle parentRect) {
             geometry.Update(parentRect);
 
-			// now update all sub-layers
-			foreach (Layer i in layers) {
-				i.UpdateGeometry(ClientRect);
-			}
-		}
+            // now update all sub-layers
+            foreach (Layer i in layers) {
+                i.UpdateGeometry(ClientRect);
+            }
+        }
 
         public void UpdateThisLayerGeometry(Rectangle parentRect) {
             geometry.Update(parentRect);
@@ -168,12 +249,12 @@ namespace fooTitle.Layers
 
             drawImpl();
             drawSubLayers();
-		}
+        }
 
         /// <summary>
         /// Subclasses of Layer should override this method to perform any drawing.
         /// </summary>
-        protected virtual void drawImpl() {}
+        protected virtual void drawImpl() { }
 
         /// <summary>
         /// This function calculates the minimal width for itself and sublayers to fit into.
@@ -184,7 +265,7 @@ namespace fooTitle.Layers
                 return new Size(0, 0);
             } else {
                 return getMinimalSizeImpl();
-                
+
             }
         }
 
@@ -206,5 +287,5 @@ namespace fooTitle.Layers
             }
             return minSize;
         }
-	}
+    }
 }

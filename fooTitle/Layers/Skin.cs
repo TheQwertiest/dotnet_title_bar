@@ -248,6 +248,30 @@ namespace fooTitle.Layers {
             geometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)geometry).Width, ((AbsoluteGeometry)geometry).Height));
         }
 
+        private Layer topLayerUnderMouse = null;
+        public Layer TopLayerUnderMouse { get { return topLayerUnderMouse; } }
+
+        private Layer topToolTipLayer = null;
+        public Layer TopToolTipLayer { get { return topToolTipLayer; } }
+
+        private Layer GetTopToolTipLayer(Layer topLayer) {
+            Layer parent = topLayer;
+            while (parent != null && !parent.HasToolTip) {
+                parent = parent.ParentLayer;
+            }
+            return parent;
+        }
+
+        private Layer GetTopLayerUnderMouse(Layer parent) {
+            Layer topLayer = parent;
+            foreach (Layer layer in parent.SubLayers) {
+                if (layer.IsMouseOver) {
+                    topLayer = GetTopLayerUnderMouse(layer);
+                }
+            }
+            return topLayer;
+        }
+
         void display_MouseUp(object sender, MouseEventArgs e) {
             sendEventCatch(OnMouseUp, sender, e);
         }
@@ -257,6 +281,10 @@ namespace fooTitle.Layers {
         }
 
         void display_MouseMove(object sender, MouseEventArgs e) {
+            Main.GetInstance().ttd.Left = e.X;
+            Main.GetInstance().ttd.Top = e.Y + 18;
+            topLayerUnderMouse = GetTopLayerUnderMouse(this);
+            topToolTipLayer = GetTopToolTipLayer(topLayerUnderMouse);
             sendEventCatch(OnMouseMove, sender, e);
         }
 

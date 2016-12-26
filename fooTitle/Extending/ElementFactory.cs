@@ -212,6 +212,20 @@ namespace fooTitle.Extending {
                 return def;
             }
         }
+
+        public static string GetStringFromExpression(string expr, string def) {
+            if (expr.IndexOfAny(new char[] { '%', '$' }) == -1) {
+                return expr;
+            }
+            if (expr == null) {
+                return def;
+            }
+            try {
+                return Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), expr);
+            } catch (Exception) {
+                return def;
+            }
+        }
     }
 
     /// Keeps track of elements available in this and extension assemblies
