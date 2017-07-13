@@ -133,22 +133,32 @@ bool CPlayControl::IsPaused() {
 	return pc->is_paused();
 }
 
-
 void fooManagedWrapper::CConsole::Error(String ^a) {
-	const char *c_msg = CManagedWrapper::ToCString(a);
-	console::error(c_msg);
-	CManagedWrapper::FreeCString(c_msg);
+     pin_ptr<const wchar_t> wch = PtrToStringChars( a );
+     pfc::string8_fast str = stringcvt::string_utf8_from_wide( wch );
+
+     pfc::string_formatter formatter;
+     formatter << "foo_title: " << str;
+
+     console::error( formatter );
 }
 
 void fooManagedWrapper::CConsole::Warning(String ^a) {
-	const char *c_msg = CManagedWrapper::ToCString(a);
-	console::warning(c_msg);
-	CManagedWrapper::FreeCString(c_msg);
+     pin_ptr<const wchar_t> wch = PtrToStringChars( a );
+     pfc::string8_fast str = stringcvt::string_utf8_from_wide( wch );
+
+     pfc::string_formatter formatter;
+     formatter << "foo_title: " << str;
+
+     console::warning( formatter );
 }
 
 void fooManagedWrapper::CConsole::Write(String ^a) {
-	const char *c_msg = CManagedWrapper::ToCString(a);
-	console::print(c_msg);
-	CManagedWrapper::FreeCString(c_msg);
-}
+     pin_ptr<const wchar_t> wch = PtrToStringChars( a );
+     pfc::string8_fast str = stringcvt::string_utf8_from_wide( wch );
 
+     pfc::string_formatter formatter;
+     formatter << "foo_title: " << str;
+
+     console::print( formatter );
+}
