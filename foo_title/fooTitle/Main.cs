@@ -71,10 +71,10 @@ namespace fooTitle {
         /// </summary>
         public ConfString SkinPath = new ConfString("base/skinName", null);
 
-        protected void skinNameChanged(string name) {
+        protected void SkinNameChanged(string name) {
             if (initDone) {
                 try {
-                    loadSkin(SkinPath.Value);
+                    LoadSkin(SkinPath.Value);
                 } catch (Exception e) {
                     skin = null;
                     System.Windows.Forms.MessageBox.Show("foo_title - There was an error loading skin " + SkinPath.Value + ":\n" + e.Message, "foo_title");
@@ -186,6 +186,11 @@ namespace fooTitle {
                 ShowWhen.Value = ShowWhenEnum.Always;
         }
 
+        public void TriggerDisplay()
+        {
+            Display.Display_Trigger();
+        }
+
         /// <summary>
         /// Checks if foobar is minimized or active and shows/hides display according to it
         /// </summary>
@@ -284,7 +289,7 @@ namespace fooTitle {
         /// the application directory is used to load the skin from.
         /// </summary>
         /// <param name="path">The name of the skin's directory</param>
-        private void loadSkin(string path) {
+        private void LoadSkin(string path) {
             try {
                 // delete the old one
                 if (skin != null)
@@ -407,14 +412,14 @@ namespace fooTitle {
 
             // initialize the display and skin
             reinitDisplay();
-            loadSkin(SkinPath.Value);
+            LoadSkin(SkinPath.Value);
 
             ttd = new ToolTipDisplay();
 
             // register response events on some variables
             ShowWhen.OnChanged += new ConfValuesManager.ValueChangedDelegate(ShowWhen_OnChanged);
             UpdateInterval.OnChanged += new ConfValuesManager.ValueChangedDelegate(updateIntervalChanged);
-            SkinPath.OnChanged += new ConfValuesManager.ValueChangedDelegate(skinNameChanged);
+            SkinPath.OnChanged += new ConfValuesManager.ValueChangedDelegate(SkinNameChanged);
             positionX.OnChanged += new ConfValuesManager.ValueChangedDelegate(positionX_Changed);
             positionY.OnChanged += new ConfValuesManager.ValueChangedDelegate(positionY_Changed);
 
@@ -488,3 +493,4 @@ namespace fooTitle {
         #endregion
     }
 }
+>>>>>>> 179444e... Added foo_title trigger

@@ -26,7 +26,12 @@ using namespace System;
 
 bool CCommand::GetDisplay(String^ %text, unsigned int %flags) {
 	text = GetName();
-	flags = 0;
+	flags = GetFlags();
 	return true;
+}
+
+unsigned int CCommand::GetFlags()
+{
+     return 0;
 }
 
