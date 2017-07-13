@@ -14,7 +14,7 @@
     <ProjectGuid>{58632F25-43CD-4C57-8FD4-CD85BBC9BEF6}</ProjectGuid>
     <RootNamespace>fooManagedWrapper</RootNamespace>
     <Keyword>ManagedCProj</Keyword>
-    <ProjectName>foo_managedWrapper</ProjectName>
+    <ProjectName>foo_managed_wrapper</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -78,7 +78,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetPath)" "$(SolutionDir)..\..\..\foobar3000\user-components\foo_ManagedWrapper\"</Command>
+      <Command>copy /Y "$(TargetPath)" "$(SolutionDir)..\..\..\foobar3000\user-components\foo_managed_wrapper\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -96,7 +96,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "$(SolutionDir)..\foobar2000_portable\components\"</Command>
+      <Command>copy /Y "$(TargetPath)" "$(SolutionDir)..\..\..\foobar3000\user-components\foo_managed_wrapper\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
