@@ -39,7 +39,15 @@ namespace fooTitle {
         private ConfValuesManager.ValueChangedDelegate normalOpacityChangeDelegate;
         private ConfValuesManager.ValueChangedDelegate windowPositionChangeDelegate;
 
-        public class Fade {
+        public abstract class FadeInterface
+        {
+            public abstract int GetValue();
+            public abstract bool Done();
+        }
+
+        public class Fade 
+            : FadeInterface
+        {
             protected int startVal;
             protected int stopVal;
             protected int length;
@@ -54,7 +62,7 @@ namespace fooTitle {
                 length = _length;
             }
 
-            public int GetValue() {
+            public override int GetValue() {
                 long now = System.DateTime.Now.Ticks / 10000;
 
                 // special cases
@@ -71,12 +79,94 @@ namespace fooTitle {
                 return (int)(startVal + phase * (stopVal - startVal));
             }
 
-            public bool Done() {
+            public override bool Done() {
                 return phase >= 1;
             }
         }
 
-        protected Fade opacityFade;
+        public class MixedFade 
+            : FadeInterface
+        {
+            private Fade curAnimation_;
+
+            private int startVal_;
+            private int stopVal_;
+            private int fadeInLength_;
+            private int fadeOutLength_;
+            private int waitLength_;
+            private long startTime_;
+
+            private int phase_;
+
+            public MixedFade(int startVal, int stopVal, int fadeInLength, int waitLength, int fadeOutLength) 
+            {
+                startVal_ = startVal;
+                stopVal_ = stopVal;
+                fadeInLength_ = fadeInLength;
+                fadeOutLength_ = fadeOutLength;
+                waitLength_ = waitLength;
+
+                startTime_ = System.DateTime.Now.Ticks / 10000;
+                curAnimation_ = new Fade(startVal, stopVal, fadeInLength);
+                phase_ = 0;
+            }
+
+            public override int GetValue()
+            {
+                long now = System.DateTime.Now.Ticks / 10000;
+
+                if (phase_ == 0)
+                {// Fade in
+                    if (fadeInLength_ == 0 || (now - startTime_) >= fadeInLength_)
+                    {
+                        phase_ = 1;
+                        startTime_ = System.DateTime.Now.Ticks / 10000;
+                        now = startTime_;
+                    }
+                    else
+                    {
+                        return curAnimation_.GetValue();
+                    }
+                }
+
+                if (phase_ == 1)
+                {// Wait
+                    if (waitLength_ == 0 || (now - startTime_) >= waitLength_)
+                    {
+                        phase_ = 2;
+                        curAnimation_ = new Fade(stopVal_, startVal_, fadeOutLength_);
+                        startTime_ = System.DateTime.Now.Ticks / 10000;
+                        now = startTime_;
+                    }
+                    else
+                    {
+                        return stopVal_;
+                    }
+                }
+
+                if (phase_ == 2)
+                {// Fade out
+                    if (fadeOutLength_ == 0 || (now - startTime_) >= fadeOutLength_)
+                    {
+                        phase_ = 3;
+                        curAnimation_ = null;
+                    }
+                    else
+                    {
+                        return curAnimation_.GetValue();
+                    }
+                }
+
+                return startVal_;
+            }
+
+            public override bool Done()
+            {
+                return phase_ == 3;
+            }
+        }
+
+        protected FadeInterface opacityFade;
 
         /// <summary>
         /// The opacity in normal state
@@ -86,6 +176,11 @@ namespace fooTitle {
         /// The opacity when the mouse is over foo_title
         /// </summary>
         protected ConfInt overOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
+        /// <summary>
+        /// The opacity when the foo_title display is triggered
+        /// </summary>
+        protected ConfInt triggerOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
+        protected ConfInt triggerWaitTime = ConfValuesManager.CreateIntValue("display/triggerWaitTime", 3000, 0, 30000);
         /// <summary>
         /// The length of fade between normal and over states in miliseconds
         /// </summary>
@@ -265,6 +360,11 @@ namespace fooTitle {
 
         void Display_MouseEnter(object sender, EventArgs e) {
             opacityFade = new Fade(opacity, overOpacity.Value, fadeLength.Value);
+        }
+
+        public void Display_Trigger()
+        {
+            opacityFade = new MixedFade(opacity, triggerOpacity.Value, 150, triggerWaitTime.Value, 600);
         }
 
         public void SetNormalOpacity(int value) {
