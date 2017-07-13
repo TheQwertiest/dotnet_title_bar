@@ -241,7 +241,7 @@
   <ItemGroup>
     <ProjectReference Include="..\fooManagedWrapper\fooManagedWrapper.vcxproj">
       <Project>{58632f25-43cd-4c57-8fd4-cd85bbc9bef6}</Project>
-      <Name>foo_managedWrapper</Name>
+      <Name>foo_managed_wrapper</Name>
     </ProjectReference>
     <ProjectReference Include="..\naid\naid.csproj">
       <Project>{3D5EF8EC-20FC-4D9E-8D84-4726ACD45F93}</Project>
@@ -272,6 +272,6 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>copy /Y "$(TargetPath)" "$(SolutionDir)..\..\..\foobar3000\user-components\foo_ManagedWrapper\"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(TargetPath)" "$(SolutionDir)..\..\..\foobar3000\user-components\foo_managed_wrapper\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
