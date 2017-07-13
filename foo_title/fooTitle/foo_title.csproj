@@ -272,6 +272,6 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)..\foobar2000_portable\components\"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(TargetPath)" "$(SolutionDir)..\..\..\foobar3000\user-components\foo_ManagedWrapper\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
