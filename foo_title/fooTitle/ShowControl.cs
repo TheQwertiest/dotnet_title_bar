@@ -165,7 +165,7 @@ namespace fooTitle {
             if (lastSong.GetLength() <= 0)
                 return;
 
-            if (time < onSongStartStay.Value)
+            if (onSongStart.Value && time < onSongStartStay.Value)
             {
                 if (!newSongSat)
                 {// We don't want to trigger animation every time
@@ -173,7 +173,7 @@ namespace fooTitle {
                     newSongSat = true;
                 }
             }
-            else if (lastSong.GetLength() - beforeSongEndsStay.Value <= time)
+            else if (beforeSongEnds.Value && (lastSong.GetLength() - beforeSongEndsStay.Value <= time ) )
             {
                 if (!reachedEndSat)
                 {// We don't want to trigger animation every time
