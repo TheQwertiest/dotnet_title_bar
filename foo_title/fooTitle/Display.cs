@@ -25,6 +25,19 @@ using fooTitle.Config;
 
 namespace fooTitle {
     public class Display : PerPixelAlphaForm {
+        public enum Animation
+        {
+            FadeInNormal,
+            FadeInOver,
+            FadeOut,
+            FadeOutFull,
+        }
+        private enum OpacityFallbackType
+        {
+            Normal,
+            Transparent,
+        }
+
         private System.ComponentModel.Container components = null;
         private System.Drawing.Bitmap canvasBitmap = null;
         public System.Drawing.Graphics Canvas = null;
@@ -35,18 +48,18 @@ namespace fooTitle {
         private int dragX;
         private int dragY;
         private int opacity;
+        private int minOpacity;
+        private Animation curAnimationName;
+        private OpacityFallbackType opacityFallbackType = OpacityFallbackType.Normal;
+        private System.Object animationLock = new System.Object();
 
         private ConfValuesManager.ValueChangedDelegate normalOpacityChangeDelegate;
         private ConfValuesManager.ValueChangedDelegate windowPositionChangeDelegate;
 
-        public abstract class FadeInterface
-        {
-            public abstract int GetValue();
-            public abstract bool Done();
-        }
+        public delegate void OnAnimationStopDelegate();
+        private OnAnimationStopDelegate OnAnimationStop;        
 
         public class Fade 
-            : FadeInterface
         {
             protected int startVal;
             protected int stopVal;
@@ -62,7 +75,7 @@ namespace fooTitle {
                 length = _length;
             }
 
-            public override int GetValue() {
+            public int GetValue() {
                 long now = System.DateTime.Now.Ticks / 10000;
 
                 // special cases
@@ -79,94 +92,12 @@ namespace fooTitle {
                 return (int)(startVal + phase * (stopVal - startVal));
             }
 
-            public override bool Done() {
+            public bool Done() {
                 return phase >= 1;
             }
         }
 
-        public class MixedFade 
-            : FadeInterface
-        {
-            private Fade curAnimation_;
-
-            private int startVal_;
-            private int stopVal_;
-            private int fadeInLength_;
-            private int fadeOutLength_;
-            private int waitLength_;
-            private long startTime_;
-
-            private int phase_;
-
-            public MixedFade(int startVal, int stopVal, int fadeInLength, int waitLength, int fadeOutLength) 
-            {
-                startVal_ = startVal;
-                stopVal_ = stopVal;
-                fadeInLength_ = fadeInLength;
-                fadeOutLength_ = fadeOutLength;
-                waitLength_ = waitLength;
-
-                startTime_ = System.DateTime.Now.Ticks / 10000;
-                curAnimation_ = new Fade(startVal, stopVal, fadeInLength);
-                phase_ = 0;
-            }
-
-            public override int GetValue()
-            {
-                long now = System.DateTime.Now.Ticks / 10000;
-
-                if (phase_ == 0)
-                {// Fade in
-                    if (fadeInLength_ == 0 || (now - startTime_) >= fadeInLength_)
-                    {
-                        phase_ = 1;
-                        startTime_ = System.DateTime.Now.Ticks / 10000;
-                        now = startTime_;
-                    }
-                    else
-                    {
-                        return curAnimation_.GetValue();
-                    }
-                }
-
-                if (phase_ == 1)
-                {// Wait
-                    if (waitLength_ == 0 || (now - startTime_) >= waitLength_)
-                    {
-                        phase_ = 2;
-                        curAnimation_ = new Fade(stopVal_, startVal_, fadeOutLength_);
-                        startTime_ = System.DateTime.Now.Ticks / 10000;
-                        now = startTime_;
-                    }
-                    else
-                    {
-                        return stopVal_;
-                    }
-                }
-
-                if (phase_ == 2)
-                {// Fade out
-                    if (fadeOutLength_ == 0 || (now - startTime_) >= fadeOutLength_)
-                    {
-                        phase_ = 3;
-                        curAnimation_ = null;
-                    }
-                    else
-                    {
-                        return curAnimation_.GetValue();
-                    }
-                }
-
-                return startVal_;
-            }
-
-            public override bool Done()
-            {
-                return phase_ == 3;
-            }
-        }
-
-        protected FadeInterface opacityFade;
+        protected Fade fadeAnimation;
 
         /// <summary>
         /// The opacity in normal state
@@ -180,7 +111,6 @@ namespace fooTitle {
         /// The opacity when the foo_title display is triggered
         /// </summary>
         protected ConfInt triggerOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
-        protected ConfInt triggerWaitTime = ConfValuesManager.CreateIntValue("display/triggerWaitTime", 3000, 0, 30000);
         /// <summary>
         /// The length of fade between normal and over states in miliseconds
         /// </summary>
@@ -202,6 +132,7 @@ namespace fooTitle {
             this.Top = 0;
 
             opacity = normalOpacity.Value;
+            minOpacity = normalOpacity.Value;
 
             normalOpacityChangeDelegate = new ConfValuesManager.ValueChangedDelegate(normalOpacity_OnChanged);
             windowPositionChangeDelegate = new ConfValuesManager.ValueChangedDelegate(windowPosition_OnChanged);
@@ -347,29 +278,75 @@ namespace fooTitle {
 
         #region Opacity
         protected void frameUpdateOpacity() {
-            if (opacityFade != null) {
-                opacity = opacityFade.GetValue();
-                if (opacityFade.Done())
-                    opacityFade = null;
+            lock (animationLock)
+            {
+                if (fadeAnimation != null)
+                {
+                    opacity = fadeAnimation.GetValue();
+                    if (fadeAnimation.Done())
+                    {
+                        fadeAnimation = null;
+                        OnAnimationStop?.Invoke();
+                    }
+                }
             }
         }
 
+        public void StartAnimation( Animation animName, OnAnimationStopDelegate actionAfterAnimation = null)
+        {
+            lock (animationLock)
+            {
+                if ( curAnimationName != animName )
+                {
+                    OnAnimationStop = null;
+                    fadeAnimation = null;
+                }
+
+                OnAnimationStop = actionAfterAnimation;
+
+                switch (animName)
+                {
+                    case Animation.FadeInNormal:
+                        fadeAnimation = new Fade(opacity, normalOpacity.Value, 100/*fadeLength.Value*/);
+                        opacityFallbackType = OpacityFallbackType.Normal;
+                        break;
+                    case Animation.FadeInOver:
+                        fadeAnimation = new Fade(opacity, overOpacity.Value, 100/*fadeLength.Value*/);
+                        break;
+                    case Animation.FadeOut:
+                        fadeAnimation = new Fade(opacity, normalOpacity.Value, 400/*fadeLength.Value*/);
+                        opacityFallbackType = OpacityFallbackType.Normal;
+                        break;
+                    case Animation.FadeOutFull:
+                        fadeAnimation = new Fade(opacity, 0, 400/*fadeLength.Value*/);
+                        opacityFallbackType = OpacityFallbackType.Transparent;
+                        break;
+                }
+
+                curAnimationName = animName;
+            }
+        }
+
+        private OnAnimationStopDelegate mouseOverSavedCallback;
+
         void Display_MouseLeave(object sender, EventArgs e) {
-            opacityFade = new Fade(opacity, normalOpacity.Value, fadeLength.Value);
+            Animation animName = opacityFallbackType == OpacityFallbackType.Normal ? Animation.FadeOut : Animation.FadeOutFull;
+            StartAnimation(animName, mouseOverSavedCallback);
+            mouseOverSavedCallback = null;
         }
 
         void Display_MouseEnter(object sender, EventArgs e) {
-            opacityFade = new Fade(opacity, overOpacity.Value, fadeLength.Value);
-        }
-
-        public void Display_Trigger()
-        {
-            opacityFade = new MixedFade(opacity, triggerOpacity.Value, 150, triggerWaitTime.Value, 600);
+            mouseOverSavedCallback = OnAnimationStop;
+            StartAnimation(Animation.FadeInOver);
         }
 
         public void SetNormalOpacity(int value) {
             opacity = value;
-            opacityFade = null;
+            fadeAnimation = null;
+            if (minOpacity != 0)
+            {
+                minOpacity = normalOpacity.Value;
+            }
         }
         #endregion
 
