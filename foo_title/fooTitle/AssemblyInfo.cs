@@ -45,10 +45,13 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.9.0.*")]
-[assembly: AssemblyInformationalVersion("0.9.0")]
+[assembly: AssemblyVersion("0.9.1.*")]
+[assembly: AssemblyInformationalVersion("0.9.1")]
 
 /* Changelog:
+   0.9.1+
+     - See: https://github.com/TheQwertiest/foo_title
+
    0.9.0+
      - See: https://github.com/LepkoQQ/foo_title
 
