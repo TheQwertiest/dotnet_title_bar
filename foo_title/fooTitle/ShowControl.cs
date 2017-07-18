@@ -46,10 +46,12 @@ namespace fooTitle {
         protected ConfInt onSongStartStay = new ConfInt("showControl/onSongStartStay", 5, 0, int.MaxValue);
         protected ConfInt beforeSongEndsStay = new ConfInt("showControl/beforeSongEndsStay", 5, 0, int.MaxValue);
         protected ConfBool showWhenNotPlaying = new ConfBool("showControl/showWhenNotPlaying", false);
+        protected ConfInt timeBeforeFade = new ConfInt("showControl/timeBeforeFade", 2, 0, int.MaxValue);
 
 
         protected Timer hideAfterSongStart = new Timer();
         private bool reachedEndSat = false;
+        private bool newSongSat = false;
         private Main main;
 
 
@@ -111,21 +113,20 @@ namespace fooTitle {
             main.DisableFooTitle();
         }
 
-        protected void DoEnableWithAnimation(bool startFadeOutTimer, bool useOverAnimation)
+        protected void DoEnableWithAnimation(bool useOverAnimation)
         {
             DoEnable();
 
             if (main.Display != null && main.Display.Visible)
             {
-                Display.OnAnimationStopDelegate onStop = startFadeOutTimer ? new Display.OnAnimationStopDelegate(StartFadeOutTimer) : null;
                 Display.Animation animName = useOverAnimation ? Display.Animation.FadeInOver : Display.Animation.FadeInNormal;
-                main.Display.StartAnimation(animName, onStop);         
+                main.Display.StartAnimation(animName);
             }
         }
 
         protected void DoDisableWithAnimation()
         {
-            if (main.Display != null && main.Display.Visible )
+            if (main.Display != null && main.Display.Visible)
             {
                 Display.Animation animName = (popupShowing.Value == PopupShowing.AllTheTime) ? Display.Animation.FadeOut : Display.Animation.FadeOutFull;
                 Display.OnAnimationStopDelegate onStop = (popupShowing.Value != PopupShowing.AllTheTime) ? new Display.OnAnimationStopDelegate(DoDisable) : null;
@@ -133,10 +134,20 @@ namespace fooTitle {
             }
         }
 
+        public void PopupPeek()
+        {
+            DoEnable();
+
+            if (main.Display != null && main.Display.Visible)
+            {
+                main.Display.StartAnimation(Display.Animation.FadeInOver, new Display.OnAnimationStopDelegate(StartFadeOutTimer));
+            }
+        }
+
         protected void StartFadeOutTimer()
         {
             // plan a hide event
-            hideAfterSongStart.Interval = onSongStartStay.Value * 1000;
+            hideAfterSongStart.Interval = timeBeforeFade.Value * 1000;
             hideAfterSongStart.Stop(); // without this the timer is not reset and fires in the old planned time
             hideAfterSongStart.Start();
         }
@@ -154,17 +165,26 @@ namespace fooTitle {
             if (lastSong.GetLength() <= 0)
                 return;
 
-            if (lastSong.GetLength() - beforeSongEndsStay.Value <= time)
+            if (time < onSongStartStay.Value)
             {
-                if (!reachedEndSat )
+                if (!newSongSat)
                 {// We don't want to trigger animation every time
-                    bool startFadeOutTimer = !onSongStart.Value;
-                    DoEnableWithAnimation(startFadeOutTimer, true);
+                    DoEnableWithAnimation(true);
+                    newSongSat = true;
+                }
+            }
+            else if (lastSong.GetLength() - beforeSongEndsStay.Value <= time)
+            {
+                if (!reachedEndSat)
+                {// We don't want to trigger animation every time
+                    DoEnableWithAnimation(true);
                     reachedEndSat = true;
                 }
             }
             else if (!hideAfterSongStart.Enabled)
-            {// If new track event was not started
+            {// Do not skip wait event
+                newSongSat = false;
+                reachedEndSat = false;
                 DoDisableWithAnimation();
             }
         }
@@ -176,13 +196,14 @@ namespace fooTitle {
             // store the song
             lastSong = song;
             reachedEndSat = false;
+            newSongSat = false;
 
-            if ( !onSongStart.Value )
+            if (!onSongStart.Value)
             {
                 return;
             }
 
-            DoEnableWithAnimation(true, true);            
+            DoEnableWithAnimation(true);
         }
 
         FileInfo lastFileInfo;
@@ -216,15 +237,12 @@ namespace fooTitle {
             if (state) {
                 // paused, leave hiding it for a later time
                 hideAfterSongStart.Stop();
-                showByCriteria();
-            } else {
-                // re-plan hiding
-                StartFadeOutTimer();
             }
+            showByCriteria();
         }
 
         void hideAfterSongStart_Tick(object sender, EventArgs e) {
-            DoDisableWithAnimation();
+            showByCriteria();
             hideAfterSongStart.Stop();
         }
 
@@ -272,19 +290,16 @@ namespace fooTitle {
 
         /// <summary>
         /// Evaluates current state of criteria and shows or hides foo_title.
+        /// Should not be used in very frequently used callbacks such as OnPlaybackTimeEvent.
         /// </summary>
         protected void showByCriteria() {
             if (popupShowing.Value == PopupShowing.AllTheTime || notPlayingSat())
             {
-                DoEnableWithAnimation(false, false);
+                DoEnableWithAnimation(false);
             }
-            else if (songStartSat() )
+            else if (songStartSat() || beforeSongEndSat())
             {
-                DoEnableWithAnimation(false, true);
-            }
-            else if (beforeSongEndSat())
-            {
-                DoEnableWithAnimation(true, true);
+                DoEnableWithAnimation(true);
             }
             else
             {
