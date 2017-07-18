@@ -168,7 +168,9 @@ namespace fooTitle {
         protected bool fooTitleEnabled = true;
         public void DisableFooTitle() {
             if (initDone)
+            {
                 Display.Hide();
+            }
             fooTitleEnabled = false;
         }
 
@@ -188,7 +190,7 @@ namespace fooTitle {
 
         public void TriggerDisplay()
         {
-            Display.Display_Trigger();
+            //Display.Display_Trigger();
         }
 
         /// <summary>
