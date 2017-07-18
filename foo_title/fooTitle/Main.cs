@@ -188,9 +188,9 @@ namespace fooTitle {
                 ShowWhen.Value = ShowWhenEnum.Always;
         }
 
-        public void TriggerDisplay()
+        public void PopupPeek()
         {
-            //Display.Display_Trigger();
+            showControl.PopupPeek();
         }
 
         /// <summary>

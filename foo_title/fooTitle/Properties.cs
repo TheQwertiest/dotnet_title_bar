@@ -26,7 +26,7 @@ using fooTitle.Config;
 
 namespace fooTitle {
     class Properties : fooManagedWrapper.CManagedPrefPage_v3 {
-        //class Properties : System.Windows.Forms.Form {
+    //class Properties : System.Windows.Forms.Form {
 
         public override void Reset() {
             ConfValuesManager.GetInstance().Reset();
@@ -70,9 +70,6 @@ namespace fooTitle {
         private Label artLoadEveryLabelLeft;
         private GroupBox groupBox3;
         private Button openSkinDirBtn;
-        private GroupBox groupBox2;
-        private Label label3;
-        private Label label1;
         private GroupBox groupBox4;
         private CheckBox edgeSnapCheckBox;
         private NumericUpDown posYnumbox;
@@ -85,6 +82,15 @@ namespace fooTitle {
         private RadioButton enableDraggingAlwaysRadio;
         protected RadioGroupWrapper popupShowingWrapper;
         private RadioButton enableDraggingNeverRadio;
+        private GroupBox groupBox6;
+        private GroupBox groupBox2;
+        private Label label3;
+        private TrackBar updateIntervalTrackBar;
+        private Label label1;
+        private Label label7;
+        private Label label16;
+        private Label label13;
+        private NumericUpDown timeBeforeFadeTextBox;
         protected RadioGroupWrapper enableDraggingWrapper;
 
         public Properties(Main _main) : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage_v3.guid_display) {
@@ -156,7 +162,6 @@ namespace fooTitle {
         private System.Windows.Forms.NumericUpDown onSongStartStayTextBox;
         private System.Windows.Forms.ListBox skinsList;
         private System.Windows.Forms.Button applySkinBtn;
-        private System.Windows.Forms.TrackBar updateIntervalTrackBar;
         private System.Windows.Forms.GroupBox showWhenBox;
         private System.Windows.Forms.RadioButton neverRadio;
         private System.Windows.Forms.RadioButton minimizedRadio;
@@ -166,9 +171,6 @@ namespace fooTitle {
         private System.Windows.Forms.TrackBar overOpacityTrackBar;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TrackBar fadeLengthTrackBar;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label fadeLengthLabel;
         private System.Windows.Forms.Label versionLabel;
         private System.Windows.Forms.GroupBox zOrderBox;
         private System.Windows.Forms.RadioButton onDesktopRadio;
@@ -185,7 +187,6 @@ namespace fooTitle {
         private void InitializeComponent() {
             this.skinsList = new System.Windows.Forms.ListBox();
             this.applySkinBtn = new System.Windows.Forms.Button();
-            this.updateIntervalTrackBar = new System.Windows.Forms.TrackBar();
             this.showWhenBox = new System.Windows.Forms.GroupBox();
             this.neverRadio = new System.Windows.Forms.RadioButton();
             this.minimizedRadio = new System.Windows.Forms.RadioButton();
@@ -193,9 +194,6 @@ namespace fooTitle {
             this.opacityOpts = new System.Windows.Forms.GroupBox();
             this.opacityNormalLabel = new System.Windows.Forms.Label();
             this.opacityMouseOverLabel = new System.Windows.Forms.Label();
-            this.fadeLengthLabel = new System.Windows.Forms.Label();
-            this.fadeLengthTrackBar = new System.Windows.Forms.TrackBar();
-            this.label7 = new System.Windows.Forms.Label();
             this.normalOpacityTrackBar = new System.Windows.Forms.TrackBar();
             this.overOpacityTrackBar = new System.Windows.Forms.TrackBar();
             this.label6 = new System.Windows.Forms.Label();
@@ -220,13 +218,17 @@ namespace fooTitle {
             this.allTheTimeRadio = new System.Windows.Forms.RadioButton();
             this.tabControl1 = new fooTitle.SafeTabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.openSkinDirBtn = new System.Windows.Forms.Button();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.updateIntervalTrackBar = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.enableDraggingNeverRadio = new System.Windows.Forms.RadioButton();
             this.enableDraggingPropsOpenRadio = new System.Windows.Forms.RadioButton();
             this.enableDraggingAlwaysRadio = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -245,11 +247,11 @@ namespace fooTitle {
             this.artLoadEveryLabelRight = new System.Windows.Forms.Label();
             this.artLoadEveryNumber = new System.Windows.Forms.NumericUpDown();
             this.artLoadEveryLabelLeft = new System.Windows.Forms.Label();
-            this.enableDraggingNeverRadio = new System.Windows.Forms.RadioButton();
-            ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
+            this.timeBeforeFadeTextBox = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
             this.showWhenBox.SuspendLayout();
             this.opacityOpts.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fadeLengthTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.normalOpacityTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.overOpacityTrackBar)).BeginInit();
             this.zOrderBox.SuspendLayout();
@@ -258,9 +260,11 @@ namespace fooTitle {
             ((System.ComponentModel.ISupportInitialize)(this.onSongStartStayTextBox)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.posYnumbox)).BeginInit();
@@ -268,6 +272,7 @@ namespace fooTitle {
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.timeBeforeFadeTextBox)).BeginInit();
             this.SuspendLayout();
             // 
             // skinsList
@@ -287,21 +292,6 @@ namespace fooTitle {
             this.applySkinBtn.Text = "Apply skin";
             this.applySkinBtn.UseVisualStyleBackColor = true;
             this.applySkinBtn.Click += new System.EventHandler(this.applySkinBtn_Click);
-            // 
-            // updateIntervalTrackBar
-            // 
-            this.updateIntervalTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.updateIntervalTrackBar.LargeChange = 100;
-            this.updateIntervalTrackBar.Location = new System.Drawing.Point(6, 32);
-            this.updateIntervalTrackBar.Maximum = 500;
-            this.updateIntervalTrackBar.Minimum = 50;
-            this.updateIntervalTrackBar.Name = "updateIntervalTrackBar";
-            this.updateIntervalTrackBar.Size = new System.Drawing.Size(200, 45);
-            this.updateIntervalTrackBar.SmallChange = 10;
-            this.updateIntervalTrackBar.TabIndex = 2;
-            this.updateIntervalTrackBar.Tag = "display/updateInterval";
-            this.updateIntervalTrackBar.TickFrequency = 50;
-            this.updateIntervalTrackBar.Value = 50;
             // 
             // showWhenBox
             // 
@@ -352,16 +342,13 @@ namespace fooTitle {
             // 
             this.opacityOpts.Controls.Add(this.opacityNormalLabel);
             this.opacityOpts.Controls.Add(this.opacityMouseOverLabel);
-            this.opacityOpts.Controls.Add(this.fadeLengthLabel);
-            this.opacityOpts.Controls.Add(this.fadeLengthTrackBar);
-            this.opacityOpts.Controls.Add(this.label7);
             this.opacityOpts.Controls.Add(this.normalOpacityTrackBar);
             this.opacityOpts.Controls.Add(this.overOpacityTrackBar);
             this.opacityOpts.Controls.Add(this.label6);
             this.opacityOpts.Controls.Add(this.label5);
             this.opacityOpts.Location = new System.Drawing.Point(6, 6);
             this.opacityOpts.Name = "opacityOpts";
-            this.opacityOpts.Size = new System.Drawing.Size(226, 213);
+            this.opacityOpts.Size = new System.Drawing.Size(226, 168);
             this.opacityOpts.TabIndex = 10;
             this.opacityOpts.TabStop = false;
             this.opacityOpts.Text = "Opacity";
@@ -387,39 +374,6 @@ namespace fooTitle {
             this.opacityMouseOverLabel.Tag = "display/overOpacity";
             this.opacityMouseOverLabel.Text = "label8";
             this.opacityMouseOverLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // fadeLengthLabel
-            // 
-            this.fadeLengthLabel.AutoSize = true;
-            this.fadeLengthLabel.Location = new System.Drawing.Point(171, 144);
-            this.fadeLengthLabel.Name = "fadeLengthLabel";
-            this.fadeLengthLabel.Size = new System.Drawing.Size(35, 13);
-            this.fadeLengthLabel.TabIndex = 5;
-            this.fadeLengthLabel.Tag = "display/fadeLength";
-            this.fadeLengthLabel.Text = "label8";
-            this.fadeLengthLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // fadeLengthTrackBar
-            // 
-            this.fadeLengthTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.fadeLengthTrackBar.LargeChange = 100;
-            this.fadeLengthTrackBar.Location = new System.Drawing.Point(6, 160);
-            this.fadeLengthTrackBar.Maximum = 2000;
-            this.fadeLengthTrackBar.Name = "fadeLengthTrackBar";
-            this.fadeLengthTrackBar.Size = new System.Drawing.Size(200, 45);
-            this.fadeLengthTrackBar.SmallChange = 10;
-            this.fadeLengthTrackBar.TabIndex = 3;
-            this.fadeLengthTrackBar.Tag = "display/fadeLength";
-            this.fadeLengthTrackBar.TickFrequency = 100;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 144);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(66, 13);
-            this.label7.TabIndex = 4;
-            this.label7.Text = "Fade length:";
             // 
             // normalOpacityTrackBar
             // 
@@ -545,7 +499,7 @@ namespace fooTitle {
             this.popupBox.Controls.Add(this.onSongStartCheckbox);
             this.popupBox.Controls.Add(this.onlyWhenRadio);
             this.popupBox.Controls.Add(this.allTheTimeRadio);
-            this.popupBox.Location = new System.Drawing.Point(238, 96);
+            this.popupBox.Location = new System.Drawing.Point(238, 6);
             this.popupBox.Name = "popupBox";
             this.popupBox.Size = new System.Drawing.Size(225, 188);
             this.popupBox.TabIndex = 13;
@@ -672,8 +626,8 @@ namespace fooTitle {
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.groupBox6);
             this.tabPage1.Controls.Add(this.groupBox3);
-            this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.zOrderBox);
             this.tabPage1.Controls.Add(this.versionLabel);
             this.tabPage1.Controls.Add(this.popupBox);
@@ -685,6 +639,28 @@ namespace fooTitle {
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Appearance";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.label16);
+            this.groupBox6.Controls.Add(this.label13);
+            this.groupBox6.Controls.Add(this.timeBeforeFadeTextBox);
+            this.groupBox6.Controls.Add(this.label7);
+            this.groupBox6.Location = new System.Drawing.Point(238, 200);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(225, 84);
+            this.groupBox6.TabIndex = 17;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Popup Peek";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(20, 25);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(115, 13);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Time before fade away";
             // 
             // groupBox3
             // 
@@ -708,15 +684,30 @@ namespace fooTitle {
             this.openSkinDirBtn.UseVisualStyleBackColor = true;
             this.openSkinDirBtn.Click += new System.EventHandler(this.openSkinDirBtn_Click);
             // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.groupBox2);
+            this.tabPage2.Controls.Add(this.groupBox5);
+            this.tabPage2.Controls.Add(this.groupBox4);
+            this.tabPage2.Controls.Add(this.groupBox1);
+            this.tabPage2.Controls.Add(this.opacityOpts);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(469, 431);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Misc";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.updateIntervalTrackBar);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(238, 6);
+            this.groupBox2.Location = new System.Drawing.Point(6, 180);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(225, 84);
-            this.groupBox2.TabIndex = 15;
+            this.groupBox2.Size = new System.Drawing.Size(226, 84);
+            this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             // 
             // label3
@@ -730,6 +721,21 @@ namespace fooTitle {
             this.label3.Text = "label8";
             this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // updateIntervalTrackBar
+            // 
+            this.updateIntervalTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.updateIntervalTrackBar.LargeChange = 100;
+            this.updateIntervalTrackBar.Location = new System.Drawing.Point(6, 32);
+            this.updateIntervalTrackBar.Maximum = 500;
+            this.updateIntervalTrackBar.Minimum = 50;
+            this.updateIntervalTrackBar.Name = "updateIntervalTrackBar";
+            this.updateIntervalTrackBar.Size = new System.Drawing.Size(200, 45);
+            this.updateIntervalTrackBar.SmallChange = 10;
+            this.updateIntervalTrackBar.TabIndex = 2;
+            this.updateIntervalTrackBar.Tag = "display/updateInterval";
+            this.updateIntervalTrackBar.TickFrequency = 50;
+            this.updateIntervalTrackBar.Value = 50;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -738,20 +744,6 @@ namespace fooTitle {
             this.label1.Size = new System.Drawing.Size(82, 13);
             this.label1.TabIndex = 3;
             this.label1.Text = "Update interval:";
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.groupBox5);
-            this.tabPage2.Controls.Add(this.groupBox4);
-            this.tabPage2.Controls.Add(this.groupBox1);
-            this.tabPage2.Controls.Add(this.opacityOpts);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(469, 431);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Misc";
-            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // groupBox5
             // 
@@ -765,12 +757,23 @@ namespace fooTitle {
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Enable Dragging";
             // 
+            // enableDraggingNeverRadio
+            // 
+            this.enableDraggingNeverRadio.AutoSize = true;
+            this.enableDraggingNeverRadio.Location = new System.Drawing.Point(6, 65);
+            this.enableDraggingNeverRadio.Name = "enableDraggingNeverRadio";
+            this.enableDraggingNeverRadio.Size = new System.Drawing.Size(54, 17);
+            this.enableDraggingNeverRadio.TabIndex = 16;
+            this.enableDraggingNeverRadio.TabStop = true;
+            this.enableDraggingNeverRadio.Text = "Never";
+            this.enableDraggingNeverRadio.UseVisualStyleBackColor = true;
+            // 
             // enableDraggingPropsOpenRadio
             // 
             this.enableDraggingPropsOpenRadio.AutoSize = true;
             this.enableDraggingPropsOpenRadio.Location = new System.Drawing.Point(6, 42);
             this.enableDraggingPropsOpenRadio.Name = "enableDraggingPropsOpenRadio";
-            this.enableDraggingPropsOpenRadio.Size = new System.Drawing.Size(198, 17);
+            this.enableDraggingPropsOpenRadio.Size = new System.Drawing.Size(208, 17);
             this.enableDraggingPropsOpenRadio.TabIndex = 15;
             this.enableDraggingPropsOpenRadio.TabStop = true;
             this.enableDraggingPropsOpenRadio.Text = "Only when these preferences are open";
@@ -808,7 +811,7 @@ namespace fooTitle {
             this.label2.ForeColor = System.Drawing.SystemColors.GrayText;
             this.label2.Location = new System.Drawing.Point(6, 71);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(195, 26);
+            this.label2.Size = new System.Drawing.Size(201, 26);
             this.label2.TabIndex = 13;
             this.label2.Text = "If edge snapping is enabled you can hold\r\nCTRL to disable it while dragging.";
             // 
@@ -946,16 +949,31 @@ namespace fooTitle {
             this.artLoadEveryLabelLeft.TabIndex = 0;
             this.artLoadEveryLabelLeft.Text = "Every";
             // 
-            // enableDraggingNeverRadio
+            // timeBeforeFadeTextBox
             // 
-            this.enableDraggingNeverRadio.AutoSize = true;
-            this.enableDraggingNeverRadio.Location = new System.Drawing.Point(6, 65);
-            this.enableDraggingNeverRadio.Name = "enableDraggingNeverRadio";
-            this.enableDraggingNeverRadio.Size = new System.Drawing.Size(54, 17);
-            this.enableDraggingNeverRadio.TabIndex = 16;
-            this.enableDraggingNeverRadio.TabStop = true;
-            this.enableDraggingNeverRadio.Text = "Never";
-            this.enableDraggingNeverRadio.UseVisualStyleBackColor = true;
+            this.timeBeforeFadeTextBox.Location = new System.Drawing.Point(50, 45);
+            this.timeBeforeFadeTextBox.Name = "timeBeforeFadeTextBox";
+            this.timeBeforeFadeTextBox.Size = new System.Drawing.Size(65, 20);
+            this.timeBeforeFadeTextBox.TabIndex = 19;
+            this.timeBeforeFadeTextBox.Tag = "showControl/timeBeforeFade";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(16, 48);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(28, 13);
+            this.label13.TabIndex = 20;
+            this.label13.Text = "Stay";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(120, 48);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(47, 13);
+            this.label16.TabIndex = 21;
+            this.label16.Text = "seconds";
             // 
             // Properties
             // 
@@ -967,12 +985,10 @@ namespace fooTitle {
             this.Text = "foo_title";
             this.HandleCreated += new System.EventHandler(this.Properties_HandleCreated);
             this.HandleDestroyed += new System.EventHandler(this.Properties_HandleDestroyed);
-            ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).EndInit();
             this.showWhenBox.ResumeLayout(false);
             this.showWhenBox.PerformLayout();
             this.opacityOpts.ResumeLayout(false);
             this.opacityOpts.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fadeLengthTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.normalOpacityTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.overOpacityTrackBar)).EndInit();
             this.zOrderBox.ResumeLayout(false);
@@ -984,10 +1000,13 @@ namespace fooTitle {
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.groupBox3.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -998,6 +1017,7 @@ namespace fooTitle {
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadMaxNumber)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.artLoadEveryNumber)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.timeBeforeFadeTextBox)).EndInit();
             this.ResumeLayout(false);
 
         }

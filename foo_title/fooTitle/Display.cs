@@ -112,10 +112,6 @@ namespace fooTitle {
         /// </summary>
         protected ConfInt triggerOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
         /// <summary>
-        /// The length of fade between normal and over states in miliseconds
-        /// </summary>
-        protected ConfInt fadeLength = ConfValuesManager.CreateIntValue("display/fadeLength", 100, 0, 2000);
-        /// <summary>
         /// The z position of the window - either always on top or on the bottom.
         /// </summary>
         public ConfEnum<Win32.WindowPosition> WindowPosition = ConfValuesManager.CreateEnumValue<Win32.WindowPosition>("display/windowPosition", Win32.WindowPosition.Topmost);
