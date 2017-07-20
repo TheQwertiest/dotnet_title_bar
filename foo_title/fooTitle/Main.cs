@@ -283,6 +283,10 @@ namespace fooTitle {
             if (skin != null)
                 skin.Free();
             skin = null;
+
+            Win32.Point windowsPos = myDisplay.GetDeadjustedPosition();
+            positionX.Value = windowsPos.x;
+            positionY.Value = windowsPos.y;            
             myDisplay = null;
         }
 

@@ -44,6 +44,9 @@ namespace fooTitle {
 
         public int SnapDist = 10;
 
+        private double anchor_dx = 0;
+        private double anchor_dy = 0;
+        private AnchorStyles anchorType = AnchorStyles.Left | AnchorStyles.Top;
         private bool dragging = false;
         private int dragX;
         private int dragY;
@@ -347,11 +350,81 @@ namespace fooTitle {
         #endregion
 
         internal void SetSize(int width, int height) {
+            
+            int oldW = this.Width;
+            int oldH = this.Height;
             this.Width = width;
             this.Height = height;
 
             canvasBitmap = new Bitmap(this.Width, this.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Canvas = Graphics.FromImage(canvasBitmap);
+            FrameRedraw();
+
+            AdjustPositionByAnchor(oldW, oldH, width, height);
+        }
+
+        internal void SetAnchor(AnchorStyles type, double dx, double dy)
+        {
+            anchorType = type;
+            anchor_dx = dx;
+            anchor_dy = dy;
+        }
+
+        internal Win32.Point GetDeadjustedPosition()
+        {
+            if (anchorType == (AnchorStyles.Left | AnchorStyles.Top))
+            {
+                return new Win32.Point(this.Left, this.Top);
+            }
+
+            int x = this.Left;
+            int y = this.Top;
+
+            if ((anchorType & AnchorStyles.Bottom) != 0)
+            {
+                y += this.Height;
+            }
+            else if ((anchorType & AnchorStyles.Top) == 0)
+            {
+                y -= (int)((double)this.Height * anchor_dy);
+            }
+
+            if ((anchorType & AnchorStyles.Right) != 0)
+            {
+                x += this.Width;
+            }
+            else if ((anchorType & AnchorStyles.Left) == 0)
+            {
+                x -= (int)((double)this.Width * anchor_dx);
+            }
+
+            return new Win32.Point(x, y);
+        }
+
+        private void AdjustPositionByAnchor(int oldW, int oldH, int newW, int newH)
+        {
+            if (anchorType == (AnchorStyles.Left | AnchorStyles.Top))
+            {
+                return;
+            }
+            
+            if ( (anchorType & AnchorStyles.Bottom) != 0 )
+            {
+                this.Top -= (newH - oldH);
+            }
+            else if ((anchorType & AnchorStyles.Top) == 0)
+            {
+                this.Top += (int)((double)(oldH - newH) * anchor_dy);
+            }
+
+            if ((anchorType & AnchorStyles.Right) != 0)
+            {
+                this.Left -= (newW - oldW);
+            }
+            else if ((anchorType & AnchorStyles.Left) == 0)
+            {
+                this.Left += (int)((double)(oldW - newW) * anchor_dx);
+            }
         }
     }
 }

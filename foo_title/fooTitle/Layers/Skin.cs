@@ -244,8 +244,35 @@ namespace fooTitle.Layers {
             mouseWheelReg = new MouseEventHandler(display_MouseWheel);
             display.MouseWheel += mouseWheelReg;
 
+            InitAnchor();
             loadLayers(skin);
             geometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)geometry).Width, ((AbsoluteGeometry)geometry).Height));
+        }
+
+        private void InitAnchor()
+        {
+            XmlNode anchorDxStr = skin.Attributes.GetNamedItem("anchor_dx");
+            XmlNode anchorDyStr = skin.Attributes.GetNamedItem("anchor_dy");
+            XmlNode anchorTypeStr = skin.Attributes.GetNamedItem("anchor_type");
+            if (anchorTypeStr != null)
+            {
+                double anchor_dx = anchorDxStr == null ? 0 : double.Parse(anchorDxStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
+                double anchor_dy = anchorDyStr == null ? 0 : double.Parse(anchorDyStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
+                AnchorStyles anchorType = AnchorStyles.None;
+                foreach (string i in anchorTypeStr.Value.Split(','))
+                {
+                    if (i == "Top")
+                        anchorType |= AnchorStyles.Top;
+                    else if (i == "Bottom")
+                        anchorType |= AnchorStyles.Bottom;
+                    else if (i == "Right")
+                        anchorType |= AnchorStyles.Right;
+                    else if (i == "Left")
+                        anchorType |= AnchorStyles.Left;
+                }
+
+                display.SetAnchor(anchorType, anchor_dx, anchor_dy);
+            }
         }
 
         private Layer topLayerUnderMouse = null;
