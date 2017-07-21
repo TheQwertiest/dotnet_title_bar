@@ -116,32 +116,21 @@ namespace fooTitle {
         protected void DoEnableWithAnimation(bool useOverAnimation)
         {
             DoEnable();
-
-            if (main.Display != null && main.Display.Visible)
-            {
-                Display.Animation animName = useOverAnimation ? Display.Animation.FadeInOver : Display.Animation.FadeInNormal;
-                main.Display.StartAnimation(animName);
-            }
+            Display.Animation animName = useOverAnimation ? Display.Animation.FadeInOver : Display.Animation.FadeInNormal;
+            main.StartDisplayAnimation(animName);
         }
 
         protected void DoDisableWithAnimation()
         {
-            if (main.Display != null && main.Display.Visible)
-            {
-                Display.Animation animName = (popupShowing.Value == PopupShowing.AllTheTime) ? Display.Animation.FadeOut : Display.Animation.FadeOutFull;
-                Display.OnAnimationStopDelegate onStop = (popupShowing.Value != PopupShowing.AllTheTime) ? new Display.OnAnimationStopDelegate(DoDisable) : null;
-                main.Display.StartAnimation(animName, onStop);
-            }
+            Display.Animation animName = (popupShowing.Value == PopupShowing.AllTheTime) ? Display.Animation.FadeOut : Display.Animation.FadeOutFull;
+            Display.OnAnimationStopDelegate onStop = (popupShowing.Value != PopupShowing.AllTheTime) ? new Display.OnAnimationStopDelegate(DoDisable) : null;
+            main.StartDisplayAnimation(animName, onStop);
         }
 
         public void PopupPeek()
         {
             DoEnable();
-
-            if (main.Display != null && main.Display.Visible)
-            {
-                main.Display.StartAnimation(Display.Animation.FadeInOver, new Display.OnAnimationStopDelegate(StartFadeOutTimer));
-            }
+            main.StartDisplayAnimation(Display.Animation.FadeInOver, new Display.OnAnimationStopDelegate(StartFadeOutTimer));
         }
 
         protected void StartFadeOutTimer()

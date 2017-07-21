@@ -181,6 +181,14 @@ namespace fooTitle {
             }
         }
 
+        public void StartDisplayAnimation(Display.Animation animationName, Display.OnAnimationStopDelegate onStopCallback = null)
+        {
+            if (initDone && Display.Visible)
+            {
+                Display.StartAnimation(animationName, onStopCallback);
+            }
+        }
+
         public void ToggleEnabled() {
             if (ShowWhen.Value == ShowWhenEnum.Always)
                 ShowWhen.Value = ShowWhenEnum.Never;
