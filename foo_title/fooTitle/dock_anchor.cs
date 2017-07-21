@@ -38,8 +38,12 @@ namespace fooTitle
         internal void Initialize(AnchorStyles type, double dx, double dy)
         {
             anchorType_ = type;
-            anchor_dx_ = Math.Min(Math.Max(dx, 0), 1);
-            anchor_dy_ = Math.Min(Math.Max(dy, 0), 1); ;
+            anchor_dx_ = (anchorType_ & AnchorStyles.Left) != 0 ? 
+                0 : (anchorType_ & AnchorStyles.Right) != 0 ? 
+                1 : Math.Min(Math.Max(dx, 0), 1);
+            anchor_dy_ = (anchorType_ & AnchorStyles.Top) != 0 ?
+                0 : (anchorType_ & AnchorStyles.Bottom) != 0 ?
+                1 : Math.Min(Math.Max(dy, 0), 1);
             Win32.Point anchorPos = CalculatePositionFromWindow();
             anchor_x_ = anchorPos.x;
             anchor_y_ = anchorPos.y;
@@ -57,26 +61,8 @@ namespace fooTitle
 
         internal Win32.Point GetWindowPosition()
         {
-            int x = anchor_x_;
-            int y = anchor_y_;
-
-            if ((anchorType_ & AnchorStyles.Bottom) != 0)
-            {
-                y -= display_.Height;
-            }
-            else if ((anchorType_ & AnchorStyles.Top) == 0)
-            {
-                y -= (int)(display_.Height * anchor_dy_);
-            }
-
-            if ((anchorType_ & AnchorStyles.Right) != 0)
-            {
-                x -= display_.Width;
-            }
-            else if ((anchorType_ & AnchorStyles.Left) == 0)
-            {
-                x -= (int)(display_.Width * anchor_dx_);
-            }
+            int x = anchor_x_ - (int)(display_.Width * anchor_dx_);
+            int y = anchor_y_ - (int)(display_.Height * anchor_dy_);
 
             return new Win32.Point(x, y);
         }
@@ -85,6 +71,7 @@ namespace fooTitle
         {
             int anchorRelativeX = Math.Min((int)(anchor_dx_ * display_.Width), display_.Width - 1);
             int anchorRelativeY = Math.Min((int)(anchor_dy_ * display_.Height), display_.Height - 1);
+
             Color anchorCol = Color.FromArgb(0xFF, 0xFF, 0xFF, 0x70);
 
             display_.Canvas.FillRectangle(new SolidBrush(anchorCol), anchorRelativeX - 1, anchorRelativeY - 1, 3, 3);
@@ -94,26 +81,8 @@ namespace fooTitle
 
         private Win32.Point CalculatePositionFromWindow()
         {
-            int x = display_.Left;
-            int y = display_.Top;
-
-            if ((anchorType_ & AnchorStyles.Bottom) != 0)
-            {
-                y += display_.Height;
-            }
-            else if ((anchorType_ & AnchorStyles.Top) == 0)
-            {
-                y += (int)(display_.Height * anchor_dy_);
-            }
-
-            if ((anchorType_ & AnchorStyles.Right) != 0)
-            {
-                x += display_.Width;
-            }
-            else if ((anchorType_ & AnchorStyles.Left) == 0)
-            {
-                x += (int)(display_.Width * anchor_dx_);
-            }
+            int x = display_.Left + (int)(display_.Width * anchor_dx_);
+            int y = display_.Top + (int)(display_.Height * anchor_dy_);
 
             return new Win32.Point(x, y);
         }
