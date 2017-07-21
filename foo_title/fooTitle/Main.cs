@@ -212,10 +212,10 @@ namespace fooTitle {
         private ConfInt positionX = new ConfInt("display/positionX", 0);
         private ConfInt positionY = new ConfInt("display/positionY", 0);
         public void positionX_Changed(string name) {
-            Display.Left = positionX.Value;
+            Display.SetPositionByAnchor(positionX.Value, positionY.Value);
         }
         public void positionY_Changed(string name) {
-            Display.Top = positionY.Value;
+            Display.SetPositionByAnchor(positionX.Value, positionY.Value);
         }
 
         private ConfBool edgeSnap = new ConfBool("display/edgeSnap", true);
@@ -274,19 +274,13 @@ namespace fooTitle {
             myDisplay.Closing -= new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
             myDisplay.Closing += new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
             myDisplay.Show();
-
-            RestorePosition();
         }
 
         void myDisplay_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             myDisplay.Closing -= new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
             if (skin != null)
                 skin.Free();
-            skin = null;
-
-            Win32.Point windowsPos = myDisplay.GetDeadjustedPosition();
-            positionX.Value = windowsPos.x;
-            positionY.Value = windowsPos.y;            
+            skin = null;        
             myDisplay = null;
         }
 
@@ -312,6 +306,7 @@ namespace fooTitle {
 
                 skin = new Skin(path);
                 skin.Init(Display);
+                RestorePosition();
 
                 // need to tell it about the currently playing song
                 if (lastSong != null)
@@ -364,8 +359,9 @@ namespace fooTitle {
         }
 
         public void SavePosition() {
-            positionX.Value = Display.Left;
-            positionY.Value = Display.Top;
+            Win32.Point anchorPos = Display.GetDockAnchor().GetPosition();
+            positionX.Value = anchorPos.x;
+            positionY.Value = anchorPos.y;
 
             if (DraggingEnabled.Value == EnableDragging.ALWAYS && !Properties.IsOpen) {
                 ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
@@ -373,8 +369,7 @@ namespace fooTitle {
         }
 
         public void RestorePosition() {
-            Display.Left = positionX.Value;
-            Display.Top = positionY.Value;
+            Display.SetPositionByAnchor(positionX.Value, positionY.Value);            
         }
 
         #region Events

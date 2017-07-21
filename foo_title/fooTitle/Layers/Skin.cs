@@ -254,11 +254,13 @@ namespace fooTitle.Layers {
             XmlNode anchorDxStr = skin.Attributes.GetNamedItem("anchor_dx");
             XmlNode anchorDyStr = skin.Attributes.GetNamedItem("anchor_dy");
             XmlNode anchorTypeStr = skin.Attributes.GetNamedItem("anchor_type");
+
+            double anchor_dx = anchorDxStr == null ? 0 : double.Parse(anchorDxStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
+            double anchor_dy = anchorDyStr == null ? 0 : double.Parse(anchorDyStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
+            AnchorStyles anchorType = AnchorStyles.Top | AnchorStyles.Left;
             if (anchorTypeStr != null)
             {
-                double anchor_dx = anchorDxStr == null ? 0 : double.Parse(anchorDxStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
-                double anchor_dy = anchorDyStr == null ? 0 : double.Parse(anchorDyStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
-                AnchorStyles anchorType = AnchorStyles.None;
+                anchorType = AnchorStyles.None;
                 foreach (string i in anchorTypeStr.Value.Split(','))
                 {
                     if (i == "Top")
@@ -270,9 +272,9 @@ namespace fooTitle.Layers {
                     else if (i == "Left")
                         anchorType |= AnchorStyles.Left;
                 }
-
-                display.SetAnchor(anchorType, anchor_dx, anchor_dy);
             }
+
+            display.GetDockAnchor().Initialize(anchorType, anchor_dx, anchor_dy);
         }
 
         private Layer topLayerUnderMouse = null;

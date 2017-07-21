@@ -44,9 +44,6 @@ namespace fooTitle {
 
         public int SnapDist = 10;
 
-        private double anchor_dx = 0;
-        private double anchor_dy = 0;
-        private AnchorStyles anchorType = AnchorStyles.Left | AnchorStyles.Top;
         private bool dragging = false;
         private int dragX;
         private int dragY;
@@ -60,9 +57,9 @@ namespace fooTitle {
         private ConfValuesManager.ValueChangedDelegate windowPositionChangeDelegate;
 
         public delegate void OnAnimationStopDelegate();
-        private OnAnimationStopDelegate OnAnimationStop;        
+        private OnAnimationStopDelegate OnAnimationStop;
 
-        public class Fade 
+        public class Fade
         {
             protected int startVal;
             protected int stopVal;
@@ -101,6 +98,95 @@ namespace fooTitle {
         }
 
         protected Fade fadeAnimation;
+        
+        internal class DockAnchor
+        {
+            private Display display_ = null;
+            private double anchor_dx_ = 0;
+            private double anchor_dy_ = 0;
+            private int anchor_x_ = 0;
+            private int anchor_y_ = 0;
+            private AnchorStyles anchorType_ = AnchorStyles.Left | AnchorStyles.Top;
+
+            internal DockAnchor(Display display)
+            {
+                display_ = display;
+            }
+
+            internal void Initialize(AnchorStyles type, double dx, double dy)
+            {
+                anchorType_ = type;
+                anchor_dx_ = Math.Min(Math.Max(dx, 0), 1);
+                anchor_dy_ = Math.Min(Math.Max(dy, 0), 1); ;
+                Win32.Point anchorPos = CalculatePositionFromWindow();
+                anchor_x_ = anchorPos.x;
+                anchor_y_ = anchorPos.y;
+            }
+            internal Win32.Point GetPosition()
+            {
+                return CalculatePositionFromWindow();
+            }
+
+            internal void SetPosition(int anchor_x, int anchor_y)
+            {
+                anchor_x_ = anchor_x;
+                anchor_y_ = anchor_y;
+            }
+
+            internal Win32.Point GetWindowPosition()
+            {
+                int x = anchor_x_;
+                int y = anchor_y_;
+
+                if ((anchorType_ & AnchorStyles.Bottom) != 0)
+                {
+                    y -= display_.Height;
+                }
+                else if ((anchorType_ & AnchorStyles.Top) == 0)
+                {
+                    y -= (int)((double)display_.Height * anchor_dy_);
+                }
+
+                if ((anchorType_ & AnchorStyles.Right) != 0)
+                {
+                    x -= display_.Width;
+                }
+                else if ((anchorType_ & AnchorStyles.Left) == 0)
+                {
+                    x -= (int)((double)display_.Width * anchor_dx_);
+                }
+
+                return new Win32.Point(x, y);
+            }
+
+            private Win32.Point CalculatePositionFromWindow()
+            {
+                int x = display_.Left;
+                int y = display_.Top;
+
+                if ((anchorType_ & AnchorStyles.Bottom) != 0)
+                {
+                    y += display_.Height;
+                }
+                else if ((anchorType_ & AnchorStyles.Top) == 0)
+                {
+                    y += (int)((double)display_.Height * anchor_dy_);
+                }
+
+                if ((anchorType_ & AnchorStyles.Right) != 0)
+                {
+                    x += display_.Width;
+                }
+                else if ((anchorType_ & AnchorStyles.Left) == 0)
+                {
+                    x += (int)((double)display_.Width * anchor_dx_);
+                }
+
+                return new Win32.Point(x, y);
+            }
+        }
+
+        private DockAnchor dockAnchor_;
 
         /// <summary>
         /// The opacity in normal state
@@ -138,6 +224,7 @@ namespace fooTitle {
             normalOpacity.OnChanged += normalOpacityChangeDelegate;
             WindowPosition.OnChanged += windowPositionChangeDelegate;
 
+            dockAnchor_ = new DockAnchor(this);
             SetWindowsPos(WindowPosition.Value);
         }
 
@@ -291,11 +378,11 @@ namespace fooTitle {
             }
         }
 
-        public void StartAnimation( Animation animName, OnAnimationStopDelegate actionAfterAnimation = null)
+        public void StartAnimation(Animation animName, OnAnimationStopDelegate actionAfterAnimation = null)
         {
             lock (animationLock)
             {
-                if ( curAnimationName != animName )
+                if (curAnimationName != animName)
                 {
                     OnAnimationStop = null;
                     fadeAnimation = null;
@@ -350,7 +437,7 @@ namespace fooTitle {
         #endregion
 
         internal void SetSize(int width, int height) {
-            
+
             int oldW = this.Width;
             int oldH = this.Height;
             this.Width = width;
@@ -360,70 +447,38 @@ namespace fooTitle {
             Canvas = Graphics.FromImage(canvasBitmap);
             FrameRedraw();
 
-            AdjustPositionByAnchor(oldW, oldH, width, height);
+            AdjustPositionByAnchor();
         }
 
-        internal void SetAnchor(AnchorStyles type, double dx, double dy)
+        internal DockAnchor GetDockAnchor()
         {
-            anchorType = type;
-            anchor_dx = dx;
-            anchor_dy = dy;
+            return dockAnchor_;
         }
 
-        internal Win32.Point GetDeadjustedPosition()
+        internal void SetPositionByAnchor(int anchor_x, int anchor_y)
         {
-            if (anchorType == (AnchorStyles.Left | AnchorStyles.Top))
+            dockAnchor_.SetPosition(anchor_x, anchor_y);
+            Win32.Point windowPos = dockAnchor_.GetWindowPosition();
+            if (this.Top != windowPos.y)
             {
-                return new Win32.Point(this.Left, this.Top);
+                this.Top = windowPos.y;
             }
-
-            int x = this.Left;
-            int y = this.Top;
-
-            if ((anchorType & AnchorStyles.Bottom) != 0)
+            if (this.Left != windowPos.x)
             {
-                y += this.Height;
+                this.Left = windowPos.x;
             }
-            else if ((anchorType & AnchorStyles.Top) == 0)
-            {
-                y -= (int)((double)this.Height * anchor_dy);
-            }
-
-            if ((anchorType & AnchorStyles.Right) != 0)
-            {
-                x += this.Width;
-            }
-            else if ((anchorType & AnchorStyles.Left) == 0)
-            {
-                x -= (int)((double)this.Width * anchor_dx);
-            }
-
-            return new Win32.Point(x, y);
         }
 
-        private void AdjustPositionByAnchor(int oldW, int oldH, int newW, int newH)
+        private void AdjustPositionByAnchor()
         {
-            if (anchorType == (AnchorStyles.Left | AnchorStyles.Top))
+            Win32.Point windowPos = dockAnchor_.GetWindowPosition();
+            if (this.Top != windowPos.y)
             {
-                return;
+                this.Top = windowPos.y;
             }
-            
-            if ( (anchorType & AnchorStyles.Bottom) != 0 )
+            if (this.Left != windowPos.x)
             {
-                this.Top -= (newH - oldH);
-            }
-            else if ((anchorType & AnchorStyles.Top) == 0)
-            {
-                this.Top += (int)((double)(oldH - newH) * anchor_dy);
-            }
-
-            if ((anchorType & AnchorStyles.Right) != 0)
-            {
-                this.Left -= (newW - oldW);
-            }
-            else if ((anchorType & AnchorStyles.Left) == 0)
-            {
-                this.Left += (int)((double)(oldW - newW) * anchor_dx);
+                this.Left = windowPos.x;
             }
         }
     }

@@ -409,9 +409,9 @@ namespace fooTitle {
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(6, 95);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(119, 13);
+            this.label6.Size = new System.Drawing.Size(93, 13);
             this.label6.TabIndex = 1;
-            this.label6.Text = "Opacity on mouse over:";
+            this.label6.Text = "Opacity on trigger:";
             // 
             // label5
             // 
@@ -842,7 +842,7 @@ namespace fooTitle {
             this.groupBox4.Size = new System.Drawing.Size(225, 104);
             this.groupBox4.TabIndex = 12;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Position";
+            this.groupBox4.Text = "Anchor Position";
             // 
             // label2
             // 
