@@ -192,6 +192,18 @@ namespace fooTitle.Config {
 
             return new ConfEnum<T>(name, _def);
         }
+
+        /// <summary>
+        /// <see cref="CreateIntValue"/>
+        /// </summary>
+        public static ConfBool CreateBoolValue(string name, bool _def)
+        {
+            ConfBool existing = (ConfBool)GetInstance().GetValueByName(name);
+            if (existing != null)
+                return existing;
+
+            return new ConfBool(name, _def);
+        }
     }
 
     #endregion

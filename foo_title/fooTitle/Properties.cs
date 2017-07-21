@@ -100,6 +100,7 @@ namespace fooTitle {
         private NumericUpDown numericUpDown2;
         private CheckBox checkBox2;
         private CheckBox checkBox3;
+        private CheckBox checkBox4;
         protected RadioGroupWrapper enableDraggingWrapper;
 
         public Properties(Main _main) : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage_v3.guid_display) {
@@ -252,6 +253,7 @@ namespace fooTitle {
             this.artLoadEveryLabelRight = new System.Windows.Forms.Label();
             this.artLoadEveryNumber = new System.Windows.Forms.NumericUpDown();
             this.artLoadEveryLabelLeft = new System.Windows.Forms.Label();
+            this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.showWhenBox.SuspendLayout();
             this.opacityOpts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.normalOpacityTrackBar)).BeginInit();
@@ -789,7 +791,7 @@ namespace fooTitle {
             this.groupBox5.Controls.Add(this.enableDraggingNeverRadio);
             this.groupBox5.Controls.Add(this.enableDraggingPropsOpenRadio);
             this.groupBox5.Controls.Add(this.enableDraggingAlwaysRadio);
-            this.groupBox5.Location = new System.Drawing.Point(238, 290);
+            this.groupBox5.Location = new System.Drawing.Point(238, 314);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(225, 90);
             this.groupBox5.TabIndex = 13;
@@ -831,6 +833,7 @@ namespace fooTitle {
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.checkBox4);
             this.groupBox4.Controls.Add(this.label2);
             this.groupBox4.Controls.Add(this.edgeSnapCheckBox);
             this.groupBox4.Controls.Add(this.posYnumbox);
@@ -839,7 +842,7 @@ namespace fooTitle {
             this.groupBox4.Controls.Add(this.label8);
             this.groupBox4.Location = new System.Drawing.Point(238, 180);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(225, 104);
+            this.groupBox4.Size = new System.Drawing.Size(225, 128);
             this.groupBox4.TabIndex = 12;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Anchor Position";
@@ -848,7 +851,7 @@ namespace fooTitle {
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.label2.Location = new System.Drawing.Point(6, 71);
+            this.label2.Location = new System.Drawing.Point(6, 94);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(201, 26);
             this.label2.TabIndex = 13;
@@ -857,7 +860,7 @@ namespace fooTitle {
             // edgeSnapCheckBox
             // 
             this.edgeSnapCheckBox.AutoSize = true;
-            this.edgeSnapCheckBox.Location = new System.Drawing.Point(9, 51);
+            this.edgeSnapCheckBox.Location = new System.Drawing.Point(9, 74);
             this.edgeSnapCheckBox.Name = "edgeSnapCheckBox";
             this.edgeSnapCheckBox.Size = new System.Drawing.Size(132, 17);
             this.edgeSnapCheckBox.TabIndex = 12;
@@ -987,6 +990,17 @@ namespace fooTitle {
             this.artLoadEveryLabelLeft.Size = new System.Drawing.Size(34, 13);
             this.artLoadEveryLabelLeft.TabIndex = 0;
             this.artLoadEveryLabelLeft.Text = "Every";
+            // 
+            // checkBox4
+            // 
+            this.checkBox4.AutoSize = true;
+            this.checkBox4.Location = new System.Drawing.Point(9, 51);
+            this.checkBox4.Name = "checkBox4";
+            this.checkBox4.Size = new System.Drawing.Size(96, 17);
+            this.checkBox4.TabIndex = 14;
+            this.checkBox4.Tag = "display/drawAnchor";
+            this.checkBox4.Text = "Display anchor";
+            this.checkBox4.UseVisualStyleBackColor = true;
             // 
             // Properties
             // 

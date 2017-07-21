@@ -212,10 +212,10 @@ namespace fooTitle {
         private ConfInt positionX = new ConfInt("display/positionX", 0);
         private ConfInt positionY = new ConfInt("display/positionY", 0);
         public void positionX_Changed(string name) {
-            Display.SetPositionByAnchor(positionX.Value, positionY.Value);
+            Display.SetAnchorPosition(positionX.Value, positionY.Value);
         }
         public void positionY_Changed(string name) {
-            Display.SetPositionByAnchor(positionX.Value, positionY.Value);
+            Display.SetAnchorPosition(positionX.Value, positionY.Value);
         }
 
         private ConfBool edgeSnap = new ConfBool("display/edgeSnap", true);
@@ -359,7 +359,7 @@ namespace fooTitle {
         }
 
         public void SavePosition() {
-            Win32.Point anchorPos = Display.GetDockAnchor().GetPosition();
+            Win32.Point anchorPos = Display.GetAnchorPosition();
             positionX.Value = anchorPos.x;
             positionY.Value = anchorPos.y;
 
@@ -369,7 +369,7 @@ namespace fooTitle {
         }
 
         public void RestorePosition() {
-            Display.SetPositionByAnchor(positionX.Value, positionY.Value);            
+            Display.SetAnchorPosition(positionX.Value, positionY.Value);            
         }
 
         #region Events

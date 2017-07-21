@@ -1,0 +1,121 @@
+/*
+    This file is part of foo_title.
+
+    foo_title is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
+    (at your option) any later version.
+
+    foo_title is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with foo_title; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+using System;
+using System.Windows.Forms;
+using System.Drawing;
+
+namespace fooTitle
+{
+    internal class DockAnchor
+    {
+        private Display display_ = null;
+        private double anchor_dx_ = 0;
+        private double anchor_dy_ = 0;
+        private int anchor_x_ = 0;
+        private int anchor_y_ = 0;
+        private AnchorStyles anchorType_ = AnchorStyles.Left | AnchorStyles.Top;
+
+        internal DockAnchor(Display display)
+        {
+            display_ = display;
+        }
+
+        internal void Initialize(AnchorStyles type, double dx, double dy)
+        {
+            anchorType_ = type;
+            anchor_dx_ = Math.Min(Math.Max(dx, 0), 1);
+            anchor_dy_ = Math.Min(Math.Max(dy, 0), 1); ;
+            Win32.Point anchorPos = CalculatePositionFromWindow();
+            anchor_x_ = anchorPos.x;
+            anchor_y_ = anchorPos.y;
+        }
+        internal Win32.Point GetPosition()
+        {
+            return CalculatePositionFromWindow();
+        }
+
+        internal void SetPosition(int anchor_x, int anchor_y)
+        {
+            anchor_x_ = anchor_x;
+            anchor_y_ = anchor_y;
+        }
+
+        internal Win32.Point GetWindowPosition()
+        {
+            int x = anchor_x_;
+            int y = anchor_y_;
+
+            if ((anchorType_ & AnchorStyles.Bottom) != 0)
+            {
+                y -= display_.Height;
+            }
+            else if ((anchorType_ & AnchorStyles.Top) == 0)
+            {
+                y -= (int)(display_.Height * anchor_dy_);
+            }
+
+            if ((anchorType_ & AnchorStyles.Right) != 0)
+            {
+                x -= display_.Width;
+            }
+            else if ((anchorType_ & AnchorStyles.Left) == 0)
+            {
+                x -= (int)(display_.Width * anchor_dx_);
+            }
+
+            return new Win32.Point(x, y);
+        }
+
+        internal void Draw()
+        {
+            int anchorRelativeX = Math.Min((int)(anchor_dx_ * display_.Width), display_.Width - 1);
+            int anchorRelativeY = Math.Min((int)(anchor_dy_ * display_.Height), display_.Height - 1);
+            Color anchorCol = Color.FromArgb(0xFF, 0xFF, 0xFF, 0x70);
+
+            display_.Canvas.FillRectangle(new SolidBrush(anchorCol), anchorRelativeX - 1, anchorRelativeY - 1, 3, 3);
+            display_.Canvas.DrawLine(new Pen(anchorCol), anchorRelativeX - 25, anchorRelativeY, anchorRelativeX + 25, anchorRelativeY);
+            display_.Canvas.DrawLine(new Pen(anchorCol), anchorRelativeX, anchorRelativeY - 25, anchorRelativeX, anchorRelativeY + 25);
+        }
+
+        private Win32.Point CalculatePositionFromWindow()
+        {
+            int x = display_.Left;
+            int y = display_.Top;
+
+            if ((anchorType_ & AnchorStyles.Bottom) != 0)
+            {
+                y += display_.Height;
+            }
+            else if ((anchorType_ & AnchorStyles.Top) == 0)
+            {
+                y += (int)(display_.Height * anchor_dy_);
+            }
+
+            if ((anchorType_ & AnchorStyles.Right) != 0)
+            {
+                x += display_.Width;
+            }
+            else if ((anchorType_ & AnchorStyles.Left) == 0)
+            {
+                x += (int)(display_.Width * anchor_dx_);
+            }
+
+            return new Win32.Point(x, y);
+        }
+    }
+}

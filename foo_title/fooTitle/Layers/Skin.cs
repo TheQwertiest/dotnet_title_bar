@@ -245,6 +245,7 @@ namespace fooTitle.Layers {
             display.MouseWheel += mouseWheelReg;
 
             InitAnchor();
+
             loadLayers(skin);
             geometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)geometry).Width, ((AbsoluteGeometry)geometry).Height));
         }
@@ -274,7 +275,7 @@ namespace fooTitle.Layers {
                 }
             }
 
-            display.GetDockAnchor().Initialize(anchorType, anchor_dx, anchor_dy);
+            display.InitializeAnchor(anchorType, anchor_dx, anchor_dy);
         }
 
         private Layer topLayerUnderMouse = null;

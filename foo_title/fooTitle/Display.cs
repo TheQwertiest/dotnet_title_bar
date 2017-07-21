@@ -98,93 +98,6 @@ namespace fooTitle {
         }
 
         protected Fade fadeAnimation;
-        
-        internal class DockAnchor
-        {
-            private Display display_ = null;
-            private double anchor_dx_ = 0;
-            private double anchor_dy_ = 0;
-            private int anchor_x_ = 0;
-            private int anchor_y_ = 0;
-            private AnchorStyles anchorType_ = AnchorStyles.Left | AnchorStyles.Top;
-
-            internal DockAnchor(Display display)
-            {
-                display_ = display;
-            }
-
-            internal void Initialize(AnchorStyles type, double dx, double dy)
-            {
-                anchorType_ = type;
-                anchor_dx_ = Math.Min(Math.Max(dx, 0), 1);
-                anchor_dy_ = Math.Min(Math.Max(dy, 0), 1); ;
-                Win32.Point anchorPos = CalculatePositionFromWindow();
-                anchor_x_ = anchorPos.x;
-                anchor_y_ = anchorPos.y;
-            }
-            internal Win32.Point GetPosition()
-            {
-                return CalculatePositionFromWindow();
-            }
-
-            internal void SetPosition(int anchor_x, int anchor_y)
-            {
-                anchor_x_ = anchor_x;
-                anchor_y_ = anchor_y;
-            }
-
-            internal Win32.Point GetWindowPosition()
-            {
-                int x = anchor_x_;
-                int y = anchor_y_;
-
-                if ((anchorType_ & AnchorStyles.Bottom) != 0)
-                {
-                    y -= display_.Height;
-                }
-                else if ((anchorType_ & AnchorStyles.Top) == 0)
-                {
-                    y -= (int)((double)display_.Height * anchor_dy_);
-                }
-
-                if ((anchorType_ & AnchorStyles.Right) != 0)
-                {
-                    x -= display_.Width;
-                }
-                else if ((anchorType_ & AnchorStyles.Left) == 0)
-                {
-                    x -= (int)((double)display_.Width * anchor_dx_);
-                }
-
-                return new Win32.Point(x, y);
-            }
-
-            private Win32.Point CalculatePositionFromWindow()
-            {
-                int x = display_.Left;
-                int y = display_.Top;
-
-                if ((anchorType_ & AnchorStyles.Bottom) != 0)
-                {
-                    y += display_.Height;
-                }
-                else if ((anchorType_ & AnchorStyles.Top) == 0)
-                {
-                    y += (int)((double)display_.Height * anchor_dy_);
-                }
-
-                if ((anchorType_ & AnchorStyles.Right) != 0)
-                {
-                    x += display_.Width;
-                }
-                else if ((anchorType_ & AnchorStyles.Left) == 0)
-                {
-                    x += (int)((double)display_.Width * anchor_dx_);
-                }
-
-                return new Win32.Point(x, y);
-            }
-        }
 
         private DockAnchor dockAnchor_;
 
@@ -204,6 +117,10 @@ namespace fooTitle {
         /// The z position of the window - either always on top or on the bottom.
         /// </summary>
         public ConfEnum<Win32.WindowPosition> WindowPosition = ConfValuesManager.CreateEnumValue<Win32.WindowPosition>("display/windowPosition", Win32.WindowPosition.Topmost);
+        /// <summary>
+        /// Indicates the need to draw anchor
+        /// </summary>
+        protected ConfBool shouldDrawAnchor = ConfValuesManager.CreateBoolValue("display/drawAnchor", false);
 
         public Display(int width, int height) {
             InitializeComponent();
@@ -281,6 +198,10 @@ namespace fooTitle {
         #endregion
 
         public void FrameRedraw() {
+            if (shouldDrawAnchor.Value)
+            {
+                dockAnchor_.Draw();
+            }
             frameUpdateOpacity();
             SetBitmap(canvasBitmap, (byte)opacity);
             Canvas.Clear(Color.Transparent);
@@ -450,12 +371,17 @@ namespace fooTitle {
             AdjustPositionByAnchor();
         }
 
-        internal DockAnchor GetDockAnchor()
+        internal void InitializeAnchor(AnchorStyles anchor_type, double anchor_dx, double anchor_dy)
         {
-            return dockAnchor_;
+            dockAnchor_.Initialize(anchor_type, anchor_dx, anchor_dy);
         }
 
-        internal void SetPositionByAnchor(int anchor_x, int anchor_y)
+        internal Win32.Point GetAnchorPosition()
+        {
+            return dockAnchor_.GetPosition();
+        }
+
+        internal void SetAnchorPosition(int anchor_x, int anchor_y)
         {
             dockAnchor_.SetPosition(anchor_x, anchor_y);
             Win32.Point windowPos = dockAnchor_.GetWindowPosition();
