@@ -502,4 +502,4 @@ namespace fooTitle {
         #endregion
     }
 }
->>>>>>> 179444e... Added foo_title trigger
+
