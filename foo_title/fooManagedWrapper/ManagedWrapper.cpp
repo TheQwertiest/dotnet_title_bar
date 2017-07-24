@@ -24,6 +24,11 @@
 #include "prefPages_v3.h"
 #include "mainMenuCommands.h"
 
+#include <msclr\marshal_cppstd.h>
+#include <codecvt>
+
+using namespace msclr::interop;
+
 using namespace System;
 using namespace fooManagedWrapper;
 using namespace System::Text;
@@ -103,14 +108,6 @@ namespace fooManagedWrapper {
 		services->Add(a);
 	}
 
-	const char *CManagedWrapper::ToCString(String ^a) {
-		return (const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(a)).ToPointer();
-	}
-
-	void CManagedWrapper::FreeCString(const char *a) {
-		System::Runtime::InteropServices::Marshal::FreeHGlobal(IntPtr((void*)a));
-	}
-
 	_GUID CManagedWrapper::ToGUID(Guid^ guid) {
 		array<Byte>^ guidData = guid->ToByteArray();
 		pin_ptr<Byte> data = &(guidData[0]);
@@ -140,11 +137,10 @@ namespace fooManagedWrapper {
 
 	void CManagedWrapper::DoMainMenuCommand(String ^name) {
 		if (core_api::is_main_thread()) {
-			const char *c_name = ToCString(name);
+               std::string c_name( CManagedWrapper::ToStdString( name ) );
 			GUID guid;
-			mainmenu_commands::g_find_by_name(c_name, guid);
+			mainmenu_commands::g_find_by_name(c_name.c_str(), guid);
 			mainmenu_commands::g_execute(guid);
-			FreeCString(c_name);
 		} else {
 			pfc::crash();
 		}
@@ -171,7 +167,6 @@ namespace fooManagedWrapper {
 				res += PfcStringToString(str);
 				res += "\n";
 			}
-
 		}
 
 		return res;
@@ -187,20 +182,20 @@ namespace fooManagedWrapper {
 	}
 
 	pfc::string8 CManagedWrapper::StringToPfcString(String ^a) {
-		Encoder ^enc = Encoding::UTF8->GetEncoder();
-		int charsUsed, bytesUsed;
-		bool completed;
-		array<unsigned char> ^out = gcnew array<unsigned char>(a->Length * 4);
-		enc->Convert(a->ToCharArray(), 0, a->Length, out, 0, a->Length * 4, true, charsUsed, bytesUsed, completed);
-		char *c_str = new char[bytesUsed + 1];
-		System::Runtime::InteropServices::Marshal::Copy((array<unsigned char> ^)out, (int)0, (System::IntPtr)c_str, (int)bytesUsed);
-		c_str[bytesUsed] = 0;
-		pfc::string8 result(c_str);
-		delete[] c_str;
-		return result;
+          std::string tmpStr( ToStdString( a ) );
+          return pfc::string8( tmpStr.c_str() );
 	}
 
-	String ^CManagedWrapper::PfcStringToString(const pfc::string8 &stringToConvert) {
-		return gcnew String(stringToConvert.get_ptr(), 0, stringToConvert.get_length(), gcnew System::Text::UTF8Encoding());
-	}
+     String ^CManagedWrapper::PfcStringToString( const pfc::string8 &stringToConvert )
+     {
+          return gcnew String( stringToConvert.get_ptr(), 0, stringToConvert.get_length(), gcnew System::Text::UTF8Encoding() );
+     }
+
+     std::string CManagedWrapper::ToStdString( String^ string )
+     {
+          marshal_context ctx;
+          std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> convert;
+
+          return convert.to_bytes( ctx.marshal_as<std::wstring>( string ) );
+     }
 };

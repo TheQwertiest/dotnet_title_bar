@@ -35,13 +35,12 @@ CMainMenuGroup::~CMainMenuGroup() {
 // this creates and registers a new menu group popup
 CMainMenuGroupPopup::CMainMenuGroupPopup(Guid ^guid, Guid ^parent, int priority, String ^ name) {
 	CManagedWrapper::getInstance()->AddService(this);
-	const char *c_name = CManagedWrapper::ToCString(name);
+     std::string c_name( CManagedWrapper::ToStdString( name ) );
 	wrapper = new mainmenu_group_popup_factory(
 		CManagedWrapper::ToGUID(guid),
 		CManagedWrapper::ToGUID(parent),
 		priority,
-		c_name);
-	CManagedWrapper::FreeCString(c_name);
+		c_name.c_str());
 
 	ptr = new service_ptr_t<mainmenu_group>(&wrapper->get_static_instance());
 	castPtr = new service_ptr_t<mainmenu_group_popup>(&wrapper->get_static_instance());

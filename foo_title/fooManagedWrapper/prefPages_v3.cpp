@@ -26,25 +26,22 @@ using namespace std;
 
 namespace fooManagedWrapper {
 	CCustomPrefPage_v3::CCustomPrefPage_v3() {
-		name = NULL;
 		form = NULL;
 	}
 
-	CCustomPrefPage_v3::~CCustomPrefPage_v3() {}
+	CCustomPrefPage_v3::~CCustomPrefPage_v3() {
+     }
 
 	preferences_page_instance::ptr CCustomPrefPage_v3::instantiate(HWND parent, preferences_page_callback::ptr callback) {
 		return new service_impl_t<CCustomPrefPageInstance_v3>(form, parent, callback);
 	}
 
 	const char * CCustomPrefPage_v3::get_name() {
-		if (!name) {
-			const char *c = CManagedWrapper::ToCString(form->Text);
-			size_t c_len = strlen(c);
-			name = new char[c_len + 1];
-			strcpy_s(name, c_len + 1, c);
-			CManagedWrapper::FreeCString(c);
+		if (name.empty()) {
+               std::string c( CManagedWrapper::ToStdString( form->Text ) );
+               name = std::string( c.c_str() );
 		}
-		return name;
+		return name.c_str();
 	}
 
 	//! Retrieves GUID of the page.

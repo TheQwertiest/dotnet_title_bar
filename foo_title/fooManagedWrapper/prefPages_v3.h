@@ -49,7 +49,7 @@ namespace fooManagedWrapper {
 		gcroot<CManagedPrefPage_v3^> form;
 		GUID guid;
 		GUID parentGuid;
-		char *name;
+		std::string name;
 
 		CCustomPrefPage_v3();
 

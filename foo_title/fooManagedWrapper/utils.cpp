@@ -94,12 +94,11 @@ String ^CPlayControl::FormatTitle(CMetaDBHandle ^handle, String ^spec) {
 	if (handle == nullptr) 
           throw gcnew System::ArgumentNullException( "Null CMetaDBHandle supplied to FormatTitle" );
 
-     pin_ptr<const wchar_t> spec_wc = PtrToStringChars( spec );
-     pfc::string8_fast spec_c = stringcvt::string_utf8_from_wide( spec_wc );
+     std::string spec_c( CManagedWrapper::ToStdString( spec ) );
 
 	static_api_ptr_t<titleformat_compiler> titlecompiler;
 	service_ptr_t<titleformat_object> compiledScript;
-     bool bRet = titlecompiler->compile( compiledScript, spec_c );
+     bool bRet = titlecompiler->compile( compiledScript, spec_c.c_str() );
      if ( !bRet )
           throw gcnew System::ApplicationException( "Script compilation failed" );
 
@@ -145,31 +144,28 @@ bool CPlayControl::IsPaused() {
 }
 
 void fooManagedWrapper::CConsole::Error(String ^a) {
-     pin_ptr<const wchar_t> wch = PtrToStringChars( a );
-     pfc::string8_fast str = stringcvt::string_utf8_from_wide( wch );
+     std::string str( CManagedWrapper::ToStdString( a ) );
 
      pfc::string_formatter formatter;
-     formatter << "foo_title: " << str;
+     formatter << "foo_title: " << str.c_str();
 
      console::error( formatter );
 }
 
 void fooManagedWrapper::CConsole::Warning(String ^a) {
-     pin_ptr<const wchar_t> wch = PtrToStringChars( a );
-     pfc::string8_fast str = stringcvt::string_utf8_from_wide( wch );
+     std::string str( CManagedWrapper::ToStdString( a ) );
 
      pfc::string_formatter formatter;
-     formatter << "foo_title: " << str;
+     formatter << "foo_title: " << str.c_str();
 
      console::warning( formatter );
 }
 
 void fooManagedWrapper::CConsole::Write(String ^a) {
-     pin_ptr<const wchar_t> wch = PtrToStringChars( a );
-     pfc::string8_fast str = stringcvt::string_utf8_from_wide( wch );
+     std::string str( CManagedWrapper::ToStdString( a ) );
 
      pfc::string_formatter formatter;
-     formatter << "foo_title: " << str;
+     formatter << "foo_title: " << str.c_str();
 
      console::print( formatter );
 }

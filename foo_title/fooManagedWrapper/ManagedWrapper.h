@@ -66,12 +66,10 @@ namespace fooManagedWrapper {
 		// this provides access to all loaded .netcomponents
 		virtual System::Collections::IEnumerator ^GetClients() = System::Collections::IEnumerable::GetEnumerator;
 
-		// general purpose utility functions
-		static const char *ToCString(String ^a);
-		// must be called on the string returned by ToCString when it's no longer needed
-		static void FreeCString(const char *a);
 		static pfc::string8 StringToPfcString(String ^a);
 		static String ^PfcStringToString(const pfc::string8 &stringToConvert);
+
+          static std::string ToStdString( String^ string );
 
 		static _GUID ToGUID(Guid^ guid);
 		static Guid ^FromGUID(const _GUID& guid);

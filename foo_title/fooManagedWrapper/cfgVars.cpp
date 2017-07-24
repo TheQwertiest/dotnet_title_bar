@@ -26,9 +26,8 @@ using namespace std;
 namespace fooManagedWrapper {
 
 	CCfgString::CCfgString(Guid^ _guid, String^ _def) {
-		const char *_defString = CManagedWrapper::ToCString(_def);
-		wrapper = new CCfgStringWrapper(CManagedWrapper::ToGUID(_guid), _defString);
-		CManagedWrapper::FreeCString(_defString);
+          std::string _defString( CManagedWrapper::ToStdString( _def ) );
+		wrapper = new CCfgStringWrapper(CManagedWrapper::ToGUID(_guid), _defString.c_str());
 	};
 
 	CCfgString::!CCfgString() {
@@ -40,9 +39,8 @@ namespace fooManagedWrapper {
 	}
 
 	void CCfgString::SetVal(String ^a) {
-		const char *_defString = CManagedWrapper::ToCString(a);
-		wrapper->val = _defString;
-		CManagedWrapper::FreeCString(_defString);
+          std::string _defString( CManagedWrapper::ToStdString( a ) );
+		wrapper->val = _defString.c_str();
 	};
 
 	void notifying_cfg_string::get_data_raw(foobar2000_io::stream_writer *p_stream, foobar2000_io::abort_callback &p_abort) {
@@ -65,15 +63,13 @@ namespace fooManagedWrapper {
 	}
 
 	void CNotifyingCfgString::SetVal(String ^a) {
-		const char *_defString = CManagedWrapper::ToCString(a);
-		wrapper->val = _defString;
-		CManagedWrapper::FreeCString(_defString);
+          std::string _defString( CManagedWrapper::ToStdString( a ) );
+		wrapper->val = _defString.c_str();
 	}
 
 	CNotifyingCfgString::CNotifyingCfgString(Guid ^_guid, String ^_def) {
-		const char *_defString = CManagedWrapper::ToCString(_def);
-		wrapper = new CNotifyingCfgStringWrapper(CManagedWrapper::ToGUID(_guid), _defString, this);
-		CManagedWrapper::FreeCString(_defString);
+          std::string _defString( CManagedWrapper::ToStdString( _def ) );
+		wrapper = new CNotifyingCfgStringWrapper(CManagedWrapper::ToGUID(_guid), _defString.c_str(), this);
 	}
 
 	void CNotifyingCfgString::FireBeforeWritingEvent() {
