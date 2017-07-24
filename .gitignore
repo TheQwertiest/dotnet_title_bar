@@ -4,7 +4,7 @@ Release/
 ipch/
 
 *.VC.db
-*.VC.VC.opendb
+*.VC.opendb
 *.obj
 *.user
 *.dll

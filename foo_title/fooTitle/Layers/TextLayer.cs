@@ -40,7 +40,6 @@ namespace fooTitle.Layers
             public string fontName;
         }
  
-		protected fooManagedWrapper.CMetaDBHandle currentSong;
         protected string defaultText;
 
         protected LabelPart left = new LabelPart();
@@ -90,7 +89,6 @@ namespace fooTitle.Layers
 
         public void CurrentSkin_OnPlaybackStopEvent(IPlayControl.StopReason reason) {
             if (reason != IPlayControl.StopReason.stop_reason_starting_another) {
-                currentSong = null;
                 updateText();
             }
         }
@@ -214,11 +212,11 @@ namespace fooTitle.Layers
             left.formatted = defaultText;
             right.formatted = "";
 
+            IPlayControl pc = Main.PlayControl;
             for (int i = 0; i < 2; i++ ) {
-                if (!string.IsNullOrEmpty(parts[i].text)) {
-                    if (currentSong != null) {
-                        parts[i].formatted = Main.PlayControl.FormatTitle(currentSong, parts[i].text);
-                    }
+                if (!string.IsNullOrEmpty(parts[i].text) && pc.IsPlaying()) {
+                    // Evaluate only when there is a track, otherwise keep default text
+                    parts[i].formatted = Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), parts[i].text);
                 }
             }
 		}
@@ -292,7 +290,6 @@ namespace fooTitle.Layers
         }
 
 		public void OnPlaybackNewTrack(fooManagedWrapper.CMetaDBHandle song) {
-			this.currentSong = song;
 			updateText();
 		}
 

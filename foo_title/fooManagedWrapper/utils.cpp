@@ -91,21 +91,32 @@ Bitmap ^CMetaDBHandle::GetArtworkBitmap(Boolean get_stub) {
 }
 
 String ^CPlayControl::FormatTitle(CMetaDBHandle ^handle, String ^spec) {
-	if (handle == nullptr) return gcnew String("abc");
+	if (handle == nullptr) 
+          throw gcnew System::ArgumentNullException( "Null CMetaDBHandle supplied to FormatTitle" );
 
-	const char* spec_c = (const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(spec)).ToPointer();
-	string8 out;
-
-	static_api_ptr_t<play_control> pc;
+     pin_ptr<const wchar_t> spec_wc = PtrToStringChars( spec );
+     pfc::string8_fast spec_c = stringcvt::string_utf8_from_wide( spec_wc );
 
 	static_api_ptr_t<titleformat_compiler> titlecompiler;
 	service_ptr_t<titleformat_object> compiledScript;
-	titlecompiler->compile(compiledScript, spec_c);
+     bool bRet = titlecompiler->compile( compiledScript, spec_c );
+     if ( !bRet )
+          throw gcnew System::ApplicationException( "Script compilation failed" );
 
-	pc->playback_format_title_ex(handle->GetHandle(), NULL, out, compiledScript, NULL, playback_control::display_level_all);
+     static_api_ptr_t<play_control> pc;
+     metadb_handle_ptr tmpHandle = handle->GetHandle();
+     if ( tmpHandle.is_empty() )
+     {// Fake handle, workaround recommended by foobar2000
+          playable_location_impl l;
+          static_api_ptr_t<metadb>()->handle_create( tmpHandle, l );
+     }
+
+     string8 out;
+     bRet = pc->playback_format_title_ex( tmpHandle, NULL, out, compiledScript, NULL, playback_control::display_level_all );
+     if ( !bRet )
+          throw gcnew System::ApplicationException( "Script evaluation failed" );
 	
 	String ^res = CManagedWrapper::PfcStringToString(out);
-	System::Runtime::InteropServices::Marshal::FreeHGlobal(IntPtr((void*)spec_c));
 	return res;
 }
 
