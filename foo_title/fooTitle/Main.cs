@@ -312,6 +312,10 @@ namespace fooTitle {
                     path = Path.Combine(UserDataDir, "white");
                 }
 
+                if (!Directory.Exists(path)) {
+                    return;
+                }
+
                 skin = new Skin(path);
                 skin.Init(Display);
                 RestorePosition();
@@ -380,6 +384,21 @@ namespace fooTitle {
             Display.SetAnchorPosition(positionX.Value, positionY.Value);            
         }
 
+        private void CreateDefaultDir()
+        {
+            try { 
+                // create foo_title folder (does nothing if exists)
+                Directory.CreateDirectory(UserDataDir);
+            }
+            catch (Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show(
+                    String.Format("foo_title - Failed to create default directory.\nPath:\n{0}\nError message:\n{1}\nError details:\n{2}",
+                    UserDataDir, e.Message, e.ToString())
+                    , "foo_title");
+            }
+        }
+
         #region Events
         public event OnInitDelegate OnInitEvent;
 
@@ -394,6 +413,8 @@ namespace fooTitle {
             t.Run();
             t.ReportGUI();
 #endif
+            CreateDefaultDir();
+
             Config.Load();
             ConfValuesManager.GetInstance().LoadFrom(Config);
             ConfValuesManager.GetInstance().SetStorage(Config);
