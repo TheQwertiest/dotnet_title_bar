@@ -23,27 +23,61 @@ namespace fooTitle
 {
     internal class DockAnchor
     {
+        public enum Type
+        {
+            None = 0,
+            Left = 1,
+            Right = 1 << 1,
+            Top = 1 << 2,
+            Bottom = 1 << 3,
+            Center = 1 << 4,            
+        }
+
         private Display display_ = null;
         private double anchor_dx_ = 0;
         private double anchor_dy_ = 0;
         private int anchor_x_ = 0;
         private int anchor_y_ = 0;
-        private AnchorStyles anchorType_ = AnchorStyles.Left | AnchorStyles.Top;
+        private DockAnchor.Type anchorType_ = DockAnchor.Type.Left | DockAnchor.Type.Top;
 
         internal DockAnchor(Display display)
         {
             display_ = display;
         }
 
-        internal void Initialize(AnchorStyles type, double dx, double dy)
+        internal void Initialize(DockAnchor.Type type, double dx, double dy)
         {
             anchorType_ = type;
-            anchor_dx_ = (anchorType_ & AnchorStyles.Left) != 0 ? 
-                0 : (anchorType_ & AnchorStyles.Right) != 0 ? 
-                1 : Math.Min(Math.Max(dx, 0), 1);
-            anchor_dy_ = (anchorType_ & AnchorStyles.Top) != 0 ?
-                0 : (anchorType_ & AnchorStyles.Bottom) != 0 ?
-                1 : Math.Min(Math.Max(dy, 0), 1);
+
+            anchor_dx_ = 0.5/*dx*/;
+            anchor_dy_ = 0.5/*dy*/;
+
+            if ((anchorType_ & DockAnchor.Type.Left) != 0)
+            {
+                anchor_dx_ = 0;
+            }
+            else if ((anchorType_ & DockAnchor.Type.Right) != 0)
+            {
+                anchor_dx_ = 1;
+            }
+            else if ((anchorType_ & DockAnchor.Type.Center) != 0)
+            {
+                anchor_dx_ = 0.5;
+            }
+
+            if ((anchorType_ & DockAnchor.Type.Top) != 0)
+            {
+                anchor_dy_ = 0;
+            }
+            else if ((anchorType_ & DockAnchor.Type.Bottom) != 0)
+            {
+                anchor_dy_ = 1;
+            }
+            else if ((anchorType_ & DockAnchor.Type.Center) != 0)
+            {
+                anchor_dy_ = 0.5;
+            }
+
             Win32.Point anchorPos = CalculatePositionFromWindow();
             anchor_x_ = anchorPos.x;
             anchor_y_ = anchorPos.y;

@@ -258,20 +258,27 @@ namespace fooTitle.Layers {
 
             double anchor_dx = anchorDxStr == null ? 0 : double.Parse(anchorDxStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
             double anchor_dy = anchorDyStr == null ? 0 : double.Parse(anchorDyStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            AnchorStyles anchorType = AnchorStyles.Top | AnchorStyles.Left;
+            DockAnchor.Type anchorType = DockAnchor.Type.Top | DockAnchor.Type.Left;
             if (anchorTypeStr != null)
             {
-                anchorType = AnchorStyles.None;
+                anchorType = DockAnchor.Type.None;
                 foreach (string i in anchorTypeStr.Value.Split(','))
                 {
                     if (i == "Top")
-                        anchorType |= AnchorStyles.Top;
+                        anchorType |= DockAnchor.Type.Top;
                     else if (i == "Bottom")
-                        anchorType |= AnchorStyles.Bottom;
+                        anchorType |= DockAnchor.Type.Bottom;
                     else if (i == "Right")
-                        anchorType |= AnchorStyles.Right;
+                        anchorType |= DockAnchor.Type.Right;
                     else if (i == "Left")
-                        anchorType |= AnchorStyles.Left;
+                        anchorType |= DockAnchor.Type.Left;
+                    else if (i == "Center")
+                        anchorType |= DockAnchor.Type.Center;
+                }
+
+                if (anchorType == DockAnchor.Type.None)
+                {
+                    anchorType = DockAnchor.Type.Top | DockAnchor.Type.Left;
                 }
             }
 

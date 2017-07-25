@@ -212,9 +212,8 @@ namespace fooTitle.Layers
             left.formatted = defaultText;
             right.formatted = "";
 
-            IPlayControl pc = Main.PlayControl;
             for (int i = 0; i < 2; i++ ) {
-                if (!string.IsNullOrEmpty(parts[i].text) && pc.IsPlaying()) {
+                if (!string.IsNullOrEmpty(parts[i].text) && Main.PlayControl.IsPlaying()) {
                     // Evaluate only when there is a track, otherwise keep default text
                     parts[i].formatted = Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), parts[i].text);
                 }
