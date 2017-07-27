@@ -24,7 +24,7 @@ using fooManagedWrapper;
 
 namespace fooTitle.Layers {
     [LayerTypeAttribute("album-art")]
-    class AlbumArtLayer : Layer {
+    internal class AlbumArtLayer : Layer {
         protected Bitmap albumArt;
         protected Bitmap albumArtStub;
         protected Bitmap noCover;
@@ -45,13 +45,13 @@ namespace fooTitle.Layers {
                 noCover = null;
             }
 
-            Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(CurrentSkin_OnPlaybackNewTrackEvent);
-            Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += new OnPlaybackTimeDelegate(CurrentSkin_OnPlaybackTimeEvent);
-            Main.GetInstance().CurrentSkin.OnPlaybackStopEvent += new OnPlaybackStopDelegate(CurrentSkin_OnPlaybackStopEvent);
+            Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += CurrentSkin_OnPlaybackNewTrackEvent;
+            Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += CurrentSkin_OnPlaybackTimeEvent;
+            Main.GetInstance().CurrentSkin.OnPlaybackStopEvent += CurrentSkin_OnPlaybackStopEvent;
         }
 
         private void LoadArtwork(CMetaDBHandle song) {
-            CConsole.Write(String.Format("Loading album art... "));
+            CConsole.Write("Loading album art... ");
             Bitmap artwork = song.GetArtworkBitmap(false);
             if (artwork != null) {
                 try {
@@ -59,7 +59,7 @@ namespace fooTitle.Layers {
                     artwork.Dispose();
                 } catch (Exception e) {
                     albumArt = null;
-                    CConsole.Warning(String.Format("Cannot open album art {0} : {1}", song.GetPath(), e.Message));
+                    CConsole.Warning($"Cannot open album art {song.GetPath()} : {e.Message}");
                 }
             }
             Bitmap artworkStub = song.GetArtworkBitmap(true);
@@ -69,12 +69,12 @@ namespace fooTitle.Layers {
                     artworkStub.Dispose();
                 } catch (Exception e) {
                     albumArtStub = null;
-                    CConsole.Warning(String.Format("Cannot open album art stub {0} : {1}", song.GetPath(), e.Message));
+                    CConsole.Warning($"Cannot open album art stub {song.GetPath()} : {e.Message}");
                 }
             }
         }
 
-        void CurrentSkin_OnPlaybackStopEvent(IPlayControl.StopReason reason) {
+        private void CurrentSkin_OnPlaybackStopEvent(IPlayControl.StopReason reason) {
             if (reason != IPlayControl.StopReason.stop_reason_starting_another) {
                 timesCheckedArtwork = 0;
                 albumArt = null;
@@ -83,14 +83,15 @@ namespace fooTitle.Layers {
             }
         }
 
-        void CurrentSkin_OnPlaybackTimeEvent(double time) {
-            if (albumArt == null && time % Main.GetInstance().ArtReloadFreq == 0 && (timesCheckedArtwork < Main.GetInstance().ArtReloadMax || Main.GetInstance().ArtReloadMax == -1)) {
+        private void CurrentSkin_OnPlaybackTimeEvent(double time) {
+            if (albumArt == null && time % Main.GetInstance().ArtReloadFreq == 0 
+                && (timesCheckedArtwork < Main.GetInstance().ArtReloadMax || Main.GetInstance().ArtReloadMax == -1)) {
                 timesCheckedArtwork++;
                 LoadArtwork(Main.PlayControl.GetNowPlaying());
             }
         }
 
-        void CurrentSkin_OnPlaybackNewTrackEvent(CMetaDBHandle song) {
+        private void CurrentSkin_OnPlaybackNewTrackEvent(CMetaDBHandle song) {
             timesCheckedArtwork = 0;
             albumArt = null;
             albumArtStub = null;
@@ -116,7 +117,7 @@ namespace fooTitle.Layers {
             if (albumArt == null && albumArtStub == null)
                 return noCover;
 
-            Bitmap artOrStub = albumArt != null ? albumArt : albumArtStub;
+            Bitmap artOrStub = albumArt ?? albumArtStub;
             cachedResized = new Bitmap(ClientRect.Width, ClientRect.Height);
 
             float scale = Math.Min((float)ClientRect.Width / artOrStub.Width, (float)ClientRect.Height / artOrStub.Height);

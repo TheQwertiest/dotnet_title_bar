@@ -17,7 +17,6 @@
 */
 using System;
 using System.Xml;
-using System.Xml.XPath;
 using System.Drawing;
 
 namespace fooTitle.Layers
@@ -28,15 +27,15 @@ namespace fooTitle.Layers
     [LayerTypeAttribute("color")]
     public class ColorLayer : Layer
     {
-        private Color color_;
+        private readonly Color _color;
 
         public ColorLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node)
         {
             XmlNode contents = GetFirstChildByName(node, "contents");
-            color_ = colorFromCode(contents.Attributes.GetNamedItem("color").Value);
+            _color = ColorFromCode(contents.Attributes.GetNamedItem("color").Value);
         }
 
-        protected Color colorFromCode(string code)
+        protected Color ColorFromCode(string code)
         {
             try
             {
@@ -46,10 +45,10 @@ namespace fooTitle.Layers
                 string b = code.Substring(6, 2).ToLower();
 
                 return Color.FromArgb(
-                    Int32.Parse(a, System.Globalization.NumberStyles.HexNumber),
-                    Int32.Parse(r, System.Globalization.NumberStyles.HexNumber),
-                    Int32.Parse(g, System.Globalization.NumberStyles.HexNumber),
-                    Int32.Parse(b, System.Globalization.NumberStyles.HexNumber)
+                    int.Parse(a, System.Globalization.NumberStyles.HexNumber),
+                    int.Parse(r, System.Globalization.NumberStyles.HexNumber),
+                    int.Parse(g, System.Globalization.NumberStyles.HexNumber),
+                    int.Parse(b, System.Globalization.NumberStyles.HexNumber)
                 );
             }
             catch
@@ -61,7 +60,7 @@ namespace fooTitle.Layers
 
         protected override void drawImpl()
         {
-            Display.Canvas.FillRectangle(new SolidBrush(color_), ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
+            Display.Canvas.FillRectangle(new SolidBrush(_color), ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
         }
 
     }

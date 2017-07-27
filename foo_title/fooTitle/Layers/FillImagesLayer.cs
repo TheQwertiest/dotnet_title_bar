@@ -65,25 +65,26 @@ namespace fooTitle.Layers
             centerRepeated = new Bitmap(Math.Max(10, getRightImageStart() - getLeftImageWidth()), Math.Max(10, ClientRect.Height));
             centerRepeatedCanvas = Graphics.FromImage(centerRepeated);
 
-            if (centerImage != null) {
-                if (repeatCenter) {
-                    ImageAttributes attrs = new ImageAttributes();
-                    float count = (getRightImageStart() - getLeftImageWidth()) / (float)centerImage.Width;
+            if (centerImage == null)
+                return;
 
-                    for (int i = 0; i < (count + 1); i++) {
-                        centerRepeatedCanvas.DrawImage(centerImage, new Rectangle(
-                                (int)Math.Round((float)(i * centerImage.Width)),
-                                0,
-                                (int)Math.Round((float)centerImage.Width),
-                                ClientRect.Height),
-                            0, 0, centerImage.Width, centerImage.Height,
-                            GraphicsUnit.Pixel,
-                            attrs);
-                    }
-                } else {
-                    // no repeat
-                    centerRepeatedCanvas.DrawImage(centerImage, 0, 0, centerRepeated.Width, centerRepeated.Height);
+            if (repeatCenter) {
+                ImageAttributes attrs = new ImageAttributes();
+                float count = (getRightImageStart() - getLeftImageWidth()) / (float)centerImage.Width;
+
+                for (int i = 0; i < (count + 1); i++) {
+                    centerRepeatedCanvas.DrawImage(centerImage, new Rectangle(
+                            (int)Math.Round((float)(i * centerImage.Width)),
+                            0,
+                            (int)Math.Round((float)centerImage.Width),
+                            ClientRect.Height),
+                        0, 0, centerImage.Width, centerImage.Height,
+                        GraphicsUnit.Pixel,
+                        attrs);
                 }
+            } else {
+                // no repeat
+                centerRepeatedCanvas.DrawImage(centerImage, 0, 0, centerRepeated.Width, centerRepeated.Height);
             }
         }
 

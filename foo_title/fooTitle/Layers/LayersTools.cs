@@ -18,9 +18,6 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Reflection;
-using System.Collections;
-using fooTitle;
 using System.Xml;
 using fooTitle.Extending;
 using System.Collections.Generic;
@@ -28,11 +25,11 @@ using System.Collections.Generic;
 namespace fooTitle.Layers {
     /// <summary>
     /// This attribute should be used on classes that represent layers accessible from the
-    /// skin's XML file. Type coresponds to the type="..." attribute in the skin's <layer> tag.
+    /// skin's XML file. Type corresponds to the type="..." attribute in the skin's <layer> tag.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class LayerTypeAttribute : ElementTypeAttribute {
-        public LayerTypeAttribute(String type):base(type) {
+        public LayerTypeAttribute(string type):base(type) {
         }
     }
 
@@ -47,7 +44,7 @@ namespace fooTitle.Layers {
             elementTypeAttributeType = typeof(LayerTypeAttribute);
         }
 
-        public Layer CreateLayer(String type, System.Drawing.Rectangle parentRect, XmlNode node) {
+        public Layer CreateLayer(string type, System.Drawing.Rectangle parentRect, XmlNode node) {
             return(Layer)CreateElement(type, new object[] { parentRect, node });
         }
 

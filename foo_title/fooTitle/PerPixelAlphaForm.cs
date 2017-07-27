@@ -47,19 +47,19 @@ namespace fooTitle
         [StructLayout(LayoutKind.Sequential)]
         public struct Point
         {
-            public Int32 x;
-            public Int32 y;
+            public int x;
+            public int y;
 
-            public Point(Int32 x, Int32 y) { this.x = x; this.y = y; }
+            public Point(int x, int y) { this.x = x; this.y = y; }
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct Size
         {
-            public Int32 cx;
-            public Int32 cy;
+            public int cx;
+            public int cy;
 
-            public Size(Int32 cx, Int32 cy) { this.cx = cx; this.cy = cy; }
+            public Size(int cx, int cy) { this.cx = cx; this.cy = cy; }
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -81,22 +81,22 @@ namespace fooTitle
         }
 
 
-        public const Int32 ULW_COLORKEY = 0x00000001;
-        public const Int32 ULW_ALPHA = 0x00000002;
-        public const Int32 ULW_OPAQUE = 0x00000004;
+        public const int ULW_COLORKEY = 0x00000001;
+        public const int ULW_ALPHA = 0x00000002;
+        public const int ULW_OPAQUE = 0x00000004;
 
         public const byte AC_SRC_OVER = 0x00;
         public const byte AC_SRC_ALPHA = 0x01;
 
 
         [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern Bool UpdateLayeredWindow(IntPtr hwnd, IntPtr hdcDst, ref Point pptDst, ref Size psize, IntPtr hdcSrc, ref Point pprSrc, Int32 crKey, ref BLENDFUNCTION pblend, Int32 dwFlags);
+        public static extern Bool UpdateLayeredWindow(IntPtr hwnd, IntPtr hdcDst, ref Point pptDst, ref Size psize, IntPtr hdcSrc, ref Point pprSrc, int crKey, ref BLENDFUNCTION pblend, int dwFlags);
 
         [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         public static extern IntPtr GetDC(IntPtr hWnd);
         
         [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern Bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, Int32 X, Int32 Y, Int32 cX, Int32 cY, UInt32 uFlags);
+        public static extern Bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cX, int cY, UInt32 uFlags);
 
         [DllImport("user32.dll", ExactSpelling = true)]
         public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
@@ -130,12 +130,12 @@ namespace fooTitle
         }
 
         public void SetWindowsPos(fooTitle.Win32.WindowPosition newPos) {
-            uint SWP_NOSIZE = 0x0001;
-            uint SWP_NOMOVE = 0x0002;
-            uint SWP_NOACTIVATE = 0x0010;
-            int HWND_TOPMOST = -1;
-            int HWND_BOTTOM = 1;
-            int HWND_NOTOPMOST = -2;
+            const uint SWP_NOSIZE = 0x0001;
+            const uint SWP_NOMOVE = 0x0002;
+            const uint SWP_NOACTIVATE = 0x0010;
+            const int HWND_TOPMOST = -1;
+            const int HWND_BOTTOM = 1;
+            const int HWND_NOTOPMOST = -2;
 
             int pos = HWND_TOPMOST;
             if (newPos == Win32.WindowPosition.Bottom)

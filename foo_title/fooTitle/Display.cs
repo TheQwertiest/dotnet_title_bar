@@ -38,7 +38,7 @@ namespace fooTitle {
             Transparent,
         }
 
-        private System.ComponentModel.Container components = null;
+        private readonly System.ComponentModel.Container components = null;
         private System.Drawing.Bitmap canvasBitmap = null;
         public System.Drawing.Graphics Canvas = null;
 
@@ -53,74 +53,74 @@ namespace fooTitle {
         private OpacityFallbackType opacityFallbackType = OpacityFallbackType.Normal;
         private System.Object animationLock = new System.Object();
 
-        private ConfValuesManager.ValueChangedDelegate normalOpacityChangeDelegate;
-        private ConfValuesManager.ValueChangedDelegate windowPositionChangeDelegate;
+        private readonly ConfValuesManager.ValueChangedDelegate normalOpacityChangeDelegate;
+        private readonly ConfValuesManager.ValueChangedDelegate windowPositionChangeDelegate;
 
         public delegate void OnAnimationStopDelegate();
-        private OnAnimationStopDelegate OnAnimationStop;
+        private OnAnimationStopDelegate OnAnimationStopEvent;
 
         public class Fade
         {
-            protected int startVal;
-            protected int stopVal;
-            protected int length;
-            protected long startTime;
+            private readonly int _startVal;
+            private readonly int _stopVal;
+            private readonly int _length;
+            private readonly long _startTime;
 
-            protected float phase;
+            private float _phase;
 
-            public Fade(int _startVal, int _stopVal, int _length) {
-                startVal = _startVal;
-                stopVal = _stopVal;
-                startTime = System.DateTime.Now.Ticks / 10000;
-                length = _length;
+            public Fade(int startVal, int stopVal, int length) {
+                _startVal = startVal;
+                _stopVal = stopVal;
+                _startTime = System.DateTime.Now.Ticks / 10000;
+                _length = length;
             }
 
-            public int GetValue() {
+            public int GetOpacity() {
                 long now = System.DateTime.Now.Ticks / 10000;
 
                 // special cases
-                if (now == startTime)
-                    return startVal;
-                if (length == 0) {
-                    phase = 1;  // end it now
+                if (now == _startTime)
+                    return _startVal;
+                if (_length == 0) {
+                    _phase = 1;  // end it now
                 }
 
                 // normal processing
-                phase = (float)(now - startTime) / (float)length;
-                if (phase > 1)
-                    phase = 1;
-                return (int)(startVal + phase * (stopVal - startVal));
+                _phase = (now - _startTime) / (float)_length;
+                if (_phase > 1)
+                    _phase = 1;
+                return (int)(_startVal + _phase * (_stopVal - _startVal));
             }
 
             public bool Done() {
-                return phase >= 1;
+                return _phase >= 1;
             }
         }
 
-        protected Fade fadeAnimation;
+        private Fade _fadeAnimation;
 
-        private DockAnchor dockAnchor_;
+        private readonly DockAnchor _dockAnchor;
 
         /// <summary>
         /// The opacity in normal state
         /// </summary>
-        protected ConfInt normalOpacity = ConfValuesManager.CreateIntValue("display/normalOpacity", 255, 5, 255);
+        private readonly ConfInt normalOpacity = ConfValuesManager.CreateIntValue("display/normalOpacity", 255, 5, 255);
         /// <summary>
         /// The opacity when the mouse is over foo_title
         /// </summary>
-        protected ConfInt overOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
+        private readonly ConfInt overOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
         /// <summary>
         /// The opacity when the foo_title display is triggered
         /// </summary>
-        protected ConfInt triggerOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
+        private ConfInt triggerOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
         /// <summary>
         /// The z position of the window - either always on top or on the bottom.
         /// </summary>
-        public ConfEnum<Win32.WindowPosition> WindowPosition = ConfValuesManager.CreateEnumValue<Win32.WindowPosition>("display/windowPosition", Win32.WindowPosition.Topmost);
+        public ConfEnum<Win32.WindowPosition> WindowPosition = ConfValuesManager.CreateEnumValue("display/windowPosition", Win32.WindowPosition.Topmost);
         /// <summary>
         /// Indicates the need to draw anchor
         /// </summary>
-        protected ConfBool shouldDrawAnchor = ConfValuesManager.CreateBoolValue("display/drawAnchor", false);
+        private readonly ConfBool _shouldDrawAnchor = ConfValuesManager.CreateBoolValue("display/drawAnchor", false);
 
         public Display(int width, int height) {
             InitializeComponent();
@@ -136,12 +136,12 @@ namespace fooTitle {
             opacity = normalOpacity.Value;
             minOpacity = normalOpacity.Value;
 
-            normalOpacityChangeDelegate = new ConfValuesManager.ValueChangedDelegate(normalOpacity_OnChanged);
-            windowPositionChangeDelegate = new ConfValuesManager.ValueChangedDelegate(windowPosition_OnChanged);
+            normalOpacityChangeDelegate = normalOpacity_OnChanged;
+            windowPositionChangeDelegate = windowPosition_OnChanged;
             normalOpacity.OnChanged += normalOpacityChangeDelegate;
             WindowPosition.OnChanged += windowPositionChangeDelegate;
 
-            dockAnchor_ = new DockAnchor(this);
+            _dockAnchor = new DockAnchor(this);
             SetWindowsPos(WindowPosition.Value);
         }
 
@@ -181,26 +181,26 @@ namespace fooTitle {
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(480, 96);
             this.ControlBox = false;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = FormBorderStyle.None;
             this.Icon = fooManagedWrapper.CManagedWrapper.getInstance().GetMainIcon();
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Display";
             this.ShowInTaskbar = false;
             this.Text = "foo_title";
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Display_MouseDown);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Display_MouseUp);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Display_MouseMove);
-            this.MouseEnter += new EventHandler(Display_MouseEnter);
-            this.MouseLeave += new EventHandler(Display_MouseLeave);
-            this.Activated += new EventHandler(Display_Activated);
+            this.MouseDown += Display_MouseDown;
+            this.MouseUp += Display_MouseUp;
+            this.MouseMove += Display_MouseMove;
+            this.MouseEnter += Display_MouseEnter;
+            this.MouseLeave += Display_MouseLeave;
+            this.Activated += Display_Activated;
         }
         #endregion
 
         public void FrameRedraw() {
-            if (shouldDrawAnchor.Value)
+            if (_shouldDrawAnchor.Value)
             {
-                dockAnchor_.Draw();
+                _dockAnchor.Draw();
             }
             frameUpdateOpacity();
             SetBitmap(canvasBitmap, (byte)opacity);
@@ -239,7 +239,7 @@ namespace fooTitle {
         #endregion
 
         #region Dragging
-        private void Display_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+        private void Display_MouseDown(object sender, MouseEventArgs e) {
             if (Main.GetInstance().CanDragDisplay) {
                 dragging = true;
                 dragX = e.X;
@@ -247,7 +247,7 @@ namespace fooTitle {
             }
         }
 
-        private void Display_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
+        private void Display_MouseUp(object sender, MouseEventArgs e) {
             if (dragging) {
                 dragging = false;
 
@@ -256,7 +256,7 @@ namespace fooTitle {
             }
         }
 
-        private void Display_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {
+        private void Display_MouseMove(object sender, MouseEventArgs e) {
             if (dragging) {
                 Point mouse = this.PointToScreen(new Point(e.X, e.Y));
                 Screen screen = Screen.FromPoint(mouse);
@@ -287,13 +287,13 @@ namespace fooTitle {
         protected void frameUpdateOpacity() {
             lock (animationLock)
             {
-                if (fadeAnimation != null)
+                if (_fadeAnimation != null)
                 {
-                    opacity = fadeAnimation.GetValue();
-                    if (fadeAnimation.Done())
+                    opacity = _fadeAnimation.GetOpacity();
+                    if (_fadeAnimation.Done())
                     {
-                        fadeAnimation = null;
-                        OnAnimationStop?.Invoke();
+                        _fadeAnimation = null;
+                        OnAnimationStopEvent?.Invoke();
                     }
                 }
             }
@@ -305,29 +305,31 @@ namespace fooTitle {
             {
                 if (curAnimationName != animName)
                 {
-                    OnAnimationStop = null;
-                    fadeAnimation = null;
+                    OnAnimationStopEvent = null;
+                    _fadeAnimation = null;
                 }
 
-                OnAnimationStop = actionAfterAnimation;
+                OnAnimationStopEvent = actionAfterAnimation;
 
                 switch (animName)
                 {
                     case Animation.FadeInNormal:
-                        fadeAnimation = new Fade(opacity, normalOpacity.Value, 100/*fadeLength.Value*/);
+                        _fadeAnimation = new Fade(opacity, normalOpacity.Value, 100/*fadeLength.Value*/);
                         opacityFallbackType = OpacityFallbackType.Normal;
                         break;
                     case Animation.FadeInOver:
-                        fadeAnimation = new Fade(opacity, overOpacity.Value, 100/*fadeLength.Value*/);
+                        _fadeAnimation = new Fade(opacity, overOpacity.Value, 100/*fadeLength.Value*/);
                         break;
                     case Animation.FadeOut:
-                        fadeAnimation = new Fade(opacity, normalOpacity.Value, 400/*fadeLength.Value*/);
+                        _fadeAnimation = new Fade(opacity, normalOpacity.Value, 400/*fadeLength.Value*/);
                         opacityFallbackType = OpacityFallbackType.Normal;
                         break;
                     case Animation.FadeOutFull:
-                        fadeAnimation = new Fade(opacity, 0, 400/*fadeLength.Value*/);
+                        _fadeAnimation = new Fade(opacity, 0, 400/*fadeLength.Value*/);
                         opacityFallbackType = OpacityFallbackType.Transparent;
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(animName), animName, null);
                 }
 
                 curAnimationName = animName;
@@ -336,20 +338,20 @@ namespace fooTitle {
 
         private OnAnimationStopDelegate mouseOverSavedCallback;
 
-        void Display_MouseLeave(object sender, EventArgs e) {
+        private void Display_MouseLeave(object sender, EventArgs e) {
             Animation animName = opacityFallbackType == OpacityFallbackType.Normal ? Animation.FadeOut : Animation.FadeOutFull;
             StartAnimation(animName, mouseOverSavedCallback);
             mouseOverSavedCallback = null;
         }
 
-        void Display_MouseEnter(object sender, EventArgs e) {
-            mouseOverSavedCallback = OnAnimationStop;
+        private void Display_MouseEnter(object sender, EventArgs e) {
+            mouseOverSavedCallback = OnAnimationStopEvent;
             StartAnimation(Animation.FadeInOver);
         }
 
         public void SetNormalOpacity(int value) {
             opacity = value;
-            fadeAnimation = null;
+            _fadeAnimation = null;
             if (minOpacity != 0)
             {
                 minOpacity = normalOpacity.Value;
@@ -358,9 +360,6 @@ namespace fooTitle {
         #endregion
 
         internal void SetSize(int width, int height) {
-
-            int oldW = this.Width;
-            int oldH = this.Height;
             this.Width = width;
             this.Height = height;
 
@@ -371,20 +370,20 @@ namespace fooTitle {
             AdjustPositionByAnchor();
         }
 
-        internal void InitializeAnchor(DockAnchor.Type anchor_type, double anchor_dx, double anchor_dy)
+        internal void InitializeAnchor(DockAnchor.Type anchorType, double anchorDx, double anchorDy)
         {
-            dockAnchor_.Initialize(anchor_type, anchor_dx, anchor_dy);
+            _dockAnchor.Initialize(anchorType, anchorDx, anchorDy);
         }
 
         internal Win32.Point GetAnchorPosition()
         {
-            return dockAnchor_.GetPosition();
+            return _dockAnchor.GetPosition();
         }
 
-        internal void SetAnchorPosition(int anchor_x, int anchor_y)
+        internal void SetAnchorPosition(int anchorX, int anchorY)
         {
-            dockAnchor_.SetPosition(anchor_x, anchor_y);
-            Win32.Point windowPos = dockAnchor_.GetWindowPosition();
+            _dockAnchor.SetPosition(anchorX, anchorY);
+            Win32.Point windowPos = _dockAnchor.GetWindowPosition();
             if (this.Top != windowPos.y)
             {
                 this.Top = windowPos.y;
@@ -397,7 +396,7 @@ namespace fooTitle {
 
         private void AdjustPositionByAnchor()
         {
-            Win32.Point windowPos = dockAnchor_.GetWindowPosition();
+            Win32.Point windowPos = _dockAnchor.GetWindowPosition();
             if (this.Top != windowPos.y)
             {
                 this.Top = windowPos.y;

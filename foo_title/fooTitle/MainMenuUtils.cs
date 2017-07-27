@@ -20,8 +20,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-
 using fooManagedWrapper;
 
 namespace fooTitle {
@@ -98,12 +96,10 @@ namespace fooTitle {
             // one we need
             foreach (CMainMenuCommands cmds in new CMainMenuCommandsEnumerator()) {
                 for (uint i = 0; i < cmds.CommandCount; i++) {
-                    if (cmds.GetName(i) == commandName) {
-                        if (checkCommandsParents(cmds, parts)) {
-                            commands = cmds;
-                            index = i;
-                            return true;
-                        }
+                    if (cmds.GetName(i) == commandName && checkCommandsParents(cmds, parts)) {
+                        commands = cmds;
+                        index = i;
+                        return true;
                     }
                 }
             }

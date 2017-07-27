@@ -35,31 +35,27 @@ namespace fooTitle.Layers {
     /// Loads itself from an xml file and handles all drawing.
     /// </summary>
     public class Skin : Layer, IPlayCallbackSender {
-        XmlDocument document = new XmlDocument();
-        XmlNode skin;
-        string path;
+        private readonly XmlDocument document = new XmlDocument();
+        private readonly XmlNode skin;
         public List<Layer> DynamicLayers = new List<Layer>();
 
         /// <summary>
         /// Returns the directory of the skin. Can be used for loading images and other data files.
         /// </summary>
-        public string SkinDirectory {
-            get {
-                return path;
-            }
-        }
+        private string SkinDirectory { get; }
 
-        private OnPlaybackNewTrackDelegate onNewTrackRegistered;
-        private OnPlaybackTimeDelegate onTimeRegistered;
-        private OnPlaybackPauseDelegate onPauseRegistered;
-        private OnPlaybackStopDelegate onStopRegistered;
+        private readonly OnPlaybackNewTrackDelegate onNewTrackRegistered;
+        private readonly OnPlaybackTimeDelegate onTimeRegistered;
+        private readonly OnPlaybackPauseDelegate onPauseRegistered;
+        private readonly OnPlaybackStopDelegate onStopRegistered;
 
         /// <summary>
         /// Loads the skin from the specified xml file
         /// </summary>
         /// <param name="path">Path to the skin directory.</param>
-        public Skin(string _path) : base() {
-            path = _path;
+        public Skin(string path)
+        {
+            SkinDirectory = path;
 
             // load the skin xml file
             document.Load(GetSkinFilePath("skin.xml"));
@@ -67,15 +63,15 @@ namespace fooTitle.Layers {
             // read the xml document for the basic properties
             skin = document.GetElementsByTagName("skin").Item(0);
 
-            int width = Int32.Parse(skin.Attributes.GetNamedItem("width").Value);
-            int height = Int32.Parse(skin.Attributes.GetNamedItem("height").Value);
+            int width = int.Parse(skin.Attributes.GetNamedItem("width").Value);
+            int height = int.Parse(skin.Attributes.GetNamedItem("height").Value);
             geometry = new AbsoluteGeometry(new Rectangle(0, 0, width, height), width, height, new Point(0, 0), AlignType.Left);
 
             // register to main for playback events
-            onNewTrackRegistered = new OnPlaybackNewTrackDelegate(OnPlaybackNewTrack);
-            onTimeRegistered = new OnPlaybackTimeDelegate(OnPlaybackTime);
-            onStopRegistered = new OnPlaybackStopDelegate(OnPlaybackStop);
-            onPauseRegistered = new OnPlaybackPauseDelegate(OnPlaybackPause);
+            onNewTrackRegistered = OnPlaybackNewTrack;
+            onTimeRegistered = OnPlaybackTime;
+            onStopRegistered = OnPlaybackStop;
+            onPauseRegistered = OnPlaybackPause;
             Main.GetInstance().OnPlaybackNewTrackEvent += onNewTrackRegistered;
             Main.GetInstance().OnPlaybackTimeEvent += onTimeRegistered;
             Main.GetInstance().OnPlaybackPauseEvent += onPauseRegistered;
@@ -233,15 +229,15 @@ namespace fooTitle.Layers {
             display = _display;
 
             // register to mouse events
-            mouseMoveReg = new MouseEventHandler(display_MouseMove);
+            mouseMoveReg = display_MouseMove;
             display.MouseMove += mouseMoveReg;
-            mouseDownReg = new MouseEventHandler(display_MouseDown);
+            mouseDownReg = display_MouseDown;
             display.MouseDown += mouseDownReg;
-            mouseUpReg = new MouseEventHandler(display_MouseUp);
+            mouseUpReg = display_MouseUp;
             display.MouseUp += mouseUpReg;
-            mouseLeaveReg = new EventHandler(display_MouseLeave);
+            mouseLeaveReg = display_MouseLeave;
             display.MouseLeave += mouseLeaveReg;
-            mouseWheelReg = new MouseEventHandler(display_MouseWheel);
+            mouseWheelReg = display_MouseWheel;
             display.MouseWheel += mouseWheelReg;
 
             InitAnchor();
@@ -256,24 +252,32 @@ namespace fooTitle.Layers {
             XmlNode anchorDyStr = skin.Attributes.GetNamedItem("anchor_dy");
             XmlNode anchorTypeStr = skin.Attributes.GetNamedItem("anchor_type");
 
-            double anchor_dx = anchorDxStr == null ? 0 : double.Parse(anchorDxStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            double anchor_dy = anchorDyStr == null ? 0 : double.Parse(anchorDyStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
+            double anchorDx = anchorDxStr == null ? 0 : double.Parse(anchorDxStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
+            double anchorDy = anchorDyStr == null ? 0 : double.Parse(anchorDyStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
             DockAnchor.Type anchorType = DockAnchor.Type.Top | DockAnchor.Type.Left;
             if (anchorTypeStr != null)
             {
                 anchorType = DockAnchor.Type.None;
                 foreach (string i in anchorTypeStr.Value.Split(','))
                 {
-                    if (i == "Top")
-                        anchorType |= DockAnchor.Type.Top;
-                    else if (i == "Bottom")
-                        anchorType |= DockAnchor.Type.Bottom;
-                    else if (i == "Right")
-                        anchorType |= DockAnchor.Type.Right;
-                    else if (i == "Left")
-                        anchorType |= DockAnchor.Type.Left;
-                    else if (i == "Center")
-                        anchorType |= DockAnchor.Type.Center;
+                    switch (i)
+                    {
+                        case "Top":
+                            anchorType |= DockAnchor.Type.Top;
+                            break;
+                        case "Bottom":
+                            anchorType |= DockAnchor.Type.Bottom;
+                            break;
+                        case "Right":
+                            anchorType |= DockAnchor.Type.Right;
+                            break;
+                        case "Left":
+                            anchorType |= DockAnchor.Type.Left;
+                            break;
+                        case "Center":
+                            anchorType |= DockAnchor.Type.Center;
+                            break;
+                    }
                 }
 
                 if (anchorType == DockAnchor.Type.None)
@@ -282,14 +286,12 @@ namespace fooTitle.Layers {
                 }
             }
 
-            display.InitializeAnchor(anchorType, anchor_dx, anchor_dy);
+            display.InitializeAnchor(anchorType, anchorDx, anchorDy);
         }
 
-        private Layer topLayerUnderMouse = null;
-        public Layer TopLayerUnderMouse { get { return topLayerUnderMouse; } }
+        public Layer TopLayerUnderMouse { get; private set; }
 
-        private Layer topToolTipLayer = null;
-        public Layer TopToolTipLayer { get { return topToolTipLayer; } }
+        public Layer TopToolTipLayer { get; private set; }
 
         private Layer GetTopToolTipLayer(Layer topLayer) {
             Layer parent = topLayer;
@@ -320,8 +322,8 @@ namespace fooTitle.Layers {
         void display_MouseMove(object sender, MouseEventArgs e) {
             Main.GetInstance().ttd.Left = e.X;
             Main.GetInstance().ttd.Top = e.Y + 18;
-            topLayerUnderMouse = GetTopLayerUnderMouse(this);
-            topToolTipLayer = GetTopToolTipLayer(topLayerUnderMouse);
+            TopLayerUnderMouse = GetTopLayerUnderMouse(this);
+            TopToolTipLayer = GetTopToolTipLayer(TopLayerUnderMouse);
             sendEventCatch(OnMouseMove, sender, e);
         }
 

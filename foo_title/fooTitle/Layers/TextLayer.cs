@@ -56,13 +56,15 @@ namespace fooTitle.Layers
             angle = Int32.Parse(GetAttributeValue(contents, "angle", "0"));
 
             // read the default font
-            LabelPart empty = new LabelPart();
-            empty.bold = false;
-            empty.italic = false;
-            empty.fontName = "Arial";
-            empty.color = Color.FromArgb(255, 0, 0, 0);
-            empty.size = 9;
-            LabelPart def = readLabelFromElement(contents, empty);
+		    LabelPart empty = new LabelPart
+		    {
+		        bold = false,
+		        italic = false,
+		        fontName = "Arial",
+		        color = Color.FromArgb(255, 0, 0, 0),
+		        size = 9
+		    };
+		    LabelPart def = readLabelFromElement(contents, empty);
  
 			// read contents
             foreach (XmlNode n in contents.SelectNodes("label")) {
@@ -76,10 +78,10 @@ namespace fooTitle.Layers
             }
  
             if (Main.GetInstance().CurrentSkin != null) {
-                Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(this.OnPlaybackNewTrack);
-                Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += new OnPlaybackTimeDelegate(this.OnPlaybackTime);
-                Main.GetInstance().CurrentSkin.OnPlaybackStopEvent += new OnPlaybackStopDelegate(CurrentSkin_OnPlaybackStopEvent);
-                Main.GetInstance().CurrentSkin.OnPlaybackPauseEvent += new OnPlaybackPauseDelegate(CurrentSkin_OnPlaybackPauseEvent);
+                Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += this.OnPlaybackNewTrack;
+                Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += this.OnPlaybackTime;
+                Main.GetInstance().CurrentSkin.OnPlaybackStopEvent += CurrentSkin_OnPlaybackStopEvent;
+                Main.GetInstance().CurrentSkin.OnPlaybackPauseEvent += CurrentSkin_OnPlaybackPauseEvent;
             }
 		}
 
@@ -97,10 +99,9 @@ namespace fooTitle.Layers
             LabelPart res = new LabelPart();
 
             if (node.Attributes.GetNamedItem("size") != null)
-                res.size = Int32.Parse(node.Attributes.GetNamedItem("size").Value);
+                res.size = int.Parse(node.Attributes.GetNamedItem("size").Value);
             else
                 res.size = def.size;
-
             
             if (node.Attributes.GetNamedItem("italic") != null)
                 res.italic = (node.Attributes.GetNamedItem("italic").Value == "true");
@@ -152,13 +153,13 @@ namespace fooTitle.Layers
                 string b = code.Substring(6, 2).ToLower();
 
                 return Color.FromArgb(
-                    Int32.Parse(a, System.Globalization.NumberStyles.HexNumber),
-                    Int32.Parse(r, System.Globalization.NumberStyles.HexNumber),
-                    Int32.Parse(g, System.Globalization.NumberStyles.HexNumber),
-                    Int32.Parse(b, System.Globalization.NumberStyles.HexNumber)
+                    int.Parse(a, System.Globalization.NumberStyles.HexNumber),
+                    int.Parse(r, System.Globalization.NumberStyles.HexNumber),
+                    int.Parse(g, System.Globalization.NumberStyles.HexNumber),
+                    int.Parse(b, System.Globalization.NumberStyles.HexNumber)
                 );
             } catch {
-                fooManagedWrapper.CConsole.Warning(String.Format("Error in text layer {0}, invalid color code {1}.", this.Name, code));
+                fooManagedWrapper.CConsole.Warning($"Error in text layer {this.Name}, invalid color code {code}.");
                 return Color.Black;
             }
         }
@@ -249,7 +250,7 @@ namespace fooTitle.Layers
             Size size = calcStraightSize();
             Matrix transform = new Matrix();
             transform.Rotate(angle);
-            Point[] boundPoints = new Point[] {
+            Point[] boundPoints = {
                 new Point(0,0),
                 new Point(size.Width, 0),
                 new Point(size.Width, size.Height),

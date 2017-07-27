@@ -19,8 +19,6 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 using fooTitle.Config;
@@ -40,39 +38,37 @@ namespace fooTitle {
             OnlySometimes
         }
 
-        protected ConfEnum<PopupShowing> popupShowing = new ConfEnum<PopupShowing>("showControl/popupShowing", PopupShowing.AllTheTime);
-        protected ConfBool onSongStart = new ConfBool("showControl/onSongStart", true);
-        protected ConfBool beforeSongEnds = new ConfBool("showControl/beforeSongEnds", true);
-        protected ConfInt onSongStartStay = new ConfInt("showControl/onSongStartStay", 5, 0, int.MaxValue);
-        protected ConfInt beforeSongEndsStay = new ConfInt("showControl/beforeSongEndsStay", 5, 0, int.MaxValue);
-        protected ConfBool showWhenNotPlaying = new ConfBool("showControl/showWhenNotPlaying", false);
-        protected ConfInt timeBeforeFade = new ConfInt("showControl/timeBeforeFade", 2, 0, int.MaxValue);
+        private readonly ConfEnum<PopupShowing> popupShowing = new ConfEnum<PopupShowing>("showControl/popupShowing", PopupShowing.AllTheTime);
+        private readonly ConfBool onSongStart = new ConfBool("showControl/onSongStart", true);
+        private readonly ConfBool beforeSongEnds = new ConfBool("showControl/beforeSongEnds", true);
+        private readonly ConfInt onSongStartStay = new ConfInt("showControl/onSongStartStay", 5, 0, int.MaxValue);
+        private readonly ConfInt beforeSongEndsStay = new ConfInt("showControl/beforeSongEndsStay", 5, 0, int.MaxValue);
+        private readonly ConfBool showWhenNotPlaying = new ConfBool("showControl/showWhenNotPlaying", false);
+        private readonly ConfInt timeBeforeFade = new ConfInt("showControl/timeBeforeFade", 2, 0, int.MaxValue);
 
 
-        protected Timer hideAfterSongStart = new Timer();
+        private readonly Timer hideAfterSongStart = new Timer();
         private bool reachedEndSat = false;
         private bool newSongSat = false;
-        private Main main;
+        private readonly Main main;
 
-
-
-        protected fooManagedWrapper.CMetaDBHandle lastSong;
+        private fooManagedWrapper.CMetaDBHandle lastSong;
 
         public ShowControl() {
             main = Main.GetInstance();
 
-            main.OnPlaybackNewTrackEvent += new OnPlaybackNewTrackDelegate(main_OnPlaybackNewTrackEvent);
-            main.OnPlaybackDynamicInfoTrackEvent += new OnPlaybackDynamicInfoTrackDelegate(main_OnPlaybackDynamicInfoTrackEvent);
-            main.OnPlaybackPauseEvent += new OnPlaybackPauseDelegate(main_OnPlaybackPauseEvent);
-            main.OnPlaybackStopEvent += new OnPlaybackStopDelegate(main_OnPlaybackStopEvent);
-            main.OnPlaybackTimeEvent += new OnPlaybackTimeDelegate(ShowControl_OnPlaybackTimeEvent);
+            main.OnPlaybackNewTrackEvent += main_OnPlaybackNewTrackEvent;
+            main.OnPlaybackDynamicInfoTrackEvent += main_OnPlaybackDynamicInfoTrackEvent;
+            main.OnPlaybackPauseEvent += main_OnPlaybackPauseEvent;
+            main.OnPlaybackStopEvent += main_OnPlaybackStopEvent;
+            main.OnPlaybackTimeEvent += main_OnPlaybackTimeEvent;
 
             // react to settings change
-            popupShowing.OnChanged += new ConfValuesManager.ValueChangedDelegate(popupShowing_OnChanged);
-            showWhenNotPlaying.OnChanged += new ConfValuesManager.ValueChangedDelegate(showWhenNotPlaying_OnChanged);
+            popupShowing.OnChanged += popupShowing_OnChanged;
+            showWhenNotPlaying.OnChanged += showWhenNotPlaying_OnChanged;
 
             // init the timers
-            hideAfterSongStart.Tick += new EventHandler(hideAfterSongStart_Tick);
+            hideAfterSongStart.Tick += hideAfterSongStart_Tick;
 
             // on start, foo_title should be probably enabled
             DoEnable();
@@ -81,11 +77,11 @@ namespace fooTitle {
         /// <summary>
         /// When the showing option changes, check the situation and disable/enable foo_title as needed
         /// </summary>
-        void popupShowing_OnChanged(string name) {
+        private void popupShowing_OnChanged(string name) {
             showByCriteria();
         }
 
-        void showWhenNotPlaying_OnChanged(string name) {
+        private void showWhenNotPlaying_OnChanged(string name) {
             showByCriteria();
         }
 
@@ -94,33 +90,40 @@ namespace fooTitle {
         /// This enables foo_title, but only if it's enabled in the preferences
         /// Should be called from functions that check if it's time to show
         /// </summary>
-        protected void DoEnable() {
-            if (main.ShowWhen.Value == ShowWhenEnum.WhenMinimized) {
-                // can show only if minimized
-                if (!CManagedWrapper.getInstance().IsFoobarActivated())
+        private void DoEnable()
+        {
+            switch (main.ShowWhen.Value)
+            {
+                case ShowWhenEnum.WhenMinimized:
+                    // can show only if minimized
+                    if (!CManagedWrapper.getInstance().IsFoobarActivated())
+                        main.EnableFooTitle();
+                    break;
+                case ShowWhenEnum.Never:
+                    // nothing
+                    break;
+                case ShowWhenEnum.Always:
                     main.EnableFooTitle();
-            } else if (main.ShowWhen.Value == ShowWhenEnum.Never) {
-                // nothing
-            } else {
-                // can show it freely
-                main.EnableFooTitle();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
-        protected void DoDisable()
+        private void DoDisable()
         {
             // can always hide
             main.DisableFooTitle();
         }
 
-        protected void DoEnableWithAnimation(bool useOverAnimation)
+        private void DoEnableWithAnimation(bool useOverAnimation)
         {
             DoEnable();
             Display.Animation animName = useOverAnimation ? Display.Animation.FadeInOver : Display.Animation.FadeInNormal;
             main.StartDisplayAnimation(animName);
         }
 
-        protected void DoDisableWithAnimation()
+        private void DoDisableWithAnimation()
         {
             Display.Animation animName = (popupShowing.Value == PopupShowing.AllTheTime) ? Display.Animation.FadeOut : Display.Animation.FadeOutFull;
             Display.OnAnimationStopDelegate onStop = (popupShowing.Value != PopupShowing.AllTheTime) ? new Display.OnAnimationStopDelegate(DoDisable) : null;
@@ -130,10 +133,10 @@ namespace fooTitle {
         public void PopupPeek()
         {
             DoEnable();
-            main.StartDisplayAnimation(Display.Animation.FadeInOver, new Display.OnAnimationStopDelegate(StartFadeOutTimer));
+            main.StartDisplayAnimation(Display.Animation.FadeInOver, StartFadeOutTimer);
         }
 
-        protected void StartFadeOutTimer()
+        private void StartFadeOutTimer()
         {
             // plan a hide event
             hideAfterSongStart.Interval = timeBeforeFade.Value * 1000;
@@ -146,7 +149,7 @@ namespace fooTitle {
         /// <summary>
         /// Checks time and displays foo_title when time has come
         /// </summary>
-        void ShowControl_OnPlaybackTimeEvent(double time) {
+        private void main_OnPlaybackTimeEvent(double time) {
             if (lastSong == null)
                 return;
 
@@ -181,7 +184,7 @@ namespace fooTitle {
         /// <summary>
         /// Displays foo_title when it's set to display on new song and also hides foo_title if not set
         /// </summary>
-        void main_OnPlaybackNewTrackEvent(fooManagedWrapper.CMetaDBHandle song) {
+        private void main_OnPlaybackNewTrackEvent(fooManagedWrapper.CMetaDBHandle song) {
             // store the song
             lastSong = song;
             reachedEndSat = false;
@@ -195,14 +198,14 @@ namespace fooTitle {
             DoEnableWithAnimation(true);
         }
 
-        FileInfo lastFileInfo;
+        private FileInfo lastFileInfo;
 
         /// <summary>
         /// Handles the dynamic info change. Checks if the file info is different from
         /// the last one and if it is, shows foo_title. Used for displaying on
         /// stream title change.
         /// </summary>
-        void main_OnPlaybackDynamicInfoTrackEvent(FileInfo fileInfo) {
+        private void main_OnPlaybackDynamicInfoTrackEvent(FileInfo fileInfo) {
             // if not stored yet, show
             if (lastFileInfo == null) {
                 main_OnPlaybackNewTrackEvent(lastSong);
@@ -218,11 +221,11 @@ namespace fooTitle {
         }
 
 
-        void main_OnPlaybackStopEvent(IPlayControl.StopReason reason) {
+        private void main_OnPlaybackStopEvent(IPlayControl.StopReason reason) {
             showByCriteria();
         }
 
-        void main_OnPlaybackPauseEvent(bool state) {
+        private void main_OnPlaybackPauseEvent(bool state) {
             if (state) {
                 // paused, leave hiding it for a later time
                 hideAfterSongStart.Stop();
@@ -230,7 +233,7 @@ namespace fooTitle {
             showByCriteria();
         }
 
-        void hideAfterSongStart_Tick(object sender, EventArgs e) {
+        private void hideAfterSongStart_Tick(object sender, EventArgs e) {
             showByCriteria();
             hideAfterSongStart.Stop();
         }

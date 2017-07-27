@@ -16,13 +16,13 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Windows.Forms;
 using System.Drawing;
 
 namespace fooTitle
 {
     internal class DockAnchor
     {
+        [Flags]
         public enum Type
         {
             None = 0,
@@ -33,90 +33,90 @@ namespace fooTitle
             Center = 1 << 4,            
         }
 
-        private Display display_ = null;
-        private double anchor_dx_ = 0;
-        private double anchor_dy_ = 0;
-        private int anchor_x_ = 0;
-        private int anchor_y_ = 0;
-        private DockAnchor.Type anchorType_ = DockAnchor.Type.Left | DockAnchor.Type.Top;
+        private readonly Display _display;
+        private double _anchorDx = 0;
+        private double _anchorDy = 0;
+        private int _anchorX = 0;
+        private int _anchorY = 0;
+        private DockAnchor.Type _anchorType = DockAnchor.Type.Left | DockAnchor.Type.Top;
 
         internal DockAnchor(Display display)
         {
-            display_ = display;
+            _display = display;
         }
 
         internal void Initialize(DockAnchor.Type type, double dx, double dy)
         {
-            anchorType_ = type;
+            _anchorType = type;
 
-            anchor_dx_ = 0.5/*dx*/;
-            anchor_dy_ = 0.5/*dy*/;
+            _anchorDx = 0.5/*dx*/;
+            _anchorDy = 0.5/*dy*/;
 
-            if ((anchorType_ & DockAnchor.Type.Left) != 0)
+            if ((_anchorType & DockAnchor.Type.Left) != 0)
             {
-                anchor_dx_ = 0;
+                _anchorDx = 0;
             }
-            else if ((anchorType_ & DockAnchor.Type.Right) != 0)
+            else if ((_anchorType & DockAnchor.Type.Right) != 0)
             {
-                anchor_dx_ = 1;
+                _anchorDx = 1;
             }
-            else if ((anchorType_ & DockAnchor.Type.Center) != 0)
+            else if ((_anchorType & DockAnchor.Type.Center) != 0)
             {
-                anchor_dx_ = 0.5;
+                _anchorDx = 0.5;
             }
 
-            if ((anchorType_ & DockAnchor.Type.Top) != 0)
+            if ((_anchorType & DockAnchor.Type.Top) != 0)
             {
-                anchor_dy_ = 0;
+                _anchorDy = 0;
             }
-            else if ((anchorType_ & DockAnchor.Type.Bottom) != 0)
+            else if ((_anchorType & DockAnchor.Type.Bottom) != 0)
             {
-                anchor_dy_ = 1;
+                _anchorDy = 1;
             }
-            else if ((anchorType_ & DockAnchor.Type.Center) != 0)
+            else if ((_anchorType & DockAnchor.Type.Center) != 0)
             {
-                anchor_dy_ = 0.5;
+                _anchorDy = 0.5;
             }
 
             Win32.Point anchorPos = CalculatePositionFromWindow();
-            anchor_x_ = anchorPos.x;
-            anchor_y_ = anchorPos.y;
+            _anchorX = anchorPos.x;
+            _anchorY = anchorPos.y;
         }
         internal Win32.Point GetPosition()
         {
             return CalculatePositionFromWindow();
         }
 
-        internal void SetPosition(int anchor_x, int anchor_y)
+        internal void SetPosition(int anchorX, int anchorY)
         {
-            anchor_x_ = anchor_x;
-            anchor_y_ = anchor_y;
+            _anchorX = anchorX;
+            _anchorY = anchorY;
         }
 
         internal Win32.Point GetWindowPosition()
         {
-            int x = anchor_x_ - (int)(display_.Width * anchor_dx_);
-            int y = anchor_y_ - (int)(display_.Height * anchor_dy_);
+            int x = _anchorX - (int)(_display.Width * _anchorDx);
+            int y = _anchorY - (int)(_display.Height * _anchorDy);
 
             return new Win32.Point(x, y);
         }
 
         internal void Draw()
         {
-            int anchorRelativeX = Math.Min((int)(anchor_dx_ * display_.Width), display_.Width - 1);
-            int anchorRelativeY = Math.Min((int)(anchor_dy_ * display_.Height), display_.Height - 1);
+            int anchorRelativeX = Math.Min((int)(_anchorDx * _display.Width), _display.Width - 1);
+            int anchorRelativeY = Math.Min((int)(_anchorDy * _display.Height), _display.Height - 1);
 
             Color anchorCol = Color.FromArgb(0xFF, 0xFF, 0xFF, 0x70);
 
-            display_.Canvas.FillRectangle(new SolidBrush(anchorCol), anchorRelativeX - 1, anchorRelativeY - 1, 3, 3);
-            display_.Canvas.DrawLine(new Pen(anchorCol), anchorRelativeX - 25, anchorRelativeY, anchorRelativeX + 25, anchorRelativeY);
-            display_.Canvas.DrawLine(new Pen(anchorCol), anchorRelativeX, anchorRelativeY - 25, anchorRelativeX, anchorRelativeY + 25);
+            _display.Canvas.FillRectangle(new SolidBrush(anchorCol), anchorRelativeX - 1, anchorRelativeY - 1, 3, 3);
+            _display.Canvas.DrawLine(new Pen(anchorCol), anchorRelativeX - 25, anchorRelativeY, anchorRelativeX + 25, anchorRelativeY);
+            _display.Canvas.DrawLine(new Pen(anchorCol), anchorRelativeX, anchorRelativeY - 25, anchorRelativeX, anchorRelativeY + 25);
         }
 
         private Win32.Point CalculatePositionFromWindow()
         {
-            int x = display_.Left + (int)(display_.Width * anchor_dx_);
-            int y = display_.Top + (int)(display_.Height * anchor_dy_);
+            int x = _display.Left + (int)(_display.Width * _anchorDx);
+            int y = _display.Top + (int)(_display.Height * _anchorDy);
 
             return new Win32.Point(x, y);
         }

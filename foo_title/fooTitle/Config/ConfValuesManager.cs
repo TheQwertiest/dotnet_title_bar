@@ -73,8 +73,7 @@ namespace fooTitle.Config {
 
             values.Add(v);
 
-            if (OnValueCreated != null)
-                OnValueCreated(v.Name);
+            OnValueCreated?.Invoke(v.Name);
 
             // register this as the receiver for v's OnChanged
             v.OnChanged += new ValueChangedDelegate(FireValueChanged);
@@ -99,8 +98,7 @@ namespace fooTitle.Config {
                 throw new InvalidOperationException(String.Format("Cannot fire the OnValueChanged event for value named {0}. There is no such variable registered.", name));
 
             // check if anyone's listening
-            if (OnValueChanged != null)
-                OnValueChanged(name);
+            OnValueChanged?.Invoke(name);
         }
 
         public delegate void ValueChangedDelegate(string name);

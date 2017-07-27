@@ -18,11 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Collections.Generic;
-using System.Text;
-
 using fooManagedWrapper;
-using naid;
 
 namespace fooTitle {
 
@@ -41,7 +37,7 @@ namespace fooTitle {
                 for (uint i = 0; i < cmds.Count; i++) {
                     
                     string currentPath = cmds.GetName(i);
-                    if (!String.IsNullOrEmpty(cmds.GetDefaultPath(i))) {
+                    if (!string.IsNullOrEmpty(cmds.GetDefaultPath(i))) {
                         currentPath = cmds.GetDefaultPath(i) + '/' + currentPath;
                     }
 
@@ -56,11 +52,7 @@ namespace fooTitle {
 
                     if (path.StartsWith(currentPath, StringComparison.OrdinalIgnoreCase)) {
                         string rest;
-                        if (path.Length > currentPath.Length) {
-                            rest = path.Substring(currentPath.Length + 1);
-                        } else {
-                            rest = "";
-                        }
+                        rest = path.Length > currentPath.Length ? path.Substring(currentPath.Length + 1) : "";
 
                         Guid? cmdId = cmds.FindDynamicCommand(i, rest, context);
                         if (cmdId.HasValue) {

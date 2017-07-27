@@ -34,9 +34,9 @@ namespace fooTitle {
     }
 
     public enum EnableDragging {
-        ALWAYS,
-        WHEN_PROPERTIES_OPEN,
-        NEVER,
+        Always,
+        WhenPropertiesOpen,
+        Never,
     }
 
     public class Main : IComponentClient, IPlayCallbackSender {
@@ -46,22 +46,18 @@ namespace fooTitle {
         /// </summary>
         private bool initDone = false;
 
-        private static ConfString myDataDir = new ConfString("base/dataDir", "foo_title\\");
+        private static readonly ConfString myDataDir = new ConfString("base/dataDir", "foo_title\\");
 
         /// <summary>
         /// Returns the foo_title data directory located in the foobar2000 user directory (documents and settings)
         /// </summary>
-        public static string UserDataDir {
-            get {
-                return Path.Combine(CManagedWrapper.getInstance().GetProfilePath(), myDataDir.Value);
-            }
-        }
+        public static string UserDataDir => Path.Combine(CManagedWrapper.getInstance().GetProfilePath(), myDataDir.Value);
 
         /// <summary>
         /// How often the display should be redrawn
         /// </summary>
-        private ConfInt UpdateInterval = new ConfInt("display/updateInterval", 100, 16, 1000);
-        protected void updateIntervalChanged(string name) {
+        private readonly ConfInt UpdateInterval = new ConfInt("display/updateInterval", 100, 16, 1000);
+        protected void UpdateInterval_OnChanged(string name) {
             if (initDone)
                 timer.Interval = UpdateInterval.Value;
         }
@@ -71,61 +67,45 @@ namespace fooTitle {
         /// </summary>
         public ConfString SkinPath = new ConfString("base/skinName", null);
 
-        protected void SkinNameChanged(string name) {
+        protected void SkinPath_OnChanged(string name) {
             if (initDone) {
                 try {
                     LoadSkin(SkinPath.Value);
                 } catch (Exception e) {
-                    skin = null;
-                    System.Windows.Forms.MessageBox.Show("foo_title - There was an error loading skin " + SkinPath.Value + ":\n" + e.Message, "foo_title");
+                    CurrentSkin = null;
+                    System.Windows.Forms.MessageBox.Show($"foo_title - There was an error loading skin { SkinPath.Value}:\n {e.Message} \n {e.ToString()}", "foo_title");
                 }
             }
         }
 
-        private Skin skin;
         /// <summary>
         /// Provides access to the current skin. May be null.
         /// </summary>
-        public Skin CurrentSkin {
-            get {
-                return skin;
-            }
-        }
+        public Skin CurrentSkin { get; private set; }
 
-        private LayerFactory myLayerFactory;
         /// <summary>
         /// Provides access to the layer factory for creating new layers.
         /// </summary>
-        public LayerFactory LayerFactory {
-            get {
-                return myLayerFactory;
-            }
-        }
+        public LayerFactory LayerFactory { get; private set; }
 
-        private GeometryFactory myGeometryFactory;
         /// <summary>
-        /// Provides access to the geometry factory for createing new geometries.
+        /// Provides access to the geometry factory for creating new geometries.
         /// </summary>
-        public GeometryFactory GeometryFactory {
-            get {
-                return myGeometryFactory;
-            }
-        }
+        public GeometryFactory GeometryFactory { get; private set; }
 
-        private Display myDisplay;
+        private Display _display;
         /// <summary>
         /// Provides access to the display.
         /// </summary>
         public Display Display {
             get {
-                if ((myDisplay != null) && myDisplay.IsDisposed) {
-                    if (skin != null)
-                        skin.Free();
-                    skin = null;
-                    myDisplay = null;
+                if ((_display != null) && _display.IsDisposed) {
+                    CurrentSkin?.Free();
+                    CurrentSkin = null;
+                    _display = null;
                 }
 
-                return myDisplay;
+                return _display;
             }
         }
 
@@ -140,7 +120,8 @@ namespace fooTitle {
         /// When to show foo_title: Always, never or only when foobar is minimized
         /// </summary>
         public ConfEnum<ShowWhenEnum> ShowWhen = new ConfEnum<ShowWhenEnum>("display/showWhen", ShowWhenEnum.Always);
-        void ShowWhen_OnChanged(string name) {
+
+        private void ShowWhen_OnChanged(string name) {
             if (ShowWhen.Value == ShowWhenEnum.Always)
                 EnableFooTitle();
             else if (ShowWhen.Value == ShowWhenEnum.Never)
@@ -150,17 +131,18 @@ namespace fooTitle {
             }
         }
 
-        private ConfEnum<EnableDragging> DraggingEnabled = new ConfEnum<EnableDragging>("display/enableDragging", EnableDragging.ALWAYS);
+        private readonly ConfEnum<EnableDragging> DraggingEnabled = new ConfEnum<EnableDragging>("display/enableDragging", EnableDragging.Always);
         public bool CanDragDisplay {
             get {
                 switch (DraggingEnabled.Value) {
-                    case EnableDragging.ALWAYS:
+                    case EnableDragging.Always:
                         return true;
-                    case EnableDragging.WHEN_PROPERTIES_OPEN:
+                    case EnableDragging.WhenPropertiesOpen:
                         return Properties.IsOpen;
-                    case EnableDragging.NEVER:
-                    default:
+                    case EnableDragging.Never:
                         return false;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }
@@ -217,42 +199,37 @@ namespace fooTitle {
             }
         }
 
-        private ConfInt positionX = new ConfInt("display/positionX", 0);
-        private ConfInt positionY = new ConfInt("display/positionY", 0);
-        public void positionX_Changed(string name) {
+        private readonly ConfInt positionX = new ConfInt("display/positionX", 0);
+        private readonly ConfInt positionY = new ConfInt("display/positionY", 0);
+        public void positionX_OnChanged(string name) {
             Display.SetAnchorPosition(positionX.Value, positionY.Value);
         }
-        public void positionY_Changed(string name) {
+        public void positionY_OnChanged(string name) {
             Display.SetAnchorPosition(positionX.Value, positionY.Value);
         }
 
-        private ConfBool edgeSnap = new ConfBool("display/edgeSnap", true);
-        public bool edgeSnapEnabled {
-            get { return edgeSnap.Value; }
-        }
+        private readonly ConfBool edgeSnap = new ConfBool("display/edgeSnap", true);
+        public bool edgeSnapEnabled => edgeSnap.Value;
 
-        private ConfInt artLoadEvery = new ConfInt("display/artLoadEvery", 10, 1, int.MaxValue);
-        private ConfInt artLoadMaxTimes = new ConfInt("display/artLoadMaxTimes", 2, -1, int.MaxValue);
-        public int ArtReloadFreq {
-            get { return artLoadEvery.Value; }
-        }
-        public int ArtReloadMax {
-            get { return artLoadMaxTimes.Value; }
-        }
+        private readonly ConfInt artLoadEvery = new ConfInt("display/artLoadEvery", 10, 1, int.MaxValue);
+        private readonly ConfInt artLoadMaxTimes = new ConfInt("display/artLoadMaxTimes", 2, -1, int.MaxValue);
+        public int ArtReloadFreq => artLoadEvery.Value;
 
-        System.Windows.Forms.Timer timer;
+        public int ArtReloadMax => artLoadMaxTimes.Value;
 
-        CMetaDBHandle lastSong;
-        Properties propsForm;
+        private System.Windows.Forms.Timer timer;
+
+        private CMetaDBHandle lastSong;
+        private Properties propsForm;
 
         // singleton
-        static private Main instance = null;
-        static public Main GetInstance() {
+        private static Main instance;
+        public static Main GetInstance() {
             return instance;
         }
 
         private void timerUpdate(object sender, System.EventArgs e) {
-            if (fooTitleEnabled && skin != null) {
+            if (fooTitleEnabled && CurrentSkin != null) {
                 // need to update all values that are calculated from formatting strings
                 //CurrentSkin.UpdateGeometry(CurrentSkin.ClientRect);
                 CurrentSkin.FrameUpdateGeometry(CurrentSkin.ClientRect);
@@ -266,9 +243,9 @@ namespace fooTitle {
         /// Redraws the display, called every UpdateInterval miliseconds by the timer
         /// </summary>
         private void updateDisplay() {
-            if (skin != null) {
-                skin.Draw();
-                myDisplay.FrameRedraw();
+            if (CurrentSkin != null) {
+                CurrentSkin.Draw();
+                _display.FrameRedraw();
             }
         }
 
@@ -278,18 +255,17 @@ namespace fooTitle {
         /// </summary>
         private void reinitDisplay() {
             // initialize the form displaying the images
-            myDisplay = new Display(300, 22);
-            myDisplay.Closing -= new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
-            myDisplay.Closing += new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
-            myDisplay.Show();
+            _display = new Display(300, 22);
+            _display.Closing -= myDisplay_Closing;
+            _display.Closing += myDisplay_Closing;
+            _display.Show();
         }
 
         void myDisplay_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            myDisplay.Closing -= new System.ComponentModel.CancelEventHandler(myDisplay_Closing);
-            if (skin != null)
-                skin.Free();
-            skin = null;        
-            myDisplay = null;
+            _display.Closing -= myDisplay_Closing;
+            CurrentSkin?.Free();
+            CurrentSkin = null;        
+            _display = null;
         }
 
         /// <summary>
@@ -300,9 +276,8 @@ namespace fooTitle {
         private void LoadSkin(string path) {
             try {
                 // delete the old one
-                if (skin != null)
-                    skin.Free();
-                skin = null;
+                CurrentSkin?.Free();
+                CurrentSkin = null;
 
                 if (this.Display == null) {
                     reinitDisplay();
@@ -316,23 +291,22 @@ namespace fooTitle {
                     return;
                 }
 
-                skin = new Skin(path);
-                skin.Init(Display);
+                CurrentSkin = new Skin(path);
+                CurrentSkin.Init(Display);
                 RestorePosition();
 
                 // need to tell it about the currently playing song
                 if (lastSong != null)
-                    skin.OnPlaybackNewTrack(lastSong);
+                    CurrentSkin.OnPlaybackNewTrack(lastSong);
                 else
-                    skin.OnPlaybackStop(IPlayControl.StopReason.stop_reason_user);
+                    CurrentSkin.OnPlaybackStop(IPlayControl.StopReason.stop_reason_user);
 
-                skin.FirstCheckSize();
+                CurrentSkin.FirstCheckSize();
             } catch (Exception e) {
-                if (skin != null)
-                    skin.Free();
-                skin = null;
+                CurrentSkin?.Free();
+                CurrentSkin = null;
                 System.Windows.Forms.MessageBox.Show(
-                    String.Format("foo_title - There was an error loading skin {0}:\n {1} \n {2}", path, e.Message, e.ToString())
+                    $"foo_title - There was an error loading skin {path}:\n {e.Message} \n {e.ToString()}"
                     , "foo_title");
             }
         }
@@ -375,7 +349,7 @@ namespace fooTitle {
             positionX.Value = anchorPos.x;
             positionY.Value = anchorPos.y;
 
-            if (DraggingEnabled.Value == EnableDragging.ALWAYS && !Properties.IsOpen) {
+            if (DraggingEnabled.Value == EnableDragging.Always && !Properties.IsOpen) {
                 ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
             }
         }
@@ -393,8 +367,7 @@ namespace fooTitle {
             catch (Exception e)
             {
                 System.Windows.Forms.MessageBox.Show(
-                    String.Format("foo_title - Failed to create default directory.\nPath:\n{0}\nError message:\n{1}\nError details:\n{2}",
-                    UserDataDir, e.Message, e.ToString())
+                    $"foo_title - Failed to create default directory.\nPath:\n{UserDataDir}\nError message:\n{e.Message}\nError details:\n{e}"
                     , "foo_title");
             }
         }
@@ -422,23 +395,21 @@ namespace fooTitle {
             propsForm.UpdateValues();
 
             // init registered clients
-            OnInitDelegate temp = OnInitEvent;
-            if (temp != null)
-                temp();
+            OnInitEvent?.Invoke();
 
             // start a timer updating the display
             timer = new System.Windows.Forms.Timer();
             timer.Interval = UpdateInterval.Value;
-            timer.Tick += new System.EventHandler(timerUpdate);
+            timer.Tick += timerUpdate;
             timer.Enabled = true;
 
             // create layer factory
-            myLayerFactory = new LayerFactory();
-            myLayerFactory.SearchAssembly(System.Reflection.Assembly.GetExecutingAssembly());
+            LayerFactory = new LayerFactory();
+            LayerFactory.SearchAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
             // create geometry factory
-            myGeometryFactory = new GeometryFactory();
-            myGeometryFactory.SearchAssembly(System.Reflection.Assembly.GetExecutingAssembly());
+            GeometryFactory = new GeometryFactory();
+            GeometryFactory.SearchAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
             // initialize the display and skin
             reinitDisplay();
@@ -447,11 +418,11 @@ namespace fooTitle {
             ttd = new ToolTipDisplay();
 
             // register response events on some variables
-            ShowWhen.OnChanged += new ConfValuesManager.ValueChangedDelegate(ShowWhen_OnChanged);
-            UpdateInterval.OnChanged += new ConfValuesManager.ValueChangedDelegate(updateIntervalChanged);
-            SkinPath.OnChanged += new ConfValuesManager.ValueChangedDelegate(SkinNameChanged);
-            positionX.OnChanged += new ConfValuesManager.ValueChangedDelegate(positionX_Changed);
-            positionY.OnChanged += new ConfValuesManager.ValueChangedDelegate(positionY_Changed);
+            ShowWhen.OnChanged += ShowWhen_OnChanged;
+            UpdateInterval.OnChanged += UpdateInterval_OnChanged;
+            SkinPath.OnChanged += SkinPath_OnChanged;
+            positionX.OnChanged += positionX_OnChanged;
+            positionY.OnChanged += positionY_OnChanged;
 
             if (ShowWhen.Value == ShowWhenEnum.Never)
                 DisableFooTitle();
@@ -465,30 +436,22 @@ namespace fooTitle {
         public event OnQuitDelegate OnQuitEvent;
 
         public void OnQuit() {
-            OnQuitDelegate temp = OnQuitEvent;
-            if (temp != null)
-                temp();
-
-            if (Display != null)
-                Display.Hide();
-
-            if (ttd != null) {
-                ttd.Hide();
-            }
+            OnQuitEvent?.Invoke();
+            Display?.Hide();
+            ttd?.Hide();
         }
-
 
         public event OnPlaybackNewTrackDelegate OnPlaybackNewTrackEvent;
 
         public void OnPlaybackNewTrack(fooManagedWrapper.CMetaDBHandle song) {
             lastSong = song;
-            sendEvent(OnPlaybackNewTrackEvent, song);
+            SendEvent(OnPlaybackNewTrackEvent, song);
         }
 
         public event OnPlaybackTimeDelegate OnPlaybackTimeEvent;
 
         public void OnPlaybackTime(double time) {
-            sendEvent(OnPlaybackTimeEvent, time);
+            SendEvent(OnPlaybackTimeEvent, time);
         }
 
         public event OnPlaybackStopDelegate OnPlaybackStopEvent;
@@ -496,10 +459,10 @@ namespace fooTitle {
         public void OnPlaybackStop(IPlayControl.StopReason reason) {
             if (reason != IPlayControl.StopReason.stop_reason_starting_another)
                 lastSong = null;
-            sendEvent(OnPlaybackStopEvent, reason);
+            SendEvent(OnPlaybackStopEvent, reason);
         }
 
-        protected void sendEvent(Object _event, params Object[] p) {
+        protected void SendEvent(Object _event, params Object[] p) {
             try {
                 if (_event != null) {
                     System.Delegate d = (System.Delegate)_event;
@@ -511,13 +474,13 @@ namespace fooTitle {
         }
 
         public void OnPlaybackPause(bool state) {
-            sendEvent(OnPlaybackPauseEvent, state);
+            SendEvent(OnPlaybackPauseEvent, state);
         }
 
         public event OnPlaybackDynamicInfoTrackDelegate OnPlaybackDynamicInfoTrackEvent;
 
         public void OnPlaybackDynamicInfoTrack(fooManagedWrapper.FileInfo fileInfo) {
-            sendEvent(OnPlaybackDynamicInfoTrackEvent, fileInfo);
+            SendEvent(OnPlaybackDynamicInfoTrackEvent, fileInfo);
         }
 
         #endregion

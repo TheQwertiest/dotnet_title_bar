@@ -65,13 +65,13 @@ namespace fooManagedWrapper {
 
 		static System::Guid ^file, ^view, ^edit, ^playback, ^library, ^help;
 		
-		enum class Flags {
-               Disabled = mainmenu_commands::flag_disabled,
-               Checked = mainmenu_commands::flag_checked,
-               Hidden = mainmenu_commands::flag_defaulthidden,
-               PriorityBase = mainmenu_commands::sort_priority_base,
-               PriorityDontCare = mainmenu_commands::sort_priority_dontcare,
-               PriorityLast = mainmenu_commands::sort_priority_last
+		enum class Flags : uint32_t {
+               Disabled = (uint32_t)mainmenu_commands::flag_disabled,
+               Checked = (uint32_t)mainmenu_commands::flag_checked,
+               Hidden = (uint32_t)mainmenu_commands::flag_defaulthidden,
+               PriorityBase = (uint32_t)mainmenu_commands::sort_priority_base,
+               PriorityDontCare = (uint32_t)mainmenu_commands::sort_priority_dontcare,
+               PriorityLast = (uint32_t)mainmenu_commands::sort_priority_last
 		};
 	};
 

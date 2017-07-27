@@ -5,10 +5,10 @@ using System.Windows.Forms;
 namespace fooTitle {
     public class ToolTipDisplay : PerPixelAlphaForm {
 
-        private static Color backgroundColor = Color.White;
-        private static Color textColor = Color.FromArgb(87, 87, 87);
-        private static Font textFont = SystemFonts.CaptionFont;
-        private static Pen borderPen = new Pen(Color.FromArgb(118, 118, 118));
+        private static readonly Color backgroundColor = Color.White;
+        private static readonly Color textColor = Color.FromArgb(87, 87, 87);
+        private static readonly Font textFont = SystemFonts.CaptionFont;
+        private static readonly Pen borderPen = new Pen(Color.FromArgb(118, 118, 118));
 
         private string text;
         private Rectangle borderRectangle;
@@ -55,10 +55,6 @@ namespace fooTitle {
             }
         }
 
-        protected override bool ShowWithoutActivation {
-            get {
-                return true;
-            }
-        }
+        protected override bool ShowWithoutActivation => true;
     }
 }

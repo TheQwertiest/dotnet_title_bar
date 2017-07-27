@@ -28,19 +28,18 @@ using fooTitle.Extending;
 
 
 namespace fooTitle.Layers {
-
-    interface IButtonAction {
+    internal interface IButtonAction {
         void Init(XmlNode node);
         void Run(MouseButtons button, int delta);
     };
 
-    enum ScrollDirection {
-        UP,
-        DOWN,
-        NONE,
+    internal enum ScrollDirection {
+        Up,
+        Down,
+        None,
     }
 
-    abstract class ButtonAction : IButtonAction {
+    internal abstract class ButtonAction : IButtonAction {
         protected MouseButtons button;
         protected ScrollDirection scrollDir;
 
@@ -65,19 +64,19 @@ namespace fooTitle.Layers {
         private static ScrollDirection stringToDir(string d) {
             switch (d) {
                 case "up":
-                    return ScrollDirection.UP;
+                    return ScrollDirection.Up;
                 case "down":
-                    return ScrollDirection.DOWN;
+                    return ScrollDirection.Down;
                 case "none":
                 default:
-                    return ScrollDirection.NONE;
+                    return ScrollDirection.None;
             }
         }
 
         public virtual void Init(XmlNode node) {
             button = stringToButton(Element.GetAttributeValue(node, "button", "all").ToLowerInvariant());
             scrollDir = stringToDir(Element.GetAttributeValue(node, "scroll", "none").ToLowerInvariant());
-            if (button != MouseButtons.None && scrollDir != ScrollDirection.NONE) {
+            if (button != MouseButtons.None && scrollDir != ScrollDirection.None) {
                 throw new ArgumentException("You can't specify both 'button' and 'scroll' attributes on an action tag!");
             }
         }
@@ -85,17 +84,14 @@ namespace fooTitle.Layers {
         public abstract void Run(MouseButtons button, int delta);
 
         protected bool shouldRun(MouseButtons button, int delta) {
-            if (this.scrollDir != ScrollDirection.NONE) {
-                return (scrollDir == ScrollDirection.UP && delta > 0) || (scrollDir == ScrollDirection.DOWN && delta < 0);
+            if (this.scrollDir != ScrollDirection.None) {
+                return (scrollDir == ScrollDirection.Up && delta > 0) || (scrollDir == ScrollDirection.Down && delta < 0);
             }
-            if (this.button != MouseButtons.None && this.button != button) {
-                return false;
-            }
-            return true;
+            return this.button == MouseButtons.None || this.button == button;
         }
     }
 
-    class MainMenuAction : ButtonAction {
+    internal class MainMenuAction : ButtonAction {
         private string originalCmd;
         private CMainMenuCommands cmds;
         private uint commandIndex;
@@ -104,7 +100,7 @@ namespace fooTitle.Layers {
             originalCmd = cmd;
 
             if (!MainMenuUtils.FindCommandByPath(cmd, out cmds, out commandIndex))
-                throw new ArgumentException(String.Format("Command {0} not found.", cmd));
+                throw new ArgumentException($"Command {cmd} not found.");
         }
 
         public override void Init(XmlNode node) {
@@ -161,7 +157,7 @@ namespace fooTitle.Layers {
         }
     }
 
-    class LegacyMainMenuCommand : ButtonAction {
+    internal class LegacyMainMenuCommand : ButtonAction {
         private string commandName;
 
         public override void Init(XmlNode node) {
@@ -177,7 +173,7 @@ namespace fooTitle.Layers {
         }
     };
 
-    class ToggleAction : ButtonAction {
+    internal class ToggleAction : ButtonAction {
         private string target;
 
         private enum Kind {
@@ -192,12 +188,18 @@ namespace fooTitle.Layers {
             target = Element.GetAttributeValue(node, "target", "");
 
             string _only = Element.GetAttributeValue(node, "only", "toggle").ToLowerInvariant();
-            if (_only == "enable")
-                only = Kind.Enable;
-            else if (_only == "toggle")
-                only = Kind.Toggle;
-            else if (_only == "disable")
-                only = Kind.Disable;
+            switch (_only)
+            {
+                case "enable":
+                    only = Kind.Enable;
+                    break;
+                case "toggle":
+                    only = Kind.Toggle;
+                    break;
+                case "disable":
+                    only = Kind.Disable;
+                    break;
+            }
         }
 
         public override void Run(MouseButtons button, int delta) {
@@ -222,7 +224,7 @@ namespace fooTitle.Layers {
     };
 
     [LayerTypeAttribute("button")]
-    class ButtonLayer : Layer {
+    internal class ButtonLayer : Layer {
         // action register
         public static Dictionary<string, Type> Actions = new Dictionary<string, Type>();
 
@@ -245,8 +247,7 @@ namespace fooTitle.Layers {
             XmlNode contents = GetFirstChildByName(node, "contents");
             readActions(contents);
 
-            XmlNode img;
-            img = GetFirstChildByNameOrNull(contents, "normalImg");
+            XmlNode img = GetFirstChildByNameOrNull(contents, "normalImg");
             if (img != null) {
                 myNormalImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attributes.GetNamedItem("src").Value);
             }
@@ -262,40 +263,38 @@ namespace fooTitle.Layers {
             }
 
             // register mouse events
-            Main.GetInstance().CurrentSkin.OnMouseMove += new MouseEventHandler(OnMouseMove);
-            Main.GetInstance().CurrentSkin.OnMouseDown += new MouseEventHandler(OnMouseDown);
-            Main.GetInstance().CurrentSkin.OnMouseUp += new MouseEventHandler(OnMouseUpOrWheel);
-            Main.GetInstance().CurrentSkin.OnMouseLeave += new EventHandler(OnMouseLeave);
-            Main.GetInstance().CurrentSkin.OnMouseWheel += new MouseEventHandler(OnMouseUpOrWheel);
+            Main.GetInstance().CurrentSkin.OnMouseMove += OnMouseMove;
+            Main.GetInstance().CurrentSkin.OnMouseDown += OnMouseDown;
+            Main.GetInstance().CurrentSkin.OnMouseUp += OnMouseUpOrWheel;
+            Main.GetInstance().CurrentSkin.OnMouseLeave += OnMouseLeave;
+            Main.GetInstance().CurrentSkin.OnMouseWheel += OnMouseUpOrWheel;
         }
 
-        void OnMouseLeave(object sender, EventArgs e) {
+        private void OnMouseLeave(object sender, EventArgs e) {
             mouseOn = false;
         }
 
-        void OnMouseUpOrWheel(object sender, MouseEventArgs e) {
+        private void OnMouseUpOrWheel(object sender, MouseEventArgs e) {
             if (e.Delta == 0) {
                 mouseDown = false;
             }
 
-            if (!Enabled) {
+            if (!Enabled || !mouseOn) {
                 return;
             }
 
-            if (mouseOn) {
-                // run all actions
-                foreach (IButtonAction action in actions) {
-                    action.Run(e.Button, e.Delta);
-                }
+            // run all actions
+            foreach (IButtonAction action in actions) {
+                action.Run(e.Button, e.Delta);
             }
         }
 
-        void OnMouseDown(object sender, MouseEventArgs e) {
+        private void OnMouseDown(object sender, MouseEventArgs e) {
             if (mouseOn)
                 mouseDown = true;
         }
 
-        void OnMouseMove(object sender, MouseEventArgs e) {
+        private void OnMouseMove(object sender, MouseEventArgs e) {
             mouseOn = (e.X >= ClientRect.Left) && (e.X <= ClientRect.Right) &&
                       (e.Y >= ClientRect.Top) && (e.Y <= ClientRect.Bottom);
             if (!mouseOn)
@@ -332,12 +331,12 @@ namespace fooTitle.Layers {
                 } else {
                     Type actionClass;
                     if (!Actions.TryGetValue(type, out actionClass)) {
-                        throw new ArgumentException(String.Format("No button action type {0} is registered.", type));
-                    } else {
-                        IButtonAction newAction = naid.ReflectionUtils.ConstructParameterless<IButtonAction>(actionClass);
-                        newAction.Init(child);
-                        actions.Add(newAction);
+                        throw new ArgumentException($"No button action type {type} is registered.");
                     }
+
+                    IButtonAction newAction = naid.ReflectionUtils.ConstructParameterless<IButtonAction>(actionClass);
+                    newAction.Init(child);
+                    actions.Add(newAction);
                 }
             }
         }

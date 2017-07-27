@@ -34,7 +34,7 @@ namespace fooTitle {
     public class RepeatedShowing {
         protected ConfBool reShowOnTop;
         protected Timer timer;
-        private Main main;
+        private readonly Main main;
 
         public RepeatedShowing() {
             main = Main.GetInstance();
@@ -45,9 +45,9 @@ namespace fooTitle {
 
 
             this.reShowOnTop = new ConfBool("display/reShowOnTop", true);
-            this.reShowOnTop.OnChanged += new ConfValuesManager.ValueChangedDelegate(reShowOnTop_OnChanged);
+            this.reShowOnTop.OnChanged += reShowOnTop_OnChanged;
 
-            main.Display.WindowPosition.OnChanged += new ConfValuesManager.ValueChangedDelegate(WindowPosition_OnChanged);
+            main.Display.WindowPosition.OnChanged += WindowPosition_OnChanged;
 
             this.updateTimerState();
         }
@@ -56,9 +56,9 @@ namespace fooTitle {
             updateTimerState();
         }
 
-        private void timer_Tick(object sender, EventArgs e) {
-            if (main.Display != null)
-                main.Display.SetWindowsPos(Win32.WindowPosition.Topmost);
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            main.Display?.SetWindowsPos(Win32.WindowPosition.Topmost);
         }
 
         private void updateTimerState() {
@@ -67,12 +67,10 @@ namespace fooTitle {
             } else {
                 timer.Stop();
             }
-
         }
 
         private void reShowOnTop_OnChanged(string name) {
             updateTimerState();
-
         }
     }
 }

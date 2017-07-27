@@ -18,15 +18,12 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using fooTitle;
 using System.Xml;
 
 namespace fooTitle.Layers {
     [LayerTypeAttribute("scrolling-text")]
-    class ScrollingTextLayer : TextLayer {
+    internal class ScrollingTextLayer : TextLayer {
 
         protected int direction = 1;
         /// <summary>
@@ -56,19 +53,24 @@ namespace fooTitle.Layers {
             XmlNode contents = GetFirstChildByName(node, "contents");
             
             speed = float.Parse(GetAttributeValue(contents, "speed", "25"));
-            pause = Int32.Parse(GetAttributeValue(contents, "pause", "1000"));
+            pause = int.Parse(GetAttributeValue(contents, "pause", "1000"));
         }
 
         protected override void addLabel(XmlNode node, TextLayer.LabelPart def) {
             string position = GetAttributeValue(node, "position", "left");
             left = readLabelFromElement(node, def);
 
-            if (position == "left") {
-                align = Align.Left;
-            } else if (position == "right") {
-                align = Align.Right;
-            } else if (position == "center") {
-                align = Align.Center;
+            switch (position)
+            {
+                case "left":
+                    align = Align.Left;
+                    break;
+                case "right":
+                    align = Align.Right;
+                    break;
+                case "center":
+                    align = Align.Center;
+                    break;
             }
         }
 
@@ -81,14 +83,21 @@ namespace fooTitle.Layers {
             float farPoint = this.getFarPointInClientRect(this.angle);
             float drawAt = 0;
             
-            if (textWidth <= farPoint) {  // no need to move, it's too short
+            if (textWidth <= farPoint)
+            {
+                // no need to move, it's too short
                 xpos = 0;
-                if (align == Align.Left) {
-                    drawAt = 0;
-                } else if (align == Align.Center) {
-                    drawAt = (farPoint - textWidth) / 2;
-                } else if (align == Align.Right) {
-                    drawAt = farPoint - textWidth;
+                switch (align)
+                {
+                    case Align.Left:
+                        drawAt = 0;
+                        break;
+                    case Align.Center:
+                        drawAt = (farPoint - textWidth) / 2;
+                        break;
+                    case Align.Right:
+                        drawAt = farPoint - textWidth;
+                        break;
                 }
             } else if (!paused) {
                 xpos += direction * speed * ((float)deltaTime / 10000000F);
@@ -112,11 +121,9 @@ namespace fooTitle.Layers {
 
             if (!paused) {
                 lastUpdate = now;
-            } else {
-                if ((deltaTime / 10000) >= pause) {
-                    lastUpdate = now;
-                    paused = false;
-                }
+            } else if ((deltaTime / 10000) >= pause) {
+                lastUpdate = now;
+                paused = false;
             }
         }
 

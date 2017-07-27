@@ -100,8 +100,7 @@ namespace fooTitle.Config {
         /// Helper function to fire the OnChanged event. Should be preffered over invoking the event directly
         /// </summary>
         protected void fireOnChanged() {
-            if (OnChanged != null)
-                OnChanged(Name);
+            OnChanged?.Invoke(Name);
         }
 
         /// <summary>
