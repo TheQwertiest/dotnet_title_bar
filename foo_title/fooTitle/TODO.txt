@@ -5,16 +5,11 @@
 - extendable panels :)
 - pixel accurate button hit testing
 - prevent layers from drawing outside their clientRect, that could be probably done with Drawing.Clip or ClipRegion
-- option to set actions for click/doubleclick/rightclick
 - click through - could be made .... and buttons wouldn't be click through..
 - vizualizace
 
 - profile for speed 
 - test stability
-
-cool features:
-    + now that the buttons will have an extended action specification, it could be used to enable/disable
-      a layer which could in turn be used to create extendable panels
 
 cleaning the code:
     - divide the Main class into several smaller classes for easier mantaince

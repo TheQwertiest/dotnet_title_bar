@@ -28,9 +28,17 @@ using fooTitle.Extending;
 
 
 namespace fooTitle.Layers {
+    internal enum MouseActionType
+    {
+        Click,
+        DoubleClick,
+        Wheel,
+    }
+
     internal interface IButtonAction {
         void Init(XmlNode node);
-        void Run(MouseButtons button, int delta);
+        void Run(MouseButtons button, int clicks, int delta);
+        MouseActionType GetMouseActionType();
     };
 
     internal enum ScrollDirection {
@@ -41,11 +49,13 @@ namespace fooTitle.Layers {
 
     internal abstract class ButtonAction : IButtonAction {
         protected MouseButtons button;
+        protected int clicks;
         protected ScrollDirection scrollDir;
 
         private static MouseButtons stringToButton(string b) {
             switch (b) {
                 case "left":
+                case "left_doubleclick":
                     return MouseButtons.Left;
                 case "right":
                     return MouseButtons.Right;
@@ -73,21 +83,40 @@ namespace fooTitle.Layers {
             }
         }
 
-        public virtual void Init(XmlNode node) {
-            button = stringToButton(Element.GetAttributeValue(node, "button", "all").ToLowerInvariant());
+        public virtual void Init(XmlNode node)
+        {
+            string buttonStr = Element.GetAttributeValue(node, "button", "left").ToLowerInvariant();
+            button = stringToButton(buttonStr);
+            clicks = "left_doubleclick" == buttonStr ? 2 : 1;
             scrollDir = stringToDir(Element.GetAttributeValue(node, "scroll", "none").ToLowerInvariant());
+
             if (button != MouseButtons.None && scrollDir != ScrollDirection.None) {
                 throw new ArgumentException("You can't specify both 'button' and 'scroll' attributes on an action tag!");
             }
         }
 
-        public abstract void Run(MouseButtons button, int delta);
+        public abstract void Run(MouseButtons button, int clicks, int delta);
 
-        protected bool shouldRun(MouseButtons button, int delta) {
+        public virtual MouseActionType GetMouseActionType()
+        {
+            if (clicks == 2)
+            {
+                return MouseActionType.DoubleClick;
+            }
+
+            if (scrollDir != ScrollDirection.None)
+            {
+                return MouseActionType.Wheel;
+            }
+
+            return MouseActionType.Click;
+        }
+
+        protected bool shouldRun(MouseButtons button, int clicks, int delta) {
             if (this.scrollDir != ScrollDirection.None) {
                 return (scrollDir == ScrollDirection.Up && delta > 0) || (scrollDir == ScrollDirection.Down && delta < 0);
             }
-            return this.button == MouseButtons.None || this.button == button;
+            return this.button == MouseButtons.None || ( this.button == button && this.clicks == clicks );
         }
     }
 
@@ -109,15 +138,15 @@ namespace fooTitle.Layers {
             readCommand(cmd);
         }
 
-        public override void Run(MouseButtons button, int delta) {
-            if (!shouldRun(button, delta)) {
+        public override void Run(MouseButtons button, int clicks, int delta) {
+            if (!shouldRun(button, clicks, delta)) {
                 return;
             }
             cmds.Execute(commandIndex);
         }
     };
 
-    class ContextMenuAction : ButtonAction {
+    internal class ContextMenuAction : ButtonAction {
         private Context context;
         private string cmdPath;
 
@@ -132,8 +161,8 @@ namespace fooTitle.Layers {
             cmdPath = Element.GetNodeValue(node);
         }
 
-        public override void Run(MouseButtons button, int delta) {
-            if (!shouldRun(button, delta)) {
+        public override void Run(MouseButtons button, int clicks, int delta) {
+            if (!shouldRun(button, clicks, delta)) {
                 return;
             }
             if (string.IsNullOrEmpty(cmdPath)) {
@@ -146,7 +175,7 @@ namespace fooTitle.Layers {
             bool dynamic;
 
             if (!ContextMenuUtils.FindContextCommandByDefaultPath(cmdPath, context, out cmds, out commandGuid, out index, out dynamic)) {
-                CConsole.Warning(String.Format("Contextmenu command {0} not found.", cmdPath));
+                CConsole.Warning($"Contextmenu command {cmdPath} not found.");
             }
 
             if (dynamic) {
@@ -165,8 +194,8 @@ namespace fooTitle.Layers {
             commandName = Element.GetNodeValue(node);
         }
 
-        public override void Run(MouseButtons button, int delta) {
-            if (!shouldRun(button, delta)) {
+        public override void Run(MouseButtons button, int clicks, int delta) {
+            if (!shouldRun(button, clicks, delta)) {
                 return;
             }
             CManagedWrapper.DoMainMenuCommand(commandName);
@@ -202,13 +231,13 @@ namespace fooTitle.Layers {
             }
         }
 
-        public override void Run(MouseButtons button, int delta) {
-            if (!shouldRun(button, delta)) {
+        public override void Run(MouseButtons button, int clicks, int delta) {
+            if (!shouldRun(button, clicks, delta)) {
                 return;
             }
             Layer root = LayerTools.FindLayerByName(Main.GetInstance().CurrentSkin, target);
             if (root == null) {
-                CConsole.Write(string.Format("Enable action couldn't find layer {0}.", target));
+                CConsole.Write($"Enable action couldn't find layer {target}.");
                 return;
             }
 
@@ -245,7 +274,7 @@ namespace fooTitle.Layers {
 
         public ButtonLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
             XmlNode contents = GetFirstChildByName(node, "contents");
-            readActions(contents);
+            ReadActions(contents);
 
             XmlNode img = GetFirstChildByNameOrNull(contents, "normalImg");
             if (img != null) {
@@ -262,45 +291,75 @@ namespace fooTitle.Layers {
                 myDownImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attributes.GetNamedItem("src").Value);
             }
 
-            // register mouse events
-            Main.GetInstance().CurrentSkin.OnMouseMove += OnMouseMove;
-            Main.GetInstance().CurrentSkin.OnMouseDown += OnMouseDown;
-            Main.GetInstance().CurrentSkin.OnMouseUp += OnMouseUpOrWheel;
-            Main.GetInstance().CurrentSkin.OnMouseLeave += OnMouseLeave;
-            Main.GetInstance().CurrentSkin.OnMouseWheel += OnMouseUpOrWheel;
+            RegisterMouseEvents();
         }
 
         private void OnMouseLeave(object sender, EventArgs e) {
             mouseOn = false;
         }
 
-        private void OnMouseUpOrWheel(object sender, MouseEventArgs e) {
-            if (e.Delta == 0) {
-                mouseDown = false;
+        private void OnMouseUp(object sender, MouseEventArgs e) {         
+            mouseDown = false;
+
+            if (!Enabled || !mouseOn ) {
+                return;
             }
 
-            if (!Enabled || !mouseOn) {
+            if (e.Button == MouseButtons.Left && (e.Clicks == (e.Clicks >> 1) << 1 ) )
+            {// double clicks
                 return;
             }
 
             // run all actions
             foreach (IButtonAction action in actions) {
-                action.Run(e.Button, e.Delta);
+                action.Run(e.Button, e.Clicks ,e.Delta);
             }
         }
 
-        private void OnMouseDown(object sender, MouseEventArgs e) {
-            if (mouseOn)
-                mouseDown = true;
+        private void OnMouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (!Enabled || !mouseOn)
+            {
+                return;
+            }
+
+            // run all actions
+            foreach (IButtonAction action in actions)
+            {
+                action.Run(e.Button, e.Clicks, e.Delta);
+            }
         }
 
-        private void OnMouseMove(object sender, MouseEventArgs e) {
+        private void OnMouseWheel(object sender, MouseEventArgs e)
+        {
+            if (!Enabled || !mouseOn)
+            {
+                return;
+            }
+
+            // run all actions
+            foreach (IButtonAction action in actions)
+            {
+                action.Run(e.Button, e.Clicks, e.Delta);
+            }
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
             mouseOn = (e.X >= ClientRect.Left) && (e.X <= ClientRect.Right) &&
                       (e.Y >= ClientRect.Top) && (e.Y <= ClientRect.Bottom);
             if (!mouseOn)
                 mouseDown = false;
         }
 
+        private void OnMouseDown(object sender, MouseEventArgs e) {
+            if (!mouseOn)
+            {
+                return;
+            }
+
+            mouseDown = true;
+        }
 
         protected override void drawImpl() {
             Bitmap toDraw;
@@ -316,7 +375,7 @@ namespace fooTitle.Layers {
             }
         }
 
-        private void readActions(XmlNode node) {
+        private void ReadActions(XmlNode node) {
             actions = new List<IButtonAction>();
 
             foreach (XmlNode child in node.ChildNodes) {
@@ -340,5 +399,48 @@ namespace fooTitle.Layers {
                 }
             }
         }
+
+        private void RegisterMouseEvents()
+        {
+            bool clickIsSet = false;
+            bool doubleClickIsSet = false;
+            bool wheelIsSet = false;
+            foreach (IButtonAction child in actions)
+            {
+                switch (child.GetMouseActionType())
+                {
+                    case MouseActionType.Click:
+                        clickIsSet = true;
+                        break;
+                    case MouseActionType.DoubleClick:
+                        doubleClickIsSet = true;
+                        break;
+                    case MouseActionType.Wheel:
+                        wheelIsSet = true;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+            }
+
+            Main.GetInstance().CurrentSkin.OnMouseMove += OnMouseMove;
+            Main.GetInstance().CurrentSkin.OnMouseLeave += OnMouseLeave;
+
+            if (clickIsSet)
+            {
+                Main.GetInstance().CurrentSkin.OnMouseDown += OnMouseDown;
+                Main.GetInstance().CurrentSkin.OnMouseUp += OnMouseUp;
+            }
+            if (wheelIsSet)
+            {
+                Main.GetInstance().CurrentSkin.OnMouseWheel += OnMouseWheel;
+            }
+            if (doubleClickIsSet)
+            {
+                Main.GetInstance().CurrentSkin.OnMouseDoubleClick += OnMouseDoubleClick;
+            }
+        }
+
     }
 }

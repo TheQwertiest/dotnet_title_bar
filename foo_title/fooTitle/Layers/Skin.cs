@@ -44,11 +44,6 @@ namespace fooTitle.Layers {
         /// </summary>
         private string SkinDirectory { get; }
 
-        private readonly OnPlaybackNewTrackDelegate onNewTrackRegistered;
-        private readonly OnPlaybackTimeDelegate onTimeRegistered;
-        private readonly OnPlaybackPauseDelegate onPauseRegistered;
-        private readonly OnPlaybackStopDelegate onStopRegistered;
-
         /// <summary>
         /// Loads the skin from the specified xml file
         /// </summary>
@@ -68,29 +63,26 @@ namespace fooTitle.Layers {
             geometry = new AbsoluteGeometry(new Rectangle(0, 0, width, height), width, height, new Point(0, 0), AlignType.Left);
 
             // register to main for playback events
-            onNewTrackRegistered = OnPlaybackNewTrack;
-            onTimeRegistered = OnPlaybackTime;
-            onStopRegistered = OnPlaybackStop;
-            onPauseRegistered = OnPlaybackPause;
-            Main.GetInstance().OnPlaybackNewTrackEvent += onNewTrackRegistered;
-            Main.GetInstance().OnPlaybackTimeEvent += onTimeRegistered;
-            Main.GetInstance().OnPlaybackPauseEvent += onPauseRegistered;
-            Main.GetInstance().OnPlaybackStopEvent += onStopRegistered;
+            Main.GetInstance().OnPlaybackNewTrackEvent += OnPlaybackNewTrack;
+            Main.GetInstance().OnPlaybackTimeEvent += OnPlaybackTime;
+            Main.GetInstance().OnPlaybackPauseEvent += OnPlaybackPause;
+            Main.GetInstance().OnPlaybackStopEvent += OnPlaybackStop;
         }
 
         /// <summary>
         /// Call to free this skin (unregistering events, unregistering layer events,...)
         /// </summary>
         public void Free() {
-            Main.GetInstance().OnPlaybackNewTrackEvent -= onNewTrackRegistered;
-            Main.GetInstance().OnPlaybackTimeEvent -= onTimeRegistered;
-            Main.GetInstance().OnPlaybackStopEvent -= onStopRegistered;
-            Main.GetInstance().OnPlaybackPauseEvent -= onPauseRegistered;
+            Main.GetInstance().OnPlaybackNewTrackEvent -= OnPlaybackNewTrack;
+            Main.GetInstance().OnPlaybackTimeEvent -= OnPlaybackTime;
+            Main.GetInstance().OnPlaybackStopEvent -= OnPlaybackStop;
+            Main.GetInstance().OnPlaybackPauseEvent -= OnPlaybackPause;
 
-            display.MouseUp -= mouseUpReg;
-            display.MouseDown -= mouseDownReg;
-            display.MouseMove -= mouseMoveReg;
-            display.MouseWheel -= mouseWheelReg;
+            display.MouseUp -= OnMouseUp;
+            display.MouseDown -= OnMouseDown;
+            display.MouseMove -= OnMouseMove;
+            display.MouseWheel -= OnMouseWheel;
+            display.MouseDoubleClick -= OnMouseDoubleClick;
         }
 
         /// <summary>
@@ -218,27 +210,21 @@ namespace fooTitle.Layers {
 
         public event MouseEventHandler OnMouseMove;
         public event MouseEventHandler OnMouseDown;
+        public event MouseEventHandler OnMouseDoubleClick;
         public event MouseEventHandler OnMouseUp;
         public event EventHandler OnMouseLeave;
         public event MouseEventHandler OnMouseWheel;
-
-        protected MouseEventHandler mouseMoveReg, mouseDownReg, mouseUpReg, mouseWheelReg;
-        protected EventHandler mouseLeaveReg;
 
         public void Init(Display _display) {
             display = _display;
 
             // register to mouse events
-            mouseMoveReg = display_MouseMove;
-            display.MouseMove += mouseMoveReg;
-            mouseDownReg = display_MouseDown;
-            display.MouseDown += mouseDownReg;
-            mouseUpReg = display_MouseUp;
-            display.MouseUp += mouseUpReg;
-            mouseLeaveReg = display_MouseLeave;
-            display.MouseLeave += mouseLeaveReg;
-            mouseWheelReg = display_MouseWheel;
-            display.MouseWheel += mouseWheelReg;
+            display.MouseMove += display_MouseMove;
+            display.MouseDown += display_MouseDown;
+            display.MouseUp += display_MouseUp;
+            display.MouseLeave += display_MouseLeave;
+            display.MouseWheel += display_MouseWheel;
+            display.MouseDoubleClick += display_MouseDoubleClick;
 
             InitAnchor();
 
@@ -333,6 +319,11 @@ namespace fooTitle.Layers {
 
         void display_MouseWheel(object sender, EventArgs e) {
             sendEventCatch(OnMouseWheel, sender, e);
+        }
+
+        void display_MouseDoubleClick(object sender, EventArgs e)
+        {
+            sendEventCatch(OnMouseDoubleClick, sender, e);
         }
     }
 }
