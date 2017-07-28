@@ -78,11 +78,12 @@ namespace fooTitle.Layers {
             Main.GetInstance().OnPlaybackStopEvent -= OnPlaybackStop;
             Main.GetInstance().OnPlaybackPauseEvent -= OnPlaybackPause;
 
-            display.MouseUp -= OnMouseUp;
-            display.MouseDown -= OnMouseDown;
-            display.MouseMove -= OnMouseMove;
-            display.MouseWheel -= OnMouseWheel;
-            display.MouseDoubleClick -= OnMouseDoubleClick;
+            display.MouseMove -= display_MouseMove;
+            display.MouseDown -= display_MouseDown;
+            display.MouseUp -= display_MouseUp;
+            display.MouseLeave -= display_MouseLeave;
+            display.MouseWheel -= display_MouseWheel;
+            display.MouseDoubleClick -= display_MouseDoubleClick;
         }
 
         /// <summary>
