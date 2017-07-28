@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+    author="Roman Plasil"
+    name="Thin skin version 2"
+    width="312"
+    height="23">
+
+    <layer name="main" type="fill-images">
+        <geometry type="full">
+            <padding left="0" top="0" right="0" bottom="0"/>
+        </geometry>
+        <contents>
+            <image position="left" src="left.png" />
+            <image position="center" repeat="true" src="center.png" />
+            <image position="right" src="right.png" />
+        </contents>
+
+        <!-- buttons -->
+        <layer name="Prev" type="button">
+            <geometry type="absolute">
+                <size x="14" y="15" />
+                <position x="17" y="3" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Previous
+                </action>
+                <normalImg src="normal_03.png" />
+                <overImg src="over_03.png" />
+                <downImg src="down_03.png" />
+            </contents>
+        </layer>
+    
+        <layer name="Play" type="button">
+            <geometry type="absolute">
+                <position x="32" y="3" align="left" />
+                <size x="15" y="15" />
+            </geometry>
+            <contents>
+                <action>
+                    Play
+                </action>
+                <normalImg src="normal_05.png" />
+                <overImg src="over_05.png" />
+                <downImg src="down_05.png" />
+            </contents>
+        </layer>
+
+        <layer name="Stop" type="button">
+            <geometry type="absolute">
+                <position x="48" y="3" align="left" />
+                <size x="16" y="15" />
+            </geometry>
+            <contents>
+                <action>
+                    Stop
+                </action>
+                <normalImg src="normal_07.png" />
+                <overImg src="over_07.png" />
+                <downImg src="down_07.png" />
+            </contents>
+        </layer>
+
+        <layer name="Next" type="button">
+            <geometry type="absolute">
+                <position x="65" y="3" align="left" />
+                <size x="15" y="15" />
+            </geometry>
+            <contents>
+                <action>
+                    Next
+                </action>
+                <normalImg src="normal_09.png" />
+                <overImg src="over_09.png" />
+                <downImg src="down_09.png" />
+            </contents>
+        </layer>
+
+        <layer name="Activate" type="button">
+            <geometry type="absolute">
+                <position x="81" y="3" align="left" />
+                <size x="15" y="15" />
+            </geometry>
+            <contents>
+                <action>
+                    Activate
+                </action>
+                <normalImg src="normal_11.png" />
+                <overImg src="over_11.png" />
+                <downImg src="down_11.png" />
+            </contents>
+        </layer>
+
+        <!-- frame -->
+        <layer name="frame" type="absolute-images">
+            <geometry type="absolute">
+                <position x="4" y="2" align="left" />
+                <size x="104" y="18" />
+            </geometry>
+            <contents>
+                <image src="frame_03.png" />
+            </contents>
+        </layer>
+
+        <!-- spacer -->
+        <layer name="spacer" type="absolute-images">
+            <geometry type="absolute">
+                <position x="0" y="0" align="left" />
+                <size x="300" y="25" />
+            </geometry>
+            <contents>
+            </contents>
+        </layer>
+
+
+        <!-- text -->
+        <layer name="text" type="text">
+            <geometry type="full">
+                <padding left="113" top="4" right="14" bottom="0" />
+            </geometry>
+            <contents spacing="20" font="Verdana" size="8" bold="true" >
+                <defaultText>foobar2000</defaultText>
+                <label position="left" color="ffffffff" >%artist% '('%album%')' - %title%</label>
+                <label position="right" color="ffffffff">%_time_elapsed%/%_length%</label>
+            </contents>
+        </layer>
+    </layer>
+
+</skin>

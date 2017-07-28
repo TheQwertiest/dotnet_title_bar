@@ -9,3 +9,5 @@ ipch/
 *.user
 *.dll
 *.exe
+Thumbs.db
+*.psd

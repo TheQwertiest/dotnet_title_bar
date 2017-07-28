@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+    author="Roman Plasil"
+    name="Tag"
+    width="391"
+    height="30">
+
+    <layer name="background" type="fill-images">
+        <geometry type="full">
+            <padding left="0" top="0" right="0" bottom="0"/>
+        </geometry>
+        <contents>
+            <image position="left" src="left.png" />
+            <image position="center" repeat="true" src="middle.png" />
+            <image position="right" src="right.png" />
+        </contents>
+
+    </layer>
+
+    <layer name="text" type="text">
+        <geometry type="full">
+            <padding left="90" top="3" right="90" bottom="0" />
+        </geometry>
+        <contents spacing="20" font="Verdana" size="8">
+            <label position="left" color="ffffffff" bold="false">  %artist% '('%album%')' - %title%</label>
+            <label position="right" color="ffffffff" bold="false">%_time_elapsed%/%_length%  </label>
+        </contents>
+    </layer>
+
+    <layer name="rew" type="button">
+        <geometry type="absolute">
+            <size x="61" y="19" />
+            <position x="12" y="0" align="left" />
+        </geometry>
+        <contents>
+            <action>
+                Previous
+            </action> 
+            <overImg src="rew.png" />
+            <normalImg src="empty.png" />
+            <downImg src="empty.png" />
+        </contents>
+    </layer>
+
+    <layer name="ff" type="button">
+        <geometry type="absolute">
+            <size x="61" y="19" />
+            <position x="-12" y="0" align="right" />
+        </geometry>
+        <contents>
+            <action>
+                Next
+            </action> 
+            <overImg src="ff.png" />
+            <normalImg src="empty.png" />
+            <downImg src="empty.png" />
+        </contents>
+    </layer>
+
+    <layer name="pause" type="button">
+        <geometry type="full">
+            <padding left="73" right="73" top="0" bottom="10" />
+        </geometry>
+        <contents>
+            <action>
+                Play or Pause
+            </action>
+            <overImg src="whiteish.png" />
+            <normalImg src="empty.png" />
+            <downImg src="empty.png" />
+        </contents>
+    </layer>
+
+    <layer name="fill" type="absolute-images">
+        <geometry type="absolute">
+            <size x="100" y="30" />
+            <position x="0" y="0" align="left" />
+        </geometry>
+        <contents>
+        </contents>
+    </layer>
+</skin>

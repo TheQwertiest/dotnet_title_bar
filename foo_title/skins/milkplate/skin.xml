@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="utf-8"?>
+<skin 
+    author="Roman Plasil"
+    name="Milk plate"
+    width="456"
+    height="64">
+
+    <layer name="lMain" type="absolute-images">
+        <geometry type="absolute">
+            <size x="455" y="32"/>
+            <position x="60" y="0" align="left" />
+        </geometry>
+        <contents>
+            <image src="shade_main.png" />
+        </contents>
+
+        <layer name="lMainBlue" type="absolute-images">
+            <geometry type="absolute">
+                <size x="450" y="27"/>
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="blue\back_main.png" />
+            </contents>
+        </layer>
+
+        <layer name="lMainYellow" type="absolute-images" enabled="false">
+            <geometry type="absolute">
+                <size x="450" y="27"/>
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="yellow\back_main.png" />
+            </contents>
+        </layer>
+
+        <layer name="lMainGreen" type="absolute-images" enabled="false">
+            <geometry type="absolute">
+                <size x="450" y="27"/>
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="green\back_main.png" />
+            </contents>
+        </layer>
+
+        <layer name="ArtistTrack" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="280" y="21" />
+                <position x="46" y="6" align="left" />
+            </geometry>
+            <contents spacing="0" font="Tahoma" size="8" bold="true" speed="30" pause="2000">
+                <label position="left" color="ff000000">[%tracknumber%.] $if2(%artist%,Some Artist) - $if2(%title%,Some Track)</label>
+            </contents>
+        </layer>
+
+        <layer name="time" type="text">
+            <geometry type="absolute">
+                <size x="30" y="21" />
+                <position x="328" y="6" align="left" />
+            </geometry>
+            <contents spacing="0" font="Tahoma" size="8" bold="false">
+                <label position="left" color="ff000000">%playback_time% / %length%</label>
+            </contents>
+        </layer>
+
+        <!--   Buttons -->
+        <layer name="bPrev" type="button">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="10" y="4" />
+            </geometry>
+            <contents>
+                <action>Previous</action>
+                <normalImg src="normal\prev.png" />
+                <overImg src="over\prev.png" />
+                <downImg src="down\prev.png" />
+            </contents>
+        </layer>
+
+        <layer name="bPlay" type="button">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="28" y="4" />
+            </geometry>
+            <contents>
+                <action>Play or Pause</action>
+                <normalImg src="normal\play.png" />
+                <overImg src="over\play.png" />
+                <downImg src="down\play.png" />
+            </contents>
+        </layer>
+
+
+        <layer name="bNext" type="button">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="427" y="4" />
+            </geometry>
+            <contents>
+                <action>Next</action>
+                <normalImg src="normal\next.png" />
+                <overImg src="over\next.png" />
+                <downImg src="down\next.png" />
+            </contents>
+        </layer>
+
+        <layer name="bActivate" type="button">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="407" y="4" />
+            </geometry>
+            <contents>
+                <action>Activate or Hide</action>
+                <normalImg src="normal\up.png" />
+                <overImg src="over\up.png" />
+                <downImg src="down\up.png" />
+            </contents>
+        </layer>
+
+        <layer name="bExtendBlue" type="button">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="392" y="4" />
+            </geometry>
+            <contents>
+                <action type="toggle" target="lExt" />
+                <action type="toggle" only="disable" target="lExtYellow" />
+                <action type="toggle" only="disable" target="bAlbumArtYellow" />
+                <action type="toggle" only="disable" target="lExtGreen" />
+                <action type="toggle" only="disable" target="bAlbumArtGreen" />
+                <normalImg src="normal\down.png" />
+                <overImg src="over\down.png" />
+                <downImg src="down\down.png" />
+            </contents>
+        </layer>
+
+        <layer name="bExtendYellow" type="button" enabled="false">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="392" y="4" />
+            </geometry>
+            <contents>
+                <action type="toggle" target="lExt" />
+                <action type="toggle" only="disable" target="lExtBlue" />
+                <action type="toggle" only="disable" target="bAlbumArtBlue" />
+                <action type="toggle" only="disable" target="lExtGreen" />
+                <action type="toggle" only="disable" target="bAlbumArtGreen" />
+                <normalImg src="normal\down.png" />
+                <overImg src="over\down.png" />
+                <downImg src="down\down.png" />
+            </contents>
+        </layer>
+
+        <layer name="bExtendGreen" type="button" enabled="false">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="392" y="4" />
+            </geometry>
+            <contents>
+                <action type="toggle" target="lExt" />
+                <action type="toggle" only="disable" target="lExtYellow" />
+                <action type="toggle" only="disable" target="bAlbumArtYellow" />
+                <action type="toggle" only="disable" target="lExtBlue" />
+                <action type="toggle" only="disable" target="bAlbumArtBlue" />
+                <normalImg src="normal\down.png" />
+                <overImg src="over\down.png" />
+                <downImg src="down\down.png" />
+            </contents>
+        </layer>
+
+        <layer name="reflection1" type="absolute-images">
+            <geometry type="absolute">
+                <size x="450" y="25" />
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="reflection.png" />
+            </contents>
+        </layer>
+    </layer>
+
+    <layer name="lAlbumArt" type="absolute-images">
+        <geometry type="absolute">
+            <size x="62" y="64"/>
+            <position x="0" y="0" align="left" />
+        </geometry>
+        <contents>
+            <image src="shade_albumart.png" />
+        </contents>
+
+        <layer name="lAlbumArtBlue" type="absolute-images">
+            <geometry type="absolute">
+                <size x="62" y="59"/>
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="blue\add_albumart.png" />
+            </contents>
+        </layer>
+
+        <layer name="lAlbumArtYellow" type="absolute-images" enabled="false">
+            <geometry type="absolute">
+                <size x="62" y="59"/>
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="yellow\add_albumart.png" />
+            </contents>
+        </layer>
+
+        <layer name="lAlbumArtGreen" type="absolute-images" enabled="false">
+            <geometry type="absolute">
+                <size x="62" y="59"/>
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="green\add_albumart.png" />
+            </contents>
+        </layer>
+
+        <layer name="album_art" type="album-art">
+            <geometry type="absolute">
+                <size x="55" y="56"/>
+                <position x="1" y="1" align="left" />
+            </geometry>
+            <contents></contents>
+        
+        </layer>
+
+        <layer name="reflection2" type="absolute-images">
+            <geometry type="absolute">
+                <size x="62" y="25" />
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="reflection.png" />
+            </contents>
+        </layer>
+    </layer>
+
+    <layer name="lExt" type="absolute-images" enabled="false">
+        <geometry type="absolute">
+            <size x="454" y="44"/>
+            <position x="60" y="24" align="left" />
+        </geometry>
+        <contents>
+            <image src="shade_ext.png" />
+        </contents>
+
+        <layer name="lExtBlue" type="absolute-images" >
+            <geometry type="absolute">
+                <size x="450" y="39"/>
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="blue\add_ext.png" />
+            </contents>
+        </layer>
+
+        <layer name="lExtYellow" type="absolute-images" enabled="false">
+            <geometry type="absolute">
+                <size x="450" y="39"/>
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="yellow\add_ext.png" />
+            </contents>
+        </layer>
+
+        <layer name="lExtGreen" type="absolute-images" enabled="false">
+            <geometry type="absolute">
+                <size x="450" y="39"/>
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="green\add_ext.png" />
+            </contents>
+        </layer>
+
+        <layer name="bAlbumArtBlue" type="button">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="427" y="3" />
+            </geometry>
+            <contents>
+                <action type="toggle" target="lAlbumArt" />
+                <action type="toggle" only="disable" target="lAlbumArtYellow" />
+                <action type="toggle" only="disable" target="lAlbumArtGreen" />
+                <normalImg src="normal\album.png" />
+                <overImg src="over\album.png" />
+                <downImg src="down\album.png" />
+            </contents>
+        </layer>
+
+        <layer name="bAlbumArtYellow" type="button" enabled="false">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="427" y="3" />
+            </geometry>
+            <contents>
+                <action type="toggle" target="lAlbumArt" />
+                <action type="toggle" only="disable" target="lAlbumArtBlue" />
+                <action type="toggle" only="disable" target="lAlbumArtGreen" />
+                <normalImg src="normal\album.png" />
+                <overImg src="over\album.png" />
+                <downImg src="down\album.png" />
+            </contents>
+        </layer>
+
+        <layer name="bAlbumArtGreen" type="button" enabled="false">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="427" y="3" />
+            </geometry>
+            <contents>
+                <action type="toggle" target="lAlbumArt" />
+                <action type="toggle" only="disable" target="lAlbumArtYellow" />
+                <action type="toggle" only="disable" target="lAlbumArtBlue" />
+                <normalImg src="normal\album.png" />
+                <overImg src="over\album.png" />
+                <downImg src="down\album.png" />
+            </contents>
+        </layer>
+
+        <layer name="bMute" type="button">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="407" y="3" />
+            </geometry>
+            <contents>
+                <action>Volume Mute</action>
+                <normalImg src="normal\mute.png" />
+                <overImg src="over\mute.png" />
+                <downImg src="down\mute.png" />
+            </contents>
+        </layer>
+
+        <layer name="bProps" type="button">
+            <geometry type="absolute">
+                <size x="18" y="18" />
+                <position x="390" y="3" />
+            </geometry>
+            <contents>
+                <action type="contextmenu" context="nowplaying">
+                    Properties
+                </action>
+                <normalImg src="normal\props.png" />
+                <overImg src="over\props.png" />
+                <downImg src="down\props.png" />
+            </contents>
+        </layer>
+
+        <layer name="rating" type="text">
+            <geometry type="absolute">
+                <size x="30" y="21" />
+                <position x="5" y="5" align="left" />
+            </geometry>
+            <contents spacing="0" font="Tahoma" size="8" bold="false" speed="30" pause="2000">
+                <label position="left" color="ff000000">Rating: [%rating%]</label>
+            </contents>
+        </layer>
+
+        <layer name="album" type="text">
+            <geometry type="absolute">
+                <size x="30" y="21" />
+                <position x="100" y="5" align="left" />
+            </geometry>
+            <contents spacing="0" font="Tahoma" size="8" bold="false" speed="30" pause="2000">
+                <label position="left" color="ff000000">Album: [%album%]</label>
+            </contents>
+        </layer>
+
+        <layer name="genre" type="text">
+            <geometry type="absolute">
+                <size x="30" y="21" />
+                <position x="100" y="20" align="left" />
+            </geometry>
+            <contents spacing="0" font="Tahoma" size="8" bold="false" speed="30" pause="2000">
+                <label position="left" color="ff000000">Genre: [%genre%]</label>
+            </contents>
+        </layer>
+
+        <!-- Stars -->
+        <layer name="star1" type="button">
+            <geometry type="absolute">
+                <size x="16" y="15" />
+                <position x="5" y="20" />
+            </geometry>
+            <contents>
+                <action type="contextmenu" context="nowplaying">
+                    Playback Statistics/Rating/Rating/1
+                </action>
+                <normalImg src="star.png" />
+                <overImg src="star2.png" />
+                <downImg src="star2.png" />
+            </contents>
+        </layer>
+
+        <layer name="star2" type="button">
+            <geometry type="absolute">
+                <size x="16" y="15" />
+                <position x="22" y="20" />
+            </geometry>
+            <contents>
+                <action type="contextmenu" context="nowplaying">
+                    Playback Statistics/Rating/Rating/2
+                </action>
+                <normalImg src="star.png" />
+                <overImg src="star2.png" />
+                <downImg src="star2.png" />
+            </contents>
+        </layer>
+
+        <layer name="star3" type="button">
+            <geometry type="absolute">
+                <size x="16" y="15" />
+                <position x="39" y="20" />
+            </geometry>
+            <contents>
+                <action type="contextmenu" context="nowplaying">
+                    Playback Statistics/Rating/Rating/3
+                </action>
+                <normalImg src="star.png" />
+                <overImg src="star2.png" />
+                <downImg src="star2.png" />
+            </contents>
+        </layer>
+
+        <layer name="star4" type="button">
+            <geometry type="absolute">
+                <size x="16" y="15" />
+                <position x="56" y="20" />
+            </geometry>
+            <contents>
+                <action type="contextmenu" context="nowplaying">
+                    Playback Statistics/Rating/Rating/4
+                </action>
+                <normalImg src="star.png" />
+                <overImg src="star2.png" />
+                <downImg src="star2.png" />
+            </contents>
+        </layer>
+
+        <layer name="star5" type="button">
+            <geometry type="absolute">
+                <size x="16" y="15" />
+                <position x="73" y="20" />
+            </geometry>
+            <contents>
+                <action type="contextmenu" context="nowplaying">
+                    Playback Statistics/Rating/Rating/5
+                </action>
+                <normalImg src="star.png" />
+                <overImg src="star2.png" />
+                <downImg src="star2.png" />
+            </contents>
+        </layer>
+
+        <!-- Color buttons -->
+        <layer name="bBlue" type="button">
+            <geometry type="absolute">
+                <size x="16" y="16" />
+                <position x="429" y="20" />
+            </geometry>
+            <contents>
+                <action type="toggle" only="enable" target="lExtBlue" />
+                <action type="toggle" only="enable" target="lMainBlue" />
+                <action type="toggle" only="enable" target="lAlbumArtBlue" />
+                <action type="toggle" only="enable" target="bExtendBlue" />
+                <action type="toggle" only="enable" target="bAlbumArtBlue" />
+                <action type="toggle" only="disable" target="lExtYellow" />
+                <action type="toggle" only="disable" target="lMainYellow" />
+                <action type="toggle" only="disable" target="lAlbumArtYellow" />
+                <action type="toggle" only="disable" target="bExtendYellow" />
+                <action type="toggle" only="disable" target="bAlbumArtYellow" />
+                <action type="toggle" only="disable" target="lExtGreen" />
+                <action type="toggle" only="disable" target="lMainGreen" />
+                <action type="toggle" only="disable" target="lAlbumArtGreen" />
+                <action type="toggle" only="disable" target="bExtendGreen" />
+                <action type="toggle" only="disable" target="bAlbumArtGreen" />
+                <overImg src="color_btn_over.png" />
+                <downImg src="color_btn_down.png" />
+                <normalImg src="color_btn_normal.png" />
+            </contents>
+
+            <layer name="bBlueInside" type="absolute-images">
+                <geometry type="absolute">
+                    <size x="14" y="14" />
+                    <position x="1" y="1" align="left" />
+                </geometry>
+                <contents>
+                    <image src="blue/button.png" />
+                </contents>
+            </layer>
+
+        </layer>
+
+        <layer name="bYellow" type="button">
+            <geometry type="absolute">
+                <size x="16" y="16" />
+                <position x="411" y="20" />
+            </geometry>
+            <contents>
+                <action type="toggle" only="disable" target="lExtBlue" />
+                <action type="toggle" only="disable" target="lMainBlue" />
+                <action type="toggle" only="disable" target="lAlbumArtBlue" />
+                <action type="toggle" only="disable" target="bAlbumArtBlue" />
+                <action type="toggle" only="disable" target="bExtendBlue" />
+                <action type="toggle" only="disable" target="lExtGreen" />
+                <action type="toggle" only="disable" target="lMainGreen" />
+                <action type="toggle" only="disable" target="lAlbumArtGreen" />
+                <action type="toggle" only="disable" target="bAlbumArtGreen" />
+                <action type="toggle" only="disable" target="bExtendGreen" />
+                <action type="toggle" only="enable" target="lExtYellow" />
+                <action type="toggle" only="enable" target="lMainYellow" />
+                <action type="toggle" only="enable" target="lAlbumArtYellow" />
+                <action type="toggle" only="enable" target="bExtendYellow" />
+                <action type="toggle" only="enable" target="bAlbumArtYellow" />
+                <overImg src="color_btn_over.png" />
+                <downImg src="color_btn_down.png" />
+                <normalImg src="color_btn_normal.png" />
+            </contents>
+
+            <layer name="bBlueInside" type="absolute-images">
+                <geometry type="absolute">
+                    <size x="14" y="14" />
+                    <position x="1" y="1" align="left" />
+                </geometry>
+                <contents>
+                    <image src="yellow/button.png" />
+                </contents>
+            </layer>
+        </layer>
+
+        <layer name="bGreen" type="button">
+            <geometry type="absolute">
+                <size x="16" y="16" />
+                <position x="393" y="20" />
+            </geometry>
+            <contents>
+                <action type="toggle" only="disable" target="lExtBlue" />
+                <action type="toggle" only="disable" target="lMainBlue" />
+                <action type="toggle" only="disable" target="lAlbumArtBlue" />
+                <action type="toggle" only="disable" target="bAlbumArtBlue" />
+                <action type="toggle" only="disable" target="bExtendBlue" />
+                <action type="toggle" only="disable" target="lExtYellow" />
+                <action type="toggle" only="disable" target="lMainYellow" />
+                <action type="toggle" only="disable" target="lAlbumArtYellow" />
+                <action type="toggle" only="disable" target="bExtendYellow" />
+                <action type="toggle" only="disable" target="bAlbumArtYellow" />
+                <action type="toggle" only="enable" target="lExtGreen" />
+                <action type="toggle" only="enable" target="lMainGreen" />
+                <action type="toggle" only="enable" target="lAlbumArtGreen" />
+                <action type="toggle" only="enable" target="bAlbumArtGreen" />
+                <action type="toggle" only="enable" target="bExtendGreen" />
+                <overImg src="color_btn_over.png" />
+                <downImg src="color_btn_down.png" />
+                <normalImg src="color_btn_normal.png" />
+            </contents>
+
+            <layer name="bGreenInside" type="absolute-images">
+                <geometry type="absolute">
+                    <size x="14" y="14" />
+                    <position x="1" y="1" align="left" />
+                </geometry>
+                <contents>
+                    <image src="green/button.png" />
+                </contents>
+            </layer>
+
+        </layer>
+    </layer>
+</skin>

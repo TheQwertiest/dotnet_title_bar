@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+    author="Roman Plasil"
+    name="Icebox"
+    width="32"
+    height="304">
+
+    <layer name="background" type="absolute-images">
+        <geometry type="absolute">
+            <size x="32" y="300" />
+            <position />
+        </geometry>
+        <contents>
+            <image src="base2.png" />
+        </contents>
+    
+        <layer name="top" type="button">
+            <geometry type="absolute">
+                <size x="32" y="51" />
+                <position />
+            </geometry>
+            <contents>
+                <action type="menu">
+                    Playback/Previous
+                </action>
+                <overImg src="top.png" />
+                <downImg src="top2.png" />
+            </contents>
+        </layer>
+
+        <layer name="bottom" type="button">
+            <geometry type="absolute">
+                <size x="32" y="49" />
+                <position y="251" />
+            </geometry>
+            <contents>
+                <action type="menu">
+                    Playback/Next
+                </action>
+                <overImg src="bottom.png" />
+                <downImg src="bottom2.png" />
+            </contents>
+        </layer>
+    
+    </layer>
+
+
+    <layer name="text" type="scrolling-text">
+        <geometry type="full">
+            <padding left="13" top="14" right="0" bottom="15" />
+        </geometry>
+        <contents spacing="20" font="Tahoma" size="9" angle="90">
+            <label position="left" color="ff000040" bold="false"> %artist% - %title% - %_time_elapsed% </label>
+        </contents>
+    </layer>
+
+</skin>

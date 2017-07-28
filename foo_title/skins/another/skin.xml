@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+    author="Roman Plasil"
+    name="Another Vista-like skin"
+    width="312"
+    height="73">
+
+    <layer name="main" type="absolute-images">
+        <geometry type="absolute">
+            <size x="370" y="58" />
+            <position x="0" y="0" align="left" />
+        </geometry>
+
+        <contents>
+            <image src="main.png" />
+        </contents>
+        
+        <!-- titles -->
+        <layer name="Artist" type="text">
+            <geometry type="absolute">
+                <size x="124" y="18" />
+                <position x="17" y="12" align="left" />
+            </geometry>
+            <contents spacing="0" font="Bitstream Vera Sans" size="8">
+                <label position="left" color="ffffffff">%artist%</label>
+            </contents>
+        </layer>
+
+        <layer name="Album" type="text">
+            <geometry type="absolute">
+                <size x="116" y="18" />
+                <position x="25" y="32" align="left" />
+            </geometry>
+            <contents spacing="0" font="Bitstream Vera Sans" size="7">
+                <label position="left" color="ffffffff">%album%</label>
+            </contents>
+        </layer>
+        
+        <layer name="Title" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="123" y="18" />
+                <position x="233" y="13" align="left" />
+            </geometry>
+            <contents spacing="0" font="Bitstream Vera Sans" size="8" >
+                <label position="left" color="ffffffff">%title%</label>
+            </contents>
+        </layer>
+
+        <layer name="Time" type="text">
+            <geometry type="absolute">
+                <size x="69" y="16" />
+                <position x="272" y="30" align="left" />
+            </geometry>
+            <contents spacing="0" font="Bitstream Vera Sans" size="7">
+                <label position="left" color="ffffffff">%_time_elapsed%</label>
+                <label position="right" color="ffffffff">%_length%</label>
+            </contents>
+        </layer>
+
+        <!-- buttons -->
+        <layer name="Prev" type="button">
+            <geometry type="absolute">
+                <size x="27" y="22" />
+                <position x="145" y="16" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Previous
+                </action>
+                <normalImg src="normal_11.png" />
+                <overImg src="over_11.png" />
+                <downImg src="down_11.png" />
+            </contents>
+        </layer>
+
+        <layer name="Play" type="button">
+            <geometry type="absolute">
+                <size x="27" y="22" />
+                <position x="160" y="16" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Play
+                </action>
+                <normalImg src="normal_03.png" />
+                <overImg src="over_03.png" />
+                <downImg src="down_03.png" />
+            </contents>
+        </layer>
+
+        <layer name="Stop" type="button">
+            <geometry type="absolute">
+                <size x="25" y="24" />
+                <position x="181" y="14" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Stop
+                </action>
+                <normalImg src="normal_08.png" />
+                <overImg src="over_08.png" />
+                <downImg src="down_08.png" />
+            </contents>
+        </layer>
+
+        <layer name="Next" type="button">
+            <geometry type="absolute">
+                <size x="27" y="22" />
+                <position x="198" y="16" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Next
+                </action>
+                <normalImg src="normal_05.png" />
+                <overImg src="over_05.png" />
+                <downImg src="down_05.png" />
+            </contents>
+        </layer>
+
+    </layer>
+</skin>
