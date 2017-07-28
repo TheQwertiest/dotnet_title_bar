@@ -72,9 +72,7 @@ namespace fooTitle.Geometries {
         protected ExpressionPoint myExprPosition;
         protected Point myPosition;
         public Point Position {
-            get {
-                return myPosition;
-            }
+            get => myPosition;
             set {
                 myPosition = value;
                 Update(myParentRect);
@@ -83,9 +81,7 @@ namespace fooTitle.Geometries {
 
         protected AlignType myAlign;
         public AlignType Align {
-            get {
-                return myAlign;
-            }
+            get => myAlign;
             set {
                 myAlign = value;
                 Update(myParentRect);

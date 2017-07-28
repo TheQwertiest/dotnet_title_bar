@@ -407,5 +407,27 @@ namespace fooTitle {
                 this.Left = windowPos.x;
             }
         }
+
+        internal void ReadjustPosition()
+        {
+            Screen screen = Screen.FromControl(this);
+            if (this.Top < 0)
+            {
+                this.Top = 0;
+            }
+            else if (this.Top > screen.WorkingArea.Bottom)
+            {
+                this.Top = screen.WorkingArea.Bottom - this.Height;
+            }
+
+            if (this.Left < 0)
+            {
+                this.Left = 0;
+            }
+            else if (this.Top > screen.WorkingArea.Bottom)
+            {
+                this.Left = screen.WorkingArea.Right - this.Width;
+            }
+        }
     }
 }
