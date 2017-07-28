@@ -31,11 +31,8 @@ namespace fooTitle.Geometries {
         /// <summary>
         /// The rectangle that this geometry defines.
         /// </summary>
-        public Rectangle ClientRect {
-            get {
-                return myClientRect;
-            }
-        }
+        public Rectangle ClientRect => myClientRect;
+
         /// <summary>
         /// This structure describes a rectangle using foobar2000's formatting expressions.
         /// </summary>

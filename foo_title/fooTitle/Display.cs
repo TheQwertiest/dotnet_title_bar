@@ -204,6 +204,7 @@ namespace fooTitle {
             }
             frameUpdateOpacity();
             SetBitmap(canvasBitmap, (byte)opacity);
+            Canvas.ResetClip();
             Canvas.Clear(Color.Transparent);
         }
 

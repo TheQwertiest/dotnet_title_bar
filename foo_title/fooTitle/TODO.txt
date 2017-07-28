@@ -4,7 +4,6 @@
 - maybe create the effect of reflecting glass ;)
 - extendable panels :)
 - pixel accurate button hit testing
-- prevent layers from drawing outside their clientRect, that could be probably done with Drawing.Clip or ClipRegion
 - click through - could be made .... and buttons wouldn't be click through..
 - vizualizace
 

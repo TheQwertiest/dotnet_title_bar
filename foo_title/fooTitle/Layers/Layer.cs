@@ -206,6 +206,8 @@ namespace fooTitle.Layers {
             if (!Enabled)
                 return;
 
+            // Prevent layers from drawing outside their clientRect
+            Display.Canvas.SetClip(new Rectangle(ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height));
             drawImpl();
             drawSubLayers();
         }
