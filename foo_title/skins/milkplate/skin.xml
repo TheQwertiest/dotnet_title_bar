@@ -3,7 +3,8 @@
     author="Roman Plasil"
     name="Milk plate"
     width="456"
-    height="64">
+    height="64"
+    anchor="Top,Right">
 
     <layer name="lMain" type="absolute-images">
         <geometry type="absolute">
@@ -188,6 +189,16 @@
         <contents>
             <image src="shade_albumart.png" />
         </contents>
+        
+        <layer name="bOpenFolder" type="button">
+            <geometry type="absolute">
+            <size x="62" y="64"/>
+                 <position x="0" y="0" align="left"/>
+            </geometry>
+            <contents>
+                 <action type="contextmenu" context="nowplaying" button="left_doubleclick">Open containing folder</action>
+            </contents>
+        </layer>
 
         <layer name="lAlbumArtBlue" type="absolute-images">
             <geometry type="absolute">

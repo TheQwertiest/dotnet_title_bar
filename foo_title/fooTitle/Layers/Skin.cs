@@ -236,7 +236,7 @@ namespace fooTitle.Layers {
         {
             XmlNode anchorDxStr = skin.Attributes.GetNamedItem("anchor_dx");
             XmlNode anchorDyStr = skin.Attributes.GetNamedItem("anchor_dy");
-            XmlNode anchorTypeStr = skin.Attributes.GetNamedItem("anchor_type");
+            XmlNode anchorTypeStr = skin.Attributes.GetNamedItem("anchor");
 
             double anchorDx = anchorDxStr == null ? 0 : double.Parse(anchorDxStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
             double anchorDy = anchorDyStr == null ? 0 : double.Parse(anchorDyStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);

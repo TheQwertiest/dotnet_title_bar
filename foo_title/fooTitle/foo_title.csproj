@@ -153,7 +153,7 @@
     <Compile Include="Display.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="dock_anchor.cs" />
+    <Compile Include="DockAnchor.cs" />
     <Compile Include="Extending\ElementFactory.cs" />
     <Compile Include="Extending\ExtensionLoader.cs" />
     <Compile Include="Geometries\AbsoluteGeometry.cs" />
@@ -163,7 +163,7 @@
     <Compile Include="Extending\IPlugin.cs" />
     <Compile Include="Layers\AlbumArtLayer.cs" />
     <Compile Include="Layers\ButtonLayer.cs" />
-    <Compile Include="Layers\color_layer.cs" />
+    <Compile Include="Layers\ColorLayer.cs" />
     <Compile Include="Layers\LayersTools.cs" />
     <Compile Include="interfaces.cs">
       <SubType>Code</SubType>
