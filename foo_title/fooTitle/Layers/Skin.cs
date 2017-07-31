@@ -245,23 +245,23 @@ namespace fooTitle.Layers {
             if (anchorTypeStr != null)
             {
                 anchorType = DockAnchor.Type.None;
-                foreach (string i in anchorTypeStr.Value.Split(','))
+                foreach (string i in anchorTypeStr.Value.ToLower().Split(','))
                 {
                     switch (i)
                     {
-                        case "Top":
+                        case "top":
                             anchorType |= DockAnchor.Type.Top;
                             break;
-                        case "Bottom":
+                        case "bottom":
                             anchorType |= DockAnchor.Type.Bottom;
                             break;
-                        case "Right":
+                        case "right":
                             anchorType |= DockAnchor.Type.Right;
                             break;
-                        case "Left":
+                        case "left":
                             anchorType |= DockAnchor.Type.Left;
                             break;
-                        case "Center":
+                        case "center":
                             anchorType |= DockAnchor.Type.Center;
                             break;
                     }
