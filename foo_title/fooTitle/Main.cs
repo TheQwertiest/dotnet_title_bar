@@ -71,9 +71,12 @@ namespace fooTitle {
             if (initDone) {
                 try {
                     LoadSkin(SkinPath.Value);
+                    // Changing to skin with different anchor type 
+                    // may cause window to go beyond screen borders
+                    Display.ReadjustPosition();
                 } catch (Exception e) {
                     CurrentSkin = null;
-                    System.Windows.Forms.MessageBox.Show($"foo_title - There was an error loading skin { SkinPath.Value}:\n {e.Message} \n {e.ToString()}", "foo_title");
+                    System.Windows.Forms.MessageBox.Show($"foo_title - There was an error loading skin { SkinPath.Value}:\n {e.Message} \n {e}", "foo_title");
                 }
             }
         }
