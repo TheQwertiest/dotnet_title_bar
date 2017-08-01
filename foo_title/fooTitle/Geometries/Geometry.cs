@@ -17,9 +17,7 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using System.Drawing;
 using fooTitle.Extending;
 using System.Xml;
@@ -66,7 +64,7 @@ namespace fooTitle.Geometries {
         /// </summary>
         /// <param name="parentRect">The rectangle that this geometry lives in</param>
         /// <param name="node">The XML node to load geometry's parameters from</param>
-        public Geometry(Rectangle parentRect, XmlNode node) {
+        protected Geometry(Rectangle parentRect, XmlNode node) {
 
         }
 
@@ -82,10 +80,8 @@ namespace fooTitle.Geometries {
         /// <summary>
         /// Calculates the minimal size needed to display this entire layer.
         /// </summary>
-        /// <param name="display">The display this geometry will be shown on 
-        /// (different displays may have different metrics)</param>
-        /// <param name="size">The size of the contents.</param>
-        public abstract Size GetMinimalSize(Display display, Size size);
+        /// <param name="contentSize">The contentSize of the contents.</param>
+        public abstract Size GetMinimalSize(Size contentSize);
 
 
         /// <summary>

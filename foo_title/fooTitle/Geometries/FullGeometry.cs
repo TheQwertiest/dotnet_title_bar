@@ -67,7 +67,7 @@ namespace fooTitle.Geometries {
             myClientRect.Height = parentRect.Height - (myPadding.Top + myPadding.Bottom);
         }
 
-        public override Size GetMinimalSize(Display display, Size contentSize) {
+        public override Size GetMinimalSize(Size contentSize) {
             return new Size(myPadding.Left + myPadding.Right + contentSize.Width,
                             myPadding.Top + myPadding.Bottom + contentSize.Height);
         }

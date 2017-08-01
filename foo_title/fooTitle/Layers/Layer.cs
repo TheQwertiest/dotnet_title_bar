@@ -230,7 +230,7 @@ namespace fooTitle.Layers {
         }
 
         protected virtual Size getMinimalSizeImpl() {
-            return geometry.GetMinimalSize(Display, getContentSize());
+            return geometry.GetMinimalSize(getContentSize());
         }
 
         /// <summary>

@@ -18,8 +18,6 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Reflection;
-using System.Collections;
 using fooTitle.Extending;
 
 namespace fooTitle.Geometries {
@@ -27,7 +25,7 @@ namespace fooTitle.Geometries {
     [AttributeUsage(AttributeTargets.Class)]
     public class GeometryTypeAttribute : ElementTypeAttribute {
 
-        public GeometryTypeAttribute(String _type) : base(_type) {
+        public GeometryTypeAttribute(string type) : base(type) {
         }
 
     }

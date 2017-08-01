@@ -161,6 +161,7 @@
     <Compile Include="Geometries\Geometry.cs" />
     <Compile Include="Geometries\GeometryTools.cs" />
     <Compile Include="Extending\IPlugin.cs" />
+    <Compile Include="Geometries\MinimalGeometry.cs" />
     <Compile Include="Layers\AlbumArtLayer.cs" />
     <Compile Include="Layers\ButtonLayer.cs" />
     <Compile Include="Layers\ColorLayer.cs" />

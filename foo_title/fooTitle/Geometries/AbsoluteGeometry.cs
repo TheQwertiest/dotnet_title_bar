@@ -152,7 +152,7 @@ namespace fooTitle.Geometries {
             }
         }
         
-        public override Size GetMinimalSize(Display display, Size contentSize) {
+        public override Size GetMinimalSize(Size contentSize) {
             return new Size(Math.Max(Width, contentSize.Width), Math.Max(Height, contentSize.Height));
         }
 

@@ -133,7 +133,7 @@ namespace fooTitle.Layers {
         /// </summary>
         /// <returns>the same as Layer.GetMinimialSize()</returns>
         protected override System.Drawing.Size getMinimalSizeImpl() {
-            return geometry.GetMinimalSize(Display, getContentSize());
+            return geometry.GetMinimalSize(getContentSize());
         }
 
         /// <summary>

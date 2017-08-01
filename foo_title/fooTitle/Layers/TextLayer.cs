@@ -222,7 +222,7 @@ namespace fooTitle.Layers
 		}
 
 		protected override Size getMinimalSizeImpl() {
-            return geometry.GetMinimalSize(Display, calcRotatedBounds().Size);
+            return geometry.GetMinimalSize(calcRotatedBounds().Size);
 		}
 
         /// <returns>
