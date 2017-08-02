@@ -56,57 +56,12 @@ namespace fooTitle.Layers {
 
         public Layer ParentLayer;
 
-        private bool isTopToolTipLayer = false;
-
         public bool IsMouseOver { get; private set; } = false;
 
         public bool HasToolTip { get; } = false;
-
-        private readonly Timer toolTipTimer;
-        private readonly string toolTipText;
-        private bool isTooltipShowing = false;
-
-        private void delayToolTip()
-        {
-            toolTipTimer?.Start();
-        }
-
-        private void showToolTip() {
-            toolTipTimer?.Stop();
-            Main.GetInstance().ttd.SetText(Extending.Element.GetStringFromExpression(toolTipText, null));
-            Main.GetInstance().ttd.SetWindowsPos(Win32.WindowPosition.Topmost);
-            Main.GetInstance().ttd.Show();
-            isTooltipShowing = true;
-        }
-
-        private void updateToolTip() {
-            if (isTooltipShowing) {
-                Main.GetInstance().ttd.SetText(Extending.Element.GetStringFromExpression(toolTipText, null));
-            }
-        }
-
-        private void removeToolTip(bool force) {
-            toolTipTimer?.Stop();
-            if (isTooltipShowing) {
-                Main.GetInstance().ttd.Hide();
-                isTooltipShowing = false;
-            }
-        }
-
-        private void toolTipTimer_OnTick(object sender, EventArgs e) {
-            showToolTip();
-        }
+       private readonly string _toolTipText;
 
         public Layer(Rectangle parentRect, XmlNode node) {
-            XmlNode contents = GetFirstChildByName(node, "contents");
-            toolTipText = GetAttributeValue(contents, "tooltip", null);
-            if (toolTipText != null) {
-                HasToolTip = true;
-                toolTipTimer = new Timer();
-                toolTipTimer.Interval = 500;
-                toolTipTimer.Tick += toolTipTimer_OnTick;
-            }
-
             // read name and type
             Name = node.Attributes.GetNamedItem("name").Value;
             Type = node.Attributes.GetNamedItem("type").Value;
@@ -126,40 +81,50 @@ namespace fooTitle.Layers {
 
             UpdateGeometry(parentRect);
 
-            Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += OnPlaybackTime;
-            Main.GetInstance().CurrentSkin.OnMouseMove += OnMouseMove;
-            Main.GetInstance().CurrentSkin.OnMouseLeave += OnMouseLeave;
+            // tooltip
+            bool hasDynamicToolTip = false;
+            _toolTipText = GetAttributeValue(node, "tooltip", null);
+            if (_toolTipText != null)
+            {
+                HasToolTip = true;
+                hasDynamicToolTip = IsExpression(_toolTipText);
+            }
+
+            if (HasToolTip)
+            {
+                Main.GetInstance().CurrentSkin.OnMouseMove += OnMouseMove;
+                Main.GetInstance().CurrentSkin.OnMouseLeave += OnMouseLeave;
+                if (hasDynamicToolTip)
+                {
+                    Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += OnPlaybackTime;
+                }
+            }
         }
 
         protected Layer() { }
 
-        private void OnPlaybackTime(double time) {
-            if (isTooltipShowing) {
-                updateToolTip();
+        private void OnPlaybackTime(double time)
+        {
+            if (IsMouseOver)
+            {
+                Main.GetInstance().CurrentSkin.ToolTip.UpdateToolTip(this, _toolTipText);
             }
         }
 
         private void OnMouseLeave(object sender, EventArgs e) {
             IsMouseOver = false;
-            removeToolTip(true);
+            Main.GetInstance().CurrentSkin.ToolTip.ClearToolTip();
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e) {
-            bool wasMouseOver = IsMouseOver;
-            IsMouseOver = (e.X >= ClientRect.Left) && (e.X <= ClientRect.Right) && (e.Y >= ClientRect.Top) && (e.Y <= ClientRect.Bottom);
-
-            bool wasTopToolTipLayer = isTopToolTipLayer;
-            isTopToolTipLayer = Main.GetInstance().CurrentSkin.TopToolTipLayer == this;
-
-            if (!wasTopToolTipLayer && isTopToolTipLayer) {
-                delayToolTip();
-            }
-            if (wasTopToolTipLayer && !isTopToolTipLayer) {
-                removeToolTip(false);
+            IsMouseOver = ClientRect.Contains(e.X, e.Y);
+            if (IsMouseOver)
+            {
+                Main.GetInstance().CurrentSkin.ToolTip.ShowDelayedToolTip(this, _toolTipText);
             }
         }
 
-        protected virtual void loadLayers(XmlNode node) {
+        protected virtual void LoadLayers(XmlNode node) {
             foreach (XmlNode i in node.ChildNodes) {
                 if (i.Name == "layer")
                     addLayer(i);
@@ -174,7 +139,7 @@ namespace fooTitle.Layers {
             if (layer != null) {
                 layer.Display = this.Display;
                 layer.ParentLayer = this;
-                layer.loadLayers(node);
+                layer.LoadLayers(node);
                 layers.Add(layer);
             }
         }

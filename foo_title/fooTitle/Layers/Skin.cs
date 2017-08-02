@@ -25,6 +25,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.XPath;
 using System.Drawing;
+using System.Linq;
 using fooManagedWrapper;
 using fooTitle.Geometries;
 using System.Windows.Forms;
@@ -43,6 +44,8 @@ namespace fooTitle.Layers {
         /// Returns the directory of the skin. Can be used for loading images and other data files.
         /// </summary>
         private string SkinDirectory { get; }
+
+        public fooTitle.ToolTip ToolTip { get; private set; }
 
         /// <summary>
         /// Loads the skin from the specified xml file
@@ -216,8 +219,8 @@ namespace fooTitle.Layers {
         public event EventHandler OnMouseLeave;
         public event MouseEventHandler OnMouseWheel;
 
-        public void Init(Display _display) {
-            display = _display;
+        public void Init(Display display_) {
+            display = display_;
 
             // register to mouse events
             display.MouseMove += display_MouseMove;
@@ -229,8 +232,19 @@ namespace fooTitle.Layers {
 
             InitAnchor();
 
-            loadLayers(skin);
+            LoadLayers(skin);
+
+            if (HasToolTipLayer(this))
+            {
+                ToolTip = new fooTitle.ToolTip(display_, this);                
+            }
+
             geometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)geometry).Width, ((AbsoluteGeometry)geometry).Height));
+        }
+
+        private static bool HasToolTipLayer(Layer layer)
+        {
+            return layer.SubLayers.Any(i => i.HasToolTip || HasToolTipLayer(i));
         }
 
         private void InitAnchor()
@@ -276,28 +290,6 @@ namespace fooTitle.Layers {
             display.InitializeAnchor(anchorType, anchorDx, anchorDy);
         }
 
-        public Layer TopLayerUnderMouse { get; private set; }
-
-        public Layer TopToolTipLayer { get; private set; }
-
-        private Layer GetTopToolTipLayer(Layer topLayer) {
-            Layer parent = topLayer;
-            while (parent != null && !parent.HasToolTip) {
-                parent = parent.ParentLayer;
-            }
-            return parent;
-        }
-
-        private Layer GetTopLayerUnderMouse(Layer parent) {
-            Layer topLayer = parent;
-            foreach (Layer layer in parent.SubLayers) {
-                if (layer.IsMouseOver) {
-                    topLayer = GetTopLayerUnderMouse(layer);
-                }
-            }
-            return topLayer;
-        }
-
         void display_MouseUp(object sender, MouseEventArgs e) {
             sendEventCatch(OnMouseUp, sender, e);
         }
@@ -307,10 +299,7 @@ namespace fooTitle.Layers {
         }
 
         void display_MouseMove(object sender, MouseEventArgs e) {
-            Main.GetInstance().ttd.Left = e.X;
-            Main.GetInstance().ttd.Top = e.Y + 18;
-            TopLayerUnderMouse = GetTopLayerUnderMouse(this);
-            TopToolTipLayer = GetTopToolTipLayer(TopLayerUnderMouse);
+            ToolTip?.OnMouseMove(sender, e);
             sendEventCatch(OnMouseMove, sender, e);
         }
 
@@ -326,5 +315,6 @@ namespace fooTitle.Layers {
         {
             sendEventCatch(OnMouseDoubleClick, sender, e);
         }
+
     }
 }

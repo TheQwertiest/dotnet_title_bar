@@ -30,6 +30,10 @@ namespace fooTitle {
             this.ShowInTaskbar = false;
             this.Text = "ToolTipDisplay";
             this.TopMost = false;
+            // Passthrough hack
+            int initialStyle = Win32.GetWindowLong(this.Handle, -20);
+            Win32.SetWindowLong(this.Handle, -20, initialStyle | 0x80000 | 0x20);
+
             this.ResumeLayout(false);
         }
 

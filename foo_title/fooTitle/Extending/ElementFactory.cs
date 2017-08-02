@@ -28,11 +28,8 @@ namespace fooTitle.Extending {
     public class MultipleElementTypesException : ApplicationException {
         protected Type onElement;
 
-        public override String Message {
-            get {
-                return String.Format("Can't have more than one ElementTypeAttribute on single class : {0} ", onElement.ToString());
-            }
-        }
+        public override string Message =>
+            $"Can't have more than one ElementTypeAttribute on single class : {onElement.ToString()} ";
 
         public MultipleElementTypesException(Type _onElement) {
             onElement = _onElement;
@@ -40,18 +37,14 @@ namespace fooTitle.Extending {
     }
 
     public class DuplicateElementTypeException : ApplicationException {
-        protected String elementType;
+        protected string elementType;
         protected Type elementClass;
         protected Assembly assembly;
 
-        public override String Message {
-            get {
-                return String.Format("Duplicate element type {0} found in assembly {1} on class {2}.",
-                        elementType.ToString(), assembly.ToString(), elementClass.ToString());
-            }
-        }
+        public override string Message =>
+            $"Duplicate element type {elementType.ToString()} found in assembly {assembly.ToString()} on class {elementClass.ToString()}.";
 
-        public DuplicateElementTypeException(String _elementType, Type _elementClass, Assembly _assembly) {
+        public DuplicateElementTypeException(string _elementType, Type _elementClass, Assembly _assembly) {
             elementClass = _elementClass;
             elementType = _elementType;
             assembly = _assembly;
@@ -59,16 +52,12 @@ namespace fooTitle.Extending {
     }
 
     public class NoSuitableConstructorException : ApplicationException {
-        protected String elementType;
+        protected string elementType;
         protected Type elementClass;
         protected String auxMsg;
 
-        public override String Message {
-            get {
-                return String.Format("No suitable constructor for element type {0} class {1} found {2}.",
-                        elementType, elementClass.ToString(), auxMsg);
-            }
-        }
+        public override String Message =>
+            $"No suitable constructor for element type {elementType} class {elementClass.ToString()} found {auxMsg}.";
 
         public NoSuitableConstructorException(String _elementType, Type _elementClass) {
             elementType = _elementType;
@@ -90,15 +79,10 @@ namespace fooTitle.Extending {
     }
 
     public class ElementTypeNotFoundException : ApplicationException {
-        protected String elementType;
-        protected String auxMsg;
+        protected string elementType;
+        protected string auxMsg;
 
-        public override String Message {
-            get {
-                return String.Format("Element of type {0} not found {1}.",
-                        elementType, auxMsg);
-            }
-        }
+        public override string Message => $"Element of type {elementType} not found {auxMsg}.";
 
         public ElementTypeNotFoundException(String _elementType) {
             elementType = _elementType;
@@ -120,9 +104,9 @@ namespace fooTitle.Extending {
 
     [AttributeUsage(AttributeTargets.Class)]
     public class ElementTypeAttribute : Attribute {
-        public String Type;
+        public string Type;
 
-        public ElementTypeAttribute(String type) {
+        public ElementTypeAttribute(string type) {
             Type = type;
         }
     }
@@ -133,7 +117,7 @@ namespace fooTitle.Extending {
             foreach (XmlNode i in where)
                 if (i.Name == name)
                     return i;
-            throw new System.Xml.XmlException(String.Format("Node {0} not found under {1}", name, where.Name));
+            throw new System.Xml.XmlException($"Node {name} not found under {@where.Name}");
         }
 
         public static XmlNode GetFirstChildByNameOrNull(XmlNode where, string name) {
@@ -166,7 +150,7 @@ namespace fooTitle.Extending {
         public static float GetNumberFromAttribute(XmlNode where, string name, string def) {
             string val = GetAttributeValue(where, name, def);
             try {
-                if (val.IndexOfAny(new char[] { '%', '$' }) != -1) {
+                if (IsExpression(name)) {
                     // a formatting expression
                     return float.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), val));
                 } else {
@@ -190,7 +174,7 @@ namespace fooTitle.Extending {
         /// <returns>the expression if it's present or null if there's just a string or a number</returns>
         public static string GetExpressionFromAttribute(XmlNode where, string name, string def) {
             string val = GetAttributeValue(where, name, def);
-            if (val == null || val.IndexOfAny(new char[] { '%', '$' }) == -1) {
+            if (val == null || !IsExpression(name)) {
                 return null;
             }
 
@@ -218,7 +202,7 @@ namespace fooTitle.Extending {
             if (expr == null)
                 return def;
 
-            if (expr.IndexOfAny(new char[] { '%', '$' }) == -1) {
+            if (!IsExpression(expr)) {
                 return expr;
             }
             try {
@@ -226,6 +210,11 @@ namespace fooTitle.Extending {
             } catch (Exception) {
                 return def;
             }
+        }
+
+        public static bool IsExpression(string expr)
+        {
+            return (expr.IndexOfAny(new char[] {'%', '$'}) != -1);
         }
     }
 

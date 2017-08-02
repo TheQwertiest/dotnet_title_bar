@@ -217,6 +217,7 @@
     </Compile>
     <Compile Include="Tests\test_MainMenuUtils.cs" />
     <Compile Include="Tests\test_ManagedWrapper.cs" />
+    <Compile Include="ToolTip.cs" />
     <Compile Include="ToolTipDisplay.cs">
       <SubType>Form</SubType>
     </Compile>
