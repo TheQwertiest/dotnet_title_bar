@@ -61,11 +61,9 @@ namespace fooTitle {
                             return false;
                     }
 
-                    if (currentGroup.Parent == Guid.Empty) {
-                        if (currentPart >= 0)
-                            return false;
-                        else
-                            return true;
+                    if (currentGroup.Parent == Guid.Empty)
+                    {
+                        return currentPart < 0;
                     }
                     currentGroup = GroupsByGuid[currentGroup.Parent];
 

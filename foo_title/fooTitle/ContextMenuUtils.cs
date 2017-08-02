@@ -51,8 +51,7 @@ namespace fooTitle {
                     }
 
                     if (path.StartsWith(currentPath, StringComparison.OrdinalIgnoreCase)) {
-                        string rest;
-                        rest = path.Length > currentPath.Length ? path.Substring(currentPath.Length + 1) : "";
+                        string rest = path.Length > currentPath.Length ? path.Substring(currentPath.Length + 1) : "";
 
                         Guid? cmdId = cmds.FindDynamicCommand(i, rest, context);
                         if (cmdId.HasValue) {

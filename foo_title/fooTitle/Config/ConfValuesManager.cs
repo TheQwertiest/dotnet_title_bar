@@ -28,11 +28,7 @@ namespace fooTitle.Config {
     public class ValueAlreadyExistsException : Exception {
         protected string name;
 
-        public override string Message {
-            get {
-                return String.Format("Value {0} is already registered with the ConfValuesManager.");
-            }
-        }
+        public override string Message => $"Value {this.name} is already registered with the ConfValuesManager.";
 
         public ValueAlreadyExistsException(string _name) {
             name = _name;
@@ -76,7 +72,7 @@ namespace fooTitle.Config {
             OnValueCreated?.Invoke(v.Name);
 
             // register this as the receiver for v's OnChanged
-            v.OnChanged += new ValueChangedDelegate(FireValueChanged);
+            v.OnChanged += FireValueChanged;
 
             // if there is a storage set, load the value from it
             if (savedStorage != null)
@@ -95,7 +91,8 @@ namespace fooTitle.Config {
         /// </summary>
         public void FireValueChanged(string name) {
             if (GetValueByName(name) == null)
-                throw new InvalidOperationException(String.Format("Cannot fire the OnValueChanged event for value named {0}. There is no such variable registered.", name));
+                throw new InvalidOperationException(
+                    $"Cannot fire the OnValueChanged event for value named {name}. There is no such variable registered.");
 
             // check if anyone's listening
             OnValueChanged?.Invoke(name);

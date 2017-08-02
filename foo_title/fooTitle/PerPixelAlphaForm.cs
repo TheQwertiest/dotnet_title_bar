@@ -131,10 +131,6 @@ namespace fooTitle
     /// <author><name>Rui Godinho Lopes</name><email>rui@ruilopes.com</email></author>
     public class PerPixelAlphaForm : Form
     {
-
-        public PerPixelAlphaForm() {
-        }
-
         public void SetWindowsPos(fooTitle.Win32.WindowPosition newPos) {
             const uint SWP_NOSIZE = 0x0001;
             const uint SWP_NOMOVE = 0x0002;

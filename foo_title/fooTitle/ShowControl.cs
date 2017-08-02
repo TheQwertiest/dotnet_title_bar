@@ -126,7 +126,7 @@ namespace fooTitle {
         private void DoDisableWithAnimation()
         {
             Display.Animation animName = (popupShowing.Value == PopupShowing.AllTheTime) ? Display.Animation.FadeOut : Display.Animation.FadeOutFull;
-            Display.OnAnimationStopDelegate onStop = (popupShowing.Value != PopupShowing.AllTheTime) ? new Display.OnAnimationStopDelegate(DoDisable) : null;
+            Display.OnAnimationStopDelegate onStop = (popupShowing.Value != PopupShowing.AllTheTime) ? DoDisable : (Display.OnAnimationStopDelegate)null;
             main.StartDisplayAnimation(animName, onStop);
         }
 

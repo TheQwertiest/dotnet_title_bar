@@ -190,16 +190,14 @@ namespace fooTitle.Layers
             }
 
             if (!string.IsNullOrEmpty(right.formatted)) {
-                StringFormat rightFormat = new StringFormat();
-                rightFormat.Alignment = StringAlignment.Far;
+                StringFormat rightFormat = new StringFormat {Alignment = StringAlignment.Far};
                 //g.DrawString(right.formatted, right.font, new SolidBrush(right.color), space + leftWidth, 0);
                 
                 // the text is right-aligned, so we must take the size of client rect into account. But
                 // the text can be also rotated, so we must consider different sizes. This will probably
                 // not work very well for arbitrary angles, but is ok for 90*n.
                 float farEdge = getFarPointInClientRect(angle);
-                Rectangle drawInto = new Rectangle();
-                drawInto.Width = (int)farEdge;
+                Rectangle drawInto = new Rectangle {Width = (int) farEdge};
                 g.DrawString(right.formatted, right.font, new SolidBrush(right.color), drawInto, rightFormat);
 
             }

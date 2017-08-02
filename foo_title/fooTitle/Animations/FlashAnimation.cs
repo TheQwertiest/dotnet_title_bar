@@ -24,21 +24,21 @@ namespace fooTitle
 {
 	public class FlashAnimation : Animation
 	{
-		Color Color;
+	    private readonly Color _color;
 
 		public FlashAnimation(Display display) : base(display)
 		{
-			Color = Color.FromArgb(255, 255, 255);
+			_color = Color.FromArgb(255, 255, 255);
 			myMaxFrame = 4;
 		}
 
-		override public void Draw() {
+		public override void Draw() {
 			if (Frame <= 0) return;
 			base.Draw();
 
 			// sets the drawing color to some alpha-blend of this.Color
 			// the first frame is fully solid, the last frame is fully transparent
-			Color drawColor = Color.FromArgb((int)(Frame / (float)MaxFrame * 255.0), this.Color);
+			Color drawColor = Color.FromArgb((int)(Frame / (float)MaxFrame * 255.0), this._color);
 			
 			const int MAX_EMPTY_WIDTH = 30;
 			int emptyWidth = (int) ((Frame / MaxFrame) * MAX_EMPTY_WIDTH);

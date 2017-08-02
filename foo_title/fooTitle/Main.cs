@@ -124,13 +124,21 @@ namespace fooTitle {
         /// </summary>
         public ConfEnum<ShowWhenEnum> ShowWhen = new ConfEnum<ShowWhenEnum>("display/showWhen", ShowWhenEnum.Always);
 
-        private void ShowWhen_OnChanged(string name) {
-            if (ShowWhen.Value == ShowWhenEnum.Always)
-                EnableFooTitle();
-            else if (ShowWhen.Value == ShowWhenEnum.Never)
-                DisableFooTitle();
-            else {
-                checkFoobarMinimized();
+        private void ShowWhen_OnChanged(string name)
+        {
+            switch (ShowWhen.Value)
+            {
+                case ShowWhenEnum.Always:
+                    EnableFooTitle();
+                    break;
+                case ShowWhenEnum.Never:
+                    DisableFooTitle();
+                    break;
+                case ShowWhenEnum.WhenMinimized:
+                    checkFoobarMinimized();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

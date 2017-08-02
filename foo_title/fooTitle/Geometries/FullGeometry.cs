@@ -25,7 +25,7 @@ using System.Xml;
 
 namespace fooTitle.Geometries {
     [GeometryTypeAttribute("full")]
-    class FullGeometry : Geometry{
+    internal class FullGeometry : Geometry{
 
         /// <summary>
         /// Current values of padding

@@ -42,9 +42,7 @@ namespace fooTitle.Geometries {
         protected string myExprWidth;
         protected int myWidth;
         public int Width {
-            get {
-                return myWidth;
-            }
+            get => myWidth;
             set {
                 myWidth = value;
                 Update(myParentRect);
@@ -57,9 +55,7 @@ namespace fooTitle.Geometries {
         protected string myExprHeight;
         protected int myHeight;
         public int Height {
-            get {
-                return myHeight;
-            }
+            get => myHeight;
             set {
                 myHeight = value;
                 Update(myParentRect);
@@ -139,12 +135,16 @@ namespace fooTitle.Geometries {
             myClientRect.Width = myWidth;
             myClientRect.Height = myHeight;
 
-            if (myAlign == AlignType.Left) {
-                myClientRect.X = myPosition.X + parentRect.Left;
-                myClientRect.Y = myPosition.Y + parentRect.Top;
-            } else if (myAlign == AlignType.Right) {
-                myClientRect.X = myPosition.X + parentRect.Right - myClientRect.Width;
-                myClientRect.Y = myPosition.Y + parentRect.Top;
+            switch (myAlign)
+            {
+                case AlignType.Left:
+                    myClientRect.X = myPosition.X + parentRect.Left;
+                    myClientRect.Y = myPosition.Y + parentRect.Top;
+                    break;
+                case AlignType.Right:
+                    myClientRect.X = myPosition.X + parentRect.Right - myClientRect.Width;
+                    myClientRect.Y = myPosition.Y + parentRect.Top;
+                    break;
             }
         }
         

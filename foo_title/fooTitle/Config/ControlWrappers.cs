@@ -31,7 +31,7 @@ namespace fooTitle.Config {
         protected ConfValue value;
         protected CManagedPrefPage_v3 parent;
 
-        public ControlWrapper(string _valueName, CManagedPrefPage_v3 _parent) {
+        protected ControlWrapper(string _valueName, CManagedPrefPage_v3 _parent) {
             valueName = _valueName;
             parent = _parent;
 
@@ -84,8 +84,7 @@ namespace fooTitle.Config {
             // register onChange event
             textBox.TextChanged += new EventHandler(textBox_TextChanged);
 
-            if (value != null)
-                value.ReadVisit(this);
+            value?.ReadVisit(this);
         }
 
         void textBox_TextChanged(object sender, EventArgs e) {
@@ -126,15 +125,11 @@ namespace fooTitle.Config {
             trackBar = _trackBar;
             trackBar.ValueChanged += new EventHandler(trackBar_ValueChanged);
 
-            if (value != null)
-                value.ReadVisit(this);
+            value?.ReadVisit(this);
         }
 
         void trackBar_ValueChanged(object sender, EventArgs e) {
-            if (value == null)
-                return;
-
-            value.WriteVisit(this);
+            value?.WriteVisit(this);
         }
 
 
@@ -175,15 +170,11 @@ namespace fooTitle.Config {
             numericUpDown = _numericUpDown;
             numericUpDown.ValueChanged += new EventHandler(numericUpDown_ValueChanged);
 
-            if (value != null)
-                value.ReadVisit(this);
+            value?.ReadVisit(this);
         }
 
         void numericUpDown_ValueChanged(object sender, EventArgs e) {
-            if (value == null)
-                return;
-
-            value.WriteVisit(this);
+            value?.WriteVisit(this);
         }
 
         #region IConfigValueVisitor Members
@@ -288,15 +279,11 @@ namespace fooTitle.Config {
             // register onChange event
             checkBox.CheckedChanged += new EventHandler(checkBox_CheckedChanged);
 
-            if (value != null)
-                value.ReadVisit(this);
+            value?.ReadVisit(this);
         }
 
         void checkBox_CheckedChanged(object sender, EventArgs e) {
-            if (value == null)
-                return;
-
-            value.WriteVisit(this);
+            value?.WriteVisit(this);
         }
 
         public override void ReadInt(ConfInt val) {
@@ -314,8 +301,7 @@ namespace fooTitle.Config {
         public LabelWrapper(Label _label, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
             label = _label;
 
-            if (value != null)
-                value.ReadVisit(this);
+            value?.ReadVisit(this);
         }
 
         #region IConfigValueVisitor Members
@@ -361,15 +347,15 @@ namespace fooTitle.Config {
         }
 
         protected void createWrapper(FieldInfo f, Control value, CManagedPrefPage_v3 parent) {
-            if (f.FieldType.Equals(typeof(TextBox))) {
+            if (f.FieldType == typeof(TextBox)) {
                 controlWrappers.Add(new TextBoxWrapper((TextBox)value, (string)value.Tag, parent));
-            } else if (f.FieldType.Equals(typeof(TrackBar))) {
+            } else if (f.FieldType == typeof(TrackBar)) {
                 controlWrappers.Add(new TrackBarWrapper((TrackBar)value, (string)value.Tag, parent));
-            } else if (f.FieldType.Equals(typeof(CheckBox))) {
+            } else if (f.FieldType == typeof(CheckBox)) {
                 controlWrappers.Add(new CheckBoxWrapper((CheckBox)value, (string)value.Tag, parent));
-            } else if (f.FieldType.Equals(typeof(Label))) {
+            } else if (f.FieldType == typeof(Label)) {
                 controlWrappers.Add(new LabelWrapper((Label)value, (string)value.Tag, parent));
-            } else if (f.FieldType.Equals(typeof(NumericUpDown))) {
+            } else if (f.FieldType == typeof(NumericUpDown)) {
                 controlWrappers.Add(new NumericUpDownWrapper((NumericUpDown)value, (string)value.Tag, parent));
             }
         }

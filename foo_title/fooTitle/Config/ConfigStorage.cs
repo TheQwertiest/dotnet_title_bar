@@ -33,11 +33,7 @@ namespace fooTitle.Config {
     class UnsupportedTypeException : ApplicationException {
         protected Type type;
 
-        public override string Message {
-            get {
-                return String.Format("This type is not supported for reading : {0}", type.ToString());
-            }
-        }
+        public override string Message => $"This type is not supported for reading : {type.ToString()}";
 
         public UnsupportedTypeException(Type _t) {
             type = _t;

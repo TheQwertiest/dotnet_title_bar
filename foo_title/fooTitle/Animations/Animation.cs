@@ -27,28 +27,20 @@ namespace fooTitle
 
 		protected int myFrame;
 		public int Frame {
-			get {
-				return myFrame;
-			}
-			set {
-				myFrame = value;
-			}
+			get => myFrame;
+		    set => myFrame = value;
 		}
 
 		protected int myMaxFrame;
-		public int MaxFrame {
-			get {
-				return myMaxFrame;
-			}
-		}
+		public int MaxFrame => myMaxFrame;
 
-		public Animation(Display display)
+	    public Animation(Display display)
 		{
 			myFrame = 0;
 			this.display = display;
 		}
 
-		virtual public void Draw() {
+		public virtual void Draw() {
 			if (Frame <= 0) return;
 			myFrame --;
 		}

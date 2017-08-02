@@ -243,10 +243,14 @@ namespace fooTitle.Layers {
             }
 
             bool enable = true;
-            if (only == Kind.Disable) {
-                enable = false;
-            } else if (only == Kind.Toggle) {
-                enable = !root.Enabled;
+            switch (only)
+            {
+                case Kind.Disable:
+                    enable = false;
+                    break;
+                case Kind.Toggle:
+                    enable = !root.Enabled;
+                    break;
             }
 
             LayerTools.EnableLayer(root, enable);

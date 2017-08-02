@@ -115,11 +115,9 @@ namespace fooTitle.Layers
             return ClientRect.Width;
         }
 
-        private int getLeftImageWidth() {
-            if (leftImage != null) {
-                return leftImage.Width;
-            }
-            return 0;
+        private int getLeftImageWidth()
+        {
+            return leftImage != null ? leftImage.Width : 0;
         }
 	}
 }

@@ -60,16 +60,12 @@ namespace fooTitle.Config {
         /// <summary>
         /// Gets the name of this variable. The name is a unique string identifier.
         /// </summary>
-        public string Name {
-            get {
-                return name;
-            }
-        }
+        public string Name => name;
 
         /// <summary>
         /// Registers this value with the ConfValuesManager
         /// </summary>
-        public ConfValue(string _name) {
+        protected ConfValue(string _name) {
             name = _name;
         }
 
@@ -181,20 +177,12 @@ namespace fooTitle.Config {
         /// <summary>
         /// Gets the maximum possible value.
         /// </summary>
-        public int Max {
-            get {
-                return max;
-            }
-        }
+        public int Max => max;
 
         /// <summary>
         /// Gets the minimum possible value.
         /// </summary>
-        public int Min {
-            get {
-                return min;
-            }
-        }
+        public int Min => min;
 
         public ConfInt(string _name, int _def) : base(_name) {
             def = _def;
@@ -312,12 +300,8 @@ namespace fooTitle.Config {
         }
 
         public new T Value {
-            set {
-                base.Value = System.Convert.ToInt32(value);
-            }
-            get {
-                return (T)(object)val;
-            }
+            set => base.Value = System.Convert.ToInt32(value);
+            get => (T)(object)val;
         }
     }
 
@@ -328,12 +312,8 @@ namespace fooTitle.Config {
         }
 
         public new bool Value {
-            set {
-                base.Value = value ? 1 : 0;
-            }
-            get {
-                return base.Value != 0;
-            }
+            set => base.Value = value ? 1 : 0;
+            get => base.Value != 0;
         }
     }
 }
