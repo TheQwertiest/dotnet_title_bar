@@ -38,9 +38,9 @@ namespace fooTitle {
             Transparent,
         }
 
-        private readonly System.ComponentModel.Container components = null;
-        private System.Drawing.Bitmap canvasBitmap = null;
-        public System.Drawing.Graphics Canvas = null;
+        private readonly System.ComponentModel.Container _components = null;
+        private Bitmap _canvasBitmap;
+        public Graphics Canvas;
 
         public int SnapDist = 10;
 
@@ -50,14 +50,14 @@ namespace fooTitle {
         private int opacity;
         private int minOpacity;
         private Animation curAnimationName;
-        private OpacityFallbackType opacityFallbackType = OpacityFallbackType.Normal;
-        private System.Object animationLock = new System.Object();
+        private OpacityFallbackType _opacityFallbackType = OpacityFallbackType.Normal;
+        private readonly object _animationLock = new object();
 
         private readonly ConfValuesManager.ValueChangedDelegate normalOpacityChangeDelegate;
         private readonly ConfValuesManager.ValueChangedDelegate windowPositionChangeDelegate;
 
         public delegate void OnAnimationStopDelegate();
-        private OnAnimationStopDelegate OnAnimationStopEvent;
+        private OnAnimationStopDelegate _onAnimationStopEvent;
 
         public class Fade
         {
@@ -71,12 +71,12 @@ namespace fooTitle {
             public Fade(int startVal, int stopVal, int length) {
                 _startVal = startVal;
                 _stopVal = stopVal;
-                _startTime = System.DateTime.Now.Ticks / 10000;
+                _startTime = DateTime.Now.Ticks / 10000;
                 _length = length;
             }
 
             public int GetOpacity() {
-                long now = System.DateTime.Now.Ticks / 10000;
+                long now = DateTime.Now.Ticks / 10000;
 
                 // special cases
                 if (now == _startTime)
@@ -125,8 +125,8 @@ namespace fooTitle {
         public Display(int width, int height) {
             InitializeComponent();
 
-            canvasBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Canvas = Graphics.FromImage(canvasBitmap);
+            _canvasBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Canvas = Graphics.FromImage(_canvasBitmap);
             Canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
 
             this.Size = new Size(width, height);
@@ -158,9 +158,7 @@ namespace fooTitle {
         /// </summary>
         protected override void Dispose(bool disposing) {
             if (disposing) {
-                if (components != null) {
-                    components.Dispose();
-                }
+                _components?.Dispose();
 
                 // need to remove this from the events on the configuration values
                 normalOpacity.OnChanged -= normalOpacityChangeDelegate;
@@ -178,8 +176,8 @@ namespace fooTitle {
             // 
             // Display
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(480, 96);
+            this.AutoScaleBaseSize = new Size(5, 13);
+            this.ClientSize = new Size(480, 96);
             this.ControlBox = false;
             this.FormBorderStyle = FormBorderStyle.None;
             this.Icon = fooManagedWrapper.CManagedWrapper.getInstance().GetMainIcon();
@@ -202,14 +200,15 @@ namespace fooTitle {
             {
                 _dockAnchor.Draw();
             }
-            frameUpdateOpacity();
-            SetBitmap(canvasBitmap, (byte)opacity);
+            FrameUpdateOpacity();
+            SetBitmap(_canvasBitmap, (byte)opacity);
             Canvas.ResetClip();
             Canvas.Clear(Color.Transparent);
         }
 
         #region Bottom
-        void Display_Activated(object sender, EventArgs e) {
+
+        private void Display_Activated(object sender, EventArgs e) {
             if (WindowPosition.Value == Win32.WindowPosition.Bottom) {
                 SetWindowsPos(Win32.WindowPosition.Bottom);
             }
@@ -262,13 +261,13 @@ namespace fooTitle {
                 Point mouse = this.PointToScreen(new Point(e.X, e.Y));
                 Screen screen = Screen.FromPoint(mouse);
 
-                this.Left = doSnapping(mouse.X - dragX, this.Width, screen.WorkingArea.Left, screen.WorkingArea.Right);
-                this.Top = doSnapping(mouse.Y - dragY, this.Height, screen.WorkingArea.Top, screen.WorkingArea.Bottom);
+                this.Left = DoSnapping(mouse.X - dragX, this.Width, screen.WorkingArea.Left, screen.WorkingArea.Right);
+                this.Top = DoSnapping(mouse.Y - dragY, this.Height, screen.WorkingArea.Top, screen.WorkingArea.Bottom);
             }
         }
 
         // snapping
-        private int doSnapping(int pos, int size, int border, int oppositeBorder) {
+        private int DoSnapping(int pos, int size, int border, int oppositeBorder) {
             if (Main.GetInstance().edgeSnapEnabled && (Control.ModifierKeys & Keys.Control) == 0) {
                 int borderDist = Math.Abs(pos - border);
                 int oppositeBorderDist = Math.Abs(pos + size - oppositeBorder);
@@ -285,8 +284,8 @@ namespace fooTitle {
         #endregion
 
         #region Opacity
-        protected void frameUpdateOpacity() {
-            lock (animationLock)
+        protected void FrameUpdateOpacity() {
+            lock (_animationLock)
             {
                 if (_fadeAnimation != null)
                 {
@@ -294,7 +293,7 @@ namespace fooTitle {
                     if (_fadeAnimation.Done())
                     {
                         _fadeAnimation = null;
-                        OnAnimationStopEvent?.Invoke();
+                        _onAnimationStopEvent?.Invoke();
                     }
                 }
             }
@@ -302,32 +301,32 @@ namespace fooTitle {
 
         public void StartAnimation(Animation animName, OnAnimationStopDelegate actionAfterAnimation = null)
         {
-            lock (animationLock)
+            lock (_animationLock)
             {
                 if (curAnimationName != animName)
                 {
-                    OnAnimationStopEvent = null;
+                    _onAnimationStopEvent = null;
                     _fadeAnimation = null;
                 }
 
-                OnAnimationStopEvent = actionAfterAnimation;
+                _onAnimationStopEvent = actionAfterAnimation;
 
                 switch (animName)
                 {
                     case Animation.FadeInNormal:
                         _fadeAnimation = new Fade(opacity, normalOpacity.Value, 100/*fadeLength.Value*/);
-                        opacityFallbackType = OpacityFallbackType.Normal;
+                        _opacityFallbackType = OpacityFallbackType.Normal;
                         break;
                     case Animation.FadeInOver:
                         _fadeAnimation = new Fade(opacity, overOpacity.Value, 100/*fadeLength.Value*/);
                         break;
                     case Animation.FadeOut:
                         _fadeAnimation = new Fade(opacity, normalOpacity.Value, 400/*fadeLength.Value*/);
-                        opacityFallbackType = OpacityFallbackType.Normal;
+                        _opacityFallbackType = OpacityFallbackType.Normal;
                         break;
                     case Animation.FadeOutFull:
                         _fadeAnimation = new Fade(opacity, 0, 400/*fadeLength.Value*/);
-                        opacityFallbackType = OpacityFallbackType.Transparent;
+                        _opacityFallbackType = OpacityFallbackType.Transparent;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(animName), animName, null);
@@ -337,16 +336,16 @@ namespace fooTitle {
             }
         }
 
-        private OnAnimationStopDelegate mouseOverSavedCallback;
+        private OnAnimationStopDelegate _mouseOverSavedCallback;
 
         private void Display_MouseLeave(object sender, EventArgs e) {
-            Animation animName = opacityFallbackType == OpacityFallbackType.Normal ? Animation.FadeOut : Animation.FadeOutFull;
-            StartAnimation(animName, mouseOverSavedCallback);
-            mouseOverSavedCallback = null;
+            Animation animName = _opacityFallbackType == OpacityFallbackType.Normal ? Animation.FadeOut : Animation.FadeOutFull;
+            StartAnimation(animName, _mouseOverSavedCallback);
+            _mouseOverSavedCallback = null;
         }
 
         private void Display_MouseEnter(object sender, EventArgs e) {
-            mouseOverSavedCallback = OnAnimationStopEvent;
+            _mouseOverSavedCallback = _onAnimationStopEvent;
             StartAnimation(Animation.FadeInOver);
         }
 
@@ -364,8 +363,8 @@ namespace fooTitle {
             this.Width = width;
             this.Height = height;
 
-            canvasBitmap = new Bitmap(this.Width, this.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Canvas = Graphics.FromImage(canvasBitmap);
+            _canvasBitmap = new Bitmap(this.Width, this.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Canvas = Graphics.FromImage(_canvasBitmap);
             FrameRedraw();
 
             AdjustPositionByAnchor();

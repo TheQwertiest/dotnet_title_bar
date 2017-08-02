@@ -58,6 +58,7 @@ namespace fooTitle.Layers {
                 case "left_doubleclick":
                     return MouseButtons.Left;
                 case "right":
+                case "right_doubleclick":
                     return MouseButtons.Right;
                 case "middle":
                     return MouseButtons.Middle;
@@ -305,7 +306,7 @@ namespace fooTitle.Layers {
                 return;
             }
 
-            if (e.Button == MouseButtons.Left && (e.Clicks == (e.Clicks >> 1) << 1 ) )
+            if (e.Clicks == (e.Clicks >> 1) << 1 )
             {// double clicks
                 return;
             }
@@ -346,8 +347,7 @@ namespace fooTitle.Layers {
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            mouseOn = (e.X >= ClientRect.Left) && (e.X <= ClientRect.Right) &&
-                      (e.Y >= ClientRect.Top) && (e.Y <= ClientRect.Bottom);
+            mouseOn = ClientRect.Contains(e.X, e.Y);
             if (!mouseOn)
                 mouseDown = false;
         }

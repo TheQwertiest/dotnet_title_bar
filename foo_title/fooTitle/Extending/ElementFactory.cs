@@ -190,11 +190,11 @@ namespace fooTitle.Extending {
         /// <returns>the expression if it's present or null if there's just a string or a number</returns>
         public static string GetExpressionFromAttribute(XmlNode where, string name, string def) {
             string val = GetAttributeValue(where, name, def);
-            if ((val.IndexOfAny(new char[] { '%', '$' })) != -1) {
-                return val;
-            } else {
+            if (val == null || val.IndexOfAny(new char[] { '%', '$' }) == -1) {
                 return null;
             }
+
+            return val;
         }
 
         /// <summary>
@@ -206,6 +206,7 @@ namespace fooTitle.Extending {
         public static int GetValueFromExpression(string expr, int def) {
             if (expr == null)
                 return def;
+
             try {
                 return int.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), expr));
             } catch (Exception) {
@@ -214,11 +215,11 @@ namespace fooTitle.Extending {
         }
 
         public static string GetStringFromExpression(string expr, string def) {
+            if (expr == null)
+                return def;
+
             if (expr.IndexOfAny(new char[] { '%', '$' }) == -1) {
                 return expr;
-            }
-            if (expr == null) {
-                return def;
             }
             try {
                 return Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), expr);
