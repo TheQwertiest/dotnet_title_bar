@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Added ability to display tooltip.
+
+### Changed
+- Reduced CPU usage.
 
 ## [0.9.3] - 2017-08-01
 ### Added
