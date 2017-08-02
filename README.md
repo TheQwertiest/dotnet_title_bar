@@ -9,6 +9,7 @@ Extract the components and foo_title folders to your foobar2000 installation dir
 ## Links
 [Documentation](https://quiark.github.io/foo_title)  
 [Changelog](https://github.com/theqwertiest/foo_title/blob/master/CHANGELOG.md)  
+[Skins @ hydrogenaud.io](https://hydrogenaud.io/index.php/topic,46619.0.html)  
 [Discussion thread @ hydrogenaud.io](http://www.hydrogenaudio.org/forums/index.php?showtopic=46595)
 
 ## Credits
