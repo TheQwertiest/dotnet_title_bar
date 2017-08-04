@@ -249,41 +249,30 @@ namespace fooTitle.Layers {
 
         private void InitAnchor()
         {
-            XmlNode anchorDxStr = skin.Attributes.GetNamedItem("anchor_dx");
-            XmlNode anchorDyStr = skin.Attributes.GetNamedItem("anchor_dy");
-            XmlNode anchorTypeStr = skin.Attributes.GetNamedItem("anchor");
+            string anchorTypeStr = GetAttributeValue(skin, "anchor", "top,left");
+            float anchorDx = GetNumberFromAttribute(skin, "anchor_dx", "0");
+            float anchorDy = GetNumberFromAttribute(skin, "anchor_dy", "0");
 
-            double anchorDx = anchorDxStr == null ? 0 : double.Parse(anchorDxStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            double anchorDy = anchorDyStr == null ? 0 : double.Parse(anchorDyStr.Value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            DockAnchor.Type anchorType = DockAnchor.Type.Top | DockAnchor.Type.Left;
-            if (anchorTypeStr != null)
+            DockAnchor.Type anchorType = DockAnchor.Type.None;
+            foreach (string i in anchorTypeStr.ToLower().Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                anchorType = DockAnchor.Type.None;
-                foreach (string i in anchorTypeStr.Value.ToLower().Split(','))
+                switch (i)
                 {
-                    switch (i)
-                    {
-                        case "top":
-                            anchorType |= DockAnchor.Type.Top;
-                            break;
-                        case "bottom":
-                            anchorType |= DockAnchor.Type.Bottom;
-                            break;
-                        case "right":
-                            anchorType |= DockAnchor.Type.Right;
-                            break;
-                        case "left":
-                            anchorType |= DockAnchor.Type.Left;
-                            break;
-                        case "center":
-                            anchorType |= DockAnchor.Type.Center;
-                            break;
-                    }
-                }
-
-                if (anchorType == DockAnchor.Type.None)
-                {
-                    anchorType = DockAnchor.Type.Top | DockAnchor.Type.Left;
+                    case "top":
+                        anchorType |= DockAnchor.Type.Top;
+                        break;
+                    case "bottom":
+                        anchorType |= DockAnchor.Type.Bottom;
+                        break;
+                    case "right":
+                        anchorType |= DockAnchor.Type.Right;
+                        break;
+                    case "left":
+                        anchorType |= DockAnchor.Type.Left;
+                        break;
+                    case "center":
+                        anchorType |= DockAnchor.Type.Center;
+                        break;
                 }
             }
 

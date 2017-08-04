@@ -155,7 +155,7 @@ namespace fooTitle.Extending {
                     return float.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), val));
                 } else {
                     // just a plain number
-                    return float.Parse(val);
+                    return float.Parse(val, System.Globalization.NumberFormatInfo.InvariantInfo);
                 }
             } catch (Exception e) {
                 fooManagedWrapper.CConsole.Warning(e.ToString());

@@ -59,7 +59,7 @@ namespace fooTitle.Layers {
         public bool IsMouseOver { get; private set; } = false;
 
         public bool HasToolTip { get; } = false;
-       private readonly string _toolTipText;
+        private readonly string _toolTipText;
 
         public Layer(Rectangle parentRect, XmlNode node) {
             // read name and type

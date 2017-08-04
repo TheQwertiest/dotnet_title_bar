@@ -370,7 +370,7 @@ namespace fooTitle {
             AdjustPositionByAnchor();
         }
 
-        internal void InitializeAnchor(DockAnchor.Type anchorType, double anchorDx, double anchorDy)
+        internal void InitializeAnchor(DockAnchor.Type anchorType, float anchorDx, float anchorDy)
         {
             _dockAnchor.Initialize(anchorType, anchorDx, anchorDy);
         }

@@ -60,7 +60,7 @@ namespace fooTitle
             {
                 _anchorDx = 1;
             }
-            else if ((_anchorType & DockAnchor.Type.Center) != 0)
+            else
             {
                 _anchorDx = 0.5;
             }
@@ -73,7 +73,7 @@ namespace fooTitle
             {
                 _anchorDy = 1;
             }
-            else if ((_anchorType & DockAnchor.Type.Center) != 0)
+            else
             {
                 _anchorDy = 0.5;
             }
