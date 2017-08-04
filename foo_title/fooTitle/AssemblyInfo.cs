@@ -18,14 +18,13 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 //
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle("fooTitle")]
+[assembly: AssemblyTitle("foo_title")]
 [assembly: AssemblyDescription("The main module of foo_title")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]

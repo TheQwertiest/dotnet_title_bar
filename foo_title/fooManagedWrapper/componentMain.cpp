@@ -22,13 +22,17 @@
 
 DECLARE_COMPONENT_VERSION(
 // component name
-"Managed Wrapper (.NET)",
+"Managed Wrapper (.NET) for foo_title",
 // component version
-"0.7.0",
+"0.7.1",
 // component description
-"foo_managedWrapper\n"
-"Loads .NET components\n\n"
-"(c) 2005-2006 Roman Plasil\n\n"
+"foo_managed_wrapper\n"
+".NET component loader for foo_title\n\n"
+"Copyright( c ) 2005-2006 by Roman Plasil\n\n"
 "Updated by Miha Lepej\n"
-"https://github.com/LepkoQQ/foo_title"
+"https://github.com/LepkoQQ/foo_title \n\n"
+"Further updated by TheQwertiest\n"
+"https://github.com/TheQwertiest/foo_title "
 )
+
+VALIDATE_COMPONENT_FILENAME( "foo_managed_wrapper.dll" );

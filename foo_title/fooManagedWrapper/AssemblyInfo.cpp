@@ -30,11 +30,11 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("fooManagedWrapper")];
+[assembly:AssemblyTitleAttribute("foo_managed_wrapper")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("")];
-[assembly:AssemblyProductAttribute("fooManagedWrapper")];
+[assembly:AssemblyProductAttribute("foo_managed_wrapper")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c) Roman Plasil 2006 - 2009")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
