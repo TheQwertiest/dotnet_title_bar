@@ -266,6 +266,7 @@ namespace fooTitle.Layers {
             Actions.Add("menu", typeof(MainMenuAction));
             Actions.Add("contextmenu", typeof(ContextMenuAction));
             Actions.Add("toggle", typeof(ToggleAction));
+            Actions.Add("legacy", typeof(LegacyMainMenuCommand));
         }
 
         protected Bitmap myNormalImage;
@@ -386,21 +387,16 @@ namespace fooTitle.Layers {
                 if (child.Name != "action")
                     continue;
 
-                string type = GetAttributeValue(child, "type", null);
-                if (type == null) {
-                    IButtonAction newAction = new LegacyMainMenuCommand();
-                    newAction.Init(child);
-                    actions.Add(newAction);
-                } else {
-                    Type actionClass;
-                    if (!Actions.TryGetValue(type, out actionClass)) {
-                        throw new ArgumentException($"No button action type {type} is registered.");
-                    }
-
-                    IButtonAction newAction = naid.ReflectionUtils.ConstructParameterless<IButtonAction>(actionClass);
-                    newAction.Init(child);
-                    actions.Add(newAction);
+                string type = GetAttributeValue(child, "type", "legacy");
+                Type actionClass;
+                if (!Actions.TryGetValue(type, out actionClass))
+                {
+                    throw new ArgumentException($"No button action type {type} is registered.");
                 }
+
+                IButtonAction newAction = naid.ReflectionUtils.ConstructParameterless<IButtonAction>(actionClass);
+                newAction.Init(child);
+                actions.Add(newAction);
             }
         }
 
