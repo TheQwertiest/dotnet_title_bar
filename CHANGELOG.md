@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Added ability to display tooltip.
+- Added align attribute to minimal geometry.
 
 ### Changed
 - Reduced CPU usage.
