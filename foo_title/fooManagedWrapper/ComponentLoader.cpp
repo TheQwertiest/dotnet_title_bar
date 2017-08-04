@@ -55,6 +55,8 @@ TComponentClients ^CComponentLoader::LoadComponentsInDir(System::String ^dirName
 		TComponentClients ^res = gcnew TComponentClients();
 		for each (System::IO::FileInfo^ f in files) {
 			try {
+                    if ( f->Name == "foo_managed_wrapper.dll" )
+                         continue;
 				res->Add(LoadComponent(f->FullName));
 			} catch (Exception ^e) {
 				String ^msg = gcnew String("Error loading .NET component ");

@@ -79,7 +79,7 @@ namespace fooManagedWrapper {
 		// find and create components
 		try {
 			componentLoader = gcnew CComponentLoader();
-			componentClients = componentLoader->LoadComponentsInDir(GetModuleDirectory(), "dotnet_");
+			componentClients = componentLoader->LoadComponentsInDir(GetModuleDirectory(), "foo_");
 
 			for each (IComponentClient ^cl in componentClients) {
 				cl->Create();
