@@ -157,6 +157,30 @@ namespace fooTitle.Layers {
             }
         }
 
+        public class SkinInfo
+        {
+            public string Name;
+            public string Author;
+        };        
+        public static SkinInfo GetSkinInfo(string skinPath)
+        {
+            string skinFullPath = Path.Combine(skinPath, "skin.xml");
+            if (!File.Exists(skinFullPath))
+            {
+                return null;
+            }
+
+            XmlDocument document = new XmlDocument();
+            document.Load(skinFullPath);            
+
+            XmlNode skin = document.GetElementsByTagName("skin").Item(0);
+
+            return new SkinInfo{
+                Name = GetAttributeValue(skin, "name", null),
+                Author = GetAttributeValue(skin, "author", null)
+            };
+        }
+
         public void OnPlaybackTime(double time) {
             // pass it on
             sendEvent(OnPlaybackTimeEvent, time);

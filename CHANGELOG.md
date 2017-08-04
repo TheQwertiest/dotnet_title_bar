@@ -7,6 +7,11 @@
 
 ### Changed
 - Reduced CPU usage.
+- Skin's name for preferences page is taken from skin.xml now, rather than from directory's name.
+- Added skin's author's name to the skin list.
+
+### Fixed
+- Preferences page now displays only folders containing skin.xml.
 
 ## [0.9.3] - 2017-08-01
 ### Added

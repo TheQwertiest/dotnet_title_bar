@@ -4,7 +4,10 @@ foobar2000 component
 This is a skinnable UI for [foobar2000](https://www.foobar2000.org).
 
 ## Installation
-Extract the components and foo_title folders to your foobar2000 installation directory.
+1. Extract and install foo_title*.fb2k-component file (http://wiki.hydrogenaud.io/index.php?title=Foobar2000:How_to_install_a_component).  
+1. Open folder for skins (Preferences -> Display -> foo_title -> Appearance -> Open directory).
+1. Extract directories contained in 'skins' folder to the opened folder.
+1. Choose and apply your prefered skin =)
 
 ## Links
 [Documentation](https://quiark.github.io/foo_title)  

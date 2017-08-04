@@ -23,6 +23,7 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using fooTitle.Config;
+using fooTitle.Layers;
 
 namespace fooTitle {
     class Properties : fooManagedWrapper.CManagedPrefPage_v3 {
@@ -40,15 +41,15 @@ namespace fooTitle {
             return ConfValuesManager.GetInstance().HasChanged();
         }
 
-        class SkinListEntry {
-            public string path;
+        private class SkinListEntry : ListViewItem {
+            public readonly string Path;
+            private readonly string _name;
+            private readonly string _author;
 
-            public SkinListEntry(string _path) {
-                path = _path;
-            }
-
-            public override string ToString() {
-                return Path.GetFileName(path);
+            public SkinListEntry(string _path, string name, string author) : base(new string[] { name, author }) {
+                Path = _path;
+                _name = name;
+                _author = author;
             }
         }
 
@@ -129,31 +130,35 @@ namespace fooTitle {
             autoWrapperCreator.CreateWrappers(this);
         }
 
-        protected void addSkin(string path) {
-            SkinListEntry current = new SkinListEntry(path);
-            skinsList.Items.Add(current);
-            if (path == main.SkinPath.Value) {
-                skinsList.SelectedItem = current;
-            }
-        }
-
         protected void fillSkinList() {
             skinsList.Items.Clear();
 
             try {
-                foreach (string path in System.IO.Directory.GetDirectories(Main.UserDataDir)) {
-                    addSkin(path);
+                foreach (string path in System.IO.Directory.GetDirectories(Main.UserDataDir))
+                {
+                    Skin.SkinInfo skinInfo = Skin.GetSkinInfo(path);
+                    if (skinInfo?.Name != null)
+                    {
+                        SkinListEntry current = new SkinListEntry(path, skinInfo.Name, skinInfo.Author);
+                        skinsList.Items.Add(current);
+                        if (path == main.SkinPath.Value)
+                        {
+                            
+                            skinsList.Items[skinsList.Items.Count - 1].Selected = true;
+                        }
+                    }
                 }
             } catch (Exception) {
-                fooManagedWrapper.CConsole.Write(String.Format("Failed to read from {0}.", Main.UserDataDir));
+                fooManagedWrapper.CConsole.Write($"Failed to read from {Main.UserDataDir}.");
             }
         }
 
         public void UpdateValues() {
             fillSkinList();
+            ResizeListView(skinsList);
 
             Assembly myAssembly = Assembly.GetExecutingAssembly();
-            versionLabel.Text = "Version: " + myAssembly.GetName().Version.ToString();
+            versionLabel.Text = "Version: " + myAssembly.GetName().Version;
         }
 
         public void DiscardChanges() {
@@ -164,7 +169,7 @@ namespace fooTitle {
         private SafeTabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.ListBox skinsList;
+        private System.Windows.Forms.ListView skinsList;
         private System.Windows.Forms.Button applySkinBtn;
         private System.Windows.Forms.GroupBox showWhenBox;
         private System.Windows.Forms.RadioButton neverRadio;
@@ -187,7 +192,7 @@ namespace fooTitle {
         protected Main main;
 
         private void InitializeComponent() {
-            this.skinsList = new System.Windows.Forms.ListBox();
+            this.skinsList = new System.Windows.Forms.ListView();
             this.applySkinBtn = new System.Windows.Forms.Button();
             this.showWhenBox = new System.Windows.Forms.GroupBox();
             this.neverRadio = new System.Windows.Forms.RadioButton();
@@ -282,11 +287,18 @@ namespace fooTitle {
             // 
             // skinsList
             // 
-            this.skinsList.FormattingEnabled = true;
             this.skinsList.Location = new System.Drawing.Point(6, 19);
             this.skinsList.Name = "skinsList";
             this.skinsList.Size = new System.Drawing.Size(214, 225);
+            this.skinsList.AllowColumnReorder = false;
+            this.skinsList.CheckBoxes = false;
+            this.skinsList.FullRowSelect = true;
+            this.skinsList.MultiSelect = false;
+            this.skinsList.View = View.Details;
             this.skinsList.TabIndex = 0;
+            this.skinsList.Columns.Add("Name", 50, HorizontalAlignment.Left);
+            this.skinsList.Columns.Add("Author", 50, HorizontalAlignment.Left);
+            this.skinsList.HideSelection = false;
             // 
             // applySkinBtn
             // 
@@ -1052,28 +1064,25 @@ namespace fooTitle {
         }
         #endregion
 
-        private static bool hasHandle = false;
-        public static bool IsOpen {
-            get { return hasHandle; }
-        }
+        public static bool IsOpen { get; private set; } = false;
 
         private void Properties_HandleCreated(object sender, EventArgs e) {
             UpdateValues();
-            hasHandle = true;
+            IsOpen = true;
         }
 
         private void Properties_HandleDestroyed(object sender, EventArgs e) {
             DiscardChanges();
-            hasHandle = false;
+            IsOpen = false;
         }
 
         private void applySkinBtn_Click(object sender, EventArgs e) {
-            if (skinsList.SelectedItem == null) {
+            if (skinsList.SelectedItems[0] == null) {
                 return;
             }
 
-            main.SkinPath.ForceUpdate(((SkinListEntry)skinsList.SelectedItem).path);
-            OnChange(); // If the control is not wrapped in a ControlWrapper we need to manualy call OnChange
+            main.SkinPath.ForceUpdate(((SkinListEntry)skinsList.SelectedItems[0]).Path);
+            OnChange(); // If the control is not wrapped in a ControlWrapper we need to manually call OnChange
         }
 
         private void openSkinDirBtn_Click(object sender, EventArgs e) {
@@ -1082,6 +1091,15 @@ namespace fooTitle {
             } catch (Exception ex) {
                 MessageBox.Show("foo_title - There was an error opening directory " + Main.UserDataDir + ":\n" + ex.Message, "foo_title");
             }
+        }
+
+        private void ResizeListView(ListView lv)
+        {
+            lv.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            lv.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.None);
+            lv.Columns[1].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            lv.Columns[1].AutoResize(ColumnHeaderAutoResizeStyle.None);
+            lv.Columns[0].Width = lv.Width - lv.Columns[1].Width - 5;
         }
     }
 }
