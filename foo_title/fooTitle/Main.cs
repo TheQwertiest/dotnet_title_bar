@@ -285,25 +285,32 @@ namespace fooTitle {
         /// </summary>
         /// <param name="path">The name of the skin's directory</param>
         private void LoadSkin(string path) {
-            try {
+            try
+            {
                 // delete the old one
                 CurrentSkin?.Free();
                 CurrentSkin = null;
 
-                if (this.Display == null) {
+                if (this.Display == null)
+                {
                     reinitDisplay();
                 }
 
-                if (path == null) {
+                if (path == null)
+                {
                     path = Path.Combine(UserDataDir, "white");
                 }
 
-                if (!Directory.Exists(path)) {
+                if (!Directory.Exists(path))
+                {
                     return;
                 }
 
+                System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+
                 CurrentSkin = new Skin(path);
                 CurrentSkin.Init(Display);
+
                 RestorePosition();
 
                 // need to tell it about the currently playing song
@@ -313,6 +320,8 @@ namespace fooTitle {
                     CurrentSkin.OnPlaybackStop(IPlayControl.StopReason.stop_reason_user);
 
                 CurrentSkin.FirstCheckSize();
+
+                CConsole.Write($"skin loaded in {(int)sw.Elapsed.TotalMilliseconds} ms");
             } catch (Exception e) {
                 CurrentSkin?.Free();
                 CurrentSkin = null;
