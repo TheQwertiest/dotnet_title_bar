@@ -417,8 +417,6 @@ namespace fooTitle {
             ConfValuesManager.GetInstance().LoadFrom(Config);
             ConfValuesManager.GetInstance().SetStorage(Config);
 
-            propsForm.UpdateValues();
-
             // init registered clients
             OnInitEvent?.Invoke();
 

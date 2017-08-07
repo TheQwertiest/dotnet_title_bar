@@ -43,13 +43,9 @@ namespace fooTitle {
 
         private class SkinListEntry : ListViewItem {
             public readonly string Path;
-            private readonly string _name;
-            private readonly string _author;
 
             public SkinListEntry(string _path, string name, string author) : base(new string[] { name, author }) {
                 Path = _path;
-                _name = name;
-                _author = author;
             }
         }
 
@@ -102,6 +98,8 @@ namespace fooTitle {
         private CheckBox checkBox2;
         private CheckBox checkBox3;
         private CheckBox checkBox4;
+        private ColumnHeader nameColumn;
+        private ColumnHeader authorColumn;
         protected RadioGroupWrapper enableDraggingWrapper;
 
         public Properties(Main _main) : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage_v3.guid_display) {
@@ -143,7 +141,6 @@ namespace fooTitle {
                         skinsList.Items.Add(current);
                         if (path == main.SkinPath.Value)
                         {
-                            
                             skinsList.Items[skinsList.Items.Count - 1].Selected = true;
                         }
                     }
@@ -243,6 +240,7 @@ namespace fooTitle {
             this.enableDraggingPropsOpenRadio = new System.Windows.Forms.RadioButton();
             this.enableDraggingAlwaysRadio = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.edgeSnapCheckBox = new System.Windows.Forms.CheckBox();
             this.posYnumbox = new System.Windows.Forms.NumericUpDown();
@@ -258,7 +256,8 @@ namespace fooTitle {
             this.artLoadEveryLabelRight = new System.Windows.Forms.Label();
             this.artLoadEveryNumber = new System.Windows.Forms.NumericUpDown();
             this.artLoadEveryLabelLeft = new System.Windows.Forms.Label();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.nameColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.authorColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.showWhenBox.SuspendLayout();
             this.opacityOpts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.normalOpacityTrackBar)).BeginInit();
@@ -287,18 +286,18 @@ namespace fooTitle {
             // 
             // skinsList
             // 
+            this.skinsList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.nameColumn,
+            this.authorColumn});
+            this.skinsList.FullRowSelect = true;
+            this.skinsList.HideSelection = false;
             this.skinsList.Location = new System.Drawing.Point(6, 19);
+            this.skinsList.MultiSelect = false;
             this.skinsList.Name = "skinsList";
             this.skinsList.Size = new System.Drawing.Size(214, 225);
-            this.skinsList.AllowColumnReorder = false;
-            this.skinsList.CheckBoxes = false;
-            this.skinsList.FullRowSelect = true;
-            this.skinsList.MultiSelect = false;
-            this.skinsList.View = View.Details;
             this.skinsList.TabIndex = 0;
-            this.skinsList.Columns.Add("Name", 50, HorizontalAlignment.Left);
-            this.skinsList.Columns.Add("Author", 50, HorizontalAlignment.Left);
-            this.skinsList.HideSelection = false;
+            this.skinsList.UseCompatibleStateImageBehavior = false;
+            this.skinsList.View = System.Windows.Forms.View.Details;
             // 
             // applySkinBtn
             // 
@@ -859,6 +858,17 @@ namespace fooTitle {
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Anchor Position";
             // 
+            // checkBox4
+            // 
+            this.checkBox4.AutoSize = true;
+            this.checkBox4.Location = new System.Drawing.Point(9, 51);
+            this.checkBox4.Name = "checkBox4";
+            this.checkBox4.Size = new System.Drawing.Size(96, 17);
+            this.checkBox4.TabIndex = 14;
+            this.checkBox4.Tag = "display/drawAnchor";
+            this.checkBox4.Text = "Display anchor";
+            this.checkBox4.UseVisualStyleBackColor = true;
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -1003,16 +1013,13 @@ namespace fooTitle {
             this.artLoadEveryLabelLeft.TabIndex = 0;
             this.artLoadEveryLabelLeft.Text = "Every";
             // 
-            // checkBox4
+            // nameColumn
             // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(9, 51);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(96, 17);
-            this.checkBox4.TabIndex = 14;
-            this.checkBox4.Tag = "display/drawAnchor";
-            this.checkBox4.Text = "Display anchor";
-            this.checkBox4.UseVisualStyleBackColor = true;
+            this.nameColumn.Text = "Name";
+            // 
+            // authorColumn
+            // 
+            this.authorColumn.Text = "Author";
             // 
             // Properties
             // 
@@ -1095,8 +1102,9 @@ namespace fooTitle {
 
         private void ResizeListView(ListView lv)
         {
-            lv.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
-            lv.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.None);
+            if (lv == null || lv.Columns.Count < 2)
+                return;
+
             lv.Columns[1].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
             lv.Columns[1].AutoResize(ColumnHeaderAutoResizeStyle.None);
             lv.Columns[0].Width = lv.Width - lv.Columns[1].Width - 5;
