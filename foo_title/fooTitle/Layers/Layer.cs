@@ -90,14 +90,11 @@ namespace fooTitle.Layers {
                 hasDynamicToolTip = IsExpression(_toolTipText);
             }
 
-            if (HasToolTip)
+            Main.GetInstance().CurrentSkin.OnMouseMove += OnMouseMove;
+            Main.GetInstance().CurrentSkin.OnMouseLeave += OnMouseLeave;
+            if (HasToolTip && hasDynamicToolTip)
             {
-                Main.GetInstance().CurrentSkin.OnMouseMove += OnMouseMove;
-                Main.GetInstance().CurrentSkin.OnMouseLeave += OnMouseLeave;
-                if (hasDynamicToolTip)
-                {
-                    Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += OnPlaybackTime;
-                }
+                Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += OnPlaybackTime;
             }
         }
 
@@ -113,12 +110,15 @@ namespace fooTitle.Layers {
 
         private void OnMouseLeave(object sender, EventArgs e) {
             IsMouseOver = false;
-            Main.GetInstance().CurrentSkin.ToolTip.ClearToolTip();
+            if (HasToolTip)
+            {
+                Main.GetInstance().CurrentSkin.ToolTip.ClearToolTip();
+            }
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e) {
             IsMouseOver = ClientRect.Contains(e.X, e.Y);
-            if (IsMouseOver)
+            if (HasToolTip && IsMouseOver )
             {
                 Main.GetInstance().CurrentSkin.ToolTip.ShowDelayedToolTip(this, _toolTipText);
             }

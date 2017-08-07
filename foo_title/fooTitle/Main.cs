@@ -143,11 +143,12 @@ namespace fooTitle {
         }
 
         private readonly ConfEnum<EnableDragging> DraggingEnabled = new ConfEnum<EnableDragging>("display/enableDragging", EnableDragging.Always);
+        private bool _isMouseOnDragLayer = true;
         public bool CanDragDisplay {
             get {
                 switch (DraggingEnabled.Value) {
                     case EnableDragging.Always:
-                        return true;
+                        return _isMouseOnDragLayer;
                     case EnableDragging.WhenPropertiesOpen:
                         return Properties.IsOpen;
                     case EnableDragging.Never:
@@ -155,6 +156,10 @@ namespace fooTitle {
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+            }
+            set
+            {
+                _isMouseOnDragLayer = value;
             }
         }
 
