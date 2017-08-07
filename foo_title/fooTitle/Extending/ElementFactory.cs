@@ -150,7 +150,7 @@ namespace fooTitle.Extending {
         public static float GetNumberFromAttribute(XmlNode where, string name, string def) {
             string val = GetAttributeValue(where, name, def);
             try {
-                if (IsExpression(name)) {
+                if (IsExpression(val)) {
                     // a formatting expression
                     return float.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), val));
                 } else {
@@ -174,7 +174,7 @@ namespace fooTitle.Extending {
         /// <returns>the expression if it's present or null if there's just a string or a number</returns>
         public static string GetExpressionFromAttribute(XmlNode where, string name, string def) {
             string val = GetAttributeValue(where, name, def);
-            if (val == null || !IsExpression(name)) {
+            if (val == null || !IsExpression(val)) {
                 return null;
             }
 
