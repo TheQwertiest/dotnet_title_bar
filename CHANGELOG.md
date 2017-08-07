@@ -6,7 +6,7 @@
 ### Added
 - Added ability to display tooltip.
 - Added align attribute to minimal geometry.
-- Added skin loading time logging to foobar200 console.
+- Added skin loading time logging to foobar2000 console.
 
 ### Changed
 - Reduced CPU usage.
