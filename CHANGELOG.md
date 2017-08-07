@@ -1,17 +1,23 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.9.4] - 2017-08-07
 ### Added
 - Added ability to display tooltip.
 - Added align attribute to minimal geometry.
+- Added skin loading time logging to foobar200 console.
 
 ### Changed
 - Reduced CPU usage.
+- Renamed dotnet_title.dll to foo_title.dll.
 - Skin's name for preferences page is taken from skin.xml now, rather than from directory's name.
 - Added skin's author's name to the skin list.
 
 ### Fixed
+- Disabled foo_title window dragging when mouse is over button layer, thus preventing accidental button presses.
 - Preferences page now displays only folders containing skin.xml.
+- Fixed anchor drawing.
 
 ## [0.9.3] - 2017-08-01
 ### Added
@@ -50,6 +56,7 @@
 ## Prior releases
 - See https://github.com/lepkoqq/foo_title/releases
 
-[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v0.9.3...HEAD
+[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v0.9.4...HEAD
+[0.9.3]: https://github.com/theqwertiest/foo_title/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/theqwertiest/foo_title/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/theqwertiest/foo_title/compare/v0.9.1...v0.9.2
