@@ -196,13 +196,13 @@ namespace fooTitle {
         #endregion
 
         public void FrameRedraw() {
+            Canvas.ResetClip();
             if (_shouldDrawAnchor.Value)
             {
                 _dockAnchor.Draw();
             }
             FrameUpdateOpacity();
             SetBitmap(_canvasBitmap, (byte)opacity);
-            Canvas.ResetClip();
             Canvas.Clear(Color.Transparent);
         }
 
