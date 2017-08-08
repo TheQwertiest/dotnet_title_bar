@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.9.4a] - 2017-08-08
+### Fixed
+- Fixed crash on exit from foobar2000.
+
 ## [0.9.4] - 2017-08-07
 ### Added
 - Added ability to display tooltip.
@@ -56,7 +60,8 @@
 ## Prior releases
 - See https://github.com/lepkoqq/foo_title/releases
 
-[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v0.9.4...HEAD
-[0.9.3]: https://github.com/theqwertiest/foo_title/compare/v0.9.3...v0.9.4
+[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v0.9.4a...HEAD
+[0.9.4a]: https://github.com/theqwertiest/foo_title/compare/v0.9.4...v0.9.4a
+[0.9.4]: https://github.com/theqwertiest/foo_title/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/theqwertiest/foo_title/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/theqwertiest/foo_title/compare/v0.9.1...v0.9.2
