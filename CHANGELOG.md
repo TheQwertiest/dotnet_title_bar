@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Added clip property to skin element to disable clipping.
+- Added no-content layer type: this layer has no contents itself and is used solely for positioning other layers.
 
 ### Fixed
 - Fixed tooltip behaviour on complex skins.

@@ -165,6 +165,7 @@
     <Compile Include="Layers\AlbumArtLayer.cs" />
     <Compile Include="Layers\ButtonLayer.cs" />
     <Compile Include="Layers\ColorLayer.cs" />
+    <Compile Include="Layers\NoContentLayer.cs" />
     <Compile Include="Layers\LayersTools.cs" />
     <Compile Include="interfaces.cs">
       <SubType>Code</SubType>

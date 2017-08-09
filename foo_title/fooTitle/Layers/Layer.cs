@@ -60,7 +60,12 @@ namespace fooTitle.Layers {
 
         public bool IsMouseOver { get; private set; } = false;
 
-        public bool HasToolTip { get; } = false;
+        /// <summary>
+        /// Indicates if layer is used only for positioning
+        /// </summary>
+        public bool HasContent { get; } = false;
+
+        public virtual bool HasToolTip { get; } = false;
         public string ToolTipText { get; }
 
         public Layer(Rectangle parentRect, XmlNode node) {
@@ -69,18 +74,14 @@ namespace fooTitle.Layers {
             Type = node.Attributes.GetNamedItem("type").Value;
             Enabled = GetAttributeValue(node, "enabled", "true").ToLowerInvariant() == "true";
             _clipEnabled = GetAttributeValue(node, "clip", "true").ToLowerInvariant() == "true";
+            HasContent = GetFirstChildByNameOrNull(node, "contents") != null;
 
             // create the geometry
-            foreach (XmlNode child in node.ChildNodes) {
-                if (child.Name != "geometry")
-                    continue;
-
-                string geomType = child.Attributes.GetNamedItem("type").Value;
-                geometry = Main.GetInstance().GeometryFactory.CreateGeometry(geomType, parentRect, child);
-                if (geometry.IsDynamic())
-                    Main.GetInstance().CurrentSkin.DynamicLayers.Add(this);
-                break;
-            }
+            XmlNode geomNode = GetFirstChildByName(node, "geometry");
+            string geomType = geomNode.Attributes.GetNamedItem("type").Value;
+            geometry = Main.GetInstance().GeometryFactory.CreateGeometry(geomType, parentRect, geomNode);
+            if (geometry.IsDynamic())
+                Main.GetInstance().CurrentSkin.DynamicLayers.Add(this);
 
             UpdateGeometry(parentRect);
 

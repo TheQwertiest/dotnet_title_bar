@@ -76,10 +76,12 @@ namespace fooTitle
             for (int i = parent.SubLayers.Count - 1; i >= 0; --i)
             {// Last layer is the top one
                 Layer layer = parent.SubLayers[i];
-                if (layer.IsMouseOver)
-                {
-                    return GetTopLayerUnderMouse(layer);
-                }
+                if (!layer.IsMouseOver)
+                    continue;
+
+                Layer tmpLayer = GetTopLayerUnderMouse(layer);
+                if (tmpLayer.HasContent)                
+                    return tmpLayer;
             }
             return parent;
         }
