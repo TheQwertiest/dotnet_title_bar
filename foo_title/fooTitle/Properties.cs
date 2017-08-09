@@ -1094,7 +1094,16 @@ namespace fooTitle {
 
         private void openSkinDirBtn_Click(object sender, EventArgs e) {
             try {
-                System.Diagnostics.Process.Start(Main.UserDataDir);
+                if (skinsList.SelectedItems[0] == null)
+                {
+                    System.Diagnostics.Process.Start(Main.UserDataDir);
+                }
+                else
+                {
+                    System.Diagnostics.Process.Start(
+                        "explorer.exe",
+                        $"/select, \"{((SkinListEntry) skinsList.SelectedItems[0]).Path}\"");
+                }
             } catch (Exception ex) {
                 MessageBox.Show("foo_title - There was an error opening directory " + Main.UserDataDir + ":\n" + ex.Message, "foo_title");
             }
