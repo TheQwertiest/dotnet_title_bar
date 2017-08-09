@@ -1,6 +1,15 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Added clip property to skin element to disable clipping.
+
+### Fixed
+- Fixed tooltip behaviour on complex skins.
+- Fixed minimal type geometry behaviour on complex skins.
+- Fixed error that prevented the filling of the skin list, when one of the
+skins is not parsable.
+- Fixed clipping not being applied.
 
 ## [0.9.4a] - 2017-08-08
 ### Fixed
