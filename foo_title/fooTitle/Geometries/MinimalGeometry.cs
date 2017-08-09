@@ -5,7 +5,6 @@ using System.Xml;
 namespace fooTitle.Geometries {
     [GeometryTypeAttribute("minimal")]
     internal class MinimalGeometry : Geometry{
-
         [Flags]
         public enum AlignType
         {
@@ -17,7 +16,7 @@ namespace fooTitle.Geometries {
             Center = 1 << 5
         };
 
-        private readonly Rectangle _parentRect;
+        private AlignType _align;
 
         /// <summary>
         /// Current values of padding
@@ -31,20 +30,10 @@ namespace fooTitle.Geometries {
 
         private Size _curContentSize;
 
-        private AlignType _align;
-        public AlignType Align
-        {
-            get => _align;
-            set
-            {
-                _align = value;
-                Update(_parentRect);
-            }
-        }
+        private Point _relPosition;
+        public Point Position => _relPosition;
 
         public MinimalGeometry(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
-            _parentRect = parentRect;
-
             XmlNode padding = GetFirstChildByName(node, "padding");
 
             // read and store expressions
@@ -60,7 +49,11 @@ namespace fooTitle.Geometries {
             MyPadding.Bottom = (int)GetNumberFromAttribute(padding, "bottom", "0");
 
             // read alignment
-            string alignStr = GetAttributeValue(GetFirstChildByName(node, "position"), "align", "left,top");
+            XmlNode positionNode = GetFirstChildByNameOrNull(node, "position");
+            string alignStr = "left,top";
+            if (positionNode != null )
+                alignStr = GetAttributeValue(positionNode, "align", "left,top");
+
             _align = AlignType.None;
             foreach (string i in alignStr.ToLower().Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries))
             {
@@ -91,45 +84,46 @@ namespace fooTitle.Geometries {
             MyPadding.Right = GetValueFromExpression(MyExprPadding.Right, MyPadding.Right);
             MyPadding.Bottom = GetValueFromExpression(MyExprPadding.Bottom, MyPadding.Bottom);
 
-            myClientRect.Width = Math.Max(0, Math.Min(_curContentSize.Width, parentRect.Width) - (MyPadding.Left + MyPadding.Right));
-            myClientRect.Height = Math.Max(0, Math.Min(_curContentSize.Height, parentRect.Height) - (MyPadding.Top + MyPadding.Bottom));
+            int myWidth = Math.Min(parentRect.Width - (MyPadding.Left + MyPadding.Right), _curContentSize.Width);
+            int myHeight = Math.Min(parentRect.Height - (MyPadding.Top + MyPadding.Bottom), _curContentSize.Height);
+            myClientRect.Width = Math.Max(0, myWidth);
+            myClientRect.Height = Math.Max(0, myHeight);
 
-            Point position = new Point(0,0);
             if ((_align & AlignType.Left) != 0)
             {
-                position.X = MyPadding.Left;
+                _relPosition.X = 0;
             }
             else if ((_align & AlignType.Right) != 0)
             {
-                position.X = parentRect.Right - (myClientRect.Width + MyPadding.Right);
+                _relPosition.X = parentRect.Width - (myClientRect.Width + MyPadding.Right + MyPadding.Left);
             }
             else
             {
-                position.X = (parentRect.Right - (myClientRect.Width + MyPadding.Right - MyPadding.Left)) / 2;
+                _relPosition.X = (parentRect.Width - (myClientRect.Width + MyPadding.Right - MyPadding.Left)) / 2;
             }
 
             if ((_align & AlignType.Top) != 0)
             {
-                position.Y = MyPadding.Top;
+                _relPosition.Y = 0;
             }
             else if ((_align & AlignType.Bottom) != 0)
             {
-                position.Y = parentRect.Bottom - (myClientRect.Height + MyPadding.Bottom);
+                _relPosition.Y = parentRect.Height - (myClientRect.Height + MyPadding.Bottom + MyPadding.Top);
             }
             else
             {
-                position.Y = (parentRect.Bottom - (myClientRect.Height + MyPadding.Bottom - MyPadding.Top))/2;
+                _relPosition.Y = (parentRect.Height - (myClientRect.Height + MyPadding.Bottom - MyPadding.Top))/2;
             }
 
-            myClientRect.X = position.X + parentRect.Left;
-            myClientRect.Y = position.Y + parentRect.Top;
+            myClientRect.X = parentRect.Left + MyPadding.Left + _relPosition.X;
+            myClientRect.Y = parentRect.Top + MyPadding.Top + _relPosition.Y;
         }
 
         public override Size GetMinimalSize(Size contentSize)
         {
-            _curContentSize = new Size(MyPadding.Left + MyPadding.Right + contentSize.Width,
+            _curContentSize = contentSize;
+            return new Size(MyPadding.Left + MyPadding.Right + contentSize.Width,
                 MyPadding.Top + MyPadding.Bottom + contentSize.Height);
-            return _curContentSize;
         }
 
         public override Point GetPosition()

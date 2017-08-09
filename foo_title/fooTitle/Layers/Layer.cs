@@ -24,6 +24,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using fooTitle.Geometries;
 using System.Collections.Generic;
+using System.Windows.Forms.VisualStyles;
 
 
 namespace fooTitle.Layers {
@@ -46,8 +47,9 @@ namespace fooTitle.Layers {
         }
 
         public bool Enabled { get; set; } = true;
+        private readonly bool _clipEnabled = true;
 
-        public ICollection<Layer> SubLayers => layers;
+        public IList<Layer> SubLayers => layers;
 
         protected Geometry geometry;
 
@@ -59,13 +61,14 @@ namespace fooTitle.Layers {
         public bool IsMouseOver { get; private set; } = false;
 
         public bool HasToolTip { get; } = false;
-        private readonly string _toolTipText;
+        public string ToolTipText { get; }
 
         public Layer(Rectangle parentRect, XmlNode node) {
             // read name and type
             Name = node.Attributes.GetNamedItem("name").Value;
             Type = node.Attributes.GetNamedItem("type").Value;
             Enabled = GetAttributeValue(node, "enabled", "true").ToLowerInvariant() == "true";
+            _clipEnabled = GetAttributeValue(node, "clip", "true").ToLowerInvariant() == "true";
 
             // create the geometry
             foreach (XmlNode child in node.ChildNodes) {
@@ -83,11 +86,11 @@ namespace fooTitle.Layers {
 
             // tooltip
             bool hasDynamicToolTip = false;
-            _toolTipText = GetAttributeValue(node, "tooltip", null);
-            if (_toolTipText != null)
+            ToolTipText = GetAttributeValue(node, "tooltip", null);
+            if (ToolTipText != null)
             {
                 HasToolTip = true;
-                hasDynamicToolTip = IsExpression(_toolTipText);
+                hasDynamicToolTip = IsExpression(ToolTipText);
             }
 
             Main.GetInstance().CurrentSkin.OnMouseMove += OnMouseMove;
@@ -102,26 +105,18 @@ namespace fooTitle.Layers {
 
         private void OnPlaybackTime(double time)
         {
-            if (IsMouseOver)
+            if (HasToolTip && IsMouseOver)
             {
-                Main.GetInstance().CurrentSkin.ToolTip.UpdateToolTip(this, _toolTipText);
+                Main.GetInstance().CurrentSkin.ToolTip.UpdateToolTip(this, ToolTipText);
             }
         }
 
         private void OnMouseLeave(object sender, EventArgs e) {
             IsMouseOver = false;
-            if (HasToolTip)
-            {
-                Main.GetInstance().CurrentSkin.ToolTip.ClearToolTip();
-            }
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e) {
             IsMouseOver = ClientRect.Contains(e.X, e.Y);
-            if (HasToolTip && IsMouseOver )
-            {
-                Main.GetInstance().CurrentSkin.ToolTip.ShowDelayedToolTip(this, _toolTipText);
-            }
         }
 
         protected virtual void LoadLayers(XmlNode node) {
@@ -172,9 +167,16 @@ namespace fooTitle.Layers {
                 return;
 
             // Prevent layers from drawing outside their clientRect
-            Display.Canvas.SetClip(new Rectangle(ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height));
+            RectangleF prevClipRegion = Display.Canvas.ClipBounds;
+            if (_clipEnabled)
+            {
+                Display.Canvas.SetClip(RectangleF.Intersect(prevClipRegion, ClientRect));
+            }
+
             drawImpl();
             drawSubLayers();
+
+            Display.Canvas.SetClip(prevClipRegion);            
         }
 
         /// <summary>

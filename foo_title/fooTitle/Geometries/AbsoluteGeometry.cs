@@ -26,13 +26,14 @@ using System.Xml;
 
 namespace fooTitle.Geometries {
 
-    public enum AlignType {
-        Left,
-        Right
-    };
-
     [GeometryTypeAttribute("absolute")]
     class AbsoluteGeometry : Geometry {
+
+        public enum AlignType
+        {
+            Left,
+            Right
+        };
 
         protected Rectangle myParentRect;
         
@@ -105,6 +106,7 @@ namespace fooTitle.Geometries {
             myExprPosition.X = GetExpressionFromAttribute(position, "x", "0");
             myExprPosition.Y = GetExpressionFromAttribute(position, "y", "0");
 
+            // TODO: myPosition (i.e. relative to parent) calculation should take align into account
             // get the actual values
             myPosition.X = (int)GetNumberFromAttribute(position, "x", "0");
             myPosition.Y = (int)GetNumberFromAttribute(position, "y", "0");
@@ -116,12 +118,12 @@ namespace fooTitle.Geometries {
                 myAlign = AlignType.Left;
         }
 
-        public AbsoluteGeometry(Rectangle parentRect, int width, int height, Point position, AlignType align) {
+        public AbsoluteGeometry(Rectangle parentRect, int width, int height, Point position) {
             myParentRect = parentRect;
             myWidth = width;
             myHeight = height;
             myPosition = position;
-            myAlign = align;
+            myAlign = AlignType.Left;
         }
 
         public override void Update(Rectangle parentRect) {

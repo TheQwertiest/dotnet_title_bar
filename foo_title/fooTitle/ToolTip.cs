@@ -18,6 +18,8 @@ namespace fooTitle
         private Layer _tooltipLayer;
         private string _tooltipText;
 
+        private bool _isMouseDown = false;
+
         public ToolTip(Display display, Layer parentLayer)
         {
             _parentLayer = parentLayer;
@@ -30,7 +32,10 @@ namespace fooTitle
         private Layer _curTopToolTipLayer;
         public void OnMouseMove(object sender, MouseEventArgs e)
         {
-            _curTopToolTipLayer = GetTopToolTipLayer(GetTopLayerUnderMouse(_parentLayer));
+            if (_isMouseDown)
+                return;
+
+            _curTopToolTipLayer = GetTopToolTipLayer(_parentLayer);
 
             if (!Main.GetInstance().ttd.Visible || _tooltipLayer != _curTopToolTipLayer)
             {
@@ -38,30 +43,39 @@ namespace fooTitle
                 Main.GetInstance().ttd.Left = mouse.X;
                 Main.GetInstance().ttd.Top = mouse.Y + 18;
             }
+
+            if (_curTopToolTipLayer != null)
+            {
+                ShowDelayedToolTip(_curTopToolTipLayer, _curTopToolTipLayer.ToolTipText);
+            }
+            else
+            {
+                ClearToolTip();
+            }
+        }
+
+        public void OnMouseDown(object sender, MouseEventArgs e)
+        {
+            _isMouseDown = true;
+            ClearToolTip();
+        }
+
+        public void OnMouseUp(object sender, MouseEventArgs e)
+        {
+            _isMouseDown = false;
         }
 
         private static Layer GetTopToolTipLayer(Layer layer)
         {
-            foreach (Layer i in layer.SubLayers)
-            {
-                if (i.IsMouseOver && i.HasToolTip)
-                    return i;
-            }
-
-            foreach (Layer i in layer.SubLayers)
-            {
-                Layer topLayer = GetTopToolTipLayer(i);
-                if (topLayer != null)
-                    return topLayer;
-            }
-
-            return null;
+            Layer tmp = GetTopLayerUnderMouse(layer);
+            return tmp.HasToolTip ? tmp : null;
         }
 
         private static Layer GetTopLayerUnderMouse(Layer parent)
         {
-            foreach (Layer layer in parent.SubLayers)
-            {
+            for (int i = parent.SubLayers.Count - 1; i >= 0; --i)
+            {// Last layer is the top one
+                Layer layer = parent.SubLayers[i];
                 if (layer.IsMouseOver)
                 {
                     return GetTopLayerUnderMouse(layer);

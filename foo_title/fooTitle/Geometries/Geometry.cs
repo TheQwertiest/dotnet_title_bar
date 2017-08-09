@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+using System;
 using System.Drawing;
 using fooTitle.Extending;
 using System.Xml;
@@ -80,7 +81,7 @@ namespace fooTitle.Geometries {
         /// <summary>
         /// Calculates the minimal size needed to display this entire layer.
         /// </summary>
-        /// <param name="contentSize">The contentSize of the contents.</param>
+        /// <param name="contentSize">The size of the contents.</param>
         public abstract Size GetMinimalSize(Size contentSize);
 
 

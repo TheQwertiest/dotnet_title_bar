@@ -54,8 +54,7 @@ namespace fooTitle.Layers
 
             int width = int.Parse(_skin.Attributes.GetNamedItem("width").Value);
             int height = int.Parse(_skin.Attributes.GetNamedItem("height").Value);
-            geometry = new AbsoluteGeometry(new Rectangle(0, 0, width, height), width, height, new Point(0, 0),
-                AlignType.Left);
+            geometry = new AbsoluteGeometry(new Rectangle(0, 0, width, height), width, height, new Point(0, 0));
 
             // register to main for playback events
             Main.GetInstance().OnPlaybackNewTrackEvent += OnPlaybackNewTrack;
@@ -160,7 +159,8 @@ namespace fooTitle.Layers
         /// <param name="parentRect">parent rectangle - the geometry should fit in it</param>
         public void FrameUpdateGeometry(Rectangle parentRect)
         {
-            foreach (Layer l in DynamicLayers) l.UpdateThisLayerGeometry(l.ParentLayer.ClientRect);
+            foreach (Layer l in DynamicLayers)
+                l.UpdateThisLayerGeometry(l.ParentLayer.ClientRect);
         }
 
         /// <summary>
@@ -186,16 +186,24 @@ namespace fooTitle.Layers
             if (!File.Exists(skinFullPath))
                 return null;
 
-            XmlDocument document = new XmlDocument();
-            document.Load(skinFullPath);
-
-            XmlNode skin = document.GetElementsByTagName("skin").Item(0);
-
-            return new SkinInfo
+            try
             {
-                Name = GetAttributeValue(skin, "name", null),
-                Author = GetAttributeValue(skin, "author", null)
-            };
+                XmlDocument document = new XmlDocument();
+                document.Load(skinFullPath);
+
+                XmlNode skin = document.GetElementsByTagName("skin").Item(0);
+
+                return new SkinInfo
+                {
+                    Name = GetAttributeValue(skin, "name", null),
+                    Author = GetAttributeValue(skin, "author", null)
+                };
+            }
+            catch (XmlException e)
+            {
+                CConsole.Write($"Failed to parse skin from {skinPath}:\n{e}");
+                return null;
+            }
         }
 
         /// <summary>
@@ -339,17 +347,19 @@ namespace fooTitle.Layers
         private void Display_MouseUp(object sender, MouseEventArgs e)
         {
             SendEventCatch(OnMouseUp, sender, e);
+            ToolTip?.OnMouseUp(sender, e);
         }
 
         private void Display_MouseDown(object sender, MouseEventArgs e)
         {
             SendEventCatch(OnMouseDown, sender, e);
+            ToolTip?.OnMouseDown(sender, e);
         }
 
         private void Display_MouseMove(object sender, MouseEventArgs e)
         {
-            ToolTip?.OnMouseMove(sender, e);
             SendEventCatch(OnMouseMove, sender, e);
+            ToolTip?.OnMouseMove(sender, e);
             Main.GetInstance().CanDragDisplay = !IsMouseOverButton(this);
         }
 
@@ -357,6 +367,7 @@ namespace fooTitle.Layers
         {
             Main.GetInstance().CanDragDisplay = true;
             SendEventCatch(OnMouseLeave, sender, e);
+            ToolTip?.ClearToolTip();
         }
 
         private void Display_MouseWheel(object sender, EventArgs e)
