@@ -1,15 +1,19 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.9.5] - 2017-08-10
 ### Added
-- Added clip property to skin element to disable clipping.
-- Added no-content layer type: this layer has no contents itself and is used solely for positioning other layers.
+- Added clip property to skin element: set to false to disable clipping.
+- Added no-content layer type: this layer has no contents itself and is used solely for positioning other layers, transparent for tooltip layer detection.
+
+### Changed
+- Updated Milk Plate skin.
 
 ### Fixed
 - Fixed tooltip behaviour on complex skins.
 - Fixed minimal type geometry behaviour on complex skins.
-- Fixed error that prevented the filling of the skin list, when one of the
-skins is not parsable.
+- Fixed error that prevented the filling of the skin list, when one of the skins is not parsable.
 - Fixed clipping not being applied.
 
 ## [0.9.4a] - 2017-08-08
@@ -70,7 +74,8 @@ skins is not parsable.
 ## Prior releases
 - See https://github.com/lepkoqq/foo_title/releases
 
-[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v0.9.4a...HEAD
+[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v0.9.5...HEAD
+[0.9.5]: https://github.com/theqwertiest/foo_title/compare/v0.9.4a...v0.9.5
 [0.9.4a]: https://github.com/theqwertiest/foo_title/compare/v0.9.4...v0.9.4a
 [0.9.4]: https://github.com/theqwertiest/foo_title/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/theqwertiest/foo_title/compare/v0.9.2...v0.9.3
