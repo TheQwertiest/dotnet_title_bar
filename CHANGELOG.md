@@ -5,7 +5,7 @@
 ## [0.9.5] - 2017-08-10
 ### Added
 - Added clip property to skin element: set to false to disable clipping.
-- Added no-content layer type: this layer has no contents itself and is used solely for positioning other layers, transparent for tooltip layer detection.
+- Added no-content layer type: this layer has no contents itself and is used solely for positioning other layers, it is also transparent for tool-tip layer detection.
 
 ### Changed
 - Updated Milk Plate skin.
