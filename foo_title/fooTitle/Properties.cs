@@ -18,40 +18,50 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using fooTitle.Config;
 using fooTitle.Layers;
 
 namespace fooTitle {
-    class Properties : fooManagedWrapper.CManagedPrefPage_v3 {
-    //class Properties : System.Windows.Forms.Form {
 
-        public override void Reset() {
+    class Properties : fooManagedWrapper.CManagedPrefPage_v3
+    {
+        //class Properties : Form {
+
+        public override void Reset()
+        {
             ConfValuesManager.GetInstance().Reset();
         }
 
-        public override void Apply() {
+        public override void Apply()
+        {
             ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
         }
 
-        public override bool HasChanged() {
+        public override bool HasChanged()
+        {
             return ConfValuesManager.GetInstance().HasChanged();
         }
 
-        private class SkinListEntry : ListViewItem {
+        private class SkinListEntry : ListViewItem
+        {
             public readonly string Path;
 
-            public SkinListEntry(string _path, string name, string author) : base(new string[] { name, author }) {
-                Path = _path;
+            public SkinListEntry(string path, string name, string author) : base(new[] { name, author })
+            {
+                Path = path;
             }
         }
 
-        protected AutoWrapperCreator autoWrapperCreator = new AutoWrapperCreator();
-        protected RadioGroupWrapper showWhenWrapper;
-        protected RadioGroupWrapper windowPositionWrapper;
+        private readonly AutoWrapperCreator autoWrapperCreator = new AutoWrapperCreator();
+        private RadioGroupWrapper showWhenWrapper;
+        private RadioGroupWrapper windowPositionWrapper;
         private CheckBox restoreTopmostCheckbox;
         private Label opacityNormalLabel;
         private Label opacityMouseOverLabel;
@@ -76,7 +86,7 @@ namespace fooTitle {
         private GroupBox groupBox5;
         private RadioButton enableDraggingPropsOpenRadio;
         private RadioButton enableDraggingAlwaysRadio;
-        protected RadioGroupWrapper popupShowingWrapper;
+        private RadioGroupWrapper popupShowingWrapper;
         private RadioButton enableDraggingNeverRadio;
         private GroupBox groupBox6;
         private GroupBox groupBox2;
@@ -100,10 +110,11 @@ namespace fooTitle {
         private CheckBox checkBox4;
         private ColumnHeader nameColumn;
         private ColumnHeader authorColumn;
-        protected RadioGroupWrapper enableDraggingWrapper;
+        private RadioGroupWrapper enableDraggingWrapper;
 
-        public Properties(Main _main) : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage_v3.guid_display) {
-            main = _main;
+        public Properties(Main main) : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage_v3.guid_display)
+        {
+            _main = main;
             InitializeComponent();
 
             showWhenWrapper = new RadioGroupWrapper("display/showWhen", this);
@@ -128,35 +139,93 @@ namespace fooTitle {
             autoWrapperCreator.CreateWrappers(this);
         }
 
-        protected void fillSkinList() {
-            skinsList.Items.Clear();
+        #region SkinList_Handling
 
-            try {
-                foreach (string path in System.IO.Directory.GetDirectories(Main.UserDataDir))
+        private CancellationTokenSource _cts;
+
+        private async Task<List<ListViewItem>> GetSkinItems(CancellationToken token)
+        {
+            try
+            {
+                List<ListViewItem> itemsLocal = new List<ListViewItem>();
+                var dirList = System.IO.Directory.GetDirectories(Main.UserDataDir);
+                int i = 0;
+                foreach (string path in dirList)
                 {
+                    token.ThrowIfCancellationRequested();
+
                     Skin.SkinInfo skinInfo = Skin.GetSkinInfo(path);
                     if (skinInfo?.Name != null)
                     {
-                        SkinListEntry current = new SkinListEntry(path, skinInfo.Name, skinInfo.Author);
-                        skinsList.Items.Add(current);
-                        if (path == main.SkinPath.Value)
+                        var current = new SkinListEntry(path, skinInfo.Name, skinInfo.Author);
+                        if (path == _main.SkinPath.Value)
                         {
-                            skinsList.Items[skinsList.Items.Count - 1].Selected = true;
+                            current.Selected = true;
+                            current.EnsureVisible();
                         }
+                        itemsLocal.Add(current);
+                        await Task.Delay(1, token);
                     }
+
+                    ++i;
+                    _skinListProgressTimer.Progress = (float)(i * 100) / dirList.Length;
                 }
-            } catch (Exception) {
-                fooManagedWrapper.CConsole.Write($"Failed to read from {Main.UserDataDir}.");
+
+                return itemsLocal;
+            }
+            catch (Exception e)
+            {
+                fooManagedWrapper.CConsole.Write($"Failed to read from {Main.UserDataDir}:\n{e}");
+                return new List<ListViewItem>();
             }
         }
 
-        public void UpdateValues() {
-            fillSkinList();
-            ResizeListView(skinsList);
+        private ProgressTimer _skinListProgressTimer;
 
-            Assembly myAssembly = Assembly.GetExecutingAssembly();
-            versionLabel.Text = "Version: " + myAssembly.GetName().Version;
+        private void UpdateSkinListProgress(object sender, float progress)
+        {
+            skinsList.Items[0].SubItems[0].Text = $"Loading skins... ({(int)progress}%)";
         }
+
+        private void StartSkinListFill()
+        {
+            skinsList.Items.Clear();
+            skinsList.Items.Add(new SkinListEntry("", "", ""));
+            UpdateSkinListProgress(null, 0);
+            ResizeListView(skinsList);
+        }
+
+        private void CompleteSkinListFill(ListViewItem[] items)
+        {
+            skinsList.Items.Clear();
+            if (items.Length == 0)
+            {
+                return;
+            }
+
+            skinsList.BeginUpdate();
+            skinsList.Items.AddRange(items);
+            if (skinsList.SelectedIndices.Count != 0)
+            {
+                skinsList.EnsureVisible(skinsList.SelectedIndices[0]);
+            }
+            ResizeListView(skinsList);
+            skinsList.EndUpdate();
+        }
+
+        private async Task FillSkinListAsync(CancellationToken token)
+        {
+            StartSkinListFill();
+
+            _skinListProgressTimer = new ProgressTimer(UpdateSkinListProgress);
+            _skinListProgressTimer.Start();
+            List<ListViewItem> items = await GetSkinItems(token);
+            _skinListProgressTimer.Stop();
+
+            CompleteSkinListFill(items.ToArray());
+        }
+
+        #endregion //SkinList
 
         public void DiscardChanges() {
             ConfValuesManager.GetInstance().LoadFrom(Main.GetInstance().Config);
@@ -164,32 +233,34 @@ namespace fooTitle {
 
         #region Windows Form Designer generated code
         private SafeTabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.ListView skinsList;
-        private System.Windows.Forms.Button applySkinBtn;
-        private System.Windows.Forms.GroupBox showWhenBox;
-        private System.Windows.Forms.RadioButton neverRadio;
-        private System.Windows.Forms.RadioButton minimizedRadio;
-        private System.Windows.Forms.RadioButton alwaysRadio;
-        private System.Windows.Forms.GroupBox opacityOpts;
-        private System.Windows.Forms.TrackBar normalOpacityTrackBar;
-        private System.Windows.Forms.TrackBar overOpacityTrackBar;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label versionLabel;
-        private System.Windows.Forms.GroupBox zOrderBox;
-        private System.Windows.Forms.RadioButton onDesktopRadio;
-        private System.Windows.Forms.RadioButton normalRadio;
-        private System.Windows.Forms.RadioButton alwaysOnTopRadio;
-        private System.Windows.Forms.GroupBox popupBox;
-        private System.Windows.Forms.RadioButton onlyWhenRadio;
-        private System.Windows.Forms.RadioButton allTheTimeRadio;
+        private TabPage tabPage1;
+        private TabPage tabPage2;
+        private ListView skinsList;
+        private Button applySkinBtn;
+        private GroupBox showWhenBox;
+        private RadioButton neverRadio;
+        private RadioButton minimizedRadio;
+        private RadioButton alwaysRadio;
+        private GroupBox opacityOpts;
+        private TrackBar normalOpacityTrackBar;
+        private TrackBar overOpacityTrackBar;
+        private Label label6;
+        private Label label5;
+        private Label versionLabel;
+        private GroupBox zOrderBox;
+        private RadioButton onDesktopRadio;
+        private RadioButton normalRadio;
+        private RadioButton alwaysOnTopRadio;
+        private GroupBox popupBox;
+        private RadioButton onlyWhenRadio;
+        private RadioButton allTheTimeRadio;
 
-        protected Main main;
+        private Main _main;
 
         private void InitializeComponent() {
             this.skinsList = new System.Windows.Forms.ListView();
+            this.nameColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.authorColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.applySkinBtn = new System.Windows.Forms.Button();
             this.showWhenBox = new System.Windows.Forms.GroupBox();
             this.neverRadio = new System.Windows.Forms.RadioButton();
@@ -256,8 +327,6 @@ namespace fooTitle {
             this.artLoadEveryLabelRight = new System.Windows.Forms.Label();
             this.artLoadEveryNumber = new System.Windows.Forms.NumericUpDown();
             this.artLoadEveryLabelLeft = new System.Windows.Forms.Label();
-            this.nameColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.authorColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.showWhenBox.SuspendLayout();
             this.opacityOpts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.normalOpacityTrackBar)).BeginInit();
@@ -298,6 +367,15 @@ namespace fooTitle {
             this.skinsList.TabIndex = 0;
             this.skinsList.UseCompatibleStateImageBehavior = false;
             this.skinsList.View = System.Windows.Forms.View.Details;
+            this.skinsList.DoubleBuffered(true);
+            // 
+            // nameColumn
+            // 
+            this.nameColumn.Text = "Name";
+            // 
+            // authorColumn
+            // 
+            this.authorColumn.Text = "Author";
             // 
             // applySkinBtn
             // 
@@ -959,7 +1037,7 @@ namespace fooTitle {
             this.label14.Size = new System.Drawing.Size(205, 65);
             this.label14.TabIndex = 6;
             this.label14.Text = "* 0 = never, -1 = no maximum\r\n\r\nUse this if you use an external album art\r\nloader" +
-    " that starts loading art after the song\r\nhas alread started playing.";
+    " that starts loading art after the song\r\nhas already started playing.";
             // 
             // artLoadMaxLabelRight
             // 
@@ -1013,14 +1091,6 @@ namespace fooTitle {
             this.artLoadEveryLabelLeft.TabIndex = 0;
             this.artLoadEveryLabelLeft.Text = "Every";
             // 
-            // nameColumn
-            // 
-            this.nameColumn.Text = "Name";
-            // 
-            // authorColumn
-            // 
-            this.authorColumn.Text = "Author";
-            // 
             // Properties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1030,6 +1100,7 @@ namespace fooTitle {
             this.Name = "Properties";
             this.Text = "foo_title";
             this.HandleCreated += new System.EventHandler(this.Properties_HandleCreated);
+            this.HandleCreated += new System.EventHandler(this.Properties_HandleCreated_Async);
             this.HandleDestroyed += new System.EventHandler(this.Properties_HandleDestroyed);
             this.showWhenBox.ResumeLayout(false);
             this.showWhenBox.PerformLayout();
@@ -1074,12 +1145,41 @@ namespace fooTitle {
         public static bool IsOpen { get; private set; } = false;
 
         private void Properties_HandleCreated(object sender, EventArgs e) {
-            UpdateValues();
+            Assembly myAssembly = Assembly.GetExecutingAssembly();
+            versionLabel.Text = "Version: " + myAssembly.GetName().Version;
             IsOpen = true;
+        }
+
+        private Task _fillSkinTask;
+        private async void Properties_HandleCreated_Async(object sender, EventArgs e)
+        {
+            if (_cts != null)
+            {
+                _cts.Cancel();
+                _cts = null;
+            }
+            _cts = new CancellationTokenSource();
+            try
+            {
+                _fillSkinTask = FillSkinListAsync(_cts.Token);
+                await _fillSkinTask;
+            }
+            finally
+            {
+                _cts = null;
+            }
         }
 
         private void Properties_HandleDestroyed(object sender, EventArgs e) {
             DiscardChanges();
+
+            _cts?.Cancel();
+            while (_fillSkinTask != null && _fillSkinTask.Status == TaskStatus.Running)
+            {
+                Thread.Sleep(10);
+            }
+            _cts = null;
+
             IsOpen = false;
         }
 
@@ -1088,13 +1188,13 @@ namespace fooTitle {
                 return;
             }
 
-            main.SkinPath.ForceUpdate(((SkinListEntry)skinsList.SelectedItems[0]).Path);
+            _main.SkinPath.ForceUpdate(((SkinListEntry)skinsList.SelectedItems[0]).Path);
             OnChange(); // If the control is not wrapped in a ControlWrapper we need to manually call OnChange
         }
 
         private void openSkinDirBtn_Click(object sender, EventArgs e) {
             try {
-                if (skinsList.SelectedItems[0] == null)
+                if (skinsList.SelectedItems.Count == 0)
                 {
                     System.Diagnostics.Process.Start(Main.UserDataDir);
                 }
@@ -1114,9 +1214,26 @@ namespace fooTitle {
             if (lv == null || lv.Columns.Count < 2)
                 return;
 
-            lv.Columns[1].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
-            lv.Columns[1].AutoResize(ColumnHeaderAutoResizeStyle.None);
-            lv.Columns[0].Width = lv.Width - lv.Columns[1].Width - 5;
+            lv.Columns[0].Width = CalculateColumnWidth(lv.Columns[0], lv.Font);
+            lv.Columns[1].Width = CalculateColumnWidth(lv.Columns[1], lv.Font);
+
+            bool scrollBarDisplayed = (lv.Items.Count > 0) && (lv.ClientSize.Height < (lv.Items.Count + 1) * lv.Items[0].Bounds.Height);
+
+            if (lv.Columns[0].Width + lv.Columns[1].Width < lv.ClientSize.Width)
+            {
+                lv.Columns[0].Width = lv.ClientSize.Width - lv.Columns[1].Width - (scrollBarDisplayed ? SystemInformation.VerticalScrollBarWidth : 0);
+            }
+            else if ( (lv.ClientSize.Width - lv.Columns[0].Width) > 15)
+            {
+                lv.Columns[1].Width = lv.ClientSize.Width - lv.Columns[0].Width - (scrollBarDisplayed ? SystemInformation.VerticalScrollBarWidth : 0);
+            }
+        }
+
+        private int CalculateColumnWidth(ColumnHeader column, Font font)
+        {
+            column.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            column.AutoResize(ColumnHeaderAutoResizeStyle.None);
+            return Math.Max(column.Width, TextRenderer.MeasureText(column.Text, font).Width + 10);
         }
     }
 }
