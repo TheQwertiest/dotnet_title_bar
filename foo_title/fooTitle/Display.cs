@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using fooTitle.Config;
@@ -143,10 +144,28 @@ namespace fooTitle {
             this.MouseMove += Display_MouseMove;
             this.Activated += Display_Activated;
             this.Paint += Display_OnPaint;
+#if DEBUG
+            _perf_watch.Start();
+#endif
         }
         #endregion
 
-        public void FrameRedraw() {
+#if DEBUG
+        private int _perf_frames = 0;
+        private readonly Stopwatch _perf_watch = new Stopwatch();
+        private long _perf_lastTime = 0;
+#endif
+        public void FrameRedraw()
+        {
+#if DEBUG
+            ++_perf_frames;
+            if (_perf_watch.ElapsedMilliseconds - _perf_lastTime >= 100)
+            {
+                System.Diagnostics.Debug.Write(_perf_frames + " frames\n");
+                _perf_frames = 0;
+                _perf_lastTime = _perf_watch.ElapsedMilliseconds;
+            }
+#endif
             Canvas.ResetClip();
             if (_shouldDrawAnchor.Value)
             {
