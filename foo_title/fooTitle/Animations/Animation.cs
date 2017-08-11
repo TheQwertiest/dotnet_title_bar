@@ -23,6 +23,7 @@ namespace fooTitle
 {
 	public class Animation
 	{
+        // TODO: Add timer refresh
 		protected Display display;
 
 		protected int myFrame;

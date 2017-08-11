@@ -24,7 +24,7 @@ using System.Xml;
 namespace fooTitle.Layers {
     [LayerTypeAttribute("scrolling-text")]
     internal class ScrollingTextLayer : TextLayer {
-
+        // TODO: Add timer refresh
         protected int direction = 1;
         /// <summary>
         /// Number of pixels to move the text per second.

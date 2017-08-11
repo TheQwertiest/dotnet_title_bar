@@ -208,13 +208,25 @@ namespace fooTitle.Layers
             parts[0] = left;
             parts[1] = right;
 
+
+		    string[] prevText = {left.formatted, right.formatted};		    
+
             left.formatted = defaultText;
             right.formatted = "";
 
-            for (int i = 0; i < 2; i++ ) {
+            for (int i = 0; i < 2; ++i ) {
                 if (!string.IsNullOrEmpty(parts[i].text) && Main.PlayControl.IsPlaying()) {
                     // Evaluate only when there is a track, otherwise keep default text
                     parts[i].formatted = Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), parts[i].text);
+                }
+            }
+
+		    for (int i = 0; i < 2; ++i)
+            {
+                if (prevText[i] != parts[i].formatted)
+                {
+                    Display.Refresh();
+                    break;
                 }
             }
 		}

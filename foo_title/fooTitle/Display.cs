@@ -20,84 +20,24 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using fooTitle.Config;
 
 namespace fooTitle {
     public class Display : PerPixelAlphaForm {
-        public enum Animation
-        {
-            FadeInNormal,
-            FadeInOver,
-            FadeOut,
-            FadeOutFull,
-        }
-        private enum OpacityFallbackType
-        {
-            Normal,
-            Transparent,
-        }
-
+        
         private readonly System.ComponentModel.Container _components = null;
         private Bitmap _canvasBitmap;
         public Graphics Canvas;
 
         public int SnapDist = 10;
 
+        public AnimationManager AnimManager { get; }
+
         private bool dragging = false;
         private int dragX;
         private int dragY;
-        private int opacity;
+        public int MyOpacity;
         private int minOpacity;
-        private Animation curAnimationName;
-        private OpacityFallbackType _opacityFallbackType = OpacityFallbackType.Normal;
-        private readonly object _animationLock = new object();
-
-        private readonly ConfValuesManager.ValueChangedDelegate normalOpacityChangeDelegate;
-        private readonly ConfValuesManager.ValueChangedDelegate windowPositionChangeDelegate;
-
-        public delegate void OnAnimationStopDelegate();
-        private OnAnimationStopDelegate _onAnimationStopEvent;
-
-        public class Fade
-        {
-            private readonly int _startVal;
-            private readonly int _stopVal;
-            private readonly int _length;
-            private readonly long _startTime;
-
-            private float _phase;
-
-            public Fade(int startVal, int stopVal, int length) {
-                _startVal = startVal;
-                _stopVal = stopVal;
-                _startTime = DateTime.Now.Ticks / 10000;
-                _length = length;
-            }
-
-            public int GetOpacity() {
-                long now = DateTime.Now.Ticks / 10000;
-
-                // special cases
-                if (now == _startTime)
-                    return _startVal;
-                if (_length == 0) {
-                    _phase = 1;  // end it now
-                }
-
-                // normal processing
-                _phase = (now - _startTime) / (float)_length;
-                if (_phase > 1)
-                    _phase = 1;
-                return (int)(_startVal + _phase * (_stopVal - _startVal));
-            }
-
-            public bool Done() {
-                return _phase >= 1;
-            }
-        }
-
-        private Fade _fadeAnimation;
 
         private readonly DockAnchor _dockAnchor;
 
@@ -133,13 +73,13 @@ namespace fooTitle {
             this.Left = 250;
             this.Top = 0;
 
-            opacity = normalOpacity.Value;
+            MyOpacity = normalOpacity.Value;
             minOpacity = normalOpacity.Value;
+            AnimManager = new AnimationManager(this);
 
-            normalOpacityChangeDelegate = normalOpacity_OnChanged;
-            windowPositionChangeDelegate = windowPosition_OnChanged;
-            normalOpacity.OnChanged += normalOpacityChangeDelegate;
-            WindowPosition.OnChanged += windowPositionChangeDelegate;
+            normalOpacity.OnChanged += normalOpacity_OnChanged;
+            overOpacity.OnChanged += overOpacity_OnChanged;
+            WindowPosition.OnChanged += windowPosition_OnChanged;
 
             _dockAnchor = new DockAnchor(this);
             SetWindowsPos(WindowPosition.Value);
@@ -150,7 +90,17 @@ namespace fooTitle {
         }
 
         private void normalOpacity_OnChanged(string name) {
-            SetNormalOpacity(normalOpacity.Value);
+            MyOpacity = normalOpacity.Value;
+            if (minOpacity != 0)
+            {
+                minOpacity = normalOpacity.Value;
+            }
+            Display_OnPaint(null,null);
+        }
+
+        private void overOpacity_OnChanged(string name)
+        {
+            Display_OnPaint(null, null);
         }
 
         /// <summary>
@@ -159,10 +109,12 @@ namespace fooTitle {
         protected override void Dispose(bool disposing) {
             if (disposing) {
                 _components?.Dispose();
+                AnimManager.Dispose();
 
                 // need to remove this from the events on the configuration values
-                normalOpacity.OnChanged -= normalOpacityChangeDelegate;
-                WindowPosition.OnChanged -= windowPositionChangeDelegate;
+                normalOpacity.OnChanged -= normalOpacity_OnChanged;
+                overOpacity.OnChanged -= overOpacity_OnChanged;
+                WindowPosition.OnChanged -= windowPosition_OnChanged;
             }
             base.Dispose(disposing);
         }
@@ -189,9 +141,8 @@ namespace fooTitle {
             this.MouseDown += Display_MouseDown;
             this.MouseUp += Display_MouseUp;
             this.MouseMove += Display_MouseMove;
-            this.MouseEnter += Display_MouseEnter;
-            this.MouseLeave += Display_MouseLeave;
             this.Activated += Display_Activated;
+            this.Paint += Display_OnPaint;
         }
         #endregion
 
@@ -201,8 +152,8 @@ namespace fooTitle {
             {
                 _dockAnchor.Draw();
             }
-            FrameUpdateOpacity();
-            SetBitmap(_canvasBitmap, (byte)opacity);
+            //AnimManager.UpdateOpacity();
+            SetBitmap(_canvasBitmap, (byte)MyOpacity);
             Canvas.Clear(Color.Transparent);
         }
 
@@ -257,7 +208,8 @@ namespace fooTitle {
         }
 
         private void Display_MouseMove(object sender, MouseEventArgs e) {
-            if (dragging) {
+            if (dragging)
+            {
                 Point mouse = this.PointToScreen(new Point(e.X, e.Y));
                 Screen screen = Screen.FromPoint(mouse);
 
@@ -283,81 +235,14 @@ namespace fooTitle {
         }
         #endregion
 
-        #region Opacity
-        protected void FrameUpdateOpacity() {
-            lock (_animationLock)
-            {
-                if (_fadeAnimation != null)
-                {
-                    opacity = _fadeAnimation.GetOpacity();
-                    if (_fadeAnimation.Done())
-                    {
-                        _fadeAnimation = null;
-                        _onAnimationStopEvent?.Invoke();
-                    }
-                }
-            }
-        }
-
-        public void StartAnimation(Animation animName, OnAnimationStopDelegate actionAfterAnimation = null)
+        private void Display_OnPaint(object sender, EventArgs e)
         {
-            lock (_animationLock)
+            Main.GetInstance().DrawForm();
+            if (this.Visible)
             {
-                if (curAnimationName != animName)
-                {
-                    _onAnimationStopEvent = null;
-                    _fadeAnimation = null;
-                }
-
-                _onAnimationStopEvent = actionAfterAnimation;
-
-                switch (animName)
-                {
-                    case Animation.FadeInNormal:
-                        _fadeAnimation = new Fade(opacity, normalOpacity.Value, 100/*fadeLength.Value*/);
-                        _opacityFallbackType = OpacityFallbackType.Normal;
-                        break;
-                    case Animation.FadeInOver:
-                        _fadeAnimation = new Fade(opacity, overOpacity.Value, 100/*fadeLength.Value*/);
-                        break;
-                    case Animation.FadeOut:
-                        _fadeAnimation = new Fade(opacity, normalOpacity.Value, 400/*fadeLength.Value*/);
-                        _opacityFallbackType = OpacityFallbackType.Normal;
-                        break;
-                    case Animation.FadeOutFull:
-                        _fadeAnimation = new Fade(opacity, 0, 400/*fadeLength.Value*/);
-                        _opacityFallbackType = OpacityFallbackType.Transparent;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(animName), animName, null);
-                }
-
-                curAnimationName = animName;
+                FrameRedraw();
             }
         }
-
-        private OnAnimationStopDelegate _mouseOverSavedCallback;
-
-        private void Display_MouseLeave(object sender, EventArgs e) {
-            Animation animName = _opacityFallbackType == OpacityFallbackType.Normal ? Animation.FadeOut : Animation.FadeOutFull;
-            StartAnimation(animName, _mouseOverSavedCallback);
-            _mouseOverSavedCallback = null;
-        }
-
-        private void Display_MouseEnter(object sender, EventArgs e) {
-            _mouseOverSavedCallback = _onAnimationStopEvent;
-            StartAnimation(Animation.FadeInOver);
-        }
-
-        public void SetNormalOpacity(int value) {
-            opacity = value;
-            _fadeAnimation = null;
-            if (minOpacity != 0)
-            {
-                minOpacity = normalOpacity.Value;
-            }
-        }
-        #endregion
 
         internal void SetSize(int width, int height) {
             this.Width = width;
@@ -427,6 +312,7 @@ namespace fooTitle {
             {
                 this.Left = screen.WorkingArea.Right - this.Width;
             }
+            Refresh();
         }
     }
 }

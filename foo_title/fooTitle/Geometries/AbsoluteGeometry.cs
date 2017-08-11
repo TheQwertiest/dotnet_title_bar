@@ -154,7 +154,7 @@ namespace fooTitle.Geometries {
             return new Size(Math.Max(Width, contentSize.Width), Math.Max(Height, contentSize.Height));
         }
 
-        public override System.Drawing.Point GetPosition() {
+        public override Point GetPosition() {
             return Position;
         }
 

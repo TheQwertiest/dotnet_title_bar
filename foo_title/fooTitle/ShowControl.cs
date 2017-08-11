@@ -119,21 +119,24 @@ namespace fooTitle {
         private void DoEnableWithAnimation(bool useOverAnimation)
         {
             DoEnable();
-            Display.Animation animName = useOverAnimation ? Display.Animation.FadeInOver : Display.Animation.FadeInNormal;
+            AnimationManager.Animation animName = 
+                useOverAnimation ? AnimationManager.Animation.FadeInOver : AnimationManager.Animation.FadeInNormal;
             main.StartDisplayAnimation(animName);
         }
 
         private void DoDisableWithAnimation()
         {
-            Display.Animation animName = (popupShowing.Value == PopupShowing.AllTheTime) ? Display.Animation.FadeOut : Display.Animation.FadeOutFull;
-            Display.OnAnimationStopDelegate onStop = (popupShowing.Value != PopupShowing.AllTheTime) ? DoDisable : (Display.OnAnimationStopDelegate)null;
+            AnimationManager.Animation animName = 
+                (popupShowing.Value == PopupShowing.AllTheTime) ? AnimationManager.Animation.FadeOut : AnimationManager.Animation.FadeOutFull;
+            AnimationManager.OnAnimationStopDelegate onStop = 
+                (popupShowing.Value != PopupShowing.AllTheTime) ? DoDisable : (AnimationManager.OnAnimationStopDelegate)null;
             main.StartDisplayAnimation(animName, onStop);
         }
 
         public void PopupPeek()
         {
             DoEnable();
-            main.StartDisplayAnimation(Display.Animation.FadeInOver, StartFadeOutTimer);
+            main.StartDisplayAnimation(AnimationManager.Animation.FadeInOver, StartFadeOutTimer);
         }
 
         private void StartFadeOutTimer()

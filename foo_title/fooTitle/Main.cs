@@ -54,15 +54,6 @@ namespace fooTitle {
         public static string UserDataDir => Path.Combine(CManagedWrapper.getInstance().GetProfilePath(), myDataDir.Value);
 
         /// <summary>
-        /// How often the display should be redrawn
-        /// </summary>
-        private readonly ConfInt UpdateInterval = new ConfInt("display/updateInterval", 100, 16, 1000);
-        protected void UpdateInterval_OnChanged(string name) {
-            if (initDone)
-                timer.Interval = UpdateInterval.Value;
-        }
-
-        /// <summary>
         /// The name of the currently used skin. Can be changed
         /// </summary>
         public ConfString SkinPath = new ConfString("base/skinName", null);
@@ -179,11 +170,11 @@ namespace fooTitle {
             }
         }
 
-        public void StartDisplayAnimation(Display.Animation animationName, Display.OnAnimationStopDelegate onStopCallback = null)
+        public void StartDisplayAnimation(AnimationManager.Animation animationName, AnimationManager.OnAnimationStopDelegate onStopCallback = null)
         {
             if (initDone && Display.Visible)
             {
-                Display.StartAnimation(animationName, onStopCallback);
+                Display.AnimManager.StartAnimation(animationName, onStopCallback);
             }
         }
 
@@ -233,8 +224,6 @@ namespace fooTitle {
 
         public int ArtReloadMax => artLoadMaxTimes.Value;
 
-        private System.Windows.Forms.Timer timer;
-
         private CMetaDBHandle lastSong;
         private Properties propsForm;
 
@@ -244,25 +233,17 @@ namespace fooTitle {
             return instance;
         }
 
-        private void timerUpdate(object sender, System.EventArgs e) {
-            if (fooTitleEnabled && CurrentSkin != null) {
+        public void DrawForm()
+        {
+            if (fooTitleEnabled && CurrentSkin != null)
+            {
                 // need to update all values that are calculated from formatting strings
                 //CurrentSkin.UpdateGeometry(CurrentSkin.ClientRect);
                 CurrentSkin.FrameUpdateGeometry(CurrentSkin.ClientRect);
                 CurrentSkin.CheckSize();
-                updateDisplay();
+                CurrentSkin.Draw();
             }
             checkFoobarMinimized();
-        }
-
-        /// <summary>
-        /// Redraws the display, called every UpdateInterval miliseconds by the timer
-        /// </summary>
-        private void updateDisplay() {
-            if (CurrentSkin != null) {
-                CurrentSkin.Draw();
-                _display.FrameRedraw();
-            }
         }
 
         /// <summary>
@@ -327,6 +308,8 @@ namespace fooTitle {
                 CurrentSkin.FirstCheckSize();
 
                 CConsole.Write($"skin loaded in {(int)sw.Elapsed.TotalMilliseconds} ms");
+
+                Display.Refresh();
             } catch (Exception e) {
                 CurrentSkin?.Free();
                 CurrentSkin = null;
@@ -420,12 +403,6 @@ namespace fooTitle {
             // init registered clients
             OnInitEvent?.Invoke();
 
-            // start a timer updating the display
-            timer = new System.Windows.Forms.Timer();
-            timer.Interval = UpdateInterval.Value;
-            timer.Tick += timerUpdate;
-            timer.Enabled = true;
-
             // create layer factory
             LayerFactory = new LayerFactory();
             LayerFactory.SearchAssembly(System.Reflection.Assembly.GetExecutingAssembly());
@@ -442,7 +419,6 @@ namespace fooTitle {
 
             // register response events on some variables
             ShowWhen.OnChanged += ShowWhen_OnChanged;
-            UpdateInterval.OnChanged += UpdateInterval_OnChanged;
             SkinPath.OnChanged += SkinPath_OnChanged;
             positionX.OnChanged += positionX_OnChanged;
             positionY.OnChanged += positionY_OnChanged;

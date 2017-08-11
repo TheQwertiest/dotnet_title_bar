@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+### Changed
+- Updated to .NET 4.5.
+- Skin list loading is now asynchronous.
+- Tweaked skin list for cleaner look.
+- Changed screen refresh mechanism: now it redraws on request only and won't redraw if there is nothing to do.
 
 ## [0.9.5] - 2017-08-10
 ### Added

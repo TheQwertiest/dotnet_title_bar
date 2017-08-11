@@ -305,11 +305,12 @@ namespace fooTitle.Layers {
         }
 
         private void OnMouseUp(object sender, MouseEventArgs e) {         
-            mouseDown = false;
-
-            if (!Enabled || !mouseOn ) {
+            if (!Enabled || !mouseOn || !mouseDown) {
                 return;
             }
+
+            mouseDown = false;
+            Display.Invalidate(ClientRect);
 
             if (e.Clicks == (e.Clicks >> 1) << 1 )
             {// double clicks
@@ -320,6 +321,7 @@ namespace fooTitle.Layers {
             foreach (IButtonAction action in actions) {
                 action.Run(e.Button, e.Clicks ,e.Delta);
             }
+            Display.Refresh();
         }
 
         private void OnMouseDoubleClick(object sender, MouseEventArgs e)
@@ -334,6 +336,7 @@ namespace fooTitle.Layers {
             {
                 action.Run(e.Button, e.Clicks, e.Delta);
             }
+            Display.Refresh();
         }
 
         private void OnMouseWheel(object sender, MouseEventArgs e)
@@ -348,22 +351,30 @@ namespace fooTitle.Layers {
             {
                 action.Run(e.Button, e.Clicks, e.Delta);
             }
+            Display.Refresh();
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
+            bool wasMouseOne = mouseOn;
             mouseOn = ClientRect.Contains(e.X, e.Y);
             if (!mouseOn)
                 mouseDown = false;
+
+            if (wasMouseOne != mouseOn)
+            {
+                Display.Invalidate(ClientRect);
+            }
         }
 
         private void OnMouseDown(object sender, MouseEventArgs e) {
-            if (!mouseOn)
+            if (!Enabled || !mouseOn)
             {
                 return;
             }
 
             mouseDown = true;
+            Display.Invalidate(ClientRect);
         }
 
         protected override void drawImpl() {
