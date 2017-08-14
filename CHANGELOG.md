@@ -1,11 +1,20 @@
 # Changelog
 
 ## [Unreleased]
+
+### Added
+- Added speed property to animation layer.
+
 ### Changed
-- Updated to .NET 4.5.
+- Greatly reduced CPU usage: now UI is redrawn only on request and won't be redrawn if there is nothing to do.
+- Renamed "Update Interval" in Preferences to "Maximum refresh rate" to better reflect it's new meaning.
 - Skin list loading is now asynchronous.
 - Tweaked skin list for cleaner look.
-- Changed screen redraw mechanism: now it redraws on request only and won't redraw if there is nothing to do.
+- Updated to .NET 4.5.
+
+### Fixed
+- Fixed bug: foo_title might move beyond screen borders, when changing to skin with different anchor position.
+- Fixed bug: inconsistent fade-out animation when mouse is leaving foo_title.
 
 ## [0.9.5] - 2017-08-10
 ### Added

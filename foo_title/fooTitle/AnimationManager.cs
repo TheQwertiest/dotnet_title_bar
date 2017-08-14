@@ -44,7 +44,7 @@ namespace fooTitle
 
             _display.MouseEnter += Display_MouseEnter;
             _display.MouseLeave += Display_MouseLeave;
-            _animationTimer = new Timer {Interval = 50};
+            _animationTimer = new Timer {Interval = 33};
             _animationTimer.Tick += AnimationTimer_Tick;
         }
 
@@ -133,17 +133,18 @@ namespace fooTitle
                 }
             }
             if (prevOpacity != _display.MyOpacity)
-                Main.GetInstance().RequestRedraw();
+                Main.GetInstance().RequestRedraw(true);
         }
 
         private void Display_MouseLeave(object sender, EventArgs e)
         {
+            _mouseIn = false;
             Animation animName = _opacityFallbackType == OpacityFallbackType.Normal
                 ? Animation.FadeOut
                 : Animation.FadeOutFull;
             StartAnimation(animName, _mouseOverSavedCallback);
             _mouseOverSavedCallback = null;
-            _mouseIn = false;
+            
         }
 
         private void Display_MouseEnter(object sender, EventArgs e)

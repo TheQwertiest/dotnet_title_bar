@@ -28,7 +28,7 @@ namespace fooTitle.Layers
 	/// Summary description for AnimationLayer.
 	/// </summary>
     [LayerTypeAttribute("animation")]
-    public class AnimationLayer : Layer
+    public class AnimationLayer : Layer, IContiniousRedraw
 	{
 		protected int curFrame = 0;
         /// <summary>
@@ -83,5 +83,11 @@ namespace fooTitle.Layers
         {
             Main.GetInstance().RemoveRedrawRequester(this);
         }
+
+	    public bool IsRedrawNeeded()
+	    {
+	        int deltaTime = (int)((DateTime.Now.Ticks - lastUpdate) / 10000);
+	        return (deltaTime >= 1000 / refreshRate);
+	    }
     }
 }

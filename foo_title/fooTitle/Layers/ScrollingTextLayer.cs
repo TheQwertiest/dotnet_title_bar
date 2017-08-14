@@ -24,9 +24,8 @@ using System.Xml;
 
 namespace fooTitle.Layers {
     [LayerTypeAttribute("scrolling-text")]
-    internal class ScrollingTextLayer : TextLayer
+    internal class ScrollingTextLayer : TextLayer, IContiniousRedraw
     {
-        // TODO: Add timer refresh
         protected int direction = 1;
         /// <summary>
         /// Number of pixels to move the text per second.
@@ -147,7 +146,7 @@ namespace fooTitle.Layers {
         /// GetMinimalSize implementation
         /// </summary>
         /// <returns>the same as Layer.GetMinimialSize()</returns>
-        protected override System.Drawing.Size getMinimalSizeImpl()
+        protected override Size getMinimalSizeImpl()
         {
             return geometry.GetMinimalSize(getContentSize());
         }
@@ -158,17 +157,31 @@ namespace fooTitle.Layers {
         protected override void updateText()
         {
             string prevString = left.formatted;
-            base.updateText();
+   
+            left.formatted = defaultText;
+            right.formatted = "";
+
+            if (!string.IsNullOrEmpty(left.text) && Main.PlayControl.IsPlaying())
+            {
+                // Evaluate only when there is a track, otherwise keep default text
+                left.formatted = Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), left.text);
+            }
+  
             if (left.formatted != null)
             {
                 SizeF textSize = Main.GetInstance().Display.Canvas.MeasureString(left.formatted, left.font);
-                textImage = new Bitmap(Math.Max(10, (int)Math.Ceiling(textSize.Width)), Math.Max(10, (int)Math.Ceiling(textSize.Height)), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                textImage = new Bitmap(
+                    Math.Max(10, (int)Math.Ceiling(textSize.Width)), 
+                    Math.Max(10, (int)Math.Ceiling(textSize.Height)), 
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                 textCanvas = Graphics.FromImage(textImage);
                 textCanvas.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
                 textCanvas.DrawString(left.formatted, left.font, new SolidBrush(left.color), new PointF(0, 0));
             }
+
             if (prevString != left.formatted)
             {
+                Main.GetInstance().RequestRedraw();
                 if (IsScrollingNeeded())
                 {
                     Main.GetInstance().AddRedrawRequester(this);
@@ -197,6 +210,16 @@ namespace fooTitle.Layers {
             float farPoint = getFarPointInClientRect(this.angle);
 
             return textWidth > farPoint;
+        }
+
+        bool IContiniousRedraw.IsRedrawNeeded()
+        {
+            int deltaTime = (int)((DateTime.Now.Ticks - lastUpdate) / 10000);
+
+            if (paused && deltaTime < pause)
+                return false;
+
+            return true;
         }
     }
 }

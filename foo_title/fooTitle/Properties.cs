@@ -873,7 +873,7 @@ namespace fooTitle {
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(82, 13);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Refresh rate limit (in FPS):";
+            this.label1.Text = "Max refresh rate (in FPS):";
             // 
             // groupBox5
             // 

@@ -57,16 +57,16 @@ namespace fooTitle {
         /// <summary>
         /// How often the display should be redrawn
         /// </summary>
-        private readonly ConfInt UpdateInterval = new ConfInt("display/refreshRate", 30, 1, 250);
+        private readonly ConfInt _updateInterval = new ConfInt("display/refreshRate", 30, 1, 250);
         protected void UpdateInterval_OnChanged(string name) {
             if (initDone)
-                timer.Interval = 1000/UpdateInterval.Value;
+                timer.Interval = 1000/_updateInterval.Value;
         }
 
         /// <summary>
         /// List of layers, that need continuous redrawing (e.g. animation, scrolling text)
         /// </summary>
-        private readonly HashSet<Layer> redrawRequesters = new HashSet<Layer>();
+        private readonly HashSet<IContiniousRedraw> _redrawRequesters = new HashSet<IContiniousRedraw>();
 
         private bool _needToRedraw = false;
 
@@ -94,6 +94,7 @@ namespace fooTitle {
                     // Changing to skin with different anchor type 
                     // may cause window to go beyond screen borders
                     Display.ReadjustPosition();
+                    SavePosition();
                 } catch (Exception e) {
                     CurrentSkin = null;
                     System.Windows.Forms.MessageBox.Show($"foo_title - There was an error loading skin { SkinPath.Value}:\n {e.Message} \n {e}", "foo_title");
@@ -266,10 +267,21 @@ namespace fooTitle {
 
         private void TimerUpdate(object sender, System.EventArgs e)
         {
-            if (_needToRedraw || redrawRequesters.Count > 0 )
+            if (_needToRedraw )
             {
                 _needToRedraw = false;
                 Display.Invalidate();
+            }
+            else if (_redrawRequesters.Count > 0)
+            {
+                foreach (var i in _redrawRequesters)
+                {
+                    if (i.IsRedrawNeeded())
+                    {
+                        Display.Invalidate();
+                        break;
+                    }
+                }
             }
         }
 
@@ -286,19 +298,19 @@ namespace fooTitle {
             }
         }
 
-        public void AddRedrawRequester(Layer requester)
+        public void AddRedrawRequester(IContiniousRedraw requester)
         {
-            if (!redrawRequesters.Contains(requester))
+            if (!_redrawRequesters.Contains(requester))
             {
-                redrawRequesters.Add(requester);
+                _redrawRequesters.Add(requester);
             }
         }
 
-        public void RemoveRedrawRequester(Layer requester)
+        public void RemoveRedrawRequester(IContiniousRedraw requester)
         {
-            if (redrawRequesters.Contains(requester))
+            if (_redrawRequesters.Contains(requester))
             {
-                redrawRequesters.Remove(requester);
+                _redrawRequesters.Remove(requester);
             }
         }
 
@@ -330,7 +342,7 @@ namespace fooTitle {
             try
             {
                 // delete the old one
-                redrawRequesters.Clear();
+                _redrawRequesters.Clear();
                 CurrentSkin?.Free();
                 CurrentSkin = null;
 
@@ -461,7 +473,7 @@ namespace fooTitle {
             OnInitEvent?.Invoke();
 
             // start a timer updating the display
-            timer = new System.Windows.Forms.Timer {Interval = 1000/UpdateInterval.Value };
+            timer = new System.Windows.Forms.Timer {Interval = 1000/_updateInterval.Value };
             timer.Tick += TimerUpdate;
             timer.Enabled = true;
 
@@ -481,7 +493,7 @@ namespace fooTitle {
 
             // register response events on some variables
             ShowWhen.OnChanged += ShowWhen_OnChanged;
-            UpdateInterval.OnChanged += UpdateInterval_OnChanged;
+            _updateInterval.OnChanged += UpdateInterval_OnChanged;
             SkinPath.OnChanged += SkinPath_OnChanged;
             positionX.OnChanged += positionX_OnChanged;
             positionY.OnChanged += positionY_OnChanged;

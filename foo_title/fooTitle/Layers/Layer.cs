@@ -28,6 +28,11 @@ using System.Windows.Forms.VisualStyles;
 
 
 namespace fooTitle.Layers {
+    public interface IContiniousRedraw
+    {
+        bool IsRedrawNeeded();
+    }
+
     /// <summary>
     /// Layers exist in a hierarchical structure
     /// </summary>
@@ -184,7 +189,6 @@ namespace fooTitle.Layers {
             foreach (Layer i in layers) {
                 i.Draw();
             }
-
         }
 
         /// <summary>
