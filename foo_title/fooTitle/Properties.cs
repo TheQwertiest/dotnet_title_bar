@@ -30,8 +30,9 @@ using fooTitle.Layers;
 
 namespace fooTitle {
 
-    class Properties : fooManagedWrapper.CManagedPrefPage_v3 {
-     //class Properties : Form {
+    class Properties : fooManagedWrapper.CManagedPrefPage_v3
+    {
+        //class Properties : Form {
 
         public override void Reset()
         {
@@ -88,6 +89,10 @@ namespace fooTitle {
         private RadioGroupWrapper popupShowingWrapper;
         private RadioButton enableDraggingNeverRadio;
         private GroupBox groupBox6;
+        private GroupBox groupBox2;
+        private Label label3;
+        private TrackBar updateIntervalTrackBar;
+        private Label label1;
         private Label label7;
         private Label label16;
         private Label label13;
@@ -297,6 +302,10 @@ namespace fooTitle {
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.openSkinDirBtn = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.updateIntervalTrackBar = new System.Windows.Forms.TrackBar();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.enableDraggingNeverRadio = new System.Windows.Forms.RadioButton();
             this.enableDraggingPropsOpenRadio = new System.Windows.Forms.RadioButton();
@@ -333,6 +342,8 @@ namespace fooTitle {
             ((System.ComponentModel.ISupportInitialize)(this.timeBeforeFadeTextBox)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).BeginInit();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.posYnumbox)).BeginInit();
@@ -805,6 +816,7 @@ namespace fooTitle {
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Controls.Add(this.groupBox1);
@@ -817,12 +829,58 @@ namespace fooTitle {
             this.tabPage2.Text = "Misc";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.updateIntervalTrackBar);
+            this.groupBox2.Controls.Add(this.label1);
+            this.groupBox2.Location = new System.Drawing.Point(6, 180);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(226, 84);
+            this.groupBox2.TabIndex = 16;
+            this.groupBox2.TabStop = false;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(163, 16);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.TabIndex = 8;
+            this.label3.Tag = "display/refreshRate";
+            this.label3.Text = "label8";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // updateIntervalTrackBar
+            // 
+            this.updateIntervalTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.updateIntervalTrackBar.LargeChange = 100;
+            this.updateIntervalTrackBar.Location = new System.Drawing.Point(6, 32);
+            this.updateIntervalTrackBar.Maximum = 500;
+            this.updateIntervalTrackBar.Minimum = 50;
+            this.updateIntervalTrackBar.Name = "updateIntervalTrackBar";
+            this.updateIntervalTrackBar.Size = new System.Drawing.Size(200, 45);
+            this.updateIntervalTrackBar.SmallChange = 10;
+            this.updateIntervalTrackBar.TabIndex = 2;
+            this.updateIntervalTrackBar.Tag = "display/refreshRate";
+            this.updateIntervalTrackBar.TickFrequency = 50;
+            this.updateIntervalTrackBar.Value = 50;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 16);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(82, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Refresh rate limit (in FPS):";
+            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.enableDraggingNeverRadio);
             this.groupBox5.Controls.Add(this.enableDraggingPropsOpenRadio);
             this.groupBox5.Controls.Add(this.enableDraggingAlwaysRadio);
-            this.groupBox5.Location = new System.Drawing.Point(238, 181);
+            this.groupBox5.Location = new System.Drawing.Point(238, 314);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(225, 90);
             this.groupBox5.TabIndex = 13;
@@ -871,7 +929,7 @@ namespace fooTitle {
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.posXnumbox);
             this.groupBox4.Controls.Add(this.label8);
-            this.groupBox4.Location = new System.Drawing.Point(7, 180);
+            this.groupBox4.Location = new System.Drawing.Point(238, 180);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(225, 128);
             this.groupBox4.TabIndex = 12;
@@ -1066,6 +1124,9 @@ namespace fooTitle {
             ((System.ComponentModel.ISupportInitialize)(this.timeBeforeFadeTextBox)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.updateIntervalTrackBar)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);

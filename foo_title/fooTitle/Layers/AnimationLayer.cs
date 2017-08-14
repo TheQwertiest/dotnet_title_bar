@@ -31,16 +31,26 @@ namespace fooTitle.Layers
     public class AnimationLayer : Layer
 	{
 		protected int curFrame = 0;
+        /// <summary>
+        /// FPS rate of animation.
+        /// </summary>
+        protected int refreshRate = 15;
+        protected long lastUpdate = System.DateTime.Now.Ticks;
 
-		public AnimationLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
-			// load all images
-			XPathNavigator nav = node.CreateNavigator();
+        public AnimationLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
+            XmlNode contents = GetFirstChildByName(node, "contents");
+            refreshRate = Math.Max(1,int.Parse(GetAttributeValue(contents, "speed", "15")));
+
+            // load all images
+            XPathNavigator nav = node.CreateNavigator();
 			XPathNodeIterator xi = (XPathNodeIterator)nav.Evaluate("contents/frame");
-			
-			while (xi.MoveNext()) {
+
+            while (xi.MoveNext()) {
 				addImage(xi.Current);
 			}
-		}
+
+		    Main.GetInstance().AddRedrawRequester(this);
+        }
 
 		protected void addImage(XPathNavigator node) {
 			string src = node.GetAttribute("src", "");
@@ -49,11 +59,29 @@ namespace fooTitle.Layers
 		}
 
         protected override void drawImpl() {
-			Display.Canvas.DrawImage((Bitmap)images[curFrame], ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
+            long now = System.DateTime.Now.Ticks;
+            int deltaTime = (int)((now - lastUpdate) / 10000);
 
-			curFrame ++;
-			if (curFrame >= images.Count) 
-				curFrame = 0;
-		}
-	}
+            if (deltaTime >= 1000 / refreshRate)
+            {
+                ++curFrame;
+                if (curFrame >= images.Count)
+                    curFrame = 0;
+
+                lastUpdate = now;
+            }
+
+            Display.Canvas.DrawImage((Bitmap)images[curFrame], ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);		
+        }
+
+        protected override void OnLayerEnable()
+        {
+            Main.GetInstance().AddRedrawRequester(this);
+        }
+
+        protected override void OnLayerDisable()
+        {
+            Main.GetInstance().RemoveRedrawRequester(this);
+        }
+    }
 }

@@ -225,7 +225,7 @@ namespace fooTitle.Layers
             {
                 if (prevText[i] != parts[i].formatted)
                 {
-                    Display.Refresh();
+                    Main.GetInstance().RequestRedraw();
                     break;
                 }
             }

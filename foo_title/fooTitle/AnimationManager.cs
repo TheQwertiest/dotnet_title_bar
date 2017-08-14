@@ -79,7 +79,6 @@ namespace fooTitle
 
                 if (_animationTimer.Enabled)
                     _animationTimer.Stop();
-                _animationTimer.Start();
 
                 switch (animName)
                 {
@@ -101,8 +100,9 @@ namespace fooTitle
                     default:
                         throw new ArgumentOutOfRangeException(nameof(animName), animName, null);
                 }
-
                 _curAnimationName = animName;
+
+                _animationTimer.Start();                
             }
         }
 
@@ -111,14 +111,13 @@ namespace fooTitle
             lock (_animationLock)
             {
                 if (_fadeAnimation != null)
-                {
                     _display.MyOpacity = _fadeAnimation.GetOpacity();
-                }
             }
         }
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
         {
+            int prevOpacity = _display.MyOpacity;
             lock (_animationLock)
             {
                 if (_fadeAnimation != null)
@@ -133,7 +132,8 @@ namespace fooTitle
                     }
                 }
             }
-            _display.Refresh();
+            if (prevOpacity != _display.MyOpacity)
+                Main.GetInstance().RequestRedraw();
         }
 
         private void Display_MouseLeave(object sender, EventArgs e)

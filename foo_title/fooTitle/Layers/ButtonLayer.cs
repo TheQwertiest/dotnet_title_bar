@@ -310,7 +310,7 @@ namespace fooTitle.Layers {
             }
 
             mouseDown = false;
-            Display.Invalidate(ClientRect);
+            Main.GetInstance().RequestRedraw();
 
             if (e.Clicks == (e.Clicks >> 1) << 1 )
             {// double clicks
@@ -321,7 +321,7 @@ namespace fooTitle.Layers {
             foreach (IButtonAction action in actions) {
                 action.Run(e.Button, e.Clicks ,e.Delta);
             }
-            Display.Refresh();
+            Main.GetInstance().RequestRedraw(true);
         }
 
         private void OnMouseDoubleClick(object sender, MouseEventArgs e)
@@ -336,7 +336,7 @@ namespace fooTitle.Layers {
             {
                 action.Run(e.Button, e.Clicks, e.Delta);
             }
-            Display.Refresh();
+            Main.GetInstance().RequestRedraw(true);
         }
 
         private void OnMouseWheel(object sender, MouseEventArgs e)
@@ -351,7 +351,7 @@ namespace fooTitle.Layers {
             {
                 action.Run(e.Button, e.Clicks, e.Delta);
             }
-            Display.Refresh();
+            Main.GetInstance().RequestRedraw(true);
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
@@ -363,7 +363,7 @@ namespace fooTitle.Layers {
 
             if (wasMouseOne != mouseOn)
             {
-                Display.Invalidate(ClientRect);
+                Main.GetInstance().RequestRedraw();
             }
         }
 
@@ -374,7 +374,7 @@ namespace fooTitle.Layers {
             }
 
             mouseDown = true;
-            Display.Invalidate(ClientRect);
+            Main.GetInstance().RequestRedraw();
         }
 
         protected override void drawImpl() {

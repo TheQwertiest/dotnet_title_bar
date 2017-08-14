@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using fooManagedWrapper;
@@ -52,6 +53,34 @@ namespace fooTitle {
         /// Returns the foo_title data directory located in the foobar2000 user directory (documents and settings)
         /// </summary>
         public static string UserDataDir => Path.Combine(CManagedWrapper.getInstance().GetProfilePath(), myDataDir.Value);
+
+        /// <summary>
+        /// How often the display should be redrawn
+        /// </summary>
+        private readonly ConfInt UpdateInterval = new ConfInt("display/refreshRate", 30, 1, 250);
+        protected void UpdateInterval_OnChanged(string name) {
+            if (initDone)
+                timer.Interval = 1000/UpdateInterval.Value;
+        }
+
+        /// <summary>
+        /// List of layers, that need continuous redrawing (e.g. animation, scrolling text)
+        /// </summary>
+        private readonly HashSet<Layer> redrawRequesters = new HashSet<Layer>();
+
+        private bool _needToRedraw = false;
+
+        public void RequestRedraw(bool force = false)
+        {
+            if (force)
+            {
+                Display.Invalidate();
+            }
+            else
+            {
+                _needToRedraw = true;
+            }
+        }
 
         /// <summary>
         /// The name of the currently used skin. Can be changed
@@ -224,6 +253,8 @@ namespace fooTitle {
 
         public int ArtReloadMax => artLoadMaxTimes.Value;
 
+        private System.Windows.Forms.Timer timer;
+
         private CMetaDBHandle lastSong;
         private Properties propsForm;
 
@@ -233,8 +264,18 @@ namespace fooTitle {
             return instance;
         }
 
+        private void TimerUpdate(object sender, System.EventArgs e)
+        {
+            if (_needToRedraw || redrawRequesters.Count > 0 )
+            {
+                _needToRedraw = false;
+                Display.Invalidate();
+            }
+        }
+
         public void DrawForm()
         {
+            checkFoobarMinimized();
             if (fooTitleEnabled && CurrentSkin != null)
             {
                 // need to update all values that are calculated from formatting strings
@@ -243,7 +284,22 @@ namespace fooTitle {
                 CurrentSkin.CheckSize();
                 CurrentSkin.Draw();
             }
-            checkFoobarMinimized();
+        }
+
+        public void AddRedrawRequester(Layer requester)
+        {
+            if (!redrawRequesters.Contains(requester))
+            {
+                redrawRequesters.Add(requester);
+            }
+        }
+
+        public void RemoveRedrawRequester(Layer requester)
+        {
+            if (redrawRequesters.Contains(requester))
+            {
+                redrawRequesters.Remove(requester);
+            }
         }
 
         /// <summary>
@@ -274,6 +330,7 @@ namespace fooTitle {
             try
             {
                 // delete the old one
+                redrawRequesters.Clear();
                 CurrentSkin?.Free();
                 CurrentSkin = null;
 
@@ -309,7 +366,7 @@ namespace fooTitle {
 
                 CConsole.Write($"skin loaded in {(int)sw.Elapsed.TotalMilliseconds} ms");
 
-                Display.Refresh();
+                RequestRedraw(true);
             } catch (Exception e) {
                 CurrentSkin?.Free();
                 CurrentSkin = null;
@@ -403,6 +460,11 @@ namespace fooTitle {
             // init registered clients
             OnInitEvent?.Invoke();
 
+            // start a timer updating the display
+            timer = new System.Windows.Forms.Timer {Interval = 1000/UpdateInterval.Value };
+            timer.Tick += TimerUpdate;
+            timer.Enabled = true;
+
             // create layer factory
             LayerFactory = new LayerFactory();
             LayerFactory.SearchAssembly(System.Reflection.Assembly.GetExecutingAssembly());
@@ -419,6 +481,7 @@ namespace fooTitle {
 
             // register response events on some variables
             ShowWhen.OnChanged += ShowWhen_OnChanged;
+            UpdateInterval.OnChanged += UpdateInterval_OnChanged;
             SkinPath.OnChanged += SkinPath_OnChanged;
             positionX.OnChanged += positionX_OnChanged;
             positionY.OnChanged += positionY_OnChanged;

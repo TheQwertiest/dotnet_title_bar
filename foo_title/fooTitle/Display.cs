@@ -21,11 +21,12 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+
 using fooTitle.Config;
 
 namespace fooTitle {
     public class Display : PerPixelAlphaForm {
-        
+
         private readonly System.ComponentModel.Container _components = null;
         private Bitmap _canvasBitmap;
         public Graphics Canvas;
@@ -90,13 +91,14 @@ namespace fooTitle {
             SetWindowsPos(WindowPosition.Value);
         }
 
-        private void normalOpacity_OnChanged(string name) {
+        private void normalOpacity_OnChanged(string name)
+        {
             MyOpacity = normalOpacity.Value;
             if (minOpacity != 0)
             {
                 minOpacity = normalOpacity.Value;
             }
-            Display_OnPaint(null,null);
+            Display_OnPaint(null, null);
         }
 
         private void overOpacity_OnChanged(string name)
@@ -108,7 +110,8 @@ namespace fooTitle {
         /// Clean up any resources being used.
         /// </summary>
         protected override void Dispose(bool disposing) {
-            if (disposing) {
+            if (disposing)
+            {
                 _components?.Dispose();
                 AnimManager.Dispose();
 
@@ -159,9 +162,9 @@ namespace fooTitle {
         {
 #if DEBUG
             ++_perf_frames;
-            if (_perf_watch.ElapsedMilliseconds - _perf_lastTime >= 100)
+            if (_perf_watch.ElapsedMilliseconds - _perf_lastTime >= 1000)
             {
-                System.Diagnostics.Debug.Write(_perf_frames + " frames\n");
+                Debug.Write(_perf_frames + " frames\n");
                 _perf_frames = 0;
                 _perf_lastTime = _perf_watch.ElapsedMilliseconds;
             }
@@ -227,8 +230,7 @@ namespace fooTitle {
         }
 
         private void Display_MouseMove(object sender, MouseEventArgs e) {
-            if (dragging)
-            {
+            if (dragging) {
                 Point mouse = this.PointToScreen(new Point(e.X, e.Y));
                 Screen screen = Screen.FromPoint(mouse);
 
@@ -331,7 +333,7 @@ namespace fooTitle {
             {
                 this.Left = screen.WorkingArea.Right - this.Width;
             }
-            Refresh();
+            Main.GetInstance().RequestRedraw();
         }
     }
 }

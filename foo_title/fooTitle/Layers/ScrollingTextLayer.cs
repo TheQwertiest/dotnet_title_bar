@@ -19,11 +19,13 @@
 */
 using System;
 using System.Drawing;
+using System.Windows.Forms;
 using System.Xml;
 
 namespace fooTitle.Layers {
     [LayerTypeAttribute("scrolling-text")]
-    internal class ScrollingTextLayer : TextLayer {
+    internal class ScrollingTextLayer : TextLayer
+    {
         // TODO: Add timer refresh
         protected int direction = 1;
         /// <summary>
@@ -39,7 +41,8 @@ namespace fooTitle.Layers {
         protected Graphics textCanvas;
         protected long lastUpdate = System.DateTime.Now.Ticks;
         protected bool paused = false;
-        protected enum Align {
+        protected enum Align
+        {
             Left,
             Center,
             Right
@@ -48,15 +51,17 @@ namespace fooTitle.Layers {
         protected Align align;
 
         public ScrollingTextLayer(Rectangle parentRect, XmlNode node)
-            : base(parentRect, node) {
+            : base(parentRect, node)
+        {
 
             XmlNode contents = GetFirstChildByName(node, "contents");
-            
+
             speed = float.Parse(GetAttributeValue(contents, "speed", "25"));
             pause = int.Parse(GetAttributeValue(contents, "pause", "1000"));
         }
 
-        protected override void addLabel(XmlNode node, TextLayer.LabelPart def) {
+        protected override void addLabel(XmlNode node, TextLayer.LabelPart def)
+        {
             string position = GetAttributeValue(node, "position", "left");
             left = readLabelFromElement(node, def);
 
@@ -74,15 +79,16 @@ namespace fooTitle.Layers {
             }
         }
 
-        protected override void straightDraw(Graphics g) {
- 	
+        protected override void straightDraw(Graphics g)
+        {
+
             // first move the text
             long now = System.DateTime.Now.Ticks;
             long deltaTime = now - lastUpdate;
             float textWidth = g.MeasureString(left.formatted, left.font).Width;
             float farPoint = this.getFarPointInClientRect(this.angle);
             float drawAt = 0;
-            
+
             if (textWidth <= farPoint)
             {
                 // no need to move, it's too short
@@ -99,14 +105,19 @@ namespace fooTitle.Layers {
                         drawAt = farPoint - textWidth;
                         break;
                 }
-            } else if (!paused) {
+            }
+            else if (!paused)
+            {
                 xpos += direction * speed * ((float)deltaTime / 10000000F);
-                if (xpos >= textWidth - farPoint) {
+                if (xpos >= textWidth - farPoint)
+                {
                     // reached the right end
                     direction = -1;
                     xpos = textWidth - farPoint;
                     paused = true;
-                } else if (xpos <= 0) {
+                }
+                else if (xpos <= 0)
+                {
                     // reached the left end
                     direction = 1;
                     xpos = 0;
@@ -115,13 +126,17 @@ namespace fooTitle.Layers {
             }
 
             // then draw it
-            if (textImage != null) {
+            if (textImage != null)
+            {
                 g.DrawImage(textImage, (int)(drawAt), 0, new RectangleF((int)xpos, 0, (int)farPoint, textImage.Height), GraphicsUnit.Pixel);
             }
 
-            if (!paused) {
+            if (!paused)
+            {
                 lastUpdate = now;
-            } else if ((deltaTime / 10000) >= pause) {
+            }
+            else if ((deltaTime / 10000) >= pause)
+            {
                 lastUpdate = now;
                 paused = false;
             }
@@ -132,22 +147,56 @@ namespace fooTitle.Layers {
         /// GetMinimalSize implementation
         /// </summary>
         /// <returns>the same as Layer.GetMinimialSize()</returns>
-        protected override System.Drawing.Size getMinimalSizeImpl() {
+        protected override System.Drawing.Size getMinimalSizeImpl()
+        {
             return geometry.GetMinimalSize(getContentSize());
         }
 
         /// <summary>
         /// This draws the entire text to a backbuffer. When drawing, the appropriate part of backbuffer is used.
         /// </summary>
-        protected override void updateText() {
+        protected override void updateText()
+        {
+            string prevString = left.formatted;
             base.updateText();
-            if (left.formatted != null) {
+            if (left.formatted != null)
+            {
                 SizeF textSize = Main.GetInstance().Display.Canvas.MeasureString(left.formatted, left.font);
                 textImage = new Bitmap(Math.Max(10, (int)Math.Ceiling(textSize.Width)), Math.Max(10, (int)Math.Ceiling(textSize.Height)), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                 textCanvas = Graphics.FromImage(textImage);
                 textCanvas.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
                 textCanvas.DrawString(left.formatted, left.font, new SolidBrush(left.color), new PointF(0, 0));
             }
+            if (prevString != left.formatted)
+            {
+                if (IsScrollingNeeded())
+                {
+                    Main.GetInstance().AddRedrawRequester(this);
+                }
+                else
+                {
+                    Main.GetInstance().RemoveRedrawRequester(this);
+                }
+            }
+        }
+
+        protected override void OnLayerEnable()
+        {
+            if (IsScrollingNeeded())
+                Main.GetInstance().AddRedrawRequester(this);
+        }
+
+        protected override void OnLayerDisable()
+        {
+            Main.GetInstance().RemoveRedrawRequester(this);
+        }
+
+        private bool IsScrollingNeeded()
+        {
+            float textWidth = TextRenderer.MeasureText(left.formatted, left.font).Width;
+            float farPoint = getFarPointInClientRect(this.angle);
+
+            return textWidth > farPoint;
         }
     }
 }

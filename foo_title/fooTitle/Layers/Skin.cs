@@ -139,6 +139,7 @@ namespace fooTitle.Layers
             {
                 Resize(size);
                 Main.GetInstance().Display.SetSize(ClientRect.Width, ClientRect.Height);
+                Main.GetInstance().RequestRedraw(true);
             }
         }
 

@@ -46,7 +46,24 @@ namespace fooTitle.Layers {
             set => display = value;
         }
 
-        public bool Enabled { get; set; } = true;
+        private bool _enabled = true;
+
+        public bool Enabled
+        {
+            get => _enabled;
+            set
+            {
+                _enabled = value;
+                if (!value)
+                {
+                    OnLayerDisable();
+                }
+                else
+                {
+                    OnLayerEnable();
+                }
+            }
+        }
         private readonly bool _clipEnabled = true;
 
         public IList<Layer> SubLayers => layers;
@@ -72,7 +89,7 @@ namespace fooTitle.Layers {
             // read name and type
             Name = node.Attributes.GetNamedItem("name").Value;
             Type = node.Attributes.GetNamedItem("type").Value;
-            Enabled = GetAttributeValue(node, "enabled", "true").ToLowerInvariant() == "true";
+            _enabled = GetAttributeValue(node, "enabled", "true").ToLowerInvariant() == "true";
             _clipEnabled = GetAttributeValue(node, "clip", "true").ToLowerInvariant() == "true";
             HasContent = GetFirstChildByNameOrNull(node, "contents") != null;
 
@@ -118,6 +135,16 @@ namespace fooTitle.Layers {
 
         private void OnMouseMove(object sender, MouseEventArgs e) {
             IsMouseOver = ClientRect.Contains(e.X, e.Y);
+        }
+
+        protected virtual void OnLayerEnable()
+        {
+            
+        }
+
+        protected virtual void OnLayerDisable()
+        {
+
         }
 
         protected virtual void LoadLayers(XmlNode node) {
