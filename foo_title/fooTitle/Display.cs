@@ -112,8 +112,8 @@ namespace fooTitle {
         protected override void Dispose(bool disposing) {
             if (disposing)
             {
-                _components?.Dispose();
                 AnimManager.Dispose();
+                _components?.Dispose();
 
                 // need to remove this from the events on the configuration values
                 normalOpacity.OnChanged -= normalOpacity_OnChanged;
