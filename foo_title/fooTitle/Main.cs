@@ -60,7 +60,7 @@ namespace fooTitle {
         private readonly ConfInt _updateInterval = new ConfInt("display/refreshRate", 30, 1, 250);
         protected void UpdateInterval_OnChanged(string name) {
             if (initDone)
-                timer.Interval = 1000/_updateInterval.Value;
+                _redrawTimer.Interval = 1000/_updateInterval.Value;
         }
 
         /// <summary>
@@ -72,7 +72,12 @@ namespace fooTitle {
 
         public void RequestRedraw(bool force = false)
         {
-            if (force)
+            if (Display == null || !Display.Visible)
+            {
+                return;
+            }
+
+            if (force )
             {
                 Display.Invalidate();
             }
@@ -124,8 +129,8 @@ namespace fooTitle {
         public Display Display {
             get {
                 if ((_display != null) && _display.IsDisposed) {
-                    CurrentSkin?.Free();
-                    CurrentSkin = null;
+                    _redrawTimer.Stop();
+                    UnloadSkin();
                     _display = null;
                 }
 
@@ -197,6 +202,7 @@ namespace fooTitle {
             fooTitleEnabled = true;
             if (initDone) {
                 Display.Show();
+                RequestRedraw(true);
             }
         }
 
@@ -254,7 +260,7 @@ namespace fooTitle {
 
         public int ArtReloadMax => artLoadMaxTimes.Value;
 
-        private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.Timer _redrawTimer;
 
         private CMetaDBHandle lastSong;
         private Properties propsForm;
@@ -324,12 +330,13 @@ namespace fooTitle {
             _display.Closing -= myDisplay_Closing;
             _display.Closing += myDisplay_Closing;
             _display.Show();
+            _redrawTimer.Start();
         }
 
         void myDisplay_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             _display.Closing -= myDisplay_Closing;
-            CurrentSkin?.Free();
-            CurrentSkin = null;        
+            _redrawTimer.Stop();
+            UnloadSkin();
             _display = null;
         }
 
@@ -342,9 +349,7 @@ namespace fooTitle {
             try
             {
                 // delete the old one
-                _redrawRequesters.Clear();
-                CurrentSkin?.Free();
-                CurrentSkin = null;
+                UnloadSkin();
 
                 if (this.Display == null)
                 {
@@ -386,6 +391,13 @@ namespace fooTitle {
                     $"foo_title - There was an error loading skin {path}:\n {e.Message} \n {e.ToString()}"
                     , "foo_title");
             }
+        }
+
+        private void UnloadSkin()
+        {
+            _redrawRequesters.Clear();
+            CurrentSkin?.Free();
+            CurrentSkin = null;
         }
 
         protected ViewMenuCommands viewMenuCommands;
@@ -473,9 +485,9 @@ namespace fooTitle {
             OnInitEvent?.Invoke();
 
             // start a timer updating the display
-            timer = new System.Windows.Forms.Timer {Interval = 1000/_updateInterval.Value };
-            timer.Tick += TimerUpdate;
-            timer.Enabled = true;
+            _redrawTimer = new System.Windows.Forms.Timer {Interval = 1000/_updateInterval.Value };
+            _redrawTimer.Tick += TimerUpdate;
+            _redrawTimer.Enabled = true;
 
             // create layer factory
             LayerFactory = new LayerFactory();
