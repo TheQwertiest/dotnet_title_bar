@@ -56,9 +56,8 @@
         </layer>
 
         <layer name="time" type="text">
-            <geometry type="absolute">
-                <size x="30" y="21" />
-                <position x="328" y="6" align="left" />
+            <geometry type="minimal">
+                <padding left="328" top="6" right="0" bottom="0"/>
             </geometry>
             <contents spacing="0" font="Tahoma" size="8" bold="false">
                 <label position="left" color="ff000000">%playback_time% / %length%</label>
@@ -190,7 +189,7 @@
             <image src="shade_albumart.png" />
         </contents>
         
-        <layer name="bOpenFolder" type="button">
+        <layer name="prev" type="button">
             <geometry type="absolute">
             <size x="62" y="64"/>
                  <position x="0" y="0" align="left"/>
@@ -364,7 +363,7 @@
 
         <layer name="rating" type="text">
             <geometry type="absolute">
-                <size x="30" y="21" />
+                <size x="50" y="21" />
                 <position x="5" y="5" align="left" />
             </geometry>
             <contents spacing="0" font="Tahoma" size="8" bold="false" speed="30" pause="2000">
@@ -373,9 +372,8 @@
         </layer>
 
         <layer name="album" type="text">
-            <geometry type="absolute">
-                <size x="30" y="21" />
-                <position x="100" y="5" align="left" />
+            <geometry type="minimal">
+                <padding left="100" top="5" right="0" bottom="0"/>
             </geometry>
             <contents spacing="0" font="Tahoma" size="8" bold="false" speed="30" pause="2000">
                 <label position="left" color="ff000000">Album: [%album%]</label>
@@ -383,9 +381,8 @@
         </layer>
 
         <layer name="genre" type="text">
-            <geometry type="absolute">
-                <size x="30" y="21" />
-                <position x="100" y="20" align="left" />
+            <geometry type="minimal">
+                <padding left="100" top="20" right="0" bottom="0"/>
             </geometry>
             <contents spacing="0" font="Tahoma" size="8" bold="false" speed="30" pause="2000">
                 <label position="left" color="ff000000">Genre: [%genre%]</label>
