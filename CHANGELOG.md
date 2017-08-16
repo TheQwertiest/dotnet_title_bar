@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+## [1.0.0] - 2017-08-15
 ### Added
 - Added speed property to animation layer.
 
@@ -88,7 +89,8 @@
 ## Prior releases
 - See https://github.com/lepkoqq/foo_title/releases
 
-[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v0.9.5...HEAD
+[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/theqwertiest/foo_title/compare/v0.9.5...v1.0.0
 [0.9.5]: https://github.com/theqwertiest/foo_title/compare/v0.9.4a...v0.9.5
 [0.9.4a]: https://github.com/theqwertiest/foo_title/compare/v0.9.4...v0.9.4a
 [0.9.4]: https://github.com/theqwertiest/foo_title/compare/v0.9.3...v0.9.4
