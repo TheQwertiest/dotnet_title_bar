@@ -368,6 +368,7 @@ namespace fooTitle {
             this.skinsList.UseCompatibleStateImageBehavior = false;
             this.skinsList.View = System.Windows.Forms.View.Details;
             this.skinsList.DoubleClick += new System.EventHandler(this.skinsList_DoubleClick);
+            this.skinsList.Sorting = SortOrder.Ascending;
             this.skinsList.DoubleBuffered(true);
             // 
             // nameColumn
