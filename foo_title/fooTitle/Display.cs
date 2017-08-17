@@ -333,7 +333,7 @@ namespace fooTitle {
             {
                 this.Left = screen.WorkingArea.Right - this.Width;
             }
-            Main.GetInstance().RequestRedraw();
+            Main.GetInstance().RequestRedraw(true);
         }
     }
 }
