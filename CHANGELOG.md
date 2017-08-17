@@ -4,7 +4,9 @@
 
 ## [1.0.0] - 2017-08-15
 ### Added
-- Added speed property to animation layer.
+- Added 'speed' property to animation layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#animation)).
+- Added [>>gallery<<](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery) showcasing stock and user-created skins.
+- Updated various user-created skins for v1.0.0 (see [git directory](https://github.com/TheQwertiest/foo_title/tree/master/foo_title/skins/fixed_user_skins)).
 
 ### Changed
 - Greatly reduced CPU usage: now UI is redrawn only on request and won't be redrawn if there is nothing to do.
@@ -19,15 +21,15 @@
 
 ## [0.9.5] - 2017-08-10
 ### Added
-- Added clip property to skin element: set to false to disable clipping.
-- Added no-content layer type: this layer has no contents itself and is used solely for positioning other layers, it is also transparent for tool-tip layer detection.
+- Added 'clip' property to skin element: set to false to disable clipping (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#Layer)).
+- Added 'no-content' layer type: this layer has no contents itself and is used solely for positioning other layers, it is also transparent for tool-tip layer detection (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#no-content)).
 
 ### Changed
 - Updated Milk Plate skin.
 
 ### Fixed
-- Fixed tooltip behaviour on complex skins.
-- Fixed minimal type geometry behaviour on complex skins.
+- Fixed tool-tip behavior on complex skins.
+- Fixed minimal type geometry behavior on complex skins.
 - Fixed error that prevented the filling of the skin list, when one of the skins is not parsable.
 - Fixed clipping not being applied.
 
@@ -37,8 +39,8 @@
 
 ## [0.9.4] - 2017-08-07
 ### Added
-- Added ability to display tooltip.
-- Added align attribute to minimal geometry.
+- Added ability to display tooltip ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:0.9_Titlebar_%28foo_title%29#Layer)).
+- Added 'align' attribute to minimal geometry ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:0.9_Titlebar_%28foo_title%29#minimal)).
 - Added skin loading time logging to foobar2000 console.
 
 ### Changed
@@ -54,8 +56,8 @@
 
 ## [0.9.3] - 2017-08-01
 ### Added
-- Added double-click action to button layer.
-- Added 'minimal' geometry type.
+- Added double-click action to button layer ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#button)).
+- Added 'minimal' geometry type ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#minimal)).
 
 ### Changed
 - **(!!!)** Renamed anchor_type property to anchor.
@@ -68,7 +70,7 @@
 
 ## [0.9.2] - 2017-07-25
 ### Added
-- Added ability to configure anchor point position in skin.xml.
+- Added ability to configure anchor point position in skin.xml ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#Header)).
 - Added ability to display anchor point (see preferences page).
 
 ### Fixed
