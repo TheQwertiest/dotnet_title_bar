@@ -367,6 +367,7 @@ namespace fooTitle {
             this.skinsList.TabIndex = 0;
             this.skinsList.UseCompatibleStateImageBehavior = false;
             this.skinsList.View = System.Windows.Forms.View.Details;
+            this.skinsList.DoubleClick += new System.EventHandler(this.skinsList_DoubleClick);
             this.skinsList.DoubleBuffered(true);
             // 
             // nameColumn
@@ -1181,6 +1182,11 @@ namespace fooTitle {
             _cts = null;
 
             IsOpen = false;
+        }
+
+        private void skinsList_DoubleClick(object sender, EventArgs e)
+        {
+            applySkinBtn_Click(null, null);
         }
 
         private void applySkinBtn_Click(object sender, EventArgs e) {
