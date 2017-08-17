@@ -1,0 +1,302 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+	author="Tom Barlow"
+	name="Turquoise"
+	width="324"
+	height="156">
+
+    <layer name="main" type="absolute-images">
+        <geometry type="absolute">
+            <size x="324" y="156" />
+            <position x="0" y="0" align="left" />
+        </geometry>
+        <contents>
+            <image src="background.png"/>
+        </contents>
+
+        <layer name="artistinfo" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="198" y="18" />
+                <position x="114" y="21" align="left" />
+            </geometry>
+            <contents spacing="0" font="Myriad" size="9">
+                <defaultText>Artist</defaultText>
+                <label position="left" color="9000C6FF">$if2(%artist%,[%url%])</label>
+            </contents>
+        </layer>
+
+
+        <layer name="albuminfo" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="198" y="18" />
+                <position x="114" y="39" align="left" />
+            </geometry>
+            <contents spacing="0" font="Myriad" size="9">
+                <defaultText>Album</defaultText>
+                <label position="left" color="9000C6FF">$if(%length%,$if2(%album%,$if($strcmp(%cwb_playinglist_count%,1),,%cwb_playing_index%/%cwb_playinglist_count% | )%title%),'('Radio Stream')')</label>
+            </contents>
+        </layer>
+
+        <layer name="trackinfo" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="198" y="18" />
+                <position x="114" y="57" align="left" />
+            </geometry>
+            <contents spacing="0" font="Myriad" size="9">
+                <defaultText>Title</defaultText>
+                <label position="left" color="9000C6FF">$if(%length%,$if(%album%,$if($strcmp(%cwb_playinglist_count%,1),,%cwb_playing_index%/%cwb_playinglist_count% | )%title%),%title%)</label>
+            </contents>
+        </layer>
+
+        <layer name="progress bar" type="absolute-images">
+            <geometry type="absolute">
+                <size x="$if(%length%,$muldiv(%playback_time_seconds%,198,%length_seconds%),0)" y="9" />
+                <position x="114" y="79" align="left" />
+            </geometry>
+            <contents>
+                <image src="progressbar.png"/>
+            </contents>
+        </layer>
+
+        <layer name="progress bar continuous" type="animation">
+            <geometry type="absolute">
+                <size x="198" y="9" />
+                <position x="$if($or(%length%,%_trackinfo_notrack%,%ispaused%),4000,114)" y="79" align="left" />
+            </geometry>
+            <contents>
+                <frame src="contprogbar0.png" />
+                <frame src="contprogbar00.png" />
+                <frame src="contprogbar1.png" />
+                <frame src="contprogbar2.png" />
+                <frame src="contprogbar3.png" />
+                <frame src="contprogbar4.png" />
+                <frame src="contprogbar5.png" />
+                <frame src="contprogbar6.png" />
+                <frame src="contprogbar7.png" />
+                <frame src="contprogbar8.png" />
+                <frame src="contprogbar9.png" />
+                <frame src="contprogbar10.png" />
+                <frame src="contprogbar11.png" />
+                <frame src="contprogbar12.png" />
+                <frame src="contprogbar13.png" />
+                <frame src="contprogbar14.png" />
+                <frame src="contprogbar15.png" />
+                <frame src="contprogbar16.png" />
+                <frame src="contprogbar17.png" />
+                <frame src="contprogbar18.png" />
+            </contents>
+        </layer>
+
+        <layer name="progress barbg" type="absolute-images">
+            <geometry type="absolute">
+                <size x="200" y="11" />
+                <position x="113" y="78" align="left" />
+            </geometry>
+            <contents>
+                <image src="progressbarbg2.png"/>
+            </contents>
+        </layer>
+
+        <layer name="lengthinfo" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="198" y="18" />
+                <position x="114" y="93" align="left" />
+            </geometry>
+            <contents spacing="0" font="Myriad" size="9">
+                <defaultText>Playback Time</defaultText>
+                <label position="left" color="7000C6FF">$if(%length%,%playback_time% / %length%,%playback_time% '('Continuous')')</label>
+
+            </contents>
+        </layer>
+
+        <layer name="dateinfo" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="198" y="18" />
+                <position x="114" y="93" align="left" />
+            </geometry>
+            <contents spacing="0" font="Myriad" size="9">
+                <defaultText>Date</defaultText>
+                <label position="right" color="7000C6FF">[%date%]</label>
+            </contents>
+        </layer>
+
+        <layer name="albumartbg" type="absolute-images">
+            <geometry type="absolute">
+                <size x="90" y="90" />
+                <position x="18" y="18" align="left" />
+            </geometry>
+            <contents>
+                <image src="albumartbackground.png"/>
+            </contents>
+        </layer>
+
+        <layer name="album art" type="album-art">
+            <geometry type="absolute">
+                <size x="84" y="84" />
+                <position x="21" y="21" align="left" />
+            </geometry>
+
+            <contents>
+                <NoAlbumArt>
+                    noimage.png
+                </NoAlbumArt>
+            </contents>
+        </layer>
+
+        <layer name="buttonsbg2" type="absolute-images">
+            <geometry type="absolute">
+                <size x="36" y="18" />
+                <position x="126" y="120" align="left" />
+            </geometry>
+            <contents>
+                <image src="buttonsbackground.png"/>
+            </contents>
+        </layer>
+
+        <layer name="Activate" type="button">
+            <geometry type="absolute">
+                <size x="17" y="18" />
+                <position x="126" y="121" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Activate
+                </action>
+                <normalImg src="opennormal.png" />
+                <overImg src="openover.png" />
+                <downImg src="opendown.png" />
+            </contents>
+        </layer>
+
+        <layer name="close" type="button">
+            <geometry type="absolute">
+                <size x="18" y="17" />
+                <position x="144" y="121" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Exit
+                </action>
+                <normalImg src="exitnormal.png" />
+                <overImg src="exitover.png" />
+                <downImg src="exitdown.png" />
+            </contents>
+        </layer>
+
+        <layer name="buttonsbg" type="absolute-images">
+            <geometry type="absolute">
+                <size x="90" y="18" />
+                <position x="18" y="120" align="left" />
+            </geometry>
+            <contents>
+                <image src="buttonsbackground.png"/>
+            </contents>
+        </layer>
+
+        <layer name="Prev" type="button">
+            <geometry type="absolute">
+                <size x="17" y="18" />
+                <position x="18" y="120" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Previous
+                </action>
+                <normalImg src="prevnormal.png" />
+                <overImg src="prevover.png" />
+                <downImg src="prevdown.png" />
+            </contents>
+        </layer>
+
+        <layer name="Stop After Current" type="button">
+            <geometry type="absolute">
+                <size x="17" y="18" />
+                <position x="$if(%cwb_stopaftercurrent%,4000,36)" y="120" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Stop after Current
+                </action>
+                <normalImg src="sacnormal.png" />
+                <overImg src="sacover.png" />
+                <downImg src="sacdown.png" />
+            </contents>
+        </layer>
+
+        <layer name="Stop After Current Down" type="button">
+            <geometry type="absolute">
+                <size x="17" y="18" />
+                <position x="$if(%cwb_stopaftercurrent%,36,4000)" y="120" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Stop after Current
+                </action>
+                <normalImg src="sacdownnormal.png" />
+                <overImg src="sacdown.png" />
+                <downImg src="sacover.png" />
+            </contents>
+        </layer>
+
+        <layer name="Play" type="button">
+            <geometry type="absolute">
+                <size x="17" y="18" />
+                <position x="$if($or($not(%isplaying%),%ispaused%),54,4000)" y="120" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Play or Pause
+                </action>
+                <normalImg src="playnormal.png" />
+                <overImg src="playover.png" />
+                <downImg src="playdown.png" />
+            </contents>
+        </layer>
+
+        <layer name="Pause" type="button">
+            <geometry type="absolute">
+                <size x="17" y="18" />
+                <position x="$if($and(%isplaying%,$not(%ispaused%)),54,4000)" y="120" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Play or Pause
+                </action>
+                <normalImg src="pausenormal.png" />
+                <overImg src="pauseover.png" />
+                <downImg src="pausedown.png" />
+            </contents>
+        </layer>
+
+        <layer name="Stop" type="button">
+            <geometry type="absolute">
+                <size x="17" y="18" />
+                <position x="72" y="120" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Stop
+                </action>
+                <normalImg src="stopnormal.png" />
+                <overImg src="stopover.png" />
+                <downImg src="stopdown.png" />
+            </contents>
+        </layer>
+
+        <layer name="Next" type="button">
+            <geometry type="absolute">
+                <size x="17" y="18" />
+                <position x="90" y="120" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Next
+                </action>
+                <normalImg src="nextnormal.png" />
+                <overImg src="nextover.png" />
+                <downImg src="nextdown.png" />
+            </contents>
+        </layer>
+    </layer>
+</skin>

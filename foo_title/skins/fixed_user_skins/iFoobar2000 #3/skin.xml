@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+    author="Fernando Casal"
+    name="iFoobar2000"
+    width="319"
+    height="510">
+    <!-- A foobar2000 skin requested by my friend Paulex -->
+
+    <layer name="AlbumArt" type="album-art">
+        <geometry type="absolute">
+            <size x="193" y="193" />
+            <position x="60" y="157" align="left" />
+        </geometry>
+        <contents>
+            <NoAlbumArt>
+                noalbum.png
+            </NoAlbumArt>
+        </contents>
+    </layer>
+
+    <layer name="base" type="absolute-images">
+        <geometry type="absolute">
+            <size x="319" y="510" />
+            <position x="0" y="0" align="left" />
+        </geometry>
+        <contents>
+            <image src="1.png" />
+        </contents>
+    </layer>
+
+    <layer name="progressbar" type="absolute-images" clip="false">
+        <geometry type="absolute">
+            <size x="12" y="12" />
+            <position x="74" y="357" align="left" />
+        </geometry>
+        <contents>
+        </contents>
+
+        <layer name="progressbarinner" type="absolute-images">
+            <geometry type="absolute">
+                <size x="12" y="12" />
+                <position x="$add(0,$mul(4,$div($mul(%playback_time_seconds%,39),%length_seconds%)))" y="0" align="left" />
+            </geometry>
+            <contents>
+                <image src="2.png"/>
+            </contents>
+        </layer>
+    </layer>
+
+    <layer name="Artist" type="scrolling-text">
+        <geometry type="absolute">
+            <size x="190" y="20" />
+            <position x="62" y="124" align="left" />
+        </geometry>
+        <contents spacing="0" font="Trebuchet MS" size="7" bold="true" speed="20" pause="2000">
+            <label position="center" color="ffbfbfbf">$if2(%artist%, Artista Desconhecido)</label>
+        </contents>
+    </layer>
+
+    <layer name="TrackTitle" type="scrolling-text">
+        <geometry type="absolute">
+            <size x="190" y="20" />
+            <position x="62" y="134" align="left" />
+        </geometry>
+        <contents spacing="0" font="Trebuchet MS" size="7" bold="true" speed="20" pause="2000">
+            <label position="center" color="ffffffff">$if2(%title%,Titulo Desconhecido)</label>
+        </contents>
+    </layer>
+
+    <layer name="Album" type="scrolling-text">
+        <geometry type="absolute">
+            <size x="190" y="20" />
+            <position x="62" y="144" align="left" />
+        </geometry>
+        <contents spacing="0" font="Trebuchet MS" size="7" bold="true" speed="20" pause="2000">
+            <label position="center" color="ffbfbfbf">$if2(%album%, Album Desconhecido)</label>
+        </contents>
+    </layer>
+
+    <layer name="Time" type="text">
+        <geometry type="absolute">
+            <size x="140" y="20" />
+            <position x="135" y="89" align="left" />
+        </geometry>
+        <contents spacing="0" font="Trebuchet MS" size="7" bold="true">
+            <label position="left" color="ffbfbfbf">%_time_elapsed% / %_length%</label>
+        </contents>
+    </layer>
+
+    <layer name="Propiedades" type="button">
+        <geometry type="absolute">
+            <size x="17" y="17" />
+            <position x="233" y="107" align="left" />
+        </geometry>
+        <contents>
+            <action type="contextmenu" context="nowplaying">
+                Properties
+            </action>
+            <normalImg src="7.png" />
+            <overImg src="7.png" />
+            <downImg src="7.png" />
+        </contents>
+    </layer>
+
+    <layer name="Buscar" type="button">
+        <geometry type="absolute">
+            <size x="17" y="17" />
+            <position x="213" y="107" align="left" />
+        </geometry>
+        <contents>
+            <action>
+                Search
+            </action>
+            <normalImg src="7.png" />
+            <overImg src="7.png" />
+            <downImg src="7.png" />
+        </contents>
+    </layer>
+
+    <layer name="Previous" type="button">
+        <geometry type="absolute">
+            <size x="24" y="24" />
+            <position x="93" y="324" align="left" />
+        </geometry>
+        <contents>
+            <action>
+                Previous
+            </action>
+            <normalImg src="3.png" />
+            <overImg src="3.png" />
+            <downImg src="3b.png" />
+        </contents>
+    </layer>
+
+    <layer name="Play" type="button">
+        <geometry type="absolute">
+            <size x="24" y="24" />
+            <position x="145" y="324" align="left" />
+        </geometry>
+        <contents>
+            <action>
+                play or Pause
+            </action>
+            <normalImg src="4.png" />
+            <overImg src="4.png" />
+            <downImg src="4b.png" />
+        </contents>
+    </layer>
+
+    <layer name="Next" type="button">
+        <geometry type="absolute">
+            <size x="24" y="24" />
+            <position x="197" y="324" align="left" />
+        </geometry>
+        <contents>
+            <action>
+                Next
+            </action>
+            <normalImg src="6.png" />
+            <overImg src="6.png" />
+            <downImg src="6b.png" />
+        </contents>
+    </layer>
+
+    <layer name="maximizewindow" type="button">
+        <geometry type="absolute">
+            <size x="17" y="17" />
+            <position x="71" y="108" align="left" />
+        </geometry>
+        <contents>
+            <action>
+                Activate
+            </action>
+            <normalImg src="7.png" />
+            <overImg src="7.png" />
+            <downImg src="7.png" />
+        </contents>
+    </layer>
+
+    <layer name="Exit" type="button">
+        <geometry type="absolute">
+            <size x="17" y="17" />
+            <position x="95" y="108" align="left" />
+        </geometry>
+        <contents>
+            <action>
+                Exit
+            </action>
+            <normalImg src="7.png" />
+            <overImg src="7.png" />
+            <downImg src="7.png" />
+        </contents>
+    </layer>
+
+</skin>

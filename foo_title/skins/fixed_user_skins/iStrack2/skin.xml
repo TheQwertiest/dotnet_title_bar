@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin author="SynC" name="iStack2" width="400" height="195">
+
+    <layer name="main" type="absolute-images" clip="false">
+        <geometry type="absolute">
+            <size x="235" y="175" />
+            <position x="0" y="0" align="left" />
+        </geometry>
+        <contents>
+            <image src="images/bg.png" />
+        </contents>
+
+        <layer name="AlbumArt" type="album-art">
+            <geometry type="absolute">
+                <size x="125" y="125" />
+                <position x="100" y="23" align="center" />
+            </geometry>
+            <contents>
+                <NoAlbumArt>
+                    images/noalbum.png
+                </NoAlbumArt>
+            </contents>
+        </layer>
+
+        <layer name="Title" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="125" y="20" />
+                <position x="230" y="33" align="left" />
+            </geometry>
+            <contents spacing="0" font="HandelMod" size="9" speed="30" pause="1000">
+                <label position="left" color="FFFFFFFF"> %title%</label>
+            </contents>
+        </layer>
+
+        <layer name="Artist" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="125" y="20" />
+                <position x="230" y="53" align="left" />
+            </geometry>
+            <contents spacing="0" font="HandelMod" size="9" speed="30" pause="1000">
+                <label position="left" color="FFFFFFFF"> %artist%</label>
+            </contents>
+        </layer>
+
+        <layer name="Album" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="125" y="20" />
+                <position x="230" y="73" align="left" />
+            </geometry>
+            <contents spacing="0" font="HandelMod" size="9" speed="30" pause="1000">
+                <label position="left" color="FFFFFFFF"> %album%</label>
+            </contents>
+        </layer>
+
+        <layer name="Rating" type="text">
+            <geometry type="absolute">
+                <size x="100" y="20" />
+                <position x="230" y="93" align="left" />
+            </geometry>
+            <contents spacing="0" font="HandelMod" size="7">
+                <label position="left" color="FFFFFFFF">$repeat($char(9733),%rating%)</label>
+            </contents>
+        </layer>
+
+        <layer name="overlay" type="absolute-images">
+            <geometry type="absolute">
+                <size x="125" y="125" />
+                <position x="100" y="23" align="left" />
+            </geometry>
+            <contents>
+                <image src="images/overlay.png" />
+            </contents>
+        </layer>
+
+        <layer name="Progress" type="absolute-images">
+            <geometry type="absolute">
+                <size  x="$add(0,$div($mul(%playback_time_seconds%, 120), %length_seconds%)))" y="3" />
+                <position x="230" y="113" align="left" />
+            </geometry>
+            <contents>
+                <image src="images/knob.png" />
+            </contents>
+        </layer>
+
+        <layer name="Playtime" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="100" y="20" />
+                <position x="327" y="133" align="left" />
+            </geometry>
+            <contents spacing="0" font="Calibri" size="8"  speed="30" pause="1000">
+                <label position="left" color="FFFFFFFF"> %playback_time%</label>
+            </contents>
+        </layer>
+
+        <layer name="Pre" type="button">
+            <geometry type="absolute">
+                <size x="62" y="62" />
+                <position x="100" y="23" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Previous
+                </action>
+                <normalImg src="images/button.png" />
+                <overImg src="images/button.png" />
+                <downImg src="images/button.png" />
+            </contents>
+        </layer>
+
+        <layer name="Play" type="button">
+            <geometry type="absolute">
+                <size x="62" y="62" />
+                <position x="100" y="85" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Play
+                </action>
+                <normalImg src="images/button.png" />
+                <overImg src="images/button.png" />
+                <downImg src="images/button.png" />
+            </contents>
+        </layer>
+
+        <layer name="Pause" type="button">
+            <geometry type="absolute">
+                <size x="62" y="62" />
+                <position x="162" y="85" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Pause
+                </action>
+                <normalImg src="images/button.png" />
+                <overImg src="images/button.png" />
+                <downImg src="images/button.png" />
+            </contents>
+        </layer>
+
+        <layer name="Next" type="button">
+            <geometry type="absolute">
+                <size x="62" y="62" />
+                <position x="162" y="23" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Next
+                </action>
+                <normalImg src="images/button.png" />
+                <overImg src="images/button.png" />
+                <downImg src="images/button.png" />
+            </contents>
+        </layer>
+
+    </layer>
+</skin>

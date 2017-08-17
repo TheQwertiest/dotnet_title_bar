@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+    author="bootleq"
+    name="Coding"
+    width="494"
+    height="20">
+
+<layer name="main" type="absolute-images">
+	<geometry type="absolute">
+		<size x="494" y="24" />
+		<position x="0" y="1" align="left" />
+	</geometry>
+	<contents>
+		<image src="main.png" />
+	</contents>
+
+	<layer name="trackinfo" type="scrolling-text">
+		<geometry type="absolute">
+			<size x="340" y="18" />
+			<position x="36" y="3" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="9">
+			<label position="left" color="ffffffff">%title% - %artist%</label>
+		</contents>
+	</layer>
+
+	<layer name="time" type="text">
+		<geometry type="absolute">
+			<size x="120" y="18" />
+			<position x="334" y="5" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="7" italic="true">
+			<label position="right" color="ffffffff">%_time_elapsed%  /  %_length%</label>
+		</contents>
+	</layer>
+
+	<layer name="previous" type="button">
+		<geometry type="absolute">
+			<size x="18" y="12" />
+			<position x="9" y="5" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+        	   	 		Previous
+    			</action>
+    			<normalImg src="btn_prev.png" />
+    			<overImg src="btn_prev_hover.png" />
+    			<downImg src="btn_prev_hover.png" />
+		</contents>
+	</layer>
+
+	<layer name="next" type="button">
+		<geometry type="absolute">
+			<size x="16" y="12" />
+			<position x="465" y="5" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Next
+    			</action>
+    			<normalImg src="btn_next.png" />
+    			<overImg src="btn_next_hover.png" />
+    			<downImg src="btn_next_hover.png" />
+		</contents>
+	</layer>
+
+</layer>
+</skin>
+
+
+
+

@@ -1,0 +1,527 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<skin author="sanneh" name="flourish" width="720" height="19" anchor="top,right">
+    <!-- This skin contains source code from Firsh, an existing foo_title skin,
+	 which was the inspiration for Flourish. v1: 9/9/2014 -->
+    <layer name="background_shadow" type="fill-images">
+        <geometry type="full">
+            <padding left="0" top="0" right="0" bottom="0"/>
+        </geometry>
+        <contents>
+            <image position="left" src="left.png" />
+            <image position="center" repeat="true" src="middle.png" />
+            <image position="right" src="right.png" />
+        </contents>
+    </layer>
+    <layer name="main" type="fill-images">
+        <geometry type="full">
+            <padding left="10" top="0" right="10" bottom="8"/>
+        </geometry>
+        <contents>
+            <image position="left" repeat="false" src="r1.png"/>
+            <image position="center" repeat="true" src="r2.png"/>
+            <image position="right" repeat="false" src="r3.png"/>
+        </contents>
+
+        <layer name="bg2" type="absolute-images" enabled="true">
+            <geometry type="full">
+                <padding left="0" top="0" right="0" bottom="0"/>
+            </geometry>
+            <contents>
+                <image src="bg2.png"/>
+            </contents>
+        </layer>
+        //####
+        <layer name="buttonpadding" type="no-content">
+            <geometry type="full">
+                <padding left="2" top="0" right="0" bottom="0"/>
+            </geometry>
+            <layer name="activate" type="button" tooltip="Toggle foobar2000">
+                <geometry type="absolute">
+                    <size x="16" y="18"/>
+                    <position x="0" y="1" align="left"/>
+                </geometry>
+                <contents>
+                    <action>Activate or Hide</action>
+                    <normalImg src="f.png"/>
+                    <overImg src="fo.png"/>
+                    <downImg src="fo.png"/>
+                </contents>
+            </layer>
+            <layer name="rating" type="text">
+                <geometry type="minimal">
+                    <padding left="16" top="0" right="0" bottom="0"/>
+                    <position align="left"/>
+                </geometry>
+                <contents spacing="0" font="Guifx v2 Transports" size="10">
+                    <label position="left" color="88FFFFFF">$ifgreater(%rating_cd%,0,b, )</label>
+                </contents>
+            </layer>
+            <layer name="bg2on" type="button"  tooltip="Toggle transparency">
+                <geometry type="absolute">
+                    <size x="16" y="18"/>
+                    <position x="16" y="1" align="left"/>
+                </geometry>
+                <contents>
+                    <action type="toggle" target="bg2"/>
+                    <overImg src="b-over.png"/>
+                    <downImg src="b-click.png"/>
+                </contents>
+            </layer>
+        </layer>
+        //####
+        <layer name="info" type="no-content" clip="false">
+            <geometry type="full">
+                <padding left="34" top="2" right="182" bottom="0"/>
+            </geometry>
+            <layer name="trackinfo" type="text">
+                <geometry type="full">
+                    <padding left="1" top="1" right="0" bottom="0"/>
+                </geometry>
+                <contents spacing="0" font="Arial" size="8">
+                    <defaultText>　foobar2000　</defaultText>
+                    <label position="left" color="FF000000">[%artist%  -  ]%title% </label>
+                </contents>
+            </layer>
+            <layer name="trackinfo2" type="text">
+                <geometry type="full">
+                    <padding left="0" top="0" right="0" bottom="0"/>
+                </geometry>
+                <contents spacing="0" font="Arial" size="8">
+                    <defaultText>　foobar2000　</defaultText>
+                    <label position="left" color="DDFFFFFF">[%artist%  -  ]%title% </label>
+                </contents>
+            </layer>
+        </layer>
+        //####
+        <layer name="controlspad" type="no-content">
+            <geometry type="full">
+                <padding left="0" top="0" right="2" bottom="0"/>
+            </geometry>
+            <layer name="controls_stop" type="no-content">
+                <geometry type="absolute">
+                    <size x="182" y="19"/>
+                    <position x="0" y="0" align="right"/>
+                </geometry>
+                <layer name="stop" type="button" tooltip="Stop">
+                    <geometry type="absolute">
+                        <size x="16" y="18"/>
+                        <position x="0" y="1" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Stop</action>
+                        <overImg src="b-over.png"/>
+                        <downImg src="b-click.png"/>
+                    </contents>
+                </layer>
+            </layer>
+            <layer name="controls" type="absolute-images">
+                <geometry type="absolute">
+                    <size x="164" y="19"/>
+                    <position x="0" y="0" align="right"/>
+                </geometry>
+                <contents>
+                    <image src="cbg.png"/>
+                </contents>
+                <layer name="length" type="scrolling-text">
+                    <geometry type="absolute">
+                        <size x="32" y="15"/>
+                        <position x="40" y="2" align="center"/>
+                    </geometry>
+                    <contents spacing="0" font="PF Tempesta Seven" size="6">
+                        <label position="center" color="DDFFFFFF">[%_time_elapsed%]</label>
+                    </contents>
+                </layer>
+                <layer name="timeelapsed" type="scrolling-text">
+                    <geometry type="absolute">
+                        <size x="32" y="15"/>
+                        <position x="92" y="2" align="center"/>
+                    </geometry>
+                    <contents spacing="0" font="PF Tempesta Seven" size="6">
+                        <label position="center" color="DDFFFFFF">[%_length%]</label>
+                    </contents>
+                </layer>
+                <layer name="timeremaining" type="scrolling-text" enabled="false">
+                    <geometry type="absolute">
+                        <size x="32" y="15"/>
+                        <position x="92" y="2" align="center"/>
+                    </geometry>
+                    <contents spacing="0" font="PF Tempesta Seven" size="6">
+                        <label position="center" color="DDFFFFFF">[-%_time_remaining%]</label>
+                    </contents>
+                </layer>
+                <layer name="barwrapper" type="absolute-images">
+                    <geometry type="absolute">
+                        <size x="99" y="1"/>
+                        <position x="29" y="3" align="left"/>
+                    </geometry>
+                    <contents/>
+                    <layer name="bar" type="absolute-images">
+                        <geometry type="absolute">
+                            <size x="10" y="1"/>
+                            <position x="$ifgreater(%length_seconds%,0,$muldiv(%playback_time_seconds%, 96, %length_seconds%),-10000)" y="0" align="left"/>
+                        </geometry>
+                        <contents>
+                            <image src="bari.png"/>
+                        </contents>
+                    </layer>
+                </layer>
+                //####
+                <layer name="lockhit" type="button" enabled="false">
+                    <geometry type="absolute">
+                        <size x="99" y="3"/>
+                        <position x="44" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Mute</action>
+                        <action type="toggle" target="lockhit"/>
+                        <action type="toggle" target="lockimg"/>
+                    </contents>
+                </layer>
+                //1
+                <layer name="mute-selector" type="absolute-images">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="32" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <image src="t-activated.png"/>
+                    </contents>
+                </layer>
+                <layer name="mute" type="button">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="32" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Mute</action>
+                        <action type="toggle" target="lockhit"/>
+                        <action type="toggle" target="lockimg"/>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                //2
+                <layer name="-21-selector" type="absolute-images" enabled="false">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="43" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <image src="t-activated.png"/>
+                    </contents>
+                </layer>
+                <layer name="-21" type="button">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="43" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Set to -21 dB</action>
+                        <action type="toggle" only="disable" target="-0-selector"/>
+                        <action type="toggle" only="disable" target="-3-selector"/>
+                        <action type="toggle" only="disable" target="-6-selector"/>
+                        <action type="toggle" only="disable" target="-9-selector"/>
+                        <action type="toggle" only="disable" target="-12-selector"/>
+                        <action type="toggle" only="disable" target="-15-selector"/>
+                        <action type="toggle" only="disable" target="-18-selector"/>
+                        <action type="toggle" only="enable" target="-21-selector"/>
+                        <action type="toggle" only="enable" target="mute-selector"/>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                //3
+                <layer name="-18-selector" type="absolute-images" enabled="false">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="54" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <image src="t-activated.png"/>
+                    </contents>
+                </layer>
+                <layer name="-18" type="button">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="54" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Set to -18 dB</action>
+                        <action type="toggle" only="disable" target="-0-selector"/>
+                        <action type="toggle" only="disable" target="-3-selector"/>
+                        <action type="toggle" only="disable" target="-6-selector"/>
+                        <action type="toggle" only="disable" target="-9-selector"/>
+                        <action type="toggle" only="disable" target="-12-selector"/>
+                        <action type="toggle" only="disable" target="-15-selector"/>
+                        <action type="toggle" only="enable" target="-18-selector"/>
+                        <action type="toggle" only="enable" target="-21-selector"/>
+                        <action type="toggle" only="enable" target="mute-selector"/>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                //4
+                <layer name="-15-selector" type="absolute-images" enabled="false">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="65" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <image src="t-activated.png"/>
+                    </contents>
+                </layer>
+                <layer name="-15" type="button">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="65" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Set to -15 dB</action>
+                        <action type="toggle" only="disable" target="-0-selector"/>
+                        <action type="toggle" only="disable" target="-3-selector"/>
+                        <action type="toggle" only="disable" target="-6-selector"/>
+                        <action type="toggle" only="disable" target="-9-selector"/>
+                        <action type="toggle" only="disable" target="-12-selector"/>
+                        <action type="toggle" only="enable" target="-15-selector"/>
+                        <action type="toggle" only="enable" target="-18-selector"/>
+                        <action type="toggle" only="enable" target="-21-selector"/>
+                        <action type="toggle" only="enable" target="mute-selector"/>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                //5
+                <layer name="-12-selector" type="absolute-images" enabled="false">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="76" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <image src="t-activated.png"/>
+                    </contents>
+                </layer>
+                <layer name="-12" type="button">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="76" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Set to -12 dB</action>
+                        <action type="toggle" only="disable" target="-0-selector"/>
+                        <action type="toggle" only="disable" target="-3-selector"/>
+                        <action type="toggle" only="disable" target="-6-selector"/>
+                        <action type="toggle" only="disable" target="-9-selector"/>
+                        <action type="toggle" only="enable" target="-12-selector"/>
+                        <action type="toggle" only="enable" target="-15-selector"/>
+                        <action type="toggle" only="enable" target="-18-selector"/>
+                        <action type="toggle" only="enable" target="-21-selector"/>
+                        <action type="toggle" only="enable" target="mute-selector"/>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                //6
+                <layer name="-9-selector" type="absolute-images" enabled="false">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="87" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <image src="t-activated.png"/>
+                    </contents>
+                </layer>
+                <layer name="-9" type="button">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="87" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Set to -9 dB</action>
+                        <action type="toggle" only="disable" target="-0-selector"/>
+                        <action type="toggle" only="disable" target="-3-selector"/>
+                        <action type="toggle" only="disable" target="-6-selector"/>
+                        <action type="toggle" only="enable" target="-9-selector"/>
+                        <action type="toggle" only="enable" target="-12-selector"/>
+                        <action type="toggle" only="enable" target="-15-selector"/>
+                        <action type="toggle" only="enable" target="-18-selector"/>
+                        <action type="toggle" only="enable" target="-21-selector"/>
+                        <action type="toggle" only="enable" target="mute-selector"/>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                //7
+                <layer name="-6-selector" type="absolute-images" enabled="false">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="98" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <image src="t-activated.png"/>
+                    </contents>
+                </layer>
+                <layer name="-6" type="button">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="98" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Set to -6 dB</action>
+                        <action type="toggle" only="disable" target="-0-selector"/>
+                        <action type="toggle" only="disable" target="-3-selector"/>
+                        <action type="toggle" only="enable" target="-6-selector"/>
+                        <action type="toggle" only="enable" target="-9-selector"/>
+                        <action type="toggle" only="enable" target="-12-selector"/>
+                        <action type="toggle" only="enable" target="-15-selector"/>
+                        <action type="toggle" only="enable" target="-18-selector"/>
+                        <action type="toggle" only="enable" target="-21-selector"/>
+                        <action type="toggle" only="enable" target="mute-selector"/>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                //8
+                <layer name="-3-selector" type="absolute-images" enabled="false">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="109" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <image src="t-activated.png"/>
+                    </contents>
+                </layer>
+                <layer name="-3" type="button">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="109" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Set to -3 dB</action>
+                        <action type="toggle" only="disable" target="-0-selector"/>
+                        <action type="toggle" only="enable" target="-3-selector"/>
+                        <action type="toggle" only="enable" target="-6-selector"/>
+                        <action type="toggle" only="enable" target="-9-selector"/>
+                        <action type="toggle" only="enable" target="-12-selector"/>
+                        <action type="toggle" only="enable" target="-15-selector"/>
+                        <action type="toggle" only="enable" target="-18-selector"/>
+                        <action type="toggle" only="enable" target="-21-selector"/>
+                        <action type="toggle" only="enable" target="mute-selector"/>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                //9
+                <layer name="-0-selector" type="absolute-images" enabled="false">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="120" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <image src="t-activated.png"/>
+                    </contents>
+                </layer>
+                <layer name="-0" type="button">
+                    <geometry type="absolute">
+                        <size x="11" y="3"/>
+                        <position x="120" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Set to -0 dB</action>
+                        <action type="toggle" only="enable" target="-0-selector"/>
+                        <action type="toggle" only="enable" target="-3-selector"/>
+                        <action type="toggle" only="enable" target="-6-selector"/>
+                        <action type="toggle" only="enable" target="-9-selector"/>
+                        <action type="toggle" only="enable" target="-12-selector"/>
+                        <action type="toggle" only="enable" target="-15-selector"/>
+                        <action type="toggle" only="enable" target="-18-selector"/>
+                        <action type="toggle" only="enable" target="-21-selector"/>
+                        <action type="toggle" only="enable" target="mute-selector"/>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                //lock image
+                <layer name="lockimg" type="button" enabled="false">
+                    <geometry type="absolute">
+                        <size x="99" y="3"/>
+                        <position x="32" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <normalImg src="lock.png"/>
+                        <overImg src="lock.png"/>
+                        <downImg src="lock.png"/>
+                    </contents>
+                </layer>
+                //####
+                <layer name="down" type="button">
+                    <geometry type="absolute">
+                        <size x="32" y="3"/>
+                        <position x="0" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Down</action>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                <layer name="up" type="button">
+                    <geometry type="absolute">
+                        <size x="32" y="3"/>
+                        <position x="131" y="0" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Up</action>
+                        <overImg src="t-over.png"/>
+                        <downImg src="t-click.png"/>
+                    </contents>
+                </layer>
+                //####
+                <layer name="playpause" type="button" tooltip="Play/Pause">
+                    <geometry type="absolute">
+                        <size x="16" y="15"/>
+                        <position x="74" y="4" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Play or Pause</action>
+                        <overImg src="b-over.png"/>
+                        <downImg src="b-click.png"/>
+                    </contents>
+                </layer>
+                <layer name="timetoggle" type="button">
+                    <geometry type="absolute">
+                        <size x="32" y="15"/>
+                        <position x="92" y="3" align="center"/>
+                    </geometry>
+                    <contents>
+                        <action type="toggle" target="timeelapsed"/>
+                        <action type="toggle" target="timeremaining"/>
+                        <overImg src="b-over.png"/>
+                        <downImg src="b-click.png"/>
+                    </contents>
+                </layer>
+                <layer name="prev" type="button" tooltip="Previous">
+                    <geometry type="absolute">
+                        <size x="32" y="15"/>
+                        <position x="0" y="3" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Previous</action>
+                        <overImg src="prev3.png"/>
+                        <downImg src="b-click.png"/>
+                    </contents>
+                </layer>
+                <layer name="next" type="button" tooltip="Next">
+                    <geometry type="absolute">
+                        <size x="32" y="15"/>
+                        <position x="131" y="3" align="left"/>
+                    </geometry>
+                    <contents>
+                        <action>Next</action>
+                        <overImg src="next.png"/>
+                        <downImg src="b-click.png"/>
+                    </contents>
+                </layer>
+            </layer>
+        </layer>
+    </layer>
+</skin>

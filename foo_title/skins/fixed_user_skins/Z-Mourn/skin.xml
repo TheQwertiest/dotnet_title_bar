@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+    author="Abraxas"
+    name="Z-Mourn"
+    width="350"
+    height="42">
+
+    <layer name="main" type="absolute-images">
+        <geometry type="absolute">
+            <size x="350" y="23" />
+            <position x="0" y="0" align="left" />
+        </geometry>
+        <contents>
+            <image src="layout/bg.png" />
+        </contents>
+
+        <layer name="ArtistTrack" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="213" y="18" />
+                <position x="70" y="6" align="left" />
+            </geometry>
+            <contents spacing="0" font="Tahoma" size="7" speed="30" pause="2000">
+                <label position="left" color="eeeeeeff">$if2(%artist%,Some Artist) - $if2(%title%,Some Track)</label>
+            </contents>
+        </layer>
+
+
+        <layer name="Pause" type="button">
+            <geometry type="absolute">
+                <size x="14" y="23" />
+                <position x="32" y="0" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Pause
+                </action>
+                <normalImg src="layout/btn_pause_n.png" />
+                <overImg src="layout/btn_pause_o.png" />
+                <downImg src="layout/btn_pause_d.png" />
+            </contents>
+        </layer>
+
+        <layer name="Play" type="button">
+            <geometry type="absolute">
+                <size x="14" y="23" />
+                <position x="18" y="0" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Play
+                </action>
+                <normalImg src="layout/btn_play_n.png" />
+                <overImg src="layout/btn_play_o.png" />
+                <downImg src="layout/btn_play_d.png" />
+            </contents>
+        </layer>
+
+        <layer name="Prev" type="button">
+            <geometry type="absolute">
+                <size x="18" y="23" />
+                <position x="0" y="0" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Previous
+                </action>
+                <normalImg src="layout/btn_prev_n.png" />
+                <overImg src="layout/btn_prev_o.png" />
+                <downImg src="layout/btn_prev_d.png" />
+            </contents>
+        </layer>
+
+        <layer name="Next" type="button">
+            <geometry type="absolute">
+                <size x="16" y="23" />
+                <position x="46" y="0" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Next
+                </action>
+                <normalImg src="layout/btn_next_n.png" />
+                <overImg src="layout/btn_next_o.png" />
+                <downImg src="layout/btn_next_d.png" />
+            </contents>
+        </layer>
+
+        <layer name="Show" type="button">
+            <geometry type="absolute">
+                <size x="18" y="23" />
+                <position x="332" y="0" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Activate
+                </action>
+                <normalImg src="layout/btn_show_n.png" />
+                <overImg src="layout/btn_show_o.png" />
+                <downImg src="layout/btn_show_d.png" />
+            </contents>
+        </layer>
+
+    </layer>
+    <layer name="main" type="absolute-images">
+        <geometry type="absolute">
+            <size x="44" y="42" />
+            <position x="290" y="0" align="left" />
+        </geometry>
+        <contents>
+            <image src="layout/album_bg.png" />
+        </contents>
+    </layer>
+    <layer name="AlbumArt" type="album-art">
+        <geometry type="absolute">
+            <size x="36" y="35" />
+            <position x="294" y="3" align="left" />
+        </geometry>
+        <contents>
+
+        </contents>
+    </layer>
+    <layer name="time_bg" type="absolute-images">
+        <geometry type="absolute">
+            <size x="36" y="15" />
+            <position x="294" y="23" align="left" />
+        </geometry>
+        <contents>
+            <image src="layout/time_bg.png" />
+        </contents>
+    </layer>
+    <layer name="Time" type="text">
+        <geometry type="absolute">
+            <size x="44" y="16" />
+            <position x="299" y="25" align="left" />
+        </geometry>
+        <contents spacing="0" font="Tahoma" size="7">
+            <label position="left" color="ffffffff">-%_time_remaining%</label>
+        </contents>
+    </layer>
+    <layer name="Mute" type="button">
+        <geometry type="absolute">
+            <size x="36" y="20" />
+            <position x="294" y="3" align="left" />
+        </geometry>
+        <contents>
+            <action>
+                Mute
+            </action>
+            <normalImg src="layout/btn_mute_n.png" />
+            <overImg src="layout/btn_mute_o.png" />
+            <downImg src="layout/btn_mute_o.png" />
+        </contents>
+    </layer>
+</skin>

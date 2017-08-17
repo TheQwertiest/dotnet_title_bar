@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+    author="Leo"
+    name="leotitle"
+    width="400"
+    height="30">
+
+    <layer name="main" type="absolute-images">
+        <geometry type="absolute">
+            <size x="360" y="30" />
+            <position x="0" y="0" align="left" />
+        </geometry>
+
+        <layer name="Title" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="200" y="18" />
+                <position x="0" y="7" align="Left" />
+            </geometry>
+            <contents spacing="0" font="Verdana" bold="true" size="7" >
+                <label position="left" color="ffffffff">.::%artist%::. .::%title%::.</label>
+            </contents>
+        </layer>
+
+        <layer name="Title" type="text" clip="false">
+            <geometry type="absolute">
+                <size x="40" y="18" />
+                <position x="200" y="7" align="Left" />
+            </geometry>
+            <contents spacing="0" font="Verdana" bold="true" size="7" >
+                <label position="left" color="ffffffff"> %_time_elapsed% / %_length%</label>
+            </contents>
+        </layer>
+
+
+        ---------------------------------------------------------------------------------
+        <!-- buttons -->
+
+
+        <layer name="PlayPause" type="button">
+            <geometry type="absolute">
+                <size x="16" y="15" />
+                <position x="265" y="5" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Pause
+                </action>
+                <normalImg src="Pl_N.png" />
+                <overImg src="Pl_O.png" />
+                <downImg src="Pl_D.png" />
+            </contents>
+        </layer>
+
+        <layer name="Next" type="button">
+            <geometry type="absolute">
+                <size x="16" y="15" />
+                <position x="283" y="5" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Next
+                </action>
+                <normalImg src="N_N.png" />
+                <overImg src="N_O.png" />
+                <downImg src="N_D.png" />
+            </contents>
+        </layer>
+
+        <layer name="random" type="button">
+            <geometry type="absolute">
+                <size x="16" y="15" />
+                <position x="301" y="5" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Random
+                </action>
+                <normalImg src="r_N.png" />
+                <overImg src="r_O.png" />
+                <downImg src="r_D.png" />
+            </contents>
+        </layer>
+
+        <layer name="Next" type="button">
+            <geometry type="absolute">
+                <size x="15" y="15" />
+                <position x="323" y="5" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Activate
+                </action>
+                <normalImg src="max_N.png" />
+                <overImg src="max_O.png" />
+                <downImg src="max_D.png" />
+            </contents>
+        </layer>
+
+        <layer name="close" type="button">
+            <geometry type="absolute">
+                <size x="16" y="15" />
+                <position x="341" y="5" align="left" />
+            </geometry>
+            <contents>
+                <action>
+                    Exit
+                </action>
+                <normalImg src="X_N.png" />
+                <overImg src="X_O.png" />
+                <downImg src="X_D.png" />
+            </contents>
+        </layer>
+
+    </layer>
+</skin>
