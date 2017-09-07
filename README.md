@@ -1,4 +1,5 @@
 # foo_title
+![alt text](https://i.imgur.com/KskthTl.png)  
 foobar2000 component
 
 This is a skinnable UI for [foobar2000](https://www.foobar2000.org).
@@ -9,6 +10,7 @@ See [>>gallery<<](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery) f
 1. Extract and install foo_title.fb2k-component (http://wiki.hydrogenaud.io/index.php?title=Foobar2000:How_to_install_a_component).  
 1. Open folder for skins (Preferences -> Display -> foo_title -> Appearance -> Open directory).
 1. Extract directories contained in 'skins' folder to the opened folder.
+1. Check out and download [user-created skins](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery):
 1. Choose and apply your prefered skin =)
 
 ## Links
