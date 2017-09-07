@@ -104,12 +104,12 @@
                 </geometry>
                 <layer name="stop" type="button" tooltip="Stop">
                     <geometry type="absolute">
-                        <size x="16" y="18"/>
-                        <position x="0" y="1" align="left"/>
+                        <size x="16" y="15"/>
+                        <position x="0" y="3" align="left"/>
                     </geometry>
                     <contents>
                         <action>Stop</action>
-                        <overImg src="b-over.png"/>
+                        <overImg src="stop.png"/>
                         <downImg src="b-click.png"/>
                     </contents>
                 </layer>
@@ -149,12 +149,11 @@
                         <label position="center" color="DDFFFFFF">[-%_time_remaining%]</label>
                     </contents>
                 </layer>
-                <layer name="barwrapper" type="absolute-images">
+                <layer name="barwrapper" type="no-content">
                     <geometry type="absolute">
                         <size x="99" y="1"/>
                         <position x="29" y="3" align="left"/>
                     </geometry>
-                    <contents/>
                     <layer name="bar" type="absolute-images">
                         <geometry type="absolute">
                             <size x="10" y="1"/>
@@ -476,14 +475,25 @@
                     </contents>
                 </layer>
                 //####
-                <layer name="playpause" type="button" tooltip="Play/Pause">
+                <layer name="play" type="button" tooltip="Play">
                     <geometry type="absolute">
-                        <size x="16" y="15"/>
-                        <position x="74" y="4" align="left"/>
+                        <size x="$if($or($not(%isplaying%),%ispaused%),16,0)" y="15"/>
+                        <position x="74" y="4" align="left" />
                     </geometry>
                     <contents>
                         <action>Play or Pause</action>
-                        <overImg src="b-over.png"/>
+                        <overImg src="play.png"/>
+                        <downImg src="b-click.png"/>
+                    </contents>
+                </layer>
+                <layer name="pause" type="button" tooltip="Pause">
+                    <geometry type="absolute">
+                        <size x="$if($and(%isplaying%,$not(%ispaused%)),16,0)" y="15"/>
+                        <position x="74" y="4" align="left" />
+                    </geometry>
+                    <contents>
+                        <action>Play or Pause</action>
+                        <overImg src="pause.png"/>
                         <downImg src="b-click.png"/>
                     </contents>
                 </layer>
