@@ -6,6 +6,10 @@ This is a skinnable UI for [foobar2000](https://www.foobar2000.org).
 
 See [>>gallery<<](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery) for screenshots.
 
+## Prerequisites
+1. Microsoft .Net Framework 4.5 (https://www.microsoft.com/download/details.aspx?id=42642)
+1. Microsoft Visual Studio 2015 C++ Redistributable (https://www.microsoft.com/download/details.aspx?id=48145)
+
 ## Installation
 1. Extract and install foo_title.fb2k-component (http://wiki.hydrogenaud.io/index.php?title=Foobar2000:How_to_install_a_component).  
 1. Open folder for skins (Preferences -> Display -> foo_title -> Appearance -> Open directory).
