@@ -29,15 +29,18 @@ namespace fooTitle.Layers
     [LayerTypeAttribute("text")]
 	public class TextLayer : Layer
 	{
-        protected class LabelPart {
+        protected struct LabelPart {
             public string text;
             public string formatted;
             public Font font;
             public Color color;
-            public bool bold;
-            public bool italic;
-            public int size;
+
+            // Font properties
             public string fontName;
+            public int fontSize;
+            public bool isBold;
+            public bool isItalic;
+            public bool isScaleable;
         }
  
         protected string defaultText;
@@ -56,15 +59,16 @@ namespace fooTitle.Layers
             angle = Int32.Parse(GetAttributeValue(contents, "angle", "0"));
 
             // read the default font
-		    LabelPart empty = new LabelPart
+            LabelPart empty = new LabelPart
 		    {
-		        bold = false,
-		        italic = false,
+		        isBold = false,
+		        isItalic = false,
 		        fontName = "Arial",
 		        color = Color.FromArgb(255, 0, 0, 0),
-		        size = 9
-		    };
-		    LabelPart def = readLabelFromElement(contents, empty);
+		        fontSize = 9,
+		        isScaleable = bool.Parse(GetAttributeValue(contents, "scaleable", "false")),
+            };
+		    LabelPart def = ReadLabel(contents, empty);
  
 			// read contents
             foreach (XmlNode n in contents.SelectNodes("label")) {
@@ -95,23 +99,23 @@ namespace fooTitle.Layers
             }
         }
         
-        protected LabelPart readLabelFromElement(XmlNode node, LabelPart def) {
+        protected LabelPart ReadLabel(XmlNode node, LabelPart def) {
             LabelPart res = new LabelPart();
 
             if (node.Attributes.GetNamedItem("size") != null)
-                res.size = int.Parse(node.Attributes.GetNamedItem("size").Value);
+                res.fontSize = int.Parse(node.Attributes.GetNamedItem("size").Value);
             else
-                res.size = def.size;
+                res.fontSize = def.fontSize;
             
             if (node.Attributes.GetNamedItem("italic") != null)
-                res.italic = (node.Attributes.GetNamedItem("italic").Value == "true");
+                res.isItalic = bool.Parse(node.Attributes.GetNamedItem("italic").Value);
             else
-                res.italic = def.italic;
+                res.isItalic = def.isItalic;
 
             if (node.Attributes.GetNamedItem("bold") != null)
-                res.bold = (node.Attributes.GetNamedItem("bold").Value == "true");
+                res.isBold = bool.Parse(node.Attributes.GetNamedItem("bold").Value);
             else
-                res.bold = def.bold;
+                res.isBold = def.isBold;
 
             if (node.Attributes.GetNamedItem("font") != null)
                 res.fontName = node.Attributes.GetNamedItem("font").Value;
@@ -125,11 +129,14 @@ namespace fooTitle.Layers
 
             
             FontStyle fontStyle = FontStyle.Regular;
-            if (res.italic)
+            if (res.isItalic)
                 fontStyle |= FontStyle.Italic;
-            if (res.bold)
+            if (res.isBold)
                 fontStyle |= FontStyle.Bold;
-            res.font = new Font(res.fontName, res.size, fontStyle);
+            res.font = new Font(res.fontName,
+                res.isScaleable ? res.fontSize : (int)Math.Round((double)res.fontSize * 96 / 72),
+                fontStyle,
+                res.isScaleable ? GraphicsUnit.Point : GraphicsUnit.Pixel);
             res.text = GetNodeValue(node);
 
             return res;
@@ -137,11 +144,15 @@ namespace fooTitle.Layers
 
 		protected virtual void addLabel(XmlNode node, LabelPart def) {
             string position = GetAttributeValue(node, "position", "left");
-            LabelPart label = readLabelFromElement(node, def);
-			if (position == "left") {
-                this.left = label;
-			} else if (position == "right") {
-                this.right = label;
+            LabelPart label = ReadLabel(node, def);
+			switch (position)
+			{
+			    case "left":
+			        this.left = label;
+			        break;
+			    case "right":
+			        this.right = label;
+			        break;
 			}
 		}
 

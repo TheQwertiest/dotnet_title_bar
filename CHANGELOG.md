@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Added 'scaleable' attribute to text layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#text)).
+
+### Fixed
+- Text is not scaled with DPI by default now, thus preserving skins, that are not compatible with scaling, from breaking on high DPI screens.
 
 ## [1.0.0] - 2017-08-15
 ### Added

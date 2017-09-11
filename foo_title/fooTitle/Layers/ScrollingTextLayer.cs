@@ -62,7 +62,7 @@ namespace fooTitle.Layers {
         protected override void addLabel(XmlNode node, TextLayer.LabelPart def)
         {
             string position = GetAttributeValue(node, "position", "left");
-            left = readLabelFromElement(node, def);
+            left = ReadLabel(node, def);
 
             switch (position)
             {
