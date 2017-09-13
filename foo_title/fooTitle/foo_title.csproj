@@ -155,6 +155,9 @@
     </Compile>
     <Compile Include="ContextMenuUtils.cs" />
     <Compile Include="ControlExtenstions.cs" />
+    <Compile Include="CustomControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Display.cs">
       <SubType>Form</SubType>
     </Compile>
