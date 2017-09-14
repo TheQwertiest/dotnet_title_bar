@@ -29,7 +29,7 @@ namespace fooTitle.Layers
     [LayerTypeAttribute("text")]
 	public class TextLayer : Layer
 	{
-        protected struct LabelPart {
+        protected class LabelPart {
             public string text;
             public string formatted;
             public Font font;
