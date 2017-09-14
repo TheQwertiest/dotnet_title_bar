@@ -19,6 +19,6 @@ cleaning the code:
 		- and commenting to use doxygen probably
 
 bugs:
-    - Preferences page is cut-off, when resolution scaling is above 100%.
+    - Preferences page has some text that is cut-off, when resolution scaling is above 100%.
     - BUG: some crashes http://www.hydrogenaudio.org/forums/index.php?showtopic=55428&hl=foo_title
     - BUG: Album art layer does not work for files played from zip

@@ -16,31 +16,43 @@ namespace fooTitle
             private int _tmpH = 0;
             private bool _isFirstResize = true;
             private bool _isScaledResize = false;
+            private bool _isResizeInProgress = false;
 
             protected override void OnResize(EventArgs e)
             {
-                if (_isFirstResize)
+                if (_isResizeInProgress)
+                {
+                    base.OnResize(e);
+                    return;
+                }
+
+                if (_isFirstResize || _isScaledResize)
                 {
                     _tmpH = this.Height;
-                    this.Dock = DockStyle.Fill;
+                    if (_isFirstResize)
+                    {
+                        this.Dock = DockStyle.Fill;
+                    }
                 }
 
                 base.OnResize(e);
 
                 if (!_isFirstResize && !_isScaledResize)
                 {
+                    _isResizeInProgress = true;
                     this.Height = _tmpH;
+                    _isResizeInProgress = false;
                 }
-                else
-                {
-                    _isFirstResize = false;
-                }
+                _isFirstResize = false;
             }
 
             protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
             {
-                this.Dock = DockStyle.None;
-                _isScaledResize = true;
+                if (factor.Width != 1F || factor.Height != 1F)
+                {
+                    this.Dock = DockStyle.None;
+                    _isScaledResize = true;
+                }
 
                 base.ScaleControl(factor, specified);
             }
@@ -54,35 +66,98 @@ namespace fooTitle
             private int _tmpH = 0;
             private bool _isFirstResize = true;
             private bool _isScaledResize = false;
+            private bool _isResizeInProgress = false;
 
             protected override void OnResize(EventArgs e)
             {
-                if (_isFirstResize)
+                if (_isResizeInProgress)
+                {
+                    base.OnResize(e);
+                    return;
+                }
+
+                if (_isFirstResize || _isScaledResize)
                 {
                     _tmpH = this.Height;
-                    this.Dock = DockStyle.Fill;
+                    if (_isFirstResize)
+                    {
+                        this.Dock = DockStyle.Fill;
+                    }
                 }
 
                 base.OnResize(e);
 
                 if (!_isFirstResize && !_isScaledResize)
                 {
+                    _isResizeInProgress = true;
                     this.Height = _tmpH;
+                    _isResizeInProgress = false;
                 }
-                else
-                {
-                    _isFirstResize = false;
-                }
+                _isFirstResize = false;
             }
 
             protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
             {
-                this.Dock = DockStyle.None;
-                _isScaledResize = true;
+                if (factor.Width != 1F || factor.Height != 1F)
+                {
+                    this.Dock = DockStyle.None;
+                    _isScaledResize = true;
+                }
 
                 base.ScaleControl(factor, specified);
             }
         }
+
+        /// <summary>
+        /// A track bar that has ability to auto size in horizontal dimension only.
+        /// </summary>
+        public class HorizontalFillDockTrackBar : System.Windows.Forms.TrackBar
+        {
+            private int _tmpH = 0;
+            private bool _isFirstResize = true;
+            private bool _isScaledResize = false;
+            private bool _isResizeInProgress = false;
+
+            protected override void OnResize(EventArgs e)
+            {
+                if (_isResizeInProgress)
+                {
+                    base.OnResize(e);
+                    return;
+                }
+
+                if (_isFirstResize || _isScaledResize)
+                {
+                    _tmpH = this.Height;
+                    if (_isFirstResize)
+                    {
+                        this.Dock = DockStyle.Fill;
+                    }
+                }
+
+                base.OnResize(e);
+
+                if (!_isFirstResize && !_isScaledResize)
+                {
+                    _isResizeInProgress = true;
+                    this.Height = _tmpH;
+                    _isResizeInProgress = false;
+                }
+                _isFirstResize = false;
+            }
+
+            protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+            {
+                if (factor.Width != 1F || factor.Height != 1F)
+                {
+                    this.Dock = DockStyle.None;
+                    _isScaledResize = true;
+                }
+
+                base.ScaleControl(factor, specified);
+            }
+        }
+
         /// <summary>
         /// A check box that can wrap its text onto multiple lines as needed.
         /// </summary>
