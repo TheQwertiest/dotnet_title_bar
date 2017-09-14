@@ -60,6 +60,7 @@ namespace fooManagedWrapper {
 
 		virtual preferences_page_instance::ptr instantiate(HWND parent, preferences_page_callback::ptr callback);
 		virtual const char * get_name();
+		virtual bool get_help_url(pfc::string_base& p_out);
 		virtual GUID get_guid();
 		virtual GUID get_parent_guid();
 

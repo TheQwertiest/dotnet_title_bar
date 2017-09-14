@@ -12,7 +12,7 @@ See [>>gallery<<](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery) f
 
 ## Installation
 1. Extract and install foo_title.fb2k-component (http://wiki.hydrogenaud.io/index.php?title=Foobar2000:How_to_install_a_component).  
-1. Open folder for skins (Preferences -> Display -> foo_title -> Appearance -> Open directory).
+1. Open folder for skins (Preferences -> Display -> foo_title -> Main -> Open directory).
 1. Extract directories contained in 'skins' folder to the opened folder.
 1. Check out and download [user-created skins](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery):
 1. Choose and apply your prefered skin =)

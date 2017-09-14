@@ -1,11 +1,14 @@
 # Changelog
 
 ## [Unreleased]
+
+## [1.0.1] - 2017-09-14
 ### Added
 - Added 'scaleable' attribute to text layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#text)).
 
 ### Fixed
 - Text is not scaled with DPI by default now, thus preserving skins, that are not compatible with scaling, from breaking on high DPI screens.
+- Fixed preferences page being cut-off, when resolution scaling is above 100%.
 
 ## [1.0.0] - 2017-08-15
 ### Added
@@ -96,7 +99,8 @@
 ## Prior releases
 - See https://github.com/lepkoqq/foo_title/releases
 
-[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/theqwertiest/foo_title/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/theqwertiest/foo_title/compare/v0.9.5...v1.0.0
 [0.9.5]: https://github.com/theqwertiest/foo_title/compare/v0.9.4a...v0.9.5
 [0.9.4a]: https://github.com/theqwertiest/foo_title/compare/v0.9.4...v0.9.4a

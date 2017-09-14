@@ -44,6 +44,12 @@ namespace fooManagedWrapper {
 		return name.c_str();
 	}
 
+	bool CCustomPrefPage_v3::get_help_url(pfc::string_base& p_out)
+	{
+		p_out = "http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#Preferences_page";
+		return true;
+	}
+
 	//! Retrieves GUID of the page.
 	GUID CCustomPrefPage_v3::get_guid() {
 		return guid;
