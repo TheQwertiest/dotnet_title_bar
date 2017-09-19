@@ -18,11 +18,10 @@ See [>>gallery<<](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery) f
 1. Choose and apply your prefered skin =)
 
 ## Links
-[Documentation](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:0.9_Titlebar_%28foo_title%29)  
-[v0.8.1 Documentation](https://quiark.github.io/foo_title)  
+[Documentation](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:0.9_Titlebar_%28foo_title%29) ([v0.8.1](https://quiark.github.io/foo_title))  
 [Changelog](https://github.com/theqwertiest/foo_title/blob/master/CHANGELOG.md)  
-[Skins](https://hydrogenaud.io/index.php/topic,46619.0.html)  
-[Discussion thread @ hydrogenaud.io](http://www.hydrogenaudio.org/forums/index.php?showtopic=46595)
+[Skins](https://hydrogenaud.io/index.php/topic,46619.0.html) ([gallery](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery))  
+[Discussion/support thread @ hydrogenaud.io](http://www.hydrogenaudio.org/forums/index.php?showtopic=46595)
 
 ## Credits
 [Quiark](https://github.com/Quiark): original component.  
