@@ -155,10 +155,10 @@ namespace fooTitle.Layers
         }
 
         /// <summary>
-        ///     Optimised version of updateGeometry - processes only the dynamic layers
+        ///     Optimized version of updateGeometry - processes only the dynamic layers
         /// </summary>
         /// <param name="parentRect">parent rectangle - the geometry should fit in it</param>
-        public void FrameUpdateGeometry(Rectangle parentRect)
+        public void UpdateDynamicGeometry(Rectangle parentRect)
         {
             foreach (Layer l in DynamicLayers)
                 l.UpdateThisLayerGeometry(l.ParentLayer.ClientRect);

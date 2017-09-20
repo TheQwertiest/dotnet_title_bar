@@ -33,6 +33,8 @@ namespace fooManagedWrapper {
 		// for singleton
 		static CManagedWrapper ^instance;
 
+          bool isStarted = false;
+
 		CComponentLoader ^componentLoader;
 		// loaded .NET clients
 		TComponentClients ^componentClients;
@@ -54,6 +56,10 @@ namespace fooManagedWrapper {
 		// this loads all .netcomponents and calls their Create() method
 		// the parameter is require for this to know the directory where are the .netcomponents
 		void Start(String ^_modulePath);
+
+          String ^ GetNetComponentName();
+          String ^ GetNetComponentVersion();
+          String ^ GetNetComponentDescription();
 
 		// creates UIControlInstance
 		void OnInit();

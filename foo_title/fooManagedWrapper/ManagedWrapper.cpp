@@ -87,9 +87,48 @@ namespace fooManagedWrapper {
 		} catch (Exception ^e) {
 			fooManagedWrapper::CConsole::Error(e->Message);
 		}
+
+          isStarted = true;
 	}
 
-	void CManagedWrapper::OnInit() {
+     String ^ CManagedWrapper::GetNetComponentName()
+     {
+          if ( !isStarted || !componentClients->Count )
+          {
+               return gcnew String( "Managed Wrapper Sub-Component" );
+          }
+          else
+          {
+               return componentClients[0]->GetName();
+          }
+     }
+
+     String ^ CManagedWrapper::GetNetComponentVersion()
+     {
+          if ( !isStarted || !componentClients->Count )
+          {
+               return gcnew String( "0.0.0" );
+          }
+          else
+          {
+               return componentClients[0]->GetVersion();
+          }
+     }
+
+     String ^ CManagedWrapper::GetNetComponentDescription()
+     {
+          if ( !isStarted || !componentClients->Count )
+          {
+               return gcnew String( ".NET component was not loaded" );
+          }
+          else
+          {
+               return componentClients[0]->GetDescription();
+          }
+     }
+
+     void CManagedWrapper::OnInit()
+     {
 		UIControlInstance = new static_api_ptr_t<ui_control>();
 	}
 

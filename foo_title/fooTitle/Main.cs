@@ -20,7 +20,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Reflection;
+using System.Windows.Forms;
 using fooManagedWrapper;
 using fooTitle.Layers;
 using fooTitle.Geometries;
@@ -161,7 +162,7 @@ namespace fooTitle {
                     DisableFooTitle();
                     break;
                 case ShowWhenEnum.WhenMinimized:
-                    checkFoobarMinimized();
+                    UpdateFooTitleWhenMinimized();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -229,7 +230,7 @@ namespace fooTitle {
         /// <summary>
         /// Checks if foobar is minimized or active and shows/hides display according to it
         /// </summary>
-        private void checkFoobarMinimized() {
+        private void UpdateFooTitleWhenMinimized() {
             if (ShowWhen.Value != ShowWhenEnum.WhenMinimized)
                 return;
 
@@ -238,7 +239,14 @@ namespace fooTitle {
             if (CManagedWrapper.getInstance().IsFoobarActivated()) {
                 DisableFooTitle();
             } else {
-                showControl.TryShowWhenMinimized();
+                if (showControl.IsFooTitleNeeded())
+                {
+                    EnableFooTitle();
+                }
+                else
+                {
+                    DisableFooTitle();
+                }
             }
         }
 
@@ -293,12 +301,12 @@ namespace fooTitle {
 
         public void DrawForm()
         {
-            checkFoobarMinimized();
+            UpdateFooTitleWhenMinimized();
             if (fooTitleEnabled && CurrentSkin != null)
             {
                 // need to update all values that are calculated from formatting strings
                 //CurrentSkin.UpdateGeometry(CurrentSkin.ClientRect);
-                CurrentSkin.FrameUpdateGeometry(CurrentSkin.ClientRect);
+                CurrentSkin.UpdateDynamicGeometry(CurrentSkin.ClientRect);
                 CurrentSkin.CheckSize();
                 CurrentSkin.Draw();
             }
@@ -461,6 +469,26 @@ namespace fooTitle {
             }
         }
 
+        public string GetName()
+        {
+            return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
+        }
+        public string GetVersion()
+        {
+            return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        }
+
+        public string GetDescription()
+        {
+            return "foo_title\n" +
+                   "Displays a title-bar (like Winamp's WindowShade mode)\n\n" +
+                   "Copyright( c ) 2005-2006 by Roman Plasil\n\n" +
+                   "Updated by Miha Lepej\n" +
+                   "https://github.com/LepkoQQ/foo_title \n\n" +
+                   "Further updated by TheQwertiest\n" +
+                   "https://github.com/TheQwertiest/foo_title";
+        }
+
         #region Events
         public event OnInitDelegate OnInitEvent;
 
@@ -548,7 +576,7 @@ namespace fooTitle {
             SendEvent(OnPlaybackStopEvent, reason);
         }
 
-        protected void SendEvent(Object _event, params Object[] p) {
+        protected void SendEvent(object _event, params object[] p) {
             try {
                 if (_event != null) {
                     System.Delegate d = (System.Delegate)_event;

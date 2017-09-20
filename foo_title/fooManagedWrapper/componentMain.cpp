@@ -18,13 +18,16 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "stdafx.h"
+#include "component_version.h"
+#include "ManagedWrapper.h"
 
+VALIDATE_COMPONENT_FILENAME( "foo_managed_wrapper.dll" );
 
 DECLARE_COMPONENT_VERSION(
 // component name
-"Managed Wrapper (.NET) for foo_title",
+"Managed Wrapper (.NET)",
 // component version
-"0.7.1",
+FOO_MANAGED_WRAPPER_VERSION,
 // component description
 "foo_managed_wrapper\n"
 ".NET component loader for foo_title\n\n"
@@ -35,4 +38,33 @@ DECLARE_COMPONENT_VERSION(
 "https://github.com/TheQwertiest/foo_title "
 )
 
-VALIDATE_COMPONENT_FILENAME( "foo_managed_wrapper.dll" );
+namespace
+{
+
+using namespace fooManagedWrapper;
+
+class dontet_componentversion_impl : public componentversion
+{
+public: dontet_componentversion_impl()
+{
+} 
+void get_file_name( pfc::string_base & out )
+{
+     out = core_api::get_my_file_name();
+}	
+void get_component_name( pfc::string_base & out )
+{
+     out = CManagedWrapper::ToStdString( CManagedWrapper::getInstance()->GetNetComponentName() ).c_str();
+}	
+void get_component_version( pfc::string_base & out )
+{
+     out = CManagedWrapper::ToStdString( CManagedWrapper::getInstance()->GetNetComponentVersion() ).c_str();
+}	
+void get_about_message( pfc::string_base & out )
+{
+     out = CManagedWrapper::ToStdString( CManagedWrapper::getInstance()->GetNetComponentDescription() ).c_str();
+}	
+};
+
+static service_factory_single_t<dontet_componentversion_impl> g_dotnet_componentversion_factory;
+}

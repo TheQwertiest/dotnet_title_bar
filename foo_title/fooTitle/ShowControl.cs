@@ -308,13 +308,9 @@ namespace fooTitle {
         /// Called by the Main class when foobar2000's window gets minimized
         /// Should check if foo_title should be enabled
         /// </summary>
-        public void TryShowWhenMinimized() {
-            /*
-            if (songStartSat() && beforeSongEndSat()) {
-                main.EnableFooTitle();
-            }*/
-
-            showByCriteria();
+        public bool IsFooTitleNeeded() {
+            return (popupShowing.Value == PopupShowing.AllTheTime || notPlayingSat() || songStartSat() ||
+                    beforeSongEndSat());
         }
     }
 }

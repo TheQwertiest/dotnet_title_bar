@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "stdafx.h"
+#include "component_version.h"
 
 using namespace System;
 using namespace System::Reflection;
@@ -50,7 +51,7 @@ using namespace System::Security::Permissions;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 
-[assembly:AssemblyVersionAttribute("0.7.2")];
+[assembly:AssemblyVersionAttribute( FOO_MANAGED_WRAPPER_VERSION )];
 
 [assembly:ComVisible(false)];
 

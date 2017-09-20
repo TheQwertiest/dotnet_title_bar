@@ -89,7 +89,11 @@ namespace fooManagedWrapper
 
 	// this is the main entry point for each dotnet_ component - one class must implement it
 	public interface class IComponentClient {
-		
+
+          String ^ GetName();
+          String ^ GetVersion();
+          String ^ GetDescription();
+
 		// the component class must create all services in this method
 		void Create();
 
