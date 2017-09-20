@@ -33,21 +33,28 @@ namespace fooTitle {
     /// agent to activate and works completely independently on other classes.
     /// </summary>
     public class ShowControl {
-        public enum PopupShowing {
-            AllTheTime,
-            OnlySometimes
+        public enum EnableWhenEnum
+        {
+            Always,
+            WhenMinimized,
+            Never
+        }
+        public enum ShowWhenEnum {
+            Always,
+            OnTrigger
         }
 
-        private readonly ConfEnum<PopupShowing> popupShowing = new ConfEnum<PopupShowing>("showControl/popupShowing", PopupShowing.AllTheTime);
+        private readonly ConfEnum<ShowWhenEnum> showWhen = new ConfEnum<ShowWhenEnum>("showControl/popupShowing", ShowWhenEnum.Always);
         private readonly ConfBool onSongStart = new ConfBool("showControl/onSongStart", true);
         private readonly ConfBool beforeSongEnds = new ConfBool("showControl/beforeSongEnds", true);
         private readonly ConfInt onSongStartStay = new ConfInt("showControl/onSongStartStay", 5, 0, int.MaxValue);
         private readonly ConfInt beforeSongEndsStay = new ConfInt("showControl/beforeSongEndsStay", 5, 0, int.MaxValue);
         private readonly ConfBool showWhenNotPlaying = new ConfBool("showControl/showWhenNotPlaying", false);
         private readonly ConfInt timeBeforeFade = new ConfInt("showControl/timeBeforeFade", 2, 0, int.MaxValue);
-
+        public ConfEnum<EnableWhenEnum> enableWhen = new ConfEnum<EnableWhenEnum>("display/showWhen", EnableWhenEnum.Always);
 
         private readonly Timer hideAfterSongStart = new Timer();
+        private readonly Timer _reshowWhenMinimizedTimer = new Timer { Interval = 100 };
         private bool reachedEndSat = false;
         private bool newSongSat = false;
         private readonly Main main;
@@ -64,26 +71,70 @@ namespace fooTitle {
             main.OnPlaybackTimeEvent += main_OnPlaybackTimeEvent;
 
             // react to settings change
-            popupShowing.OnChanged += popupShowing_OnChanged;
+            showWhen.OnChanged += showWhen_OnChanged;
             showWhenNotPlaying.OnChanged += showWhenNotPlaying_OnChanged;
+            enableWhen.OnChanged += enableWhen_OnChanged;
 
             // init the timers
             hideAfterSongStart.Tick += hideAfterSongStart_Tick;
 
-            // on start, foo_title should be probably enabled
-            DoEnable();
+            _reshowWhenMinimizedTimer.Tick += _reshowWhenMinimizedTimer_Tick;
+
+            // Init popup state
+            enableWhen_OnChanged("");
         }
+
+        #region Event handling
 
         /// <summary>
         /// When the showing option changes, check the situation and disable/enable foo_title as needed
         /// </summary>
-        private void popupShowing_OnChanged(string name) {
+        private void showWhen_OnChanged(string name) {
             showByCriteria();
         }
 
         private void showWhenNotPlaying_OnChanged(string name) {
             showByCriteria();
         }
+
+        private void enableWhen_OnChanged(string name)
+        {
+            _reshowWhenMinimizedTimer.Stop();
+            switch (enableWhen.Value)
+            {
+                case EnableWhenEnum.Always:
+                    showByCriteria();
+                    break;
+                case EnableWhenEnum.Never:
+                    DoDisableWithAnimation();
+                    break;
+                case EnableWhenEnum.WhenMinimized:
+                    DoDisableWithAnimation();
+                    _reshowWhenMinimizedTimer.Start();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        /// <summary>
+        /// We don't have callback on foobar minimized state, so we have to update manually
+        /// </summary>
+        private void _reshowWhenMinimizedTimer_Tick(object sender, System.EventArgs e)
+        {
+            if (showWhen.Value == ShowWhenEnum.Always || notPlayingSat())
+            {
+                if (!CManagedWrapper.getInstance().IsFoobarActivated())
+                    StartTriggerAnimation(false);
+            }
+        }
+
+        private void hideAfterSongStart_Tick(object sender, EventArgs e)
+        {
+            showByCriteria();
+            hideAfterSongStart.Stop();
+        }
+        #endregion //Event handling
 
         #region Showing and hiding functions
         /// <summary>
@@ -92,17 +143,17 @@ namespace fooTitle {
         /// </summary>
         private void DoEnable()
         {
-            switch (main.ShowWhen.Value)
+            switch (enableWhen.Value)
             {
-                case ShowWhenEnum.WhenMinimized:
+                case EnableWhenEnum.WhenMinimized:
                     // can show only if minimized
                     if (!CManagedWrapper.getInstance().IsFoobarActivated())
                         main.EnableFooTitle();
                     break;
-                case ShowWhenEnum.Never:
+                case EnableWhenEnum.Never:
                     // nothing
                     break;
-                case ShowWhenEnum.Always:
+                case EnableWhenEnum.Always:
                     main.EnableFooTitle();
                     break;
                 default:
@@ -116,7 +167,7 @@ namespace fooTitle {
             main.DisableFooTitle();
         }
 
-        private void DoEnableWithAnimation(bool useOverAnimation)
+        private void StartTriggerAnimation(bool useOverAnimation)
         {
             DoEnable();
             AnimationManager.Animation animName = 
@@ -124,19 +175,32 @@ namespace fooTitle {
             main.StartDisplayAnimation(animName);
         }
 
-        private void DoDisableWithAnimation()
+        private void EndTriggerAnimation()
         {
             AnimationManager.Animation animName = 
-                (popupShowing.Value == PopupShowing.AllTheTime) ? AnimationManager.Animation.FadeOut : AnimationManager.Animation.FadeOutFull;
+                (showWhen.Value == ShowWhenEnum.Always) ? AnimationManager.Animation.FadeOut : AnimationManager.Animation.FadeOutFull;
             AnimationManager.OnAnimationStopDelegate onStop = 
-                (popupShowing.Value != PopupShowing.AllTheTime) ? DoDisable : (AnimationManager.OnAnimationStopDelegate)null;
+                (showWhen.Value != ShowWhenEnum.Always) ? DoDisable : (AnimationManager.OnAnimationStopDelegate)null;
             main.StartDisplayAnimation(animName, onStop);
         }
 
-        public void PopupPeek()
+        private void DoDisableWithAnimation()
+        {
+            main.StartDisplayAnimation(AnimationManager.Animation.FadeOutFull, DoDisable);
+        }
+
+        public void TriggerPopup()
         {
             DoEnable();
             main.StartDisplayAnimation(AnimationManager.Animation.FadeInOver, StartFadeOutTimer);
+        }
+
+        public void TogglePopup()
+        {
+            if (enableWhen.Value == EnableWhenEnum.Always)
+                enableWhen.Value = EnableWhenEnum.Never;
+            else
+                enableWhen.Value = EnableWhenEnum.Always;
         }
 
         private void StartFadeOutTimer()
@@ -148,7 +212,7 @@ namespace fooTitle {
         }
         #endregion
 
-        #region Event handling
+        #region Main event handling
         /// <summary>
         /// Checks time and displays foo_title when time has come
         /// </summary>
@@ -164,7 +228,7 @@ namespace fooTitle {
             {
                 if (!newSongSat)
                 {// We don't want to trigger animation every time
-                    DoEnableWithAnimation(true);
+                    StartTriggerAnimation(true);
                     newSongSat = true;
                 }
             }
@@ -172,7 +236,7 @@ namespace fooTitle {
             {
                 if (!reachedEndSat)
                 {// We don't want to trigger animation every time
-                    DoEnableWithAnimation(true);
+                    StartTriggerAnimation(true);
                     reachedEndSat = true;
                 }
             }
@@ -180,7 +244,7 @@ namespace fooTitle {
             {// Do not skip wait event
                 newSongSat = false;
                 reachedEndSat = false;
-                DoDisableWithAnimation();
+                EndTriggerAnimation();
             }
         }
 
@@ -198,7 +262,7 @@ namespace fooTitle {
                 return;
             }
 
-            DoEnableWithAnimation(true);
+            StartTriggerAnimation(true);
         }
 
         private FileInfo lastFileInfo;
@@ -236,11 +300,6 @@ namespace fooTitle {
             showByCriteria();
         }
 
-        private void hideAfterSongStart_Tick(object sender, EventArgs e) {
-            showByCriteria();
-            hideAfterSongStart.Stop();
-        }
-
         #endregion
 
         #region Criteria satisfaction queries
@@ -250,11 +309,12 @@ namespace fooTitle {
         /// and that criteria is enabled.
         /// </summary>
         protected bool songStartSat() {
-            if (!onSongStart.Value || !Main.PlayControl.IsPlaying())
+            IPlayControl pc = Main.PlayControl;
+            if (!onSongStart.Value || !pc.IsPlaying() || pc.IsPaused())
             {
                 return false;
             }
-            return (Main.PlayControl.PlaybackGetPosition() < onSongStartStay.Value);
+            return (pc.PlaybackGetPosition() < onSongStartStay.Value);
         }
 
         /// <summary>
@@ -262,12 +322,12 @@ namespace fooTitle {
         /// </summary>
         /// <returns></returns>
         protected bool beforeSongEndSat() {
-            if (!beforeSongEnds.Value)
+            IPlayControl pc = Main.PlayControl;
+            if (!beforeSongEnds.Value || !pc.IsPlaying() || pc.IsPaused())
             {
                 return false;
-            }
-            double pos = Main.PlayControl.PlaybackGetPosition();
-            return lastSong != null && (lastSong.GetLength() - beforeSongEndsStay.Value <= pos);
+            }            
+            return lastSong != null && (lastSong.GetLength() - beforeSongEndsStay.Value <= pc.PlaybackGetPosition());
         }
 
         /// <summary>
@@ -288,29 +348,20 @@ namespace fooTitle {
         /// Should not be used in very frequently used callbacks such as OnPlaybackTimeEvent.
         /// </summary>
         protected void showByCriteria() {
-            if (popupShowing.Value == PopupShowing.AllTheTime || notPlayingSat())
+            if (showWhen.Value == ShowWhenEnum.Always || notPlayingSat())
             {
-                DoEnableWithAnimation(false);
+                StartTriggerAnimation(false);
             }
             else if (songStartSat() || beforeSongEndSat())
             {
-                DoEnableWithAnimation(true);
+                StartTriggerAnimation(true);
             }
             else
             {
-                DoDisableWithAnimation();
+                EndTriggerAnimation();
             }
         }
 
         #endregion
-
-        /// <summary>
-        /// Called by the Main class when foobar2000's window gets minimized
-        /// Should check if foo_title should be enabled
-        /// </summary>
-        public bool IsFooTitleNeeded() {
-            return (popupShowing.Value == PopupShowing.AllTheTime || notPlayingSat() || songStartSat() ||
-                    beforeSongEndSat());
-        }
     }
 }

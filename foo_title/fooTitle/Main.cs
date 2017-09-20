@@ -21,7 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Windows.Forms;
 using fooManagedWrapper;
 using fooTitle.Layers;
 using fooTitle.Geometries;
@@ -29,12 +28,7 @@ using fooTitle.Config;
 
 
 namespace fooTitle {
-    public enum ShowWhenEnum {
-        Always,
-        WhenMinimized,
-        Never
-    }
-
+ 
     public enum EnableDragging {
         Always,
         WhenPropertiesOpen,
@@ -146,29 +140,6 @@ namespace fooTitle {
         /// </summary>
         protected RepeatedShowing repeatedShowing;
 
-        /// <summary>
-        /// When to show foo_title: Always, never or only when foobar is minimized
-        /// </summary>
-        public ConfEnum<ShowWhenEnum> ShowWhen = new ConfEnum<ShowWhenEnum>("display/showWhen", ShowWhenEnum.Always);
-
-        private void ShowWhen_OnChanged(string name)
-        {
-            switch (ShowWhen.Value)
-            {
-                case ShowWhenEnum.Always:
-                    EnableFooTitle();
-                    break;
-                case ShowWhenEnum.Never:
-                    DisableFooTitle();
-                    break;
-                case ShowWhenEnum.WhenMinimized:
-                    UpdateFooTitleWhenMinimized();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
         private readonly ConfEnum<EnableDragging> DraggingEnabled = new ConfEnum<EnableDragging>("display/enableDragging", EnableDragging.Always);
         private bool _isMouseOnDragLayer = true;
         public bool CanDragDisplay {
@@ -190,23 +161,27 @@ namespace fooTitle {
             }
         }
 
-        protected bool fooTitleEnabled = true;
-        public void DisableFooTitle() {
-            if (initDone)
-            {
-                Display.Hide();
-            }
-            fooTitleEnabled = false;
+        private bool _fooTitleEnabled = true;
+
+        public void EnableFooTitle()
+        {
+            if (!initDone || (_fooTitleEnabled && Display.Visible))
+                return;
+
+            _fooTitleEnabled = true;
+            Display.Show();
+            RequestRedraw(true);
         }
 
-        public void EnableFooTitle() {
-            fooTitleEnabled = true;
-            if (initDone) {
-                Display.Show();
-                RequestRedraw(true);
-            }
-        }
+        public void DisableFooTitle()
+        {
+            if (!initDone || !_fooTitleEnabled && !Display.Visible)
+                return;
 
+            Display.Hide();
+            _fooTitleEnabled = false;
+        }
+        
         public void StartDisplayAnimation(AnimationManager.Animation animationName, AnimationManager.OnAnimationStopDelegate onStopCallback = null)
         {
             if (initDone && Display.Visible)
@@ -215,39 +190,14 @@ namespace fooTitle {
             }
         }
 
-        public void ToggleEnabled() {
-            if (ShowWhen.Value == ShowWhenEnum.Always)
-                ShowWhen.Value = ShowWhenEnum.Never;
-            else
-                ShowWhen.Value = ShowWhenEnum.Always;
-        }
-
-        public void PopupPeek()
+        public void Hotkey_PopupToggle()
         {
-            showControl.PopupPeek();
+            showControl.TogglePopup();
         }
 
-        /// <summary>
-        /// Checks if foobar is minimized or active and shows/hides display according to it
-        /// </summary>
-        private void UpdateFooTitleWhenMinimized() {
-            if (ShowWhen.Value != ShowWhenEnum.WhenMinimized)
-                return;
-
-            //CConsole.Write(String.Format("foobar activated {0}", CManagedWrapper.getInstance().IsFoobarActivated()));
-
-            if (CManagedWrapper.getInstance().IsFoobarActivated()) {
-                DisableFooTitle();
-            } else {
-                if (showControl.IsFooTitleNeeded())
-                {
-                    EnableFooTitle();
-                }
-                else
-                {
-                    DisableFooTitle();
-                }
-            }
+        public void Hotkey_PopupPeek()
+        {
+            showControl.TriggerPopup();
         }
 
         private readonly ConfInt positionX = new ConfInt("display/positionX", 0);
@@ -279,7 +229,7 @@ namespace fooTitle {
             return instance;
         }
 
-        private void TimerUpdate(object sender, System.EventArgs e)
+        private void _redrawTimer_Tick(object sender, System.EventArgs e)
         {
             if (_needToRedraw )
             {
@@ -301,8 +251,7 @@ namespace fooTitle {
 
         public void DrawForm()
         {
-            UpdateFooTitleWhenMinimized();
-            if (fooTitleEnabled && CurrentSkin != null)
+            if (_fooTitleEnabled && CurrentSkin != null)
             {
                 // need to update all values that are calculated from formatting strings
                 //CurrentSkin.UpdateGeometry(CurrentSkin.ClientRect);
@@ -514,8 +463,7 @@ namespace fooTitle {
 
             // start a timer updating the display
             _redrawTimer = new System.Windows.Forms.Timer {Interval = 1000/_updateInterval.Value };
-            _redrawTimer.Tick += TimerUpdate;
-            _redrawTimer.Enabled = true;
+            _redrawTimer.Tick += _redrawTimer_Tick;            
 
             // create layer factory
             LayerFactory = new LayerFactory();
@@ -532,14 +480,10 @@ namespace fooTitle {
             ttd = new ToolTipDisplay();
 
             // register response events on some variables
-            ShowWhen.OnChanged += ShowWhen_OnChanged;
             _updateInterval.OnChanged += UpdateInterval_OnChanged;
             SkinPath.OnChanged += SkinPath_OnChanged;
             positionX.OnChanged += positionX_OnChanged;
             positionY.OnChanged += positionY_OnChanged;
-
-            if (ShowWhen.Value == ShowWhenEnum.Never)
-                DisableFooTitle();
 
             // init reshower
             repeatedShowing = new RepeatedShowing();

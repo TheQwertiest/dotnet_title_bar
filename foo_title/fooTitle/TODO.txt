@@ -1,8 +1,6 @@
-- take album art from foobar if possible
 - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
 - buttons fading in/out when mousehovered
 - maybe create the effect of reflecting glass ;)
-- extendable panels :)
 - pixel accurate button hit testing
 - click through - could be made .... and buttons wouldn't be click through..
 - vizualizace

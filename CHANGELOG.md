@@ -1,6 +1,12 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Added foo_title to Preferences -> Components menu.
+
+### Fixed
+- Fixed bug: enable when minimized was not working at all.
+- Fixed inconsistent fade-in/fade-out animations (hopefully for the last time).
 
 ## [1.0.1] - 2017-09-14
 ### Added
