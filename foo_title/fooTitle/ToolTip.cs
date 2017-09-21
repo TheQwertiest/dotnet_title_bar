@@ -37,11 +37,11 @@ namespace fooTitle
 
             _curTopToolTipLayer = GetTopToolTipLayer(_parentLayer);
 
-            if (!Main.GetInstance().ttd.Visible || _tooltipLayer != _curTopToolTipLayer)
+            if (!Main.GetInstance().Ttd.Visible || _tooltipLayer != _curTopToolTipLayer)
             {
                 Point mouse = _display.PointToScreen(new Point(e.X, e.Y));
-                Main.GetInstance().ttd.Left = mouse.X;
-                Main.GetInstance().ttd.Top = mouse.Y + 18;
+                Main.GetInstance().Ttd.Left = mouse.X;
+                Main.GetInstance().Ttd.Top = mouse.Y + 18;
             }
 
             if (_curTopToolTipLayer != null)
@@ -90,9 +90,9 @@ namespace fooTitle
         {
             lock (_tooltipLock)
             {
-                Main.GetInstance().ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
-                Main.GetInstance().ttd.SetWindowsPos(Win32.WindowPosition.Topmost);
-                Main.GetInstance().ttd.Show();
+                Main.GetInstance().Ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
+                Main.GetInstance().Ttd.SetWindowsPos(Win32.WindowPosition.Topmost);
+                Main.GetInstance().Ttd.Show();
             }
 
             _toolTipTimer.Stop();
@@ -113,7 +113,7 @@ namespace fooTitle
                 {
                     _tooltipLayer = caller;
                     _tooltipText = toolTipText;
-                    Main.GetInstance().ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
+                    Main.GetInstance().Ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace fooTitle
                     return;
 
                 _tooltipText = toolTipText;
-                Main.GetInstance().ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
+                Main.GetInstance().Ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
             }
         }
 
@@ -145,7 +145,7 @@ namespace fooTitle
 
                 _wasShowCalled = false;
                 _toolTipTimer.Stop();
-                Main.GetInstance().ttd.Hide();
+                Main.GetInstance().Ttd.Hide();
                 _tooltipText = null;
                 _tooltipLayer = null;
             }

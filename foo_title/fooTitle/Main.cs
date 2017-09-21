@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using fooManagedWrapper;
 using fooTitle.Layers;
@@ -43,20 +44,36 @@ namespace fooTitle {
         private bool initDone = false;
 
         private static readonly ConfString myDataDir = new ConfString("base/dataDir", "foo_title\\");
-
         /// <summary>
         /// Returns the foo_title data directory located in the foobar2000 user directory (documents and settings)
         /// </summary>
         public static string UserDataDir => Path.Combine(CManagedWrapper.getInstance().GetProfilePath(), myDataDir.Value);
 
         /// <summary>
-        /// How often the display should be redrawn
+        /// The name of the currently used skin. Can be changed
+        /// </summary>
+        private readonly ConfString _skinPath = new ConfString("base/skinName", null);
+        public string SkinPath
+        {
+            set => _skinPath.ForceUpdate(value);
+            get => _skinPath.Value;
+        }
+
+        private readonly ConfInt _positionX = new ConfInt("display/positionX", 0);
+        private readonly ConfInt _positionY = new ConfInt("display/positionY", 0);
+        private readonly ConfBool _edgeSnap = new ConfBool("display/edgeSnap", true);
+        public bool EdgeSnapEnabled => _edgeSnap.Value;
+
+        private readonly ConfEnum<EnableDragging> _draggingEnabled = new ConfEnum<EnableDragging>("display/enableDragging", EnableDragging.Always);
+        private readonly ConfInt _artLoadEvery = new ConfInt("display/artLoadEvery", 10, 1, int.MaxValue);
+        private readonly ConfInt _artLoadMaxTimes = new ConfInt("display/artLoadMaxTimes", 2, -1, int.MaxValue);
+        public int ArtReloadFreq => _artLoadEvery.Value;
+        public int ArtReloadMax => _artLoadMaxTimes.Value;
+
+        /// <summary>
+        /// How often the display should be redrawn (in FPS)
         /// </summary>
         private readonly ConfInt _updateInterval = new ConfInt("display/refreshRate", 30, 1, 250);
-        protected void UpdateInterval_OnChanged(string name) {
-            if (initDone)
-                _redrawTimer.Interval = 1000/_updateInterval.Value;
-        }
 
         /// <summary>
         /// List of layers, that need continuous redrawing (e.g. animation, scrolling text)
@@ -68,11 +85,9 @@ namespace fooTitle {
         public void RequestRedraw(bool force = false)
         {
             if (Display == null || !Display.Visible)
-            {
                 return;
-            }
 
-            if (force )
+            if (force)
             {
                 Display.Invalidate();
             }
@@ -82,25 +97,36 @@ namespace fooTitle {
             }
         }
 
-        /// <summary>
-        /// The name of the currently used skin. Can be changed
-        /// </summary>
-        public ConfString SkinPath = new ConfString("base/skinName", null);
-
         protected void SkinPath_OnChanged(string name) {
             if (initDone) {
                 try {
-                    LoadSkin(SkinPath.Value);
+                    LoadSkin(SkinPath);
                     // Changing to skin with different anchor type 
                     // may cause window to go beyond screen borders
                     Display.ReadjustPosition();
                     SavePosition();
                 } catch (Exception e) {
                     CurrentSkin = null;
-                    System.Windows.Forms.MessageBox.Show($"foo_title - There was an error loading skin { SkinPath.Value}:\n {e.Message} \n {e}", "foo_title");
+                    System.Windows.Forms.MessageBox.Show($"foo_title - There was an error loading skin {SkinPath}:\n {e.Message} \n {e}", "foo_title");
                 }
             }
         }
+
+        protected void UpdateInterval_OnChanged(string name)
+        {
+            if (initDone)
+                _redrawTimer.Interval = 1000 / _updateInterval.Value;
+        }
+
+        public void positionX_OnChanged(string name)
+        {
+            Display.SetAnchorPosition(_positionX.Value, _positionY.Value);
+        }
+        public void positionY_OnChanged(string name)
+        {
+            Display.SetAnchorPosition(_positionX.Value, _positionY.Value);
+        }
+
 
         /// <summary>
         /// Provides access to the current skin. May be null.
@@ -123,7 +149,7 @@ namespace fooTitle {
         /// </summary>
         public Display Display {
             get {
-                if ((_display != null) && _display.IsDisposed) {
+                if (_display != null && _display.IsDisposed) {
                     _redrawTimer.Stop();
                     UnloadSkin();
                     _display = null;
@@ -133,18 +159,12 @@ namespace fooTitle {
             }
         }
 
-        public ToolTipDisplay ttd;
+        public ToolTipDisplay Ttd;
 
-        /// <summary>
-        /// Automatically handles reshowing foo_title if it's supposed to be always on top.
-        /// </summary>
-        protected RepeatedShowing repeatedShowing;
-
-        private readonly ConfEnum<EnableDragging> DraggingEnabled = new ConfEnum<EnableDragging>("display/enableDragging", EnableDragging.Always);
         private bool _isMouseOnDragLayer = true;
         public bool CanDragDisplay {
             get {
-                switch (DraggingEnabled.Value) {
+                switch (_draggingEnabled.Value) {
                     case EnableDragging.Always:
                         return _isMouseOnDragLayer;
                     case EnableDragging.WhenPropertiesOpen:
@@ -161,25 +181,21 @@ namespace fooTitle {
             }
         }
 
-        private bool _fooTitleEnabled = true;
-
         public void EnableFooTitle()
         {
-            if (!initDone || (_fooTitleEnabled && Display.Visible))
+            if (!initDone || Display.Visible)
                 return;
 
-            _fooTitleEnabled = true;
             Display.Show();
             RequestRedraw(true);
         }
 
         public void DisableFooTitle()
         {
-            if (!initDone || !_fooTitleEnabled && !Display.Visible)
+            if (!initDone || !Display.Visible)
                 return;
 
             Display.Hide();
-            _fooTitleEnabled = false;
         }
         
         public void StartDisplayAnimation(AnimationManager.Animation animationName, AnimationManager.OnAnimationStopDelegate onStopCallback = null)
@@ -199,37 +215,23 @@ namespace fooTitle {
         {
             showControl.TriggerPopup();
         }
-
-        private readonly ConfInt positionX = new ConfInt("display/positionX", 0);
-        private readonly ConfInt positionY = new ConfInt("display/positionY", 0);
-        public void positionX_OnChanged(string name) {
-            Display.SetAnchorPosition(positionX.Value, positionY.Value);
-        }
-        public void positionY_OnChanged(string name) {
-            Display.SetAnchorPosition(positionX.Value, positionY.Value);
-        }
-
-        private readonly ConfBool edgeSnap = new ConfBool("display/edgeSnap", true);
-        public bool edgeSnapEnabled => edgeSnap.Value;
-
-        private readonly ConfInt artLoadEvery = new ConfInt("display/artLoadEvery", 10, 1, int.MaxValue);
-        private readonly ConfInt artLoadMaxTimes = new ConfInt("display/artLoadMaxTimes", 2, -1, int.MaxValue);
-        public int ArtReloadFreq => artLoadEvery.Value;
-
-        public int ArtReloadMax => artLoadMaxTimes.Value;
-
+        
         private System.Windows.Forms.Timer _redrawTimer;
 
-        private CMetaDBHandle lastSong;
-        private Properties propsForm;
+        private CMetaDBHandle _lastSong;
+        private Properties _propsForm;
+        /// <summary>
+        /// Automatically handles reshowing foo_title if it's supposed to be always on top.
+        /// </summary>
+        private RepeatedShowing _repeatedShowing;
 
         // singleton
-        private static Main instance;
+        private static Main _instance;
         public static Main GetInstance() {
-            return instance;
+            return _instance;
         }
 
-        private void _redrawTimer_Tick(object sender, System.EventArgs e)
+        private void _redrawTimer_Tick(object sender, EventArgs e)
         {
             if (_needToRedraw )
             {
@@ -238,20 +240,16 @@ namespace fooTitle {
             }
             else if (_redrawRequesters.Count > 0)
             {
-                foreach (var i in _redrawRequesters)
+                if (_redrawRequesters.Any(i => i.IsRedrawNeeded()))
                 {
-                    if (i.IsRedrawNeeded())
-                    {
-                        Display.Invalidate();
-                        break;
-                    }
+                    Display.Invalidate();
                 }
             }
         }
 
         public void DrawForm()
         {
-            if (_fooTitleEnabled && CurrentSkin != null)
+            if (Display != null && Display.Visible && CurrentSkin != null)
             {
                 // need to update all values that are calculated from formatting strings
                 //CurrentSkin.UpdateGeometry(CurrentSkin.ClientRect);
@@ -281,7 +279,7 @@ namespace fooTitle {
         /// When the Display window is closed for some reason and we want to
         /// show it again, it must be re-created and reinitialized.
         /// </summary>
-        private void reinitDisplay() {
+        private void ReinitDisplay() {
             // initialize the form displaying the images
             _display = new Display(300, 22);
             _display.Closing -= myDisplay_Closing;
@@ -309,19 +307,13 @@ namespace fooTitle {
                 UnloadSkin();
 
                 if (this.Display == null)
-                {
-                    reinitDisplay();
-                }
+                    ReinitDisplay();
 
                 if (path == null)
-                {
                     path = Path.Combine(UserDataDir, "white");
-                }
 
                 if (!Directory.Exists(path))
-                {
                     return;
-                }
 
                 System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 
@@ -331,8 +323,8 @@ namespace fooTitle {
                 RestorePosition();
 
                 // need to tell it about the currently playing song
-                if (lastSong != null)
-                    CurrentSkin.OnPlaybackNewTrack(lastSong);
+                if (_lastSong != null)
+                    CurrentSkin.OnPlaybackNewTrack(_lastSong);
                 else
                     CurrentSkin.OnPlaybackStop(IPlayControl.StopReason.stop_reason_user);
 
@@ -345,7 +337,7 @@ namespace fooTitle {
                 CurrentSkin?.Free();
                 CurrentSkin = null;
                 System.Windows.Forms.MessageBox.Show(
-                    $"foo_title - There was an error loading skin {path}:\n {e.Message} \n {e.ToString()}"
+                    $"foo_title - There was an error loading skin {path}:\n {e.Message} \n {e}"
                     , "foo_title");
             }
         }
@@ -368,10 +360,10 @@ namespace fooTitle {
         public void Create() {
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 
-            instance = this;
+            _instance = this;
 
             // create the property sheet form
-            propsForm = new Properties(this);
+            _propsForm = new Properties(this);
 
             // create the services for testing
             TestServicesInstance = new Tests.TestServices();
@@ -392,16 +384,16 @@ namespace fooTitle {
 
         public void SavePosition() {
             Win32.Point anchorPos = Display.GetAnchorPosition();
-            positionX.Value = anchorPos.x;
-            positionY.Value = anchorPos.y;
+            _positionX.Value = anchorPos.x;
+            _positionY.Value = anchorPos.y;
 
-            if (DraggingEnabled.Value == EnableDragging.Always && !Properties.IsOpen) {
+            if (_draggingEnabled.Value == EnableDragging.Always && !Properties.IsOpen) {
                 ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
             }
         }
 
         public void RestorePosition() {
-            Display.SetAnchorPosition(positionX.Value, positionY.Value);            
+            Display.SetAnchorPosition(_positionX.Value, _positionY.Value);            
         }
 
         private void CreateDefaultDir()
@@ -467,26 +459,26 @@ namespace fooTitle {
 
             // create layer factory
             LayerFactory = new LayerFactory();
-            LayerFactory.SearchAssembly(System.Reflection.Assembly.GetExecutingAssembly());
+            LayerFactory.SearchAssembly(Assembly.GetExecutingAssembly());
 
             // create geometry factory
             GeometryFactory = new GeometryFactory();
-            GeometryFactory.SearchAssembly(System.Reflection.Assembly.GetExecutingAssembly());
+            GeometryFactory.SearchAssembly(Assembly.GetExecutingAssembly());
 
             // initialize the display and skin
-            reinitDisplay();
-            LoadSkin(SkinPath.Value);
+            ReinitDisplay();
+            LoadSkin(SkinPath);
 
-            ttd = new ToolTipDisplay();
+            Ttd = new ToolTipDisplay();
 
             // register response events on some variables
             _updateInterval.OnChanged += UpdateInterval_OnChanged;
-            SkinPath.OnChanged += SkinPath_OnChanged;
-            positionX.OnChanged += positionX_OnChanged;
-            positionY.OnChanged += positionY_OnChanged;
+            _skinPath.OnChanged += SkinPath_OnChanged;
+            _positionX.OnChanged += positionX_OnChanged;
+            _positionY.OnChanged += positionY_OnChanged;
 
             // init reshower
-            repeatedShowing = new RepeatedShowing();
+            _repeatedShowing = new RepeatedShowing();
 
             initDone = true;
         }
@@ -496,13 +488,13 @@ namespace fooTitle {
         public void OnQuit() {
             OnQuitEvent?.Invoke();
             Display?.Hide();
-            ttd?.Hide();
+            Ttd?.Hide();
         }
 
         public event OnPlaybackNewTrackDelegate OnPlaybackNewTrackEvent;
 
-        public void OnPlaybackNewTrack(fooManagedWrapper.CMetaDBHandle song) {
-            lastSong = song;
+        public void OnPlaybackNewTrack(CMetaDBHandle song) {
+            _lastSong = song;
             SendEvent(OnPlaybackNewTrackEvent, song);
         }
 
@@ -516,18 +508,18 @@ namespace fooTitle {
         public event OnPlaybackPauseDelegate OnPlaybackPauseEvent;
         public void OnPlaybackStop(IPlayControl.StopReason reason) {
             if (reason != IPlayControl.StopReason.stop_reason_starting_another)
-                lastSong = null;
+                _lastSong = null;
             SendEvent(OnPlaybackStopEvent, reason);
         }
 
         protected void SendEvent(object _event, params object[] p) {
             try {
                 if (_event != null) {
-                    System.Delegate d = (System.Delegate)_event;
+                    Delegate d = (Delegate)_event;
                     d.DynamicInvoke(p);
                 }
             } catch (Exception e) {
-                fooManagedWrapper.CConsole.Error(e.ToString());
+                CConsole.Error(e.ToString());
             }
         }
 

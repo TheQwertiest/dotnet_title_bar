@@ -188,8 +188,8 @@ namespace fooTitle.Config {
             def = _def;
             val = def;
 
-            min = Int32.MinValue;
-            max = Int32.MaxValue;
+            min = int.MinValue;
+            max = int.MaxValue;
 
             init();
         }
@@ -295,12 +295,12 @@ namespace fooTitle.Config {
     }
 
     public class ConfEnum<T> : ConfInt where T : IConvertible {
-        public ConfEnum(string _name, T _def) : base(_name, System.Convert.ToInt32(_def)) {
+        public ConfEnum(string _name, T _def) : base(_name, Convert.ToInt32(_def)) {
             min = 0;
         }
 
         public new T Value {
-            set => base.Value = System.Convert.ToInt32(value);
+            set => base.Value = Convert.ToInt32(value);
             get => (T)(object)val;
         }
     }

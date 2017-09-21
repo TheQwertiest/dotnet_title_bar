@@ -29,10 +29,10 @@ namespace fooTitle {
         public static Dictionary<Guid, CMainMenuGroup> GroupsByGuid;
 
         static MainMenuUtils() {
-            initGroupsByGuid();
+            InitGroupsByGuid();
         }
 
-        private static void initGroupsByGuid() {
+        private static void InitGroupsByGuid() {
             GroupsByGuid = new Dictionary<Guid, CMainMenuGroup>();
 
             foreach (CMainMenuGroup group in new CMainMenuGroupEnumerator()) {
@@ -44,8 +44,7 @@ namespace fooTitle {
         /// Checks that <paramref name="cmds"/> has <paramref name="parts"/> as its
         /// parents.
         /// </summary>
-        /// <param name="parts">Parsed path. The last item is skipped as its the command's name.</param>
-        private static bool checkCommandsParents(CMainMenuCommands cmds, string[] parts) {
+        private static bool CheckCommandsParents(CMainMenuCommands cmds, string[] parts) {
             try {
                 int currentPart = parts.Length - 2;
                 CMainMenuGroup currentGroup = GroupsByGuid[cmds.Parent];
@@ -85,16 +84,18 @@ namespace fooTitle {
         /// <param name="commands">If found, returns the commands containing the command.</param>
         /// <param name="index">Index of found command in commands.</param>
         /// <returns>True if the command was found, false if it was not found.</returns>
-        /// <exception cref="InvalidArgumentException">Thrown when the path has invalid format.</exception>
+        /// <exception>Thrown when the path has invalid format.
+        ///     <cref>InvalidArgumentException</cref>
+        /// </exception>
         public static bool FindCommandByPath(string path, out CMainMenuCommands commands, out uint index) {
             string[] parts = path.Split('/');
             string commandName = parts[parts.Length - 1];
 
-            // find all occurences of the command and then check it's parents to make sure it's the
+            // find all occurrences of the command and then check it's parents to make sure it's the
             // one we need
             foreach (CMainMenuCommands cmds in new CMainMenuCommandsEnumerator()) {
                 for (uint i = 0; i < cmds.CommandCount; i++) {
-                    if (cmds.GetName(i) == commandName && checkCommandsParents(cmds, parts)) {
+                    if (cmds.GetName(i) == commandName && CheckCommandsParents(cmds, parts)) {
                         commands = cmds;
                         index = i;
                         return true;

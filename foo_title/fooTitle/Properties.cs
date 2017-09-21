@@ -144,7 +144,7 @@ namespace fooTitle {
             _main = main;
             InitializeComponent();
 
-            showWhenWrapper = new RadioGroupWrapper("display/showWhen", this);
+            showWhenWrapper = new RadioGroupWrapper("showControl/enableWhen", this);
             showWhenWrapper.AddRadioButton(alwaysRadio);
             showWhenWrapper.AddRadioButton(minimizedRadio);
             showWhenWrapper.AddRadioButton(neverRadio);
@@ -186,7 +186,7 @@ namespace fooTitle {
                     if (skinInfo?.Name != null)
                     {
                         var current = new SkinListEntry(path, skinInfo.Name, skinInfo.Author);
-                        if (path == _main.SkinPath.Value)
+                        if (path == _main.SkinPath)
                         {
                             current.Selected = true;
                             current.EnsureVisible();
@@ -1369,7 +1369,7 @@ namespace fooTitle {
                 return;
             }
 
-            _main.SkinPath.ForceUpdate(((SkinListEntry)skinsList.SelectedItems[0]).Path);
+            _main.SkinPath = ((SkinListEntry)skinsList.SelectedItems[0]).Path;
             OnChange(); // If the control is not wrapped in a ControlWrapper we need to manually call OnChange
         }
 
