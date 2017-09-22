@@ -1,11 +1,13 @@
 # Changelog
 
 ## [Unreleased]
+
+## [1.0.2] - 2017-09-22
 ### Added
 - Added foo_title to Preferences -> Components menu.
 
 ### Fixed
-- Fixed bug: enable when minimized was not working at all.
+- Fixed bug: 'enable when minimized' was not working at all.
 - Fixed inconsistent fade-in/fade-out animations (hopefully for the last time).
 
 ## [1.0.1] - 2017-09-14
@@ -105,7 +107,8 @@
 ## Prior releases
 - See https://github.com/lepkoqq/foo_title/releases
 
-[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/theqwertiest/foo_title/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/theqwertiest/foo_title/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/theqwertiest/foo_title/compare/v0.9.5...v1.0.0
 [0.9.5]: https://github.com/theqwertiest/foo_title/compare/v0.9.4a...v0.9.5
