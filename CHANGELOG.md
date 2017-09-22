@@ -6,6 +6,9 @@
 ### Added
 - Added foo_title to Preferences -> Components menu.
 
+### Changed 
+- Updated flourish skin ([git directory](https://github.com/TheQwertiest/foo_title/tree/master/foo_title/skins/fixed_user_skins/flourish2)).
+
 ### Fixed
 - Fixed bug: 'enable when minimized' was not working at all.
 - Fixed inconsistent fade-in/fade-out animations (hopefully for the last time).
