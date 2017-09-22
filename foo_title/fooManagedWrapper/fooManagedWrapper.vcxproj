@@ -68,7 +68,7 @@
       <DisableSpecificWarnings>4793;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\..\foobar2000\shared\shared.lib;ole32.lib;User32.lib;shlwapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\..\foobar2000-sdk\shared\shared.lib;ole32.lib;User32.lib;shlwapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
@@ -91,7 +91,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\..\foobar2000\shared\shared.lib;ole32.lib;User32.lib;shlwapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\..\foobar2000-sdk\shared\shared.lib;ole32.lib;User32.lib;shlwapi.lib</AdditionalDependencies>
       <EntryPointSymbol>
       </EntryPointSymbol>
       <TargetMachine>MachineX86</TargetMachine>
@@ -165,13 +165,11 @@
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\foobar2000\SDK\foobar2000_SDK.vcxproj">
+    <ProjectReference Include="..\..\foobar2000-sdk\SDK\foobar2000_SDK.vcxproj">
       <Project>{e8091321-d79d-4575-86ef-064ea1a4a20d}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\pfc\pfc.vcxproj">
       <Project>{ebfffb4e-261d-44d3-b89c-957b31a0bf9c}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

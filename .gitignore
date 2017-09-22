@@ -1,5 +1,7 @@
 Debug/
 Release/
+Debug_crtdll/
+Release_crtdll/
 .vs/
 ipch/
 

@@ -28,8 +28,8 @@
 #include <crtdbg.h>
 
 #pragma unmanaged
-#include "..\..\foobar2000\sdk\foobar2000.h"
-#include "..\..\foobar2000\SDK\component.h"
+#include "..\..\foobar2000-sdk\sdk\foobar2000.h"
+#include "..\..\foobar2000-sdk\sdk\component.h"
 #include <vector>
 #pragma managed
 
