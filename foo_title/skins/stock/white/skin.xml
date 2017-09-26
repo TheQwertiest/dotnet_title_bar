@@ -16,22 +16,13 @@
             <image position="right" src="right_back.png" />
         </contents>
 
-        <layer name="logo" type="animation">
+        <layer name="logo" type="absolute-images">
             <geometry type="absolute">
                 <size x="57" y="22"/>
                 <position x="0" y="0" align="right" />
             </geometry>
             <contents>
-                <frame src="logoa1.png" />
-                <frame src="logoa2.png" />
-                <frame src="logoa3.png" />
-                <frame src="logoa4.png" />
-                <frame src="logoa5.png" />
-                <frame src="logoa6.png" />
-                <frame src="logoa5.png" />
-                <frame src="logoa4.png" />
-                <frame src="logoa3.png" />
-                <frame src="logoa2.png" />
+                <image src="logoa.gif" />
             </contents>
         </layer>
     </layer>
@@ -46,16 +37,10 @@
         </contents>
     </layer>
 
-    <layer name="spacer" type="absolute-images">
+    <layer name="spacer" type="no-content">
         <geometry type="absolute">
             <size x="200" y="22" />
             <position x="0" y="0" align="left" />
         </geometry>
-        <contents>
-            <!-- empty -->
-        </contents>
     </layer>
-
-
-
 </skin>
