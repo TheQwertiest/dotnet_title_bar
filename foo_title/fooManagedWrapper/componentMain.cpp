@@ -32,10 +32,10 @@ FOO_MANAGED_WRAPPER_VERSION,
 "foo_managed_wrapper\n"
 ".NET component loader for foo_title\n\n"
 "Copyright( c ) 2005-2006 by Roman Plasil\n\n"
-"Updated by Miha Lepej\n"
+"Copyright( c ) 2016 by Miha Lepej\n"
 "https://github.com/LepkoQQ/foo_title \n\n"
-"Further updated by TheQwertiest\n"
-"https://github.com/TheQwertiest/foo_title "
+"Copyright( c ) 2017 by TheQwertiest\n"
+"https://github.com/TheQwertiest/foo_title"
 )
 
 namespace

@@ -424,9 +424,9 @@ namespace fooTitle {
             return "foo_title\n" +
                    "Displays a title-bar (like Winamp's WindowShade mode)\n\n" +
                    "Copyright( c ) 2005-2006 by Roman Plasil\n\n" +
-                   "Updated by Miha Lepej\n" +
+                   "Copyright( c ) 2016 by Miha Lepej\n" +
                    "https://github.com/LepkoQQ/foo_title \n\n" +
-                   "Further updated by TheQwertiest\n" +
+                   "Copyright( c ) 2017 by TheQwertiest\n" +
                    "https://github.com/TheQwertiest/foo_title";
         }
 
