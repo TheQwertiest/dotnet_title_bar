@@ -60,7 +60,7 @@ namespace fooTitle.Layers
 			images.Add(b);
 		}
 
-		protected override void drawImpl() {
+		protected override void DrawImpl() {
 		    if (_hasGif)
 		    {
 		        ImageAnimator.UpdateFrames();

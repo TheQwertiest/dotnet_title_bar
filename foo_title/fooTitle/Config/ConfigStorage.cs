@@ -18,7 +18,6 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
@@ -109,7 +108,7 @@ namespace fooTitle.Config {
         }
 
         public void WriteVal(string name, object value) {
-            XmlNode el = findElementById(name);
+            XmlNode el = FindElementById(name);
             if (el == null) {
                 el = _xmlDocument.CreateElement("entry");
                 _configRoot.AppendChild(el);
@@ -121,11 +120,11 @@ namespace fooTitle.Config {
         }
 
         public object ReadVal<T>(string name) {
-            XmlNode el = findElementById(name);
+            XmlNode el = FindElementById(name);
             if (el == null)
                 return null;
 
-            return stringToType<T>(el.InnerText);
+            return StringToType<T>(el.InnerText);
 
         }
 
@@ -144,7 +143,7 @@ namespace fooTitle.Config {
             return stringBuilder.ToString();
         }
 
-        protected object stringToType<T>(string str) {
+        protected object StringToType<T>(string str) {
             if (typeof(T) == typeof(int))
                 return int.Parse(str);
             if (typeof(T) == typeof(string)) 
@@ -154,7 +153,7 @@ namespace fooTitle.Config {
             throw new UnsupportedTypeException(typeof(T));
         }
 
-        protected XmlNode findElementById(string id) {
+        protected XmlNode FindElementById(string id) {
             foreach (XmlNode n in _configRoot.GetElementsByTagName("entry")) {
                 if (fooTitle.Extending.Element.GetAttributeValue(n, "id", "") == id) {
                     return n;

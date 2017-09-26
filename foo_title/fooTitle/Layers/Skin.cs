@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
@@ -73,15 +72,15 @@ namespace fooTitle.Layers
 
         public void Init(Display display_)
         {
-            display = display_;
+            Display = display_;
 
             // register to mouse events
-            display.MouseMove += Display_MouseMove;
-            display.MouseDown += Display_MouseDown;
-            display.MouseUp += Display_MouseUp;
-            display.MouseLeave += Display_MouseLeave;
-            display.MouseWheel += Display_MouseWheel;
-            display.MouseDoubleClick += Display_MouseDoubleClick;
+            Display.MouseMove += Display_MouseMove;
+            Display.MouseDown += Display_MouseDown;
+            Display.MouseUp += Display_MouseUp;
+            Display.MouseLeave += Display_MouseLeave;
+            Display.MouseWheel += Display_MouseWheel;
+            Display.MouseDoubleClick += Display_MouseDoubleClick;
 
             InitAnchor();
 
@@ -104,18 +103,18 @@ namespace fooTitle.Layers
             Main.GetInstance().OnPlaybackStopEvent -= OnPlaybackStop;
             Main.GetInstance().OnPlaybackPauseEvent -= OnPlaybackPause;
 
-            display.MouseMove -= Display_MouseMove;
-            display.MouseDown -= Display_MouseDown;
-            display.MouseUp -= Display_MouseUp;
-            display.MouseLeave -= Display_MouseLeave;
-            display.MouseWheel -= Display_MouseWheel;
-            display.MouseDoubleClick -= Display_MouseDoubleClick;
+            Display.MouseMove -= Display_MouseMove;
+            Display.MouseDown -= Display_MouseDown;
+            Display.MouseUp -= Display_MouseUp;
+            Display.MouseLeave -= Display_MouseLeave;
+            Display.MouseWheel -= Display_MouseWheel;
+            Display.MouseDoubleClick -= Display_MouseDoubleClick;
         }
 
-        protected override Size getMinimalSizeImpl()
+        protected override Size GetMinimalSizeImpl()
         {
             // don't ask geometry..
-            return getContentSize();
+            return GetContentSize();
         }
 
         /// <summary>
@@ -276,7 +275,7 @@ namespace fooTitle.Layers
                         break;
                 }
 
-            display.InitializeAnchor(anchorType, anchorDx, anchorDy);
+            Display.InitializeAnchor(anchorType, anchorDx, anchorDy);
         }
 
         private static bool HasToolTipLayer(Layer layer)

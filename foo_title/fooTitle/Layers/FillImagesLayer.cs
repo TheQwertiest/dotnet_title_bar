@@ -94,7 +94,7 @@ namespace fooTitle.Layers
             prepareRepeatImage();
         }
 
-		protected override void drawImpl() {
+		protected override void DrawImpl() {
 			int left = getLeftImageWidth();  // where the center image starts (rel. to layer)
 			int right = getRightImageStart(); // where the center image ends (rel. to layer)
 			if (leftImage != null) {

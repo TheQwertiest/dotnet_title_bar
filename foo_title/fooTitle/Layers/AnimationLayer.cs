@@ -58,7 +58,7 @@ namespace fooTitle.Layers
 			images.Add(b);
 		}
 
-        protected override void drawImpl() {
+        protected override void DrawImpl() {
             long now = System.DateTime.Now.Ticks;
             int deltaTime = (int)((now - lastUpdate) / 10000);
 

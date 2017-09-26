@@ -175,7 +175,7 @@ namespace fooTitle.Layers
             }
         }
 
-		protected override void drawImpl() {
+		protected override void DrawImpl() {
             Matrix oldTransform = Display.Canvas.Transform;
 
             Rectangle bounds = calcRotatedBounds();
@@ -242,7 +242,7 @@ namespace fooTitle.Layers
             }
 		}
 
-		protected override Size getMinimalSizeImpl() {
+		protected override Size GetMinimalSizeImpl() {
             return geometry.GetMinimalSize(calcRotatedBounds().Size);
 		}
 

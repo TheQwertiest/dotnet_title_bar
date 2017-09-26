@@ -146,9 +146,9 @@ namespace fooTitle.Layers {
         /// GetMinimalSize implementation
         /// </summary>
         /// <returns>the same as Layer.GetMinimialSize()</returns>
-        protected override Size getMinimalSizeImpl()
+        protected override Size GetMinimalSizeImpl()
         {
-            return geometry.GetMinimalSize(getContentSize());
+            return geometry.GetMinimalSize(GetContentSize());
         }
 
         /// <summary>

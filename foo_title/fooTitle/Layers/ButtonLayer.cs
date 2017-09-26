@@ -377,7 +377,7 @@ namespace fooTitle.Layers {
             Main.GetInstance().RequestRedraw();
         }
 
-        protected override void drawImpl() {
+        protected override void DrawImpl() {
             Bitmap toDraw;
             if (mouseDown)
                 toDraw = myDownImage;

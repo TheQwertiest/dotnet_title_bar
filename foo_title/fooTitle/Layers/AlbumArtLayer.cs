@@ -99,7 +99,7 @@ namespace fooTitle.Layers {
             LoadArtwork(song);
         }
 
-        protected override void drawImpl() {
+        protected override void DrawImpl() {
             Bitmap toDraw = prepareCachedImage();
             if (toDraw != null) {
                 Display.Canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;

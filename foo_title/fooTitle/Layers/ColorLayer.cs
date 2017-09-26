@@ -59,7 +59,7 @@ namespace fooTitle.Layers
             }
         }
 
-        protected override void drawImpl()
+        protected override void DrawImpl()
         {
             Display.Canvas.FillRectangle(new SolidBrush(_color), ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
         }

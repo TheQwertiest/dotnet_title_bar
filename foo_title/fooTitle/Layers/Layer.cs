@@ -24,7 +24,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using fooTitle.Geometries;
 using System.Collections.Generic;
-using System.Windows.Forms.VisualStyles;
 
 
 namespace fooTitle.Layers {
@@ -44,12 +43,8 @@ namespace fooTitle.Layers {
 
         public Point Position => geometry.GetPosition();
 
-        public virtual System.Drawing.Rectangle ClientRect => geometry.ClientRect;
-        protected Display display;
-        protected Display Display {
-            get => display;
-            set => display = value;
-        }
+        public virtual Rectangle ClientRect => geometry.ClientRect;
+        protected Display Display { get; set; }
 
         private bool _enabled = true;
 
@@ -155,11 +150,11 @@ namespace fooTitle.Layers {
         protected virtual void LoadLayers(XmlNode node) {
             foreach (XmlNode i in node.ChildNodes) {
                 if (i.Name == "layer")
-                    addLayer(i);
+                    AddLayer(i);
             }
         }
 
-        private void addLayer(XmlNode node) {
+        private void AddLayer(XmlNode node) {
             string type = node.Attributes.GetNamedItem("type").InnerText;
 
             Layer layer = Main.GetInstance().LayerFactory.CreateLayer(type, this.ClientRect, node);
@@ -185,7 +180,7 @@ namespace fooTitle.Layers {
             geometry.Update(parentRect);
         }
 
-        protected void drawSubLayers() {
+        protected void DrawSubLayers() {
             foreach (Layer i in layers) {
                 i.Draw();
             }
@@ -205,8 +200,8 @@ namespace fooTitle.Layers {
                 Display.Canvas.SetClip(RectangleF.Intersect(prevClipRegion, ClientRect));
             }
 
-            drawImpl();
-            drawSubLayers();
+            DrawImpl();
+            DrawSubLayers();
 
             Display.Canvas.SetClip(prevClipRegion);            
         }
@@ -214,28 +209,25 @@ namespace fooTitle.Layers {
         /// <summary>
         /// Subclasses of Layer should override this method to perform any drawing.
         /// </summary>
-        protected virtual void drawImpl() { }
+        protected virtual void DrawImpl() { }
 
         /// <summary>
         /// This function calculates the minimal width for itself and sublayers to fit into.
         /// </summary>
         /// <returns>Returns the minimal width required to fit the sublayers and self's content</returns>
-		public Size GetMinimalSize() {
-            if (!Enabled) {
-                return new Size(0, 0);
-            } else {
-                return getMinimalSizeImpl();
-            }
+		public Size GetMinimalSize()
+        {
+            return Enabled ? GetMinimalSizeImpl() : new Size(0, 0);
         }
 
-        protected virtual Size getMinimalSizeImpl() {
-            return geometry.GetMinimalSize(getContentSize());
+        protected virtual Size GetMinimalSizeImpl() {
+            return geometry.GetMinimalSize(GetContentSize());
         }
 
         /// <summary>
         /// This calculates the size of this's content. Does not take geometry into account.
         /// </summary>
-        protected Size getContentSize() {
+        protected Size GetContentSize() {
             Size minSize = new Size(0, 0);
             foreach (Layer i in layers) {
                 Size layerSize = i.GetMinimalSize();
