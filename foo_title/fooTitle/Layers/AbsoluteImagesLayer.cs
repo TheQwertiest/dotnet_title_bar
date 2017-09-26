@@ -29,7 +29,9 @@ namespace fooTitle.Layers
 	/// </summary>
     [LayerTypeAttribute("absolute-images")]
 	public class AbsoluteImagesLayer : Layer
-	{
+    {
+        private readonly bool _hasGif = false;
+
 		public AbsoluteImagesLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node)
 		{
 			// load all images
@@ -37,22 +39,64 @@ namespace fooTitle.Layers
 			XPathNodeIterator xi = (XPathNodeIterator)nav.Evaluate("contents/image");
 			
 			while (xi.MoveNext()) {
-				addImage(xi.Current);
+				AddImage(xi.Current);
 			}
+
+            foreach (Bitmap b in images)
+            {
+                if (ImageAnimator.CanAnimate(b))
+                {
+                    _hasGif = true;
+                    break;
+                }
+            }
+            if (Enabled)
+		        OnLayerEnable();
 		}
 
-		protected void addImage(XPathNavigator node) {
+		private void AddImage(XPathNavigator node) {
 			string src = node.GetAttribute("src", "");
 			Bitmap b = Main.GetInstance().CurrentSkin.GetSkinImage(src);
 			images.Add(b);
 		}
 
 		protected override void drawImpl() {
-			foreach (Bitmap b in images){ 
+		    if (_hasGif)
+		    {
+		        ImageAnimator.UpdateFrames();
+            }
+		    foreach (Bitmap b in images){ 
 				Display.Canvas.DrawImage(b, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
 			}
-
 		}
 
-	}
+        protected override void OnLayerEnable()
+        {
+            if (_hasGif)
+            {
+                foreach (Bitmap b in images)
+                {
+                    if (ImageAnimator.CanAnimate(b))
+                        ImageAnimator.Animate(b, OnFrameChanged);
+                }
+            }
+        }
+
+        protected override void OnLayerDisable()
+        {
+            if (_hasGif)
+            {
+                foreach (Bitmap b in images)
+                {
+                    if (ImageAnimator.CanAnimate(b))
+                        ImageAnimator.StopAnimate(b, OnFrameChanged);
+                }
+            }
+        }
+
+        private void OnFrameChanged(object o, EventArgs e)
+        {
+            Main.GetInstance().RequestRedraw();
+        }
+    }
 }

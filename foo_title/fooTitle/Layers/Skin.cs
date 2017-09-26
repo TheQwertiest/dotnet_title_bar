@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
@@ -170,11 +171,16 @@ namespace fooTitle.Layers
         /// </summary>
         public Bitmap GetSkinImage(string fileName)
         {
-            using (FileStream stream = new FileStream(GetSkinFilePath(fileName), FileMode.Open, FileAccess.Read))
-            {
-                Bitmap tmp = new Bitmap(stream);
-                return tmp.Clone() as Bitmap;
-            }
+            Image img = Image.FromFile(GetSkinFilePath(fileName)); 
+
+            MemoryStream mstr = new MemoryStream();
+            img.Save(mstr, img.RawFormat);
+
+            Bitmap retImg = new Bitmap(mstr);
+
+            img.Dispose();
+
+            return retImg;
         }
         public class SkinInfo
         {
