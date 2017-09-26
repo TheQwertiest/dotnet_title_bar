@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Added animated .gif support to 'absolute-images' layer.
 
 ## [1.0.2] - 2017-09-22
 ### Added
