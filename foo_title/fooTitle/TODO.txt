@@ -1,9 +1,8 @@
+- add optional persistent layer state (i.e. save 'enabled' state)
 - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
-- buttons fading in/out when mousehovered
 - maybe create the effect of reflecting glass ;)
 - pixel accurate button hit testing
 - click through - could be made .... and buttons wouldn't be click through..
-- vizualizace
 
 - profile for speed 
 - test stability
@@ -18,5 +17,3 @@ cleaning the code:
 
 bugs:
     - Preferences page has some text that is cut-off, when resolution scaling is above 100%.
-    - BUG: some crashes http://www.hydrogenaudio.org/forums/index.php?showtopic=55428&hl=foo_title
-    - BUG: Album art layer does not work for files played from zip
