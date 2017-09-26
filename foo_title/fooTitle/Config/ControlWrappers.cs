@@ -27,41 +27,41 @@ using fooManagedWrapper;
 namespace fooTitle.Config {
 
     public abstract class ControlWrapper : IConfigValueVisitor {
-        protected string valueName;
         protected ConfValue value;
-        protected CManagedPrefPage_v3 parent;
+        private readonly string _valueName;
+        private readonly CManagedPrefPage_v3 _parent;
 
-        protected ControlWrapper(string _valueName, CManagedPrefPage_v3 _parent) {
-            valueName = _valueName;
-            parent = _parent;
+        protected ControlWrapper(string valueName, CManagedPrefPage_v3 parent) {
+            _valueName = valueName;
+            _parent = parent;
 
-            associateValue();
+            AssociateValue();
             //ConfValuesManager.GetInstance().OnValueChanged += new ConfValuesManager.ValueChangedDelegate(onValueChanged);
             if (value == null)
-                ConfValuesManager.GetInstance().OnValueCreated += new ConfValuesManager.ValueChangedDelegate(onValueCreated);
+                ConfValuesManager.GetInstance().OnValueCreated += value_OnCreated;
         }
 
-        protected void associateValue() {
+        private void AssociateValue() {
             if (value != null)
                 return;
 
-            value = ConfValuesManager.GetInstance().GetValueByName(valueName);
+            value = ConfValuesManager.GetInstance().GetValueByName(_valueName);
 
             if (value != null) {
-                value.OnChanged += new ConfValuesManager.ValueChangedDelegate(onValueChanged);
+                value.OnChanged += value_OnChanged;
             }
         }
 
-        protected virtual void onValueChanged(string name) {
+        private void value_OnChanged(string name) {
             value.ReadVisit(this);
-            parent.OnChange();
+            _parent.OnChange();
         }
 
-        protected void onValueCreated(string name) {
-            if (name != valueName)
+        private void value_OnCreated(string name) {
+            if (name != _valueName)
                 return;
 
-            associateValue();
+            AssociateValue();
             value.ReadVisit(this);
         }
 
@@ -75,14 +75,14 @@ namespace fooTitle.Config {
         #endregion
     }
 
-    public class TextBoxWrapper : ControlWrapper, IConfigValueVisitor {
-        protected TextBox textBox;
+    public class TextBoxWrapper : ControlWrapper {
+        private readonly TextBox _textBox;
 
-        public TextBoxWrapper(TextBox _textBox, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
-            textBox = _textBox;
+        public TextBoxWrapper(TextBox textBox, string valueName, CManagedPrefPage_v3 parent) : base(valueName, parent) {
+            _textBox = textBox;
 
             // register onChange event
-            textBox.TextChanged += new EventHandler(textBox_TextChanged);
+            _textBox.TextChanged += textBox_TextChanged;
 
             value?.ReadVisit(this);
         }
@@ -91,7 +91,7 @@ namespace fooTitle.Config {
             if (value == null)
                 return;
 
-            if (textBox.Text.Length == 0)
+            if (_textBox.Text.Length == 0)
                 return;
 
             value.WriteVisit(this);
@@ -100,30 +100,30 @@ namespace fooTitle.Config {
         #region IConfigValueVisitor Members
 
         public override void ReadInt(ConfInt val) {
-            textBox.Text = val.Value.ToString();
+            _textBox.Text = val.Value.ToString();
         }
 
         public override void ReadString(ConfString val) {
-            textBox.Text = val.Value;
+            _textBox.Text = val.Value;
         }
 
         public override void WriteInt(ConfInt val) {
-            val.Value = Int32.Parse(textBox.Text);
+            val.Value = Int32.Parse(_textBox.Text);
         }
 
         public override void WriteString(ConfString val) {
-            val.Value = textBox.Text;
+            val.Value = _textBox.Text;
         }
 
         #endregion
     }
 
-    public class TrackBarWrapper : ControlWrapper, IConfigValueVisitor {
-        protected TrackBar trackBar;
+    public class TrackBarWrapper : ControlWrapper {
+        private readonly TrackBar _trackBar;
 
-        public TrackBarWrapper(TrackBar _trackBar, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
-            trackBar = _trackBar;
-            trackBar.ValueChanged += new EventHandler(trackBar_ValueChanged);
+        public TrackBarWrapper(TrackBar trackBar, string valueName, CManagedPrefPage_v3 parent) : base(valueName, parent) {
+            _trackBar = trackBar;
+            _trackBar.ValueChanged += trackBar_ValueChanged;
 
             value?.ReadVisit(this);
         }
@@ -137,38 +137,38 @@ namespace fooTitle.Config {
         /// This method sets tick frequency and large/small change values of the trackbar
         /// so that there is a consistent look and feel for any min/max range.
         /// </summary>
-        protected void adjustTickFrequency() {
-            const int TICK_COUNT = 20;
-            const int LARGE_CHANGE_COUNT = 10;
-            const int SMALL_CHANGE_COUNT = 100;
-            trackBar.TickFrequency = (trackBar.Maximum - trackBar.Minimum) / TICK_COUNT;
-            trackBar.LargeChange = (trackBar.Maximum - trackBar.Minimum) / LARGE_CHANGE_COUNT;
-            trackBar.SmallChange = (trackBar.Maximum - trackBar.Minimum) / SMALL_CHANGE_COUNT;
+        private void AdjustTickFrequency() {
+            const int tickCount = 20;
+            const int largeChangeCount = 10;
+            const int smallChangeCount = 100;
+            _trackBar.TickFrequency = (_trackBar.Maximum - _trackBar.Minimum) / tickCount;
+            _trackBar.LargeChange = (_trackBar.Maximum - _trackBar.Minimum) / largeChangeCount;
+            _trackBar.SmallChange = (_trackBar.Maximum - _trackBar.Minimum) / smallChangeCount;
         }
 
         #region IConfigValueVisitor Members
 
         public override void ReadInt(ConfInt val) {
-            trackBar.Minimum = val.Min;
-            trackBar.Maximum = val.Max;
-            trackBar.Value = val.Value;
+            _trackBar.Minimum = val.Min;
+            _trackBar.Maximum = val.Max;
+            _trackBar.Value = val.Value;
 
-            adjustTickFrequency();
+            AdjustTickFrequency();
         }
 
         public override void WriteInt(ConfInt val) {
-            val.Value = trackBar.Value;
+            val.Value = _trackBar.Value;
         }
 
         #endregion
     }
 
-    public class NumericUpDownWrapper : ControlWrapper, IConfigValueVisitor {
-        protected NumericUpDown numericUpDown;
+    public class NumericUpDownWrapper : ControlWrapper {
+        private readonly NumericUpDown _numericUpDown;
 
-        public NumericUpDownWrapper(NumericUpDown _numericUpDown, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
-            numericUpDown = _numericUpDown;
-            numericUpDown.ValueChanged += new EventHandler(numericUpDown_ValueChanged);
+        public NumericUpDownWrapper(NumericUpDown numericUpDown, string valueName, CManagedPrefPage_v3 parent) : base(valueName, parent) {
+            _numericUpDown = numericUpDown;
+            _numericUpDown.ValueChanged += numericUpDown_ValueChanged;
 
             value?.ReadVisit(this);
         }
@@ -180,28 +180,28 @@ namespace fooTitle.Config {
         #region IConfigValueVisitor Members
 
         public override void ReadInt(ConfInt val) {
-            numericUpDown.Minimum = val.Min;
-            numericUpDown.Maximum = val.Max;
-            numericUpDown.Value = val.Value;
+            _numericUpDown.Minimum = val.Min;
+            _numericUpDown.Maximum = val.Max;
+            _numericUpDown.Value = val.Value;
         }
 
         public override void WriteInt(ConfInt val) {
-            val.Value = (int)numericUpDown.Value;
+            val.Value = (int)_numericUpDown.Value;
         }
 
         #endregion
     }
-
+    
     /// <summary>
     /// This class binds a group of radio buttons to an integer value. The radio buttons
     /// need to be in a group and only one of them may be checked at a time. Use the AddRadioButton
     /// method to add a radioButton to this wrapper.
     /// </summary>
     public class RadioGroupWrapper : ControlWrapper {
-        protected List<RadioButton> radioButtons = new List<RadioButton>();
-        protected int checkedIndex = 0;
+        private readonly List<RadioButton> _radioButtons = new List<RadioButton>();
+        private int _checkedIndex = 0;
 
-        public RadioGroupWrapper(string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) { }
+        public RadioGroupWrapper(string valueName, CManagedPrefPage_v3 parent) : base(valueName, parent) { }
 
         /// <summary>
         /// Adds a radiobutton to the group. The order in which radiobuttons are added matters
@@ -224,9 +224,9 @@ namespace fooTitle.Config {
         /// </code>
         /// </example>
         public void AddRadioButton(RadioButton a) {
-            radioButtons.Add(a);
+            _radioButtons.Add(a);
 
-            a.CheckedChanged += new EventHandler(onCheckedChanged);
+            a.CheckedChanged += OnCheckedChanged;
 
             // try to update the value
             if (value != null) {
@@ -238,18 +238,18 @@ namespace fooTitle.Config {
             }
         }
 
-        protected void onCheckedChanged(object sender, EventArgs e) {
+        private void OnCheckedChanged(object sender, EventArgs e) {
             // only check for checked on
             if (!((RadioButton)sender).Checked)
                 return;
 
-            checkedIndex = getCheckedIndex(sender);
+            _checkedIndex = GetCheckedIndex(sender);
             value.WriteVisit(this);
         }
 
-        protected int getCheckedIndex(object sender) {
-            for (int i = 0; i < radioButtons.Count; i++) {
-                if (radioButtons[i] == sender) {
+        private int GetCheckedIndex(object sender) {
+            for (int i = 0; i < _radioButtons.Count; i++) {
+                if (_radioButtons[i] == sender) {
                     // this one is true now
                     return i;
                 }
@@ -259,25 +259,25 @@ namespace fooTitle.Config {
         }
 
         public override void WriteInt(ConfInt val) {
-            val.Value = checkedIndex;
+            val.Value = _checkedIndex;
         }
 
         public override void ReadInt(ConfInt val) {
-            if ((val.Value >= radioButtons.Count) || (val.Value < 0))
+            if ((val.Value >= _radioButtons.Count) || (val.Value < 0))
                 throw new InvalidOperationException("The associated value is larger than the number of radiobuttons registered.");
 
-            radioButtons[val.Value].Checked = true;
+            _radioButtons[val.Value].Checked = true;
         }
     }
 
     public class CheckBoxWrapper : ControlWrapper {
-        protected CheckBox checkBox;
+        private readonly CheckBox _checkBox;
 
-        public CheckBoxWrapper(CheckBox _checkBox, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
-            checkBox = _checkBox;
+        public CheckBoxWrapper(CheckBox checkBox, string valueName, CManagedPrefPage_v3 parent) : base(valueName, parent) {
+            _checkBox = checkBox;
 
             // register onChange event
-            checkBox.CheckedChanged += new EventHandler(checkBox_CheckedChanged);
+            _checkBox.CheckedChanged += checkBox_CheckedChanged;
 
             value?.ReadVisit(this);
         }
@@ -287,19 +287,19 @@ namespace fooTitle.Config {
         }
 
         public override void ReadInt(ConfInt val) {
-            checkBox.Checked = (val.Value != 0);
+            _checkBox.Checked = (val.Value != 0);
         }
 
         public override void WriteInt(ConfInt val) {
-            val.Value = checkBox.Checked ? 1 : 0;
+            val.Value = _checkBox.Checked ? 1 : 0;
         }
     }
 
     public class LabelWrapper : ControlWrapper {
-        protected Label label;
+        private readonly Label _label;
 
-        public LabelWrapper(Label _label, string _valueName, CManagedPrefPage_v3 _parent) : base(_valueName, _parent) {
-            label = _label;
+        public LabelWrapper(Label label, string valueName, CManagedPrefPage_v3 parent) : base(valueName, parent) {
+            _label = label;
 
             value?.ReadVisit(this);
         }
@@ -307,11 +307,11 @@ namespace fooTitle.Config {
         #region IConfigValueVisitor Members
 
         public override void ReadInt(ConfInt val) {
-            label.Text = val.Value.ToString();
+            _label.Text = val.Value.ToString();
         }
 
         public override void ReadString(ConfString val) {
-            label.Text = val.Value;
+            _label.Text = val.Value;
         }
 
         public override void WriteInt(ConfInt val) { }
@@ -322,45 +322,41 @@ namespace fooTitle.Config {
     }
 
     public class AutoWrapperCreator {
-        protected CManagedPrefPage_v3 instance;
-        protected List<ControlWrapper> controlWrappers = new List<ControlWrapper>();
+        private CManagedPrefPage_v3 _instance;
+        private readonly List<ControlWrapper> _controlWrappers = new List<ControlWrapper>();
 
-        public AutoWrapperCreator() { }
-
-        public void CreateWrappers(CManagedPrefPage_v3 _instance) {
-            instance = _instance;
-            Type formType = instance.GetType();
+        public void CreateWrappers(CManagedPrefPage_v3 instance) {
+            _instance = instance;
+            Type formType = _instance.GetType();
 
             MemberInfo[] controls = formType.FindMembers(MemberTypes.Field, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance,
-                new MemberFilter(controlsMemberFilter), null);
+                ControlsMemberFilter, null);
 
             foreach (MemberInfo m in controls) {
                 FieldInfo f = (FieldInfo)m;
 
-                Control value = (Control)f.GetValue(instance);
-                if (value == null)
+                Control value = (Control)f.GetValue(_instance);
+                if (value?.Tag == null)
                     continue;
-                if (value.Tag == null)
-                    continue;
-                createWrapper(f, value, instance);
+                CreateWrapper(f, value, this._instance);
             }
         }
 
-        protected void createWrapper(FieldInfo f, Control value, CManagedPrefPage_v3 parent) {
+        private void CreateWrapper(FieldInfo f, Control value, CManagedPrefPage_v3 parent) {
             if (f.FieldType == typeof(TextBox)) {
-                controlWrappers.Add(new TextBoxWrapper((TextBox)value, (string)value.Tag, parent));
+                _controlWrappers.Add(new TextBoxWrapper((TextBox)value, (string)value.Tag, parent));
             } else if (f.FieldType == typeof(TrackBar)) {
-                controlWrappers.Add(new TrackBarWrapper((TrackBar)value, (string)value.Tag, parent));
+                _controlWrappers.Add(new TrackBarWrapper((TrackBar)value, (string)value.Tag, parent));
             } else if (f.FieldType == typeof(CheckBox)) {
-                controlWrappers.Add(new CheckBoxWrapper((CheckBox)value, (string)value.Tag, parent));
+                _controlWrappers.Add(new CheckBoxWrapper((CheckBox)value, (string)value.Tag, parent));
             } else if (f.FieldType == typeof(Label)) {
-                controlWrappers.Add(new LabelWrapper((Label)value, (string)value.Tag, parent));
+                _controlWrappers.Add(new LabelWrapper((Label)value, (string)value.Tag, parent));
             } else if (f.FieldType == typeof(NumericUpDown)) {
-                controlWrappers.Add(new NumericUpDownWrapper((NumericUpDown)value, (string)value.Tag, parent));
+                _controlWrappers.Add(new NumericUpDownWrapper((NumericUpDown)value, (string)value.Tag, parent));
             }
         }
 
-        protected bool controlsMemberFilter(MemberInfo m, object filterCriteria) {
+        private bool ControlsMemberFilter(MemberInfo m, object filterCriteria) {
             return typeof(Control).IsAssignableFrom(((FieldInfo)m).FieldType);
         }
     }

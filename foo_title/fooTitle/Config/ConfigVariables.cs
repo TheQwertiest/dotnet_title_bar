@@ -55,18 +55,16 @@ namespace fooTitle.Config {
     /// An abstract base class for all configuration values
     /// </summary>
     public abstract class ConfValue {
-        protected string name;
-
         /// <summary>
         /// Gets the name of this variable. The name is a unique string identifier.
         /// </summary>
-        public string Name => name;
+        public string Name { get; }
 
         /// <summary>
         /// Registers this value with the ConfValuesManager
         /// </summary>
-        protected ConfValue(string _name) {
-            name = _name;
+        protected ConfValue(string name) {
+            this.Name = name;
         }
 
 
@@ -74,7 +72,7 @@ namespace fooTitle.Config {
         /// Initializes the value - registers with the manager which sends events about updating. This should be
         /// called when the value is done setting up and is fully usable.
         /// </summary>
-        protected void init() {
+        protected void Init() {
             ConfValuesManager.GetInstance().AddVal(this);
             ConfValuesManager.GetInstance().FireValueChanged(Name);
         }
@@ -95,7 +93,7 @@ namespace fooTitle.Config {
         /// <summary>
         /// Helper function to fire the OnChanged event. Should be preffered over invoking the event directly
         /// </summary>
-        protected void fireOnChanged() {
+        protected void FireOnChanged() {
             OnChanged?.Invoke(Name);
         }
 
@@ -138,14 +136,14 @@ namespace fooTitle.Config {
     /// </summary>
     public class ConfInt : ConfValue {
         protected int val;
-        protected int def;
         protected int min, max;
-        protected int saved;
+        private int _saved;
+        private readonly int _def;
 
         public virtual int Value {
             set {
-                if (setValue(value))
-                    fireOnChanged();
+                if (SetValue(value))
+                    FireOnChanged();
             }
             get {
                 return val;
@@ -155,7 +153,7 @@ namespace fooTitle.Config {
         /// <summary>
         /// Sets the new value and returns true if update event should be raised.
         /// </summary>
-        private bool setValue(int value) {
+        private bool SetValue(int value) {
             if (((value > max) && (val == max)) || ((value < min) && (val == min)) || (value == val))
                 return false; // nothing new
 
@@ -170,8 +168,8 @@ namespace fooTitle.Config {
         }
 
         public void ForceUpdate(int newVal) {
-            setValue(newVal);
-            fireOnChanged();
+            SetValue(newVal);
+            FireOnChanged();
         }
 
         /// <summary>
@@ -184,36 +182,36 @@ namespace fooTitle.Config {
         /// </summary>
         public int Min => min;
 
-        public ConfInt(string _name, int _def) : base(_name) {
-            def = _def;
-            val = def;
+        public ConfInt(string name, int def) : base(name) {
+            _def = def;
+            val = _def;
 
             min = int.MinValue;
             max = int.MaxValue;
 
-            init();
+            Init();
         }
 
-        public ConfInt(string _name, int _def, int _min, int _max) : base(_name) {
-            def = _def;
-            val = def;
+        public ConfInt(string name, int def, int _min, int _max) : base(name) {
+            _def = def;
+            val = _def;
 
             min = _min;
             max = _max;
 
-            init();
+            Init();
         }
 
         public override void SaveTo(IConfigStorage to) {
-            to.WriteVal(name, val);
-            saved = val;
+            to.WriteVal(Name, val);
+            _saved = val;
         }
 
         public override void LoadFrom(IConfigStorage from) {
-            object res = from.ReadVal<int>(name);
+            object res = from.ReadVal<int>(Name);
             if (res != null) {
                 Value = (int)res;
-                saved = Value;
+                _saved = Value;
             }
         }
 
@@ -226,54 +224,54 @@ namespace fooTitle.Config {
         }
 
         public override void Reset() {
-            Value = def;
+            Value = _def;
         }
 
         public override bool HasChanged() {
-            return Value != saved;
+            return Value != _saved;
         }
     }
 
     public class ConfString : ConfValue {
-        protected string def;
-        protected string val;
-        protected string saved;
+        private readonly string _def;
+        private string _val;
+        private string _saved;
 
-        public ConfString(string _name, string _def) : base(_name) {
-            def = _def;
-            val = _def;
+        public ConfString(string name, string def) : base(name) {
+            _def = def;
+            _val = def;
 
-            init();
+            Init();
         }
 
         public string Value {
             get {
-                return val;
+                return _val;
             }
             set {
-                if (value != val) {
-                    val = value;
+                if (value != _val) {
+                    _val = value;
 
-                    fireOnChanged();
+                    FireOnChanged();
                 }
             }
         }
 
         public void ForceUpdate(string newVal) {
-            val = newVal;
-            fireOnChanged();
+            _val = newVal;
+            FireOnChanged();
         }
 
         public override void SaveTo(IConfigStorage to) {
             to.WriteVal(Name, Value);
-            saved = Value;
+            _saved = Value;
         }
 
         public override void LoadFrom(IConfigStorage from) {
             object res = from.ReadVal<string>(Name);
             if (res != null) {
                 Value = (string)res;
-                saved = Value;
+                _saved = Value;
             }
         }
 
@@ -286,16 +284,16 @@ namespace fooTitle.Config {
         }
 
         public override void Reset() {
-            Value = def;
+            Value = _def;
         }
 
         public override bool HasChanged() {
-            return Value != saved;
+            return Value != _saved;
         }
     }
 
     public class ConfEnum<T> : ConfInt where T : IConvertible {
-        public ConfEnum(string _name, T _def) : base(_name, Convert.ToInt32(_def)) {
+        public ConfEnum(string name, T def) : base(name, Convert.ToInt32(def)) {
             min = 0;
         }
 
@@ -306,7 +304,7 @@ namespace fooTitle.Config {
     }
 
     public class ConfBool : ConfInt {
-        public ConfBool(string _name, bool _def) : base(_name, _def ? 1 : 0) {
+        public ConfBool(string name, bool def) : base(name, def ? 1 : 0) {
             min = 0;
             max = 1;
         }

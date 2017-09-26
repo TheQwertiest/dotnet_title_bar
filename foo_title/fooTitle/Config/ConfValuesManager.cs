@@ -26,12 +26,12 @@ namespace fooTitle.Config {
     /// Thrown when user attempts to create multiple values of the same name.
     /// </summary>
     public class ValueAlreadyExistsException : Exception {
-        protected string name;
+        private readonly string _name;
 
-        public override string Message => $"Value {this.name} is already registered with the ConfValuesManager.";
+        public override string Message => $"Value {_name} is already registered with the ConfValuesManager.";
 
-        public ValueAlreadyExistsException(string _name) {
-            name = _name;
+        public ValueAlreadyExistsException(string name) {
+            _name = name;
         }
     }
 
@@ -43,21 +43,19 @@ namespace fooTitle.Config {
     /// other classes when a value changes.
     /// </summary>
     public class ConfValuesManager {
-        protected List<ConfValue> values = new List<ConfValue>();
-        protected static ConfValuesManager instance;
-        protected IConfigStorage savedStorage;
+        private readonly List<ConfValue> _values = new List<ConfValue>();
+        private static ConfValuesManager _instance;
+        private IConfigStorage _savedStorage;
 
         /// <summary>
         /// This method implements the singleton pattern.
         /// </summary>
         /// <returns>An instance of ConfValuesManager. Always returns the same instance.</returns>
         public static ConfValuesManager GetInstance() {
-            if (instance != null) {
-                return instance;
-            } else {
-                instance = new ConfValuesManager();
-                return instance;
-            }
+            if (_instance == null)
+                _instance = new ConfValuesManager();
+            
+            return _instance;
         }
 
         /// <summary>
@@ -67,7 +65,7 @@ namespace fooTitle.Config {
             if (GetValueByName(v.Name) != null)
                 throw new ValueAlreadyExistsException(v.Name);
 
-            values.Add(v);
+            _values.Add(v);
 
             OnValueCreated?.Invoke(v.Name);
 
@@ -75,15 +73,15 @@ namespace fooTitle.Config {
             v.OnChanged += FireValueChanged;
 
             // if there is a storage set, load the value from it
-            if (savedStorage != null)
-                v.LoadFrom(savedStorage);
+            if (_savedStorage != null)
+                v.LoadFrom(_savedStorage);
         }
 
         /// <summary>
         /// Removes a value from this manager's care.
         /// </summary>
         public void RemoveVal(ConfValue v) {
-            values.Remove(v);
+            _values.Remove(v);
         }
 
         /// <summary>
@@ -106,14 +104,14 @@ namespace fooTitle.Config {
         /// Sets a IConfigStorage instance to use to load values of newly created variables from.
         /// </summary>
         public void SetStorage(IConfigStorage a) {
-            savedStorage = a;
+            _savedStorage = a;
         }
 
         /// <summary>
         /// Saves all handled values to a config storage
         /// </summary>
         public void SaveTo(IConfigStorage to) {
-            foreach (ConfValue v in values) {
+            foreach (ConfValue v in _values) {
                 v.SaveTo(to);
             }
 
@@ -125,7 +123,7 @@ namespace fooTitle.Config {
         /// Loads all currently registered values from a config storage.
         /// </summary>
         public void LoadFrom(IConfigStorage from) {
-            foreach (ConfValue v in values) {
+            foreach (ConfValue v in _values) {
                 v.LoadFrom(from);
             }
         }
@@ -135,7 +133,7 @@ namespace fooTitle.Config {
         /// </summary>
         /// <returns>The ConfValue if found, otherwise null.</returns>
         public ConfValue GetValueByName(string name) {
-            foreach (ConfValue v in values) {
+            foreach (ConfValue v in _values) {
                 if (v.Name == name) {
                     return v;
                 }
@@ -149,13 +147,13 @@ namespace fooTitle.Config {
         /// Resets all values to default
         /// </summary>
         public void Reset() {
-            foreach (ConfValue v in values) {
+            foreach (ConfValue v in _values) {
                 v.Reset();
             }
         }
 
         public bool HasChanged() {
-            foreach (ConfValue v in values) {
+            foreach (ConfValue v in _values) {
                 if (v.HasChanged()) {
                     return true;
                 }

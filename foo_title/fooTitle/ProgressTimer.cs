@@ -1,4 +1,4 @@
-    using System;
+using System;
 using Timer = System.Windows.Forms.Timer;
 
 namespace fooTitle {

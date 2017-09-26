@@ -30,13 +30,14 @@ using System.Xml;
 
 namespace fooTitle.Config {
     #region Exceptions
-    class UnsupportedTypeException : ApplicationException {
-        protected Type type;
 
-        public override string Message => $"This type is not supported for reading : {type.ToString()}";
+    internal class UnsupportedTypeException : ApplicationException {
+        private readonly Type _type;
 
-        public UnsupportedTypeException(Type _t) {
-            type = _t;
+        public override string Message => $"This type is not supported for reading : {_type.ToString()}";
+
+        public UnsupportedTypeException(Type t) {
+            _type = t;
         }
     }
 
@@ -89,30 +90,29 @@ namespace fooTitle.Config {
     /// This is the XML in foobar's configuration variables implementation of IConfigStorage.
     /// </summary>
     public class XmlConfigStorage : IConfigStorage {
-        protected string xmlData;
-        protected fooManagedWrapper.CNotifyingCfgString cfgEntry;
-        protected XmlDocument xmlDocument;
-        protected XmlElement configRoot;
+        private readonly fooManagedWrapper.CNotifyingCfgString _cfgEntry;
+        private XmlDocument _xmlDocument;
+        private XmlElement _configRoot;
         
         /// <summary>
         /// Creates an instance of XmlConfigStorage and prepares it for writing and reading
         /// </summary>
-        public XmlConfigStorage(fooManagedWrapper.CNotifyingCfgString _cfgEntry) {
-             cfgEntry = _cfgEntry;
+        public XmlConfigStorage(fooManagedWrapper.CNotifyingCfgString cfgEntry) {
+             _cfgEntry = cfgEntry;
         }
 
         #region IConfig Members
         public void Load() {
-            xmlDocument = new XmlDocument();
-            xmlDocument.LoadXml(cfgEntry.GetVal());
-            configRoot = (XmlElement)xmlDocument.GetElementsByTagName("config")[0];
+            _xmlDocument = new XmlDocument();
+            _xmlDocument.LoadXml(_cfgEntry.GetVal());
+            _configRoot = (XmlElement)_xmlDocument.GetElementsByTagName("config")[0];
         }
 
         public void WriteVal(string name, object value) {
             XmlNode el = findElementById(name);
             if (el == null) {
-                el = xmlDocument.CreateElement("entry");
-                configRoot.AppendChild(el);
+                el = _xmlDocument.CreateElement("entry");
+                _configRoot.AppendChild(el);
             }
             ((XmlElement)el).SetAttribute("id", name);
             if (value != null) {
@@ -132,31 +132,30 @@ namespace fooTitle.Config {
         public void Save() {
             StringBuilder stringBuilder = new StringBuilder();
             XmlWriter writer = XmlTextWriter.Create(stringBuilder);
-            xmlDocument.Save(writer);
-            cfgEntry.SetVal(stringBuilder.ToString());
+            _xmlDocument.Save(writer);
+            _cfgEntry.SetVal(stringBuilder.ToString());
         }
         #endregion
 
         public override string ToString() {
             StringBuilder stringBuilder = new StringBuilder();
             XmlWriter writer = XmlTextWriter.Create(stringBuilder);
-            xmlDocument.Save(writer);
+            _xmlDocument.Save(writer);
             return stringBuilder.ToString();
         }
 
         protected object stringToType<T>(string str) {
-            if (typeof(T) == typeof(int)) {
-                return Int32.Parse(str);
-            } else if (typeof(T) == typeof(string)) {
+            if (typeof(T) == typeof(int))
+                return int.Parse(str);
+            if (typeof(T) == typeof(string)) 
                 return str;
-            } else if (typeof(T) == typeof(float)) {
+            if (typeof(T) == typeof(float)) 
                 return float.Parse(str);
-            } else
-                throw new UnsupportedTypeException(typeof(T));
+            throw new UnsupportedTypeException(typeof(T));
         }
 
         protected XmlNode findElementById(string id) {
-            foreach (XmlNode n in configRoot.GetElementsByTagName("entry")) {
+            foreach (XmlNode n in _configRoot.GetElementsByTagName("entry")) {
                 if (fooTitle.Extending.Element.GetAttributeValue(n, "id", "") == id) {
                     return n;
                 }

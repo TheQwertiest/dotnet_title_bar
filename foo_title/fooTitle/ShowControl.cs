@@ -33,13 +33,13 @@ namespace fooTitle {
     /// agent to activate and works completely independently on other classes.
     /// </summary>
     public class ShowControl {
-        public enum EnableWhenEnum
+        private enum EnableWhenEnum
         {
             Always,
             WhenMinimized,
             Never
         }
-        public enum ShowWhenEnum {
+        private enum ShowWhenEnum {
             Always,
             OnTrigger
         }

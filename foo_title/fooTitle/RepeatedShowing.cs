@@ -32,24 +32,29 @@ namespace fooTitle {
     /// that always on top windows sometimes fall down.
     /// </summary>
     public class RepeatedShowing {
-        protected ConfBool reShowOnTop;
-        protected Timer timer;
-        private readonly Main main;
+        private readonly ConfBool _reShowOnTop;
+        private readonly Timer _timer = new Timer {Interval = 1000 * 1 * 60};// every minute
+        private readonly Main _main;
 
         public RepeatedShowing() {
-            main = Main.GetInstance();
+            _main = Main.GetInstance();
 
-            this.timer = new Timer();
-            this.timer.Interval = 1000 * 1 * 60; // every minute
-            this.timer.Tick += new EventHandler(timer_Tick);
+            this._timer.Tick += timer_Tick;
 
+            this._reShowOnTop = new ConfBool("display/reShowOnTop", true);
+            this._reShowOnTop.OnChanged += reShowOnTop_OnChanged;
 
-            this.reShowOnTop = new ConfBool("display/reShowOnTop", true);
-            this.reShowOnTop.OnChanged += reShowOnTop_OnChanged;
-
-            main.Display.WindowPosition.OnChanged += WindowPosition_OnChanged;
+            _main.Display.WindowPosition.OnChanged += WindowPosition_OnChanged;
 
             this.updateTimerState();
+        }
+
+        private void updateTimerState() {
+            if (_reShowOnTop.Value && _main.Display.WindowPosition.Value == Win32.WindowPosition.Topmost) {
+                _timer.Start();
+            } else {
+                _timer.Stop();
+            }
         }
 
         private void WindowPosition_OnChanged(string name) {
@@ -58,15 +63,7 @@ namespace fooTitle {
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            main.Display?.SetWindowsPos(Win32.WindowPosition.Topmost);
-        }
-
-        private void updateTimerState() {
-            if ((reShowOnTop.Value) && (main.Display.WindowPosition.Value == Win32.WindowPosition.Topmost)) {
-                timer.Start();
-            } else {
-                timer.Stop();
-            }
+            _main.Display?.SetWindowsPos(Win32.WindowPosition.Topmost);
         }
 
         private void reShowOnTop_OnChanged(string name) {

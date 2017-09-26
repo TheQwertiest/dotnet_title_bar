@@ -10,8 +10,8 @@ namespace fooTitle {
         private static readonly Font textFont = SystemFonts.CaptionFont;
         private static readonly Pen borderPen = new Pen(Color.FromArgb(118, 118, 118));
 
-        private string text;
-        private Rectangle borderRectangle;
+        private string _text;
+        private Rectangle _borderRectangle;
 
         public ToolTipDisplay() {
             this.InitializeComponent();
@@ -37,25 +37,25 @@ namespace fooTitle {
             this.ResumeLayout(false);
         }
 
-        private void updateBitmap() {
+        private void UpdateBitmap() {
             Bitmap b = new Bitmap(Width, Height);
             using (Graphics g = Graphics.FromImage(b)) {
                 g.Clear(backgroundColor);
-                g.DrawRectangle(borderPen, borderRectangle);
-                TextRenderer.DrawText(g, text, textFont, new Point(3, 2), textColor, backgroundColor);
+                g.DrawRectangle(borderPen, _borderRectangle);
+                TextRenderer.DrawText(g, _text, textFont, new Point(3, 2), textColor, backgroundColor);
             }
             SetBitmap(b);
         }
 
         public void SetText(string newText) {
-            if (newText != null && text != newText) {
-                text = newText;
-                SizeF textSize = TextRenderer.MeasureText(text, textFont);
+            if (newText != null && _text != newText) {
+                _text = newText;
+                SizeF textSize = TextRenderer.MeasureText(_text, textFont);
                 Width = (int)textSize.Width + 6;
                 Height = (int)textSize.Height + 5;
-                borderRectangle.Width = Width - 1;
-                borderRectangle.Height = Height - 1;
-                updateBitmap();
+                _borderRectangle.Width = Width - 1;
+                _borderRectangle.Height = Height - 1;
+                UpdateBitmap();
             }
         }
 

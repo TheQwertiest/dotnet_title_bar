@@ -26,77 +26,77 @@ namespace fooTitle.Extending {
 
     #region Exceptions
     public class MultipleElementTypesException : ApplicationException {
-        protected Type onElement;
+        private readonly Type _onElement;
 
         public override string Message =>
-            $"Can't have more than one ElementTypeAttribute on single class : {onElement.ToString()} ";
+            $"Can't have more than one ElementTypeAttribute on single class : {_onElement.ToString()} ";
 
-        public MultipleElementTypesException(Type _onElement) {
-            onElement = _onElement;
+        public MultipleElementTypesException(Type onElement) {
+            _onElement = onElement;
         }
     }
 
     public class DuplicateElementTypeException : ApplicationException {
-        protected string elementType;
-        protected Type elementClass;
-        protected Assembly assembly;
+        private readonly string _elementType;
+        private readonly Type _elementClass;
+        private readonly Assembly _assembly;
 
         public override string Message =>
-            $"Duplicate element type {elementType.ToString()} found in assembly {assembly.ToString()} on class {elementClass.ToString()}.";
+            $"Duplicate element type {_elementType.ToString()} found in assembly {_assembly.ToString()} on class {_elementClass.ToString()}.";
 
-        public DuplicateElementTypeException(string _elementType, Type _elementClass, Assembly _assembly) {
-            elementClass = _elementClass;
-            elementType = _elementType;
-            assembly = _assembly;
+        public DuplicateElementTypeException(string elementType, Type elementClass, Assembly assembly) {
+            _elementClass = elementClass;
+            _elementType = elementType;
+            _assembly = assembly;
         }
     }
 
     public class NoSuitableConstructorException : ApplicationException {
-        protected string elementType;
-        protected Type elementClass;
-        protected String auxMsg;
+        private readonly string _elementType;
+        private readonly Type _elementClass;
+        private readonly string _auxMsg;
 
-        public override String Message =>
-            $"No suitable constructor for element type {elementType} class {elementClass.ToString()} found {auxMsg}.";
+        public override string Message =>
+            $"No suitable constructor for element type {_elementType} class {_elementClass.ToString()} found {_auxMsg}.";
 
-        public NoSuitableConstructorException(String _elementType, Type _elementClass) {
-            elementType = _elementType;
-            elementClass = _elementClass;
+        public NoSuitableConstructorException(string elementType, Type elementClass) {
+            _elementType = elementType;
+            _elementClass = elementClass;
         }
 
-        public NoSuitableConstructorException(String _elementType, Type _elementClass, String _auxMsg) {
-            elementType = _elementType;
-            elementClass = _elementClass;
-            auxMsg = _auxMsg;
+        public NoSuitableConstructorException(string elementType, Type elementClass, string auxMsg) {
+            _elementType = elementType;
+            _elementClass = elementClass;
+            _auxMsg = auxMsg;
         }
 
-        public NoSuitableConstructorException(String _elementType, Type _elementClass, String _auxMsg, Exception _inner)
-            : base("", _inner) {
-            elementType = _elementType;
-            elementClass = _elementClass;
-            auxMsg = _auxMsg;
+        public NoSuitableConstructorException(string elementType, Type elementClass, string auxMsg, Exception inner)
+            : base("", inner) {
+            _elementType = elementType;
+            _elementClass = elementClass;
+            _auxMsg = auxMsg;
         }
     }
 
     public class ElementTypeNotFoundException : ApplicationException {
-        protected string elementType;
-        protected string auxMsg;
+        private readonly string _elementType;
+        private readonly string _auxMsg;
 
-        public override string Message => $"Element of type {elementType} not found {auxMsg}.";
+        public override string Message => $"Element of type {_elementType} not found {_auxMsg}.";
 
-        public ElementTypeNotFoundException(String _elementType) {
-            elementType = _elementType;
+        public ElementTypeNotFoundException(string elementType) {
+            _elementType = elementType;
         }
 
-        public ElementTypeNotFoundException(String _elementType, String _auxMsg) {
-            elementType = _elementType;
-            auxMsg = _auxMsg;
+        public ElementTypeNotFoundException(string elementType, string auxMsg) {
+            _elementType = elementType;
+            _auxMsg = auxMsg;
         }
 
-        public ElementTypeNotFoundException(String _elementType, String _auxMsg, Exception _inner)
-            : base("", _inner) {
-            elementType = _elementType;
-            auxMsg = _auxMsg;
+        public ElementTypeNotFoundException(string elementType, string auxMsg, Exception inner)
+            : base("", inner) {
+            _elementType = elementType;
+            _auxMsg = auxMsg;
         }
     }
 
@@ -117,7 +117,7 @@ namespace fooTitle.Extending {
             foreach (XmlNode i in where)
                 if (i.Name == name)
                     return i;
-            throw new System.Xml.XmlException($"Node {name} not found under {@where.Name}");
+            throw new XmlException($"Node {name} not found under {@where.Name}");
         }
 
         public static XmlNode GetFirstChildByNameOrNull(XmlNode where, string name) {
@@ -223,24 +223,24 @@ namespace fooTitle.Extending {
     public abstract class ElementFactory {
 
         /// represents a single entry in the dictionary of elements
-        protected struct ElementEntry {
-            public String TypeName;
-            public Type Class;
+        private struct ElementEntry {
+            public readonly string TypeName;
+            public readonly Type Class;
 
-            public ElementEntry(String _typeName, Type _class) {
-                TypeName = _typeName;
+            public ElementEntry(string typeName, Type _class) {
+                TypeName = typeName;
                 Class = _class;
             }
         }
 
-        protected ArrayList elementsDictionary;
+        private readonly ArrayList _elementsDictionary;
         /// the type of element to search for - set in inheriting classes
         protected Type elementType;
         /// the type of attribute to search for - set in inheriting classes
         protected Type elementTypeAttributeType;
 
-        public ElementFactory() {
-            elementsDictionary = new ArrayList();
+        protected ElementFactory() {
+            _elementsDictionary = new ArrayList();
         }
 
         /// finds all elements in assembly and adds them to list of elements which can be created later
@@ -251,8 +251,8 @@ namespace fooTitle.Extending {
                 if (elementType.IsAssignableFrom(t)) {
                     Object[] attrs = t.GetCustomAttributes(elementTypeAttributeType, false);
                     if (attrs.Length == 1) {
-                        String elementTypeName = ((ElementTypeAttribute)attrs[0]).Type;
-                        addElementEntry(new ElementEntry(elementTypeName, t), assembly);
+                        string elementTypeName = ((ElementTypeAttribute)attrs[0]).Type;
+                        AddElementEntry(new ElementEntry(elementTypeName, t), assembly);
                     } else if (attrs.Length > 1) {
                         throw new MultipleElementTypesException(t);
                     }
@@ -260,8 +260,8 @@ namespace fooTitle.Extending {
             }
         }
 
-        protected bool elementTypeExists(String type) {
-            foreach (Object o in elementsDictionary) {
+        private bool ElementTypeExists(string type) {
+            foreach (Object o in _elementsDictionary) {
                 if (((ElementEntry)o).TypeName == type)
                     return true;
             }
@@ -269,34 +269,33 @@ namespace fooTitle.Extending {
         }
 
         /// assembly parameter is required in order to be able to report errors
-        protected void addElementEntry(ElementEntry e, Assembly assembly) {
+        private void AddElementEntry(ElementEntry e, Assembly assembly) {
             // check for presence first
-            if (elementTypeExists(e.TypeName)) {
+            if (ElementTypeExists(e.TypeName)) {
                 throw new DuplicateElementTypeException(e.TypeName, e.Class, assembly);
-            } else {
-                elementsDictionary.Add(e);
             }
+            _elementsDictionary.Add(e);
         }
 
         /// creates an element specified by it's type
-        protected Element CreateElement(String type, object[] parameters) {
-            foreach (Object o in elementsDictionary) {
+        protected Element CreateElement(string type, object[] parameters) {
+            foreach (object o in _elementsDictionary) {
                 if (((ElementEntry)o).TypeName == type) {
                     // an element found
                     Type elementClass = ((ElementEntry)o).Class;
-                    return createElement(elementClass, type, parameters);
+                    return CreateElement(elementClass, type, parameters);
                 }
             }
 
             throw new ElementTypeNotFoundException(type);
         }
 
-        private Element createElement(Type elementClass, String type, object[] parameters) {
+        private Element CreateElement(Type elementClass, string type, object[] parameters) {
             // construct list of types of parameters going to the constructor
             Type[] paramTypes = new Type[parameters.Length];
             int i = 0;
 
-            foreach (Object par in parameters) {
+            foreach (object par in parameters) {
                 paramTypes[i] = par.GetType();
                 i++;
 

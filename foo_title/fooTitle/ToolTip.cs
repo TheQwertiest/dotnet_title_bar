@@ -15,6 +15,7 @@ namespace fooTitle
         private readonly Timer _toolTipTimer;
 
         private bool _wasShowCalled;
+        private Layer _curTopToolTipLayer;
         private Layer _tooltipLayer;
         private string _tooltipText;
 
@@ -28,8 +29,7 @@ namespace fooTitle
             _toolTipTimer = new Timer { Interval = 500 };
             _toolTipTimer.Tick += ToolTipTimer_OnTick;
         }
-
-        private Layer _curTopToolTipLayer;
+        
         public void OnMouseMove(object sender, MouseEventArgs e)
         {
             if (_isMouseDown)
@@ -63,39 +63,6 @@ namespace fooTitle
         public void OnMouseUp(object sender, MouseEventArgs e)
         {
             _isMouseDown = false;
-        }
-
-        private static Layer GetTopToolTipLayer(Layer layer)
-        {
-            Layer tmp = GetTopLayerUnderMouse(layer);
-            return tmp.HasToolTip ? tmp : null;
-        }
-
-        private static Layer GetTopLayerUnderMouse(Layer parent)
-        {
-            for (int i = parent.SubLayers.Count - 1; i >= 0; --i)
-            {// Last layer is the top one
-                Layer layer = parent.SubLayers[i];
-                if (!layer.IsMouseOver)
-                    continue;
-
-                Layer tmpLayer = GetTopLayerUnderMouse(layer);
-                if (tmpLayer.HasContent)                
-                    return tmpLayer;
-            }
-            return parent;
-        }
-
-        private void ToolTipTimer_OnTick(object sender, EventArgs e)
-        {
-            lock (_tooltipLock)
-            {
-                Main.GetInstance().Ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
-                Main.GetInstance().Ttd.SetWindowsPos(Win32.WindowPosition.Topmost);
-                Main.GetInstance().Ttd.Show();
-            }
-
-            _toolTipTimer.Stop();
         }
 
         public void ShowDelayedToolTip(Layer caller, string toolTipText)
@@ -150,5 +117,38 @@ namespace fooTitle
                 _tooltipLayer = null;
             }
         }
+        private static Layer GetTopToolTipLayer(Layer layer)
+        {
+            Layer tmp = GetTopLayerUnderMouse(layer);
+            return tmp.HasToolTip ? tmp : null;
+        }
+
+        private static Layer GetTopLayerUnderMouse(Layer parent)
+        {
+            for (int i = parent.SubLayers.Count - 1; i >= 0; --i)
+            {// Last layer is the top one
+                Layer layer = parent.SubLayers[i];
+                if (!layer.IsMouseOver)
+                    continue;
+
+                Layer tmpLayer = GetTopLayerUnderMouse(layer);
+                if (tmpLayer.HasContent)                
+                    return tmpLayer;
+            }
+            return parent;
+        }
+
+        private void ToolTipTimer_OnTick(object sender, EventArgs e)
+        {
+            lock (_tooltipLock)
+            {
+                Main.GetInstance().Ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
+                Main.GetInstance().Ttd.SetWindowsPos(Win32.WindowPosition.Topmost);
+                Main.GetInstance().Ttd.Show();
+            }
+
+            _toolTipTimer.Stop();
+        }
+
     }
 }
