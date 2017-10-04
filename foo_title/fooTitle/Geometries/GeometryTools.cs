@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
+using System.Xml.Linq;
 using fooTitle.Extending;
 
 namespace fooTitle.Geometries {
@@ -36,7 +37,7 @@ namespace fooTitle.Geometries {
             elementTypeAttributeType = typeof(ElementTypeAttribute);
         }
 
-        public Geometry CreateGeometry(string type, System.Drawing.Rectangle parentRect, System.Xml.XmlNode child) {
+        public Geometry CreateGeometry(string type, System.Drawing.Rectangle parentRect, XNode child) {
             return (Geometry)CreateElement(type, new object[] { parentRect, child });
         }
     }

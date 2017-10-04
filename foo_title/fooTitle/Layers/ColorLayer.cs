@@ -17,7 +17,7 @@
 */
 
 using System;
-using System.Xml;
+using System.Xml.Linq;
 using System.Drawing;
 
 namespace fooTitle.Layers
@@ -30,10 +30,10 @@ namespace fooTitle.Layers
     {
         private readonly Color _color;
 
-        public ColorLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node)
+        public ColorLayer(Rectangle parentRect, XElement node) : base(parentRect, node)
         {
-            XmlNode contents = GetFirstChildByName(node, "contents");
-            _color = ColorFromCode(contents.Attributes.GetNamedItem("color").Value);
+            XElement contents = GetFirstChildByName(node, "contents");
+            _color = ColorFromCode(contents.Attribute("color").Value);
         }
 
         protected Color ColorFromCode(string code)

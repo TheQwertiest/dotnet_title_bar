@@ -18,11 +18,8 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.XPath;
 using System.Drawing;
-using System.Xml;
+using System.Xml.Linq;
 
 namespace fooTitle.Geometries {
 
@@ -85,11 +82,11 @@ namespace fooTitle.Geometries {
             }
         }
 
-        public AbsoluteGeometry(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
+        public AbsoluteGeometry(Rectangle parentRect, XElement node) : base(parentRect, node) {
             myParentRect = parentRect;
 
             // read description from the xml
-            XmlNode size = GetFirstChildByName(node, "size");
+            XElement size = GetFirstChildByName(node, "size");
 
             // read and store expressions
             myExprWidth = GetExpressionFromAttribute(size, "x", "100");
@@ -100,7 +97,7 @@ namespace fooTitle.Geometries {
             myHeight = (int)GetNumberFromAttribute(size, "y", "30");
 
             // read position
-            XmlNode position = GetFirstChildByName(node, "position");
+            XElement position = GetFirstChildByName(node, "position");
 
             // read and store expressions (if any)
             myExprPosition.X = GetExpressionFromAttribute(position, "x", "0");

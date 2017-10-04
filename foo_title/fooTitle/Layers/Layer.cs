@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Xml;
+using System.Xml.Linq;
 using System.Collections;
 using System.Drawing;
 using System.Windows.Forms;
@@ -87,18 +87,18 @@ namespace fooTitle.Layers {
         public virtual bool HasToolTip { get; } = false;
         public string ToolTipText { get; }
 
-        public Layer(Rectangle parentRect, XmlNode node) {
+        public Layer(Rectangle parentRect, XElement node) {
             // read name and type
-            Name = node.Attributes.GetNamedItem("name").Value;
-            Type = node.Attributes.GetNamedItem("type").Value;
+            Name = node.Attribute("name").Value;
+            Type = node.Attribute("type").Value;
             IsPersistent = GetCastedAttributeValue<bool>(node, "persistent", "false");
             _enabled = GetCastedAttributeValue<bool>(node, "enabled", "true");
             _clipEnabled = GetCastedAttributeValue<bool>(node, "clip", "true");
             HasContent = GetFirstChildByNameOrNull(node, "contents") != null;
 
             // create the geometry
-            XmlNode geomNode = GetFirstChildByName(node, "geometry");
-            string geomType = geomNode.Attributes.GetNamedItem("type").Value;
+            XElement geomNode = GetFirstChildByName(node, "geometry");
+            string geomType = geomNode.Attribute("type").Value;
             geometry = Main.GetInstance().GeometryFactory.CreateGeometry(geomType, parentRect, geomNode);
             if (geometry.IsDynamic())
                 Main.GetInstance().CurrentSkin.DynamicLayers.Add(this);
@@ -150,15 +150,15 @@ namespace fooTitle.Layers {
 
         }
 
-        protected virtual void LoadLayers(XmlNode node) {
-            foreach (XmlNode i in node.ChildNodes) {
+        protected virtual void LoadLayers(XElement node) {
+            foreach (XElement i in node.Elements()) {
                 if (i.Name == "layer")
                     AddLayer(i);
             }
         }
 
-        private void AddLayer(XmlNode node) {
-            string type = node.Attributes.GetNamedItem("type").InnerText;
+        private void AddLayer(XElement node) {
+            string type = node.Attribute("type").Value;
 
             Layer layer = Main.GetInstance().LayerFactory.CreateLayer(type, this.ClientRect, node);
 

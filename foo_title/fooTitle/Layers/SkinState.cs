@@ -15,15 +15,16 @@
 *  information.
 */
 
-using System.Xml;
+using System.Linq;
+using System.Xml.Linq;
 using fooTitle.Config;
 
 namespace fooTitle.Layers
 {
     public class SkinState
     {
-        private readonly XmlDocument _doc = new XmlDocument();
-        private XmlNode State
+        private readonly XDocument _doc = new XDocument();
+        private XElement State
         {
             set => _skinState.Value = value;
             get => _skinState.Value;
@@ -41,14 +42,15 @@ namespace fooTitle.Layers
             LoadStateInternal(skin, State);
         }
 
-        private static void LoadStateInternal(Layer layer, XmlNode curNode)
+        private static void LoadStateInternal(Layer layer, XElement curNode)
         {
             foreach (Layer i in layer.SubLayers)
             {
-                XmlNode iNode = curNode.SelectSingleNode("//layer[@name='" + i.Name + "']");
+                XElement iNode = curNode.Elements("layer").FirstOrDefault(el => el.Attribute("name") != null
+                                                                                && el.Attribute("name").Value == i.Name);
 
-                if (i.IsPersistent && iNode?.Attributes?.GetNamedItem("enabled") != null)
-                    i.Enabled = bool.Parse(iNode.Attributes.GetNamedItem("enabled").Value);
+                if (i.IsPersistent && iNode?.Attribute("enabled") != null)
+                    i.Enabled = bool.Parse(iNode.Attribute("enabled").Value);
 
                 LoadStateInternal(i, iNode);
             }
@@ -56,7 +58,7 @@ namespace fooTitle.Layers
 
         public void SaveState(Skin skin)
         {
-            XmlElement newNode = _doc.CreateElement("skin");
+            XElement newNode = new XElement("skin");
             SaveStateInternal(skin, newNode);
 
             _skinState.Reset();
@@ -65,20 +67,20 @@ namespace fooTitle.Layers
             ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
         }
 
-        private void SaveStateInternal(Layer layer, XmlNode curNode)
+        private void SaveStateInternal(Layer layer, XElement curNode)
         {
             foreach (Layer i in layer.SubLayers)
             {
-                XmlElement newNode = _doc.CreateElement("layer");
-                newNode.SetAttribute("name", i.Name);
+                XElement newNode = new XElement("layer");
+                newNode.SetAttributeValue("name", i.Name);
                 if (i.IsPersistent)
                 {
-                    newNode.SetAttribute("enabled", i.Enabled.ToString());
+                    newNode.SetAttributeValue("enabled", i.Enabled.ToString());
                 }
 
                 SaveStateInternal(i, newNode);
 
-                curNode.AppendChild(newNode);
+                curNode.Add(newNode);
             }
         }
 
@@ -87,11 +89,12 @@ namespace fooTitle.Layers
             return State != null && IsStateValidInternal(skin, State);
         }
 
-        private static bool IsStateValidInternal(Layer layer, XmlNode curNode)
+        private static bool IsStateValidInternal(Layer layer, XElement curNode)
         {
             foreach (Layer i in layer.SubLayers)
             {
-                XmlNode iNode = curNode.SelectSingleNode("//layer[@name='" + i.Name + "']");
+                XElement iNode = curNode.Elements("layer").FirstOrDefault(el => el.Attribute("name") != null 
+                                                                                && el.Attribute("name").Value == i.Name);
                 if (iNode == null || !IsStateValidInternal(i, iNode))
                     return false;
             }

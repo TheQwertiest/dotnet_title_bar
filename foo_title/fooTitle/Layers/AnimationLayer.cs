@@ -19,7 +19,7 @@
 */
 using System;
 using System.Drawing;
-using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace fooTitle.Layers
@@ -37,8 +37,8 @@ namespace fooTitle.Layers
         protected int refreshRate = 15;
         protected long lastUpdate = System.DateTime.Now.Ticks;
 
-        public AnimationLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
-            XmlNode contents = GetFirstChildByName(node, "contents");
+        public AnimationLayer(Rectangle parentRect, XElement node) : base(parentRect, node) {
+            XNode contents = GetFirstChildByName(node, "contents");
             refreshRate = Math.Max(1, GetCastedAttributeValue<int>(contents, "speed", "15"));
 
             // load all images

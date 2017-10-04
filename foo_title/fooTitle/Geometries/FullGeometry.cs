@@ -17,11 +17,9 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using System.Drawing;
-using System.Xml;
+using System.Xml.Linq;
 
 namespace fooTitle.Geometries {
     [GeometryTypeAttribute("full")]
@@ -37,8 +35,8 @@ namespace fooTitle.Geometries {
         /// </summary>
         protected ExpressionPadding myExprPadding;
 
-        public FullGeometry(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
-            XmlNode padding = GetFirstChildByName(node, "padding");
+        public FullGeometry(Rectangle parentRect, XElement node) : base(parentRect, node) {
+            XNode padding = GetFirstChildByName(node, "padding");
 
             // read and store expressions
             myExprPadding.Left = GetExpressionFromAttribute(padding, "left", "0");

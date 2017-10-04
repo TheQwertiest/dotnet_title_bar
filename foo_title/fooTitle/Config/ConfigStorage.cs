@@ -18,8 +18,8 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Text;
-using System.Xml;
+using System.Linq;
+using System.Xml.Linq;
 
 // what is this good for ?
 // - possibility to mantain variable amount of configuration data (as opposed to foobar's fixed configuration architecture)
@@ -90,8 +90,8 @@ namespace fooTitle.Config {
     /// </summary>
     public class XmlConfigStorage : IConfigStorage {
         private readonly fooManagedWrapper.CNotifyingCfgString _cfgEntry;
-        private XmlDocument _xmlDocument;
-        private XmlElement _configRoot;
+        private XDocument _xmlDocument;
+        private XElement _configRoot;
         
         /// <summary>
         /// Creates an instance of XmlConfigStorage and prepares it for writing and reading
@@ -102,58 +102,51 @@ namespace fooTitle.Config {
 
         #region IConfig Members
         public void Load() {
-            _xmlDocument = new XmlDocument();
-            _xmlDocument.LoadXml(_cfgEntry.GetVal());
-            _configRoot = (XmlElement)_xmlDocument.GetElementsByTagName("config")[0];
+            _xmlDocument = XDocument.Parse(_cfgEntry.GetVal());
+            _configRoot = _xmlDocument.Elements("config").First();
         }
 
         public void WriteVal(string name, object value) {
-            XmlNode el = FindElementById(name);
+            XElement el = FindElementById(name);
             if (el == null) {
-                el = _xmlDocument.CreateElement("entry");
-                _configRoot.AppendChild(el);
+                el = new XElement("entry");
+                _configRoot.Add(el);
             }
-            ((XmlElement)el).SetAttribute("id", name);
+            el.SetAttributeValue("id", name);
 
             if (value != null) {
-                if (value.GetType().IsSubclassOf(typeof(XmlNode)) ) {
-                    while (el.FirstChild != null)
-                        el.RemoveChild(el.FirstChild);
+                if (value.GetType().IsSubclassOf(typeof(XNode)) ) {
+                    el.Elements().Remove();
 
-                    XmlNode importNode = _xmlDocument.ImportNode((XmlNode)value, true);
-                    el.AppendChild(importNode);
+                    XElement importNode = new XElement((XElement)value);
+                    el.Add(importNode);
                 }
                 else {
-                    el.InnerText = value.ToString();
+                    el.Value = value.ToString();
                 }
             }
         }
 
         public object ReadVal<T>(string name)
         {
-            XmlNode el = FindElementById(name);
+            XElement el = FindElementById(name);
+            if (el == null)
+                return null;
 
-            if (typeof(T) == typeof(XmlNode) )
-                return el?.FirstChild;
+            if (el.Elements().Count() != 0)
+                return el.FirstNode;
 
-            return el == null 
-                ? null 
-                : StringToType<T>(el.InnerText);
+            return el.Value == "" ? null : StringToType<T>(el.Value);
         }
 
-        public void Save() {
-            StringBuilder stringBuilder = new StringBuilder();
-            XmlWriter writer = XmlTextWriter.Create(stringBuilder);
-            _xmlDocument.Save(writer);
-            _cfgEntry.SetVal(stringBuilder.ToString());
+        public void Save()
+        {
+            _cfgEntry.SetVal(_xmlDocument.ToString());
         }
         #endregion
 
         public override string ToString() {
-            StringBuilder stringBuilder = new StringBuilder();
-            XmlWriter writer = XmlTextWriter.Create(stringBuilder);
-            _xmlDocument.Save(writer);
-            return stringBuilder.ToString();
+            return _xmlDocument.ToString();
         }
 
         protected object StringToType<T>(string str) {
@@ -166,8 +159,8 @@ namespace fooTitle.Config {
             throw new UnsupportedTypeException(typeof(T));
         }
 
-        protected XmlNode FindElementById(string id) {
-            foreach (XmlNode n in _configRoot.GetElementsByTagName("entry")) {
+        protected XElement FindElementById(string id) {
+            foreach (XElement n in _configRoot.Elements("entry")) {
                 if (fooTitle.Extending.Element.GetAttributeValue(n, "id", "") == id) {
                     return n;
                 }

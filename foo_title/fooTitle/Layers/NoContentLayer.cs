@@ -16,7 +16,7 @@
 *  information.
 */
 
-using System.Xml;
+using System.Xml.Linq;
 using System.Drawing;
 
 namespace fooTitle.Layers
@@ -29,7 +29,7 @@ namespace fooTitle.Layers
 	{
 	    public override bool HasToolTip => false;
 
-	    public NoContentLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node)
+	    public NoContentLayer(Rectangle parentRect, XElement node) : base(parentRect, node)
 		{
         }
 	}

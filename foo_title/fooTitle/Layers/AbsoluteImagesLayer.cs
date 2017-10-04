@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Drawing;
 
@@ -32,7 +32,7 @@ namespace fooTitle.Layers
     {
         private readonly bool _hasGif = false;
 
-		public AbsoluteImagesLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node)
+		public AbsoluteImagesLayer(Rectangle parentRect, XElement node) : base(parentRect, node)
 		{
 			// load all images
 			XPathNavigator nav = node.CreateNavigator();

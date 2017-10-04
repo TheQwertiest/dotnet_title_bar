@@ -22,8 +22,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Linq;
 using fooManagedWrapper;
 using fooTitle.Geometries;
 
@@ -34,8 +36,8 @@ namespace fooTitle.Layers
     /// </summary>
     public class Skin : Layer, IPlayCallbackSender
     {
-        private readonly XmlDocument _document = new XmlDocument();
-        private readonly XmlNode _skin;
+        private readonly XDocument _document;
+        private readonly XElement _skin;
         public List<Layer> DynamicLayers = new List<Layer>();
 
         
@@ -49,13 +51,13 @@ namespace fooTitle.Layers
             SkinDirectory = path;
 
             // load the skin xml file
-            _document.Load(GetSkinFilePath("skin.xml"));
+            _document = XDocument.Load(GetSkinFilePath("skin.xml"));
 
             // read the xml document for the basic properties
-            _skin = _document.GetElementsByTagName("skin").Item(0);
+            _skin = _document.Elements("skin").First();
 
-            int width = int.Parse(_skin.Attributes.GetNamedItem("width").Value);
-            int height = int.Parse(_skin.Attributes.GetNamedItem("height").Value);
+            int width = int.Parse(_skin.Attribute("width").Value);
+            int height = int.Parse(_skin.Attribute("height").Value);
             geometry = new AbsoluteGeometry(new Rectangle(0, 0, width, height), width, height, new Point(0, 0));
 
             // register to main for playback events
@@ -92,6 +94,7 @@ namespace fooTitle.Layers
             if (!state.IsStateValid(this))
             {
                 state.ResetState();
+                state.SaveState(this);
             }
             else
             {
@@ -206,10 +209,9 @@ namespace fooTitle.Layers
 
             try
             {
-                XmlDocument document = new XmlDocument();
-                document.Load(skinFullPath);
+                XDocument document = XDocument.Load(skinFullPath);
 
-                XmlNode skin = document.GetElementsByTagName("skin").Item(0);
+                XElement skin = document.Elements("skin").First();
 
                 return new SkinInfo
                 {

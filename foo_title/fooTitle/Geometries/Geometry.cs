@@ -18,10 +18,9 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-using System;
 using System.Drawing;
 using fooTitle.Extending;
-using System.Xml;
+using System.Xml.Linq;
 
 namespace fooTitle.Geometries {
     public abstract class Geometry : Element {
@@ -65,7 +64,7 @@ namespace fooTitle.Geometries {
         /// </summary>
         /// <param name="parentRect">The rectangle that this geometry lives in</param>
         /// <param name="node">The XML node to load geometry's parameters from</param>
-        protected Geometry(Rectangle parentRect, XmlNode node) {
+        protected Geometry(Rectangle parentRect, XNode node) {
 
         }
 

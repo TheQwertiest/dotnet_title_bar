@@ -19,7 +19,7 @@
 */
 using System;
 using System.Collections.Generic;
-using System.Xml;
+using System.Xml.Linq;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -36,7 +36,7 @@ namespace fooTitle.Layers {
     }
 
     internal interface IButtonAction {
-        void Init(XmlNode node);
+        void Init(XElement node);
         void Run(MouseButtons button, int clicks, int delta);
         MouseActionType GetMouseActionType();
     };
@@ -84,7 +84,7 @@ namespace fooTitle.Layers {
             }
         }
 
-        public virtual void Init(XmlNode node)
+        public virtual void Init(XElement node)
         {
             string buttonStr = Element.GetAttributeValue(node, "button", "left").ToLowerInvariant();
             button = StringToButton(buttonStr);
@@ -133,7 +133,7 @@ namespace fooTitle.Layers {
                 throw new ArgumentException($"Command {cmd} not found.");
         }
 
-        public override void Init(XmlNode node) {
+        public override void Init(XElement node) {
             base.Init(node);
             string cmd = Element.GetNodeValue(node);
             readCommand(cmd);
@@ -151,7 +151,7 @@ namespace fooTitle.Layers {
         private Context _context;
         private string _cmdPath;
 
-        public override void Init(XmlNode node) {
+        public override void Init(XElement node) {
             base.Init(node);
             if (Element.GetAttributeValue(node, "context", "nowplaying").ToLowerInvariant() == "nowplaying") {
                 _context = Context.NowPlaying;
@@ -190,7 +190,7 @@ namespace fooTitle.Layers {
     internal class LegacyMainMenuCommand : ButtonAction {
         private string _commandName;
 
-        public override void Init(XmlNode node) {
+        public override void Init(XElement node) {
             base.Init(node);
             _commandName = Element.GetNodeValue(node);
         }
@@ -213,7 +213,7 @@ namespace fooTitle.Layers {
         }
         private Kind _only;
 
-        public override void Init(XmlNode node) {
+        public override void Init(XElement node) {
             base.Init(node);
             _target = Element.GetAttributeValue(node, "target", "");
 
@@ -278,23 +278,23 @@ namespace fooTitle.Layers {
 
         private ICollection<IButtonAction> _actions;
 
-        public ButtonLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
-            XmlNode contents = GetFirstChildByName(node, "contents");
+        public ButtonLayer(Rectangle parentRect, XElement node) : base(parentRect, node) {
+            XElement contents = GetFirstChildByName(node, "contents");
             ReadActions(contents);
 
-            XmlNode img = GetFirstChildByNameOrNull(contents, "normalImg");
+            XElement img = GetFirstChildByNameOrNull(contents, "normalImg");
             if (img != null) {
-                myNormalImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attributes.GetNamedItem("src").Value);
+                myNormalImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attribute("src").Value);
             }
 
             img = GetFirstChildByNameOrNull(contents, "overImg");
             if (img != null) {
-                myOverImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attributes.GetNamedItem("src").Value);
+                myOverImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attribute("src").Value);
             }
 
             img = GetFirstChildByNameOrNull(contents, "downImg");
             if (img != null) {
-                myDownImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attributes.GetNamedItem("src").Value);
+                myDownImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attribute("src").Value);
             }
 
             RegisterMouseEvents();
@@ -394,10 +394,10 @@ namespace fooTitle.Layers {
             }
         }
 
-        private void ReadActions(XmlNode node) {
+        private void ReadActions(XElement node) {
             _actions = new List<IButtonAction>();
 
-            foreach (XmlNode child in node.ChildNodes) {
+            foreach (XElement child in node.Elements()) {
                 if (child.Name != "action")
                     continue;
 

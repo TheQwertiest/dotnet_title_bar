@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Xml;
+using System.Xml.Linq;
 using System.Drawing;
 using fooManagedWrapper;
 using naid;
@@ -51,8 +51,8 @@ namespace fooTitle.Layers
 		protected int space;
         protected int angle;
 
-		public TextLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
-            XmlNode contents = GetFirstChildByName(node, "contents");
+		public TextLayer(Rectangle parentRect, XElement node) : base(parentRect, node) {
+		    XElement contents = GetFirstChildByName(node, "contents");
 			
 			// read the spacing
 			space = GetCastedAttributeValue<int>(contents, "spacing", "20");
@@ -71,12 +71,12 @@ namespace fooTitle.Layers
 		    LabelPart def = ReadLabel(contents, empty);
  
 			// read contents
-            foreach (XmlNode n in contents.SelectNodes("label")) {
+            foreach (XElement n in contents.Elements("label")) {
                 AddLabel(n, def);
             }
 
             defaultText = "";
-            foreach (XmlNode n in contents.ChildNodes) {
+            foreach (XElement n in contents.Elements()) {
                 if (n.Name == "defaultText")
                     defaultText = GetNodeValue(n);
             }
@@ -99,31 +99,31 @@ namespace fooTitle.Layers
             }
         }
         
-        protected LabelPart ReadLabel(XmlNode node, LabelPart def) {
+        protected LabelPart ReadLabel(XElement node, LabelPart def) {
             LabelPart res = new LabelPart();
 
-            if (node.Attributes.GetNamedItem("size") != null)
-                res.fontSize = int.Parse(node.Attributes.GetNamedItem("size").Value);
+            if (node.Attribute("size") != null)
+                res.fontSize = int.Parse(node.Attribute("size").Value);
             else
                 res.fontSize = def.fontSize;
             
-            if (node.Attributes.GetNamedItem("italic") != null)
-                res.isItalic = bool.Parse(node.Attributes.GetNamedItem("italic").Value);
+            if (node.Attribute("italic") != null)
+                res.isItalic = bool.Parse(node.Attribute("italic").Value);
             else
                 res.isItalic = def.isItalic;
 
-            if (node.Attributes.GetNamedItem("bold") != null)
-                res.isBold = bool.Parse(node.Attributes.GetNamedItem("bold").Value);
+            if (node.Attribute("bold") != null)
+                res.isBold = bool.Parse(node.Attribute("bold").Value);
             else
                 res.isBold = def.isBold;
 
-            if (node.Attributes.GetNamedItem("font") != null)
-                res.fontName = node.Attributes.GetNamedItem("font").Value;
+            if (node.Attribute("font") != null)
+                res.fontName = node.Attribute("font").Value;
             else
                 res.fontName = def.fontName;
 
-            if (node.Attributes.GetNamedItem("color") != null)
-                res.color = ColorFromCode(node.Attributes.GetNamedItem("color").Value);
+            if (node.Attribute("color") != null)
+                res.color = ColorFromCode(node.Attribute("color").Value);
             else
                 res.color = def.color;
 
@@ -142,7 +142,7 @@ namespace fooTitle.Layers
             return res;
         }
 
-		protected virtual void AddLabel(XmlNode node, LabelPart def) {
+		protected virtual void AddLabel(XElement node, LabelPart def) {
             string position = GetAttributeValue(node, "position", "left");
             LabelPart label = ReadLabel(node, def);
 			switch (position)

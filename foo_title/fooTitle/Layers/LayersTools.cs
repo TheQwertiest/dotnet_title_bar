@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Xml;
+using System.Xml.Linq;
 using fooTitle.Extending;
 using System.Collections.Generic;
 
@@ -43,7 +43,7 @@ namespace fooTitle.Layers {
             elementTypeAttributeType = typeof(LayerTypeAttribute);
         }
 
-        public Layer CreateLayer(string type, System.Drawing.Rectangle parentRect, XmlNode node) {
+        public Layer CreateLayer(string type, System.Drawing.Rectangle parentRect, XNode node) {
             return(Layer)CreateElement(type, new object[] { parentRect, node });
         }
 

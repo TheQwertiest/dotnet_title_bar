@@ -19,7 +19,7 @@
 */
 using System;
 using System.Drawing;
-using System.Xml;
+using System.Xml.Linq;
 using fooManagedWrapper;
 
 namespace fooTitle.Layers {
@@ -35,10 +35,10 @@ namespace fooTitle.Layers {
         protected Bitmap cachedResized;
         private int timesCheckedArtwork = 0;
 
-        public AlbumArtLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
+        public AlbumArtLayer(Rectangle parentRect, XElement node) : base(parentRect, node) {
             try {
-                XmlNode contents = GetFirstChildByName(node, "contents");
-                XmlNode NoAlbumArt = GetFirstChildByName(contents, "NoAlbumArt");
+                XElement contents = GetFirstChildByName(node, "contents");
+                XElement NoAlbumArt = GetFirstChildByName(contents, "NoAlbumArt");
                 string name = GetNodeValue(NoAlbumArt);
                 noCover = Main.GetInstance().CurrentSkin.GetSkinImage(name);
             } catch (Exception) {

@@ -23,6 +23,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace fooTitle.Extending {
 
@@ -115,36 +116,36 @@ namespace fooTitle.Extending {
 
 
     public class Element {
-        public static XmlNode GetFirstChildByName(XmlNode where, string name) {
-            foreach (XmlNode i in where)
+        public static XElement GetFirstChildByName(XElement where, string name) {
+            foreach (XElement i in where.Elements())
                 if (i.Name == name)
                     return i;
             throw new XmlException($"Node {name} not found under {@where.Name}");
         }
 
-        public static XmlNode GetFirstChildByNameOrNull(XmlNode where, string name) {
-            foreach (XmlNode i in where)
+        public static XElement GetFirstChildByNameOrNull(XElement where, string name) {
+            foreach (XElement i in where.Elements())
                 if (i.Name == name)
                     return i;
 
             return null;
         }
 
-        public static string GetNodeValue(XmlNode a) {
-            return a.InnerText.Trim(new char[] { ' ', '\n', '\r', '\t' });
+        public static string GetNodeValue(XElement a) {
+            return a.Value.Trim(' ', '\n', '\r', '\t');
         }
 
-        public static string GetAttributeValue(XmlNode where, string name, string def) {
-            if (where.Attributes.GetNamedItem(name) != null)
-                return where.Attributes.GetNamedItem(name).Value;
+        public static string GetAttributeValue(XElement where, string name, string def) {
+            if (where.Attribute(name) != null)
+                return where.Attribute(name).Value;
 
             return def;
         }
 
-        public static T GetCastedAttributeValue<T>(XmlNode where, string name, string def)
+        public static T GetCastedAttributeValue<T>(XNode where, string name, string def)
         {
             TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
-            return (T)converter.ConvertFromString(GetAttributeValue(where, name, def));
+            return (T)converter.ConvertFromString(GetAttributeValue((XElement)where, name, def));
         }
 
         /// <summary>
@@ -155,8 +156,8 @@ namespace fooTitle.Extending {
         /// <param name="name">name of the attribute</param>
         /// <param name="def">if the attribute doesn't exist, def is read</param>
         /// <returns>Evaluated expression or number (depending on what's in the attribute)</returns>
-        public static float GetNumberFromAttribute(XmlNode where, string name, string def) {
-            string val = GetAttributeValue(where, name, def);
+        public static float GetNumberFromAttribute(XNode where, string name, string def) {
+            string val = GetAttributeValue((XElement)where, name, def);
             try
             {
                 return IsExpression(val) 
@@ -179,8 +180,8 @@ namespace fooTitle.Extending {
         /// <param name="name">The name of the attribute</param>
         /// <param name="def">The default value if the attribute is not present</param>
         /// <returns>the expression if it's present or null if there's just a string or a number</returns>
-        public static string GetExpressionFromAttribute(XmlNode where, string name, string def) {
-            string val = GetAttributeValue(where, name, def);
+        public static string GetExpressionFromAttribute(XNode where, string name, string def) {
+            string val = GetAttributeValue((XElement)where, name, def);
             if (val == null || !IsExpression(val)) {
                 return null;
             }

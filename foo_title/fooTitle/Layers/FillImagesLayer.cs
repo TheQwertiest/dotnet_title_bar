@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -35,7 +35,7 @@ namespace fooTitle.Layers
         protected Graphics centerRepeatedCanvas;
 		protected bool repeatCenter = false;
 
-		public FillImagesLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
+		public FillImagesLayer(Rectangle parentRect, XElement node) : base(parentRect, node) {
 			// load all images
 			XPathNavigator nav = node.CreateNavigator();
 			XPathNodeIterator xi = (XPathNodeIterator)nav.Evaluate("contents/image");

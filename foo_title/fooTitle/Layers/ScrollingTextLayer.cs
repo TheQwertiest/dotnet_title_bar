@@ -20,7 +20,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Xml;
+using System.Xml.Linq;
 
 namespace fooTitle.Layers {
     [LayerTypeAttribute("scrolling-text")]
@@ -49,17 +49,17 @@ namespace fooTitle.Layers {
 
         private Align _align;
 
-        public ScrollingTextLayer(Rectangle parentRect, XmlNode node)
+        public ScrollingTextLayer(Rectangle parentRect, XElement node)
             : base(parentRect, node)
         {
 
-            XmlNode contents = GetFirstChildByName(node, "contents");
+            XNode contents = GetFirstChildByName(node, "contents");
 
             _speed = GetCastedAttributeValue<float>(contents, "speed", "25");
             _pause = GetCastedAttributeValue<int>(contents, "pause", "1000");
         }
 
-        protected override void AddLabel(XmlNode node, TextLayer.LabelPart def)
+        protected override void AddLabel(XElement node, TextLayer.LabelPart def)
         {
             string position = GetAttributeValue(node, "position", "left");
             left = ReadLabel(node, def);

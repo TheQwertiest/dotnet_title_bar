@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
-using System.Xml;
+using System.Xml.Linq;
 
 namespace fooTitle.Config {
 
@@ -318,8 +318,8 @@ namespace fooTitle.Config {
 
     public class ConfXml : ConfValue
     {
-        private XmlNode _val;
-        private XmlNode _saved;
+        private XElement _val;
+        private XElement _saved;
 
         public ConfXml(string name) : base(name)
         {
@@ -328,25 +328,21 @@ namespace fooTitle.Config {
             Init();
         }
 
-        public XmlNode Value
+        public XElement Value
         {
-            get
-            {
-                return _val?.Clone() ?? _val;
-            }
+            get => _val != null ? new XElement(_val) : null;
             set {
-                if (value != _val)
-                {
-                    if (value != null)
-                        _val = value.Clone();
-                    FireOnChanged();
-                }
+                if (value == _val)
+                    return;
+
+                _val = value != null ? new XElement(value) : null;
+                FireOnChanged();
             }
         }
 
-        public void ForceUpdate(XmlNode newVal)
+        public void ForceUpdate(XElement newVal)
         {
-            _val = newVal.Clone();
+            _val = new XElement(newVal);
             FireOnChanged();
         }
 
@@ -358,10 +354,10 @@ namespace fooTitle.Config {
 
         public override void LoadFrom(IConfigStorage from)
         {
-            object res = from.ReadVal<XmlNode>(Name);
+            object res = from.ReadVal<XElement>(Name);
             if (res != null)
             {
-                Value = (XmlNode)res;
+                Value = (XElement)res;
                 _saved = Value;
             }
         }
@@ -383,8 +379,7 @@ namespace fooTitle.Config {
 
         public override bool HasChanged()
         {
-            // TODO:?
-            return true;
+            return !XNode.DeepEquals(_saved, _val);
         }
     }
 }
