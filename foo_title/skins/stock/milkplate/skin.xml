@@ -15,7 +15,7 @@
             <image src="shade_main.png" />
         </contents>
 
-        <layer name="lMainBlue" type="absolute-images">
+        <layer name="lMainBlue" type="absolute-images" persistent="true">
             <geometry type="absolute">
                 <size x="450" y="27"/>
                 <position x="0" y="0" align="left" />
@@ -25,7 +25,7 @@
             </contents>
         </layer>
 
-        <layer name="lMainYellow" type="absolute-images" enabled="false">
+        <layer name="lMainYellow" type="absolute-images" enabled="false" persistent="true">
             <geometry type="absolute">
                 <size x="450" y="27"/>
                 <position x="0" y="0" align="left" />
@@ -35,7 +35,7 @@
             </contents>
         </layer>
 
-        <layer name="lMainGreen" type="absolute-images" enabled="false">
+        <layer name="lMainGreen" type="absolute-images" enabled="false" persistent="true">
             <geometry type="absolute">
                 <size x="450" y="27"/>
                 <position x="0" y="0" align="left" />
@@ -180,7 +180,7 @@
         </layer>
     </layer>
 
-    <layer name="lAlbumArt" type="absolute-images">
+    <layer name="lAlbumArt" type="absolute-images" persistent="true">
         <geometry type="absolute">
             <size x="62" y="64"/>
             <position x="0" y="0" align="left" />
@@ -199,7 +199,7 @@
             </contents>
         </layer>
 
-        <layer name="lAlbumArtBlue" type="absolute-images">
+        <layer name="lAlbumArtBlue" type="absolute-images" persistent="true">
             <geometry type="absolute">
                 <size x="62" y="59"/>
                 <position x="0" y="0" align="left" />
@@ -209,7 +209,7 @@
             </contents>
         </layer>
 
-        <layer name="lAlbumArtYellow" type="absolute-images" enabled="false">
+        <layer name="lAlbumArtYellow" type="absolute-images" enabled="false" persistent="true">
             <geometry type="absolute">
                 <size x="62" y="59"/>
                 <position x="0" y="0" align="left" />
@@ -219,7 +219,7 @@
             </contents>
         </layer>
 
-        <layer name="lAlbumArtGreen" type="absolute-images" enabled="false">
+        <layer name="lAlbumArtGreen" type="absolute-images" enabled="false" persistent="true">
             <geometry type="absolute">
                 <size x="62" y="59"/>
                 <position x="0" y="0" align="left" />
@@ -249,7 +249,7 @@
         </layer>
     </layer>
 
-    <layer name="lExt" type="absolute-images" enabled="false">
+    <layer name="lExt" type="absolute-images" enabled="false" persistent="true">
         <geometry type="absolute">
             <size x="454" y="44"/>
             <position x="60" y="24" align="left" />
@@ -258,7 +258,7 @@
             <image src="shade_ext.png" />
         </contents>
 
-        <layer name="lExtBlue" type="absolute-images" >
+        <layer name="lExtBlue" type="absolute-images" persistent="true">
             <geometry type="absolute">
                 <size x="450" y="39"/>
                 <position x="0" y="0" align="left" />
@@ -268,7 +268,7 @@
             </contents>
         </layer>
 
-        <layer name="lExtYellow" type="absolute-images" enabled="false">
+        <layer name="lExtYellow" type="absolute-images" enabled="false" persistent="true">
             <geometry type="absolute">
                 <size x="450" y="39"/>
                 <position x="0" y="0" align="left" />
@@ -278,7 +278,7 @@
             </contents>
         </layer>
 
-        <layer name="lExtGreen" type="absolute-images" enabled="false">
+        <layer name="lExtGreen" type="absolute-images" enabled="false" persistent="true">
             <geometry type="absolute">
                 <size x="450" y="39"/>
                 <position x="0" y="0" align="left" />
@@ -288,7 +288,7 @@
             </contents>
         </layer>
 
-        <layer name="bAlbumArtBlue" type="button">
+        <layer name="bAlbumArtBlue" type="button" persistent="true">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="427" y="3" />
@@ -303,7 +303,7 @@
             </contents>
         </layer>
 
-        <layer name="bAlbumArtYellow" type="button" enabled="false">
+        <layer name="bAlbumArtYellow" type="button" enabled="false" persistent="true">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="427" y="3" />
@@ -318,7 +318,7 @@
             </contents>
         </layer>
 
-        <layer name="bAlbumArtGreen" type="button" enabled="false">
+        <layer name="bAlbumArtGreen" type="button" enabled="false" persistent="true">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="427" y="3" />
