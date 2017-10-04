@@ -20,6 +20,8 @@
 using System;
 using System.Reflection;
 using System.Collections;
+using System.ComponentModel;
+using System.Globalization;
 using System.Xml;
 
 namespace fooTitle.Extending {
@@ -42,7 +44,7 @@ namespace fooTitle.Extending {
         private readonly Assembly _assembly;
 
         public override string Message =>
-            $"Duplicate element type {_elementType.ToString()} found in assembly {_assembly.ToString()} on class {_elementClass.ToString()}.";
+            $"Duplicate element type {_elementType} found in assembly {_assembly.ToString()} on class {_elementClass.ToString()}.";
 
         public DuplicateElementTypeException(string elementType, Type elementClass, Assembly assembly) {
             _elementClass = elementClass;
@@ -139,6 +141,12 @@ namespace fooTitle.Extending {
             return def;
         }
 
+        public static T GetCastedAttributeValue<T>(XmlNode where, string name, string def)
+        {
+            TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
+            return (T)converter.ConvertFromString(GetAttributeValue(where, name, def));
+        }
+
         /// <summary>
         /// If the attribute contains an expression, it is evaluated and the result is returned. 
         /// If the attribute is a number, the number is returned
@@ -149,14 +157,13 @@ namespace fooTitle.Extending {
         /// <returns>Evaluated expression or number (depending on what's in the attribute)</returns>
         public static float GetNumberFromAttribute(XmlNode where, string name, string def) {
             string val = GetAttributeValue(where, name, def);
-            try {
-                if (IsExpression(val)) {
-                    // a formatting expression
-                    return float.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), val));
-                } else {
-                    // just a plain number
-                    return float.Parse(val, System.Globalization.NumberFormatInfo.InvariantInfo);
-                }
+            try
+            {
+                return IsExpression(val) 
+                    ? float.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), val)) 
+                    : float.Parse(val, NumberFormatInfo.InvariantInfo);
+
+                // just a plain number
             } catch (Exception e) {
                 fooManagedWrapper.CConsole.Warning(e.ToString());
                 fooManagedWrapper.CConsole.Warning(val);
@@ -214,7 +221,7 @@ namespace fooTitle.Extending {
 
         public static bool IsExpression(string expr)
         {
-            return (expr.IndexOfAny(new char[] {'%', '$'}) != -1);
+            return (expr.IndexOfAny(new[] {'%', '$'}) != -1);
         }
     }
 
@@ -249,7 +256,7 @@ namespace fooTitle.Extending {
 
             foreach (Type t in types) {
                 if (elementType.IsAssignableFrom(t)) {
-                    Object[] attrs = t.GetCustomAttributes(elementTypeAttributeType, false);
+                    object[] attrs = t.GetCustomAttributes(elementTypeAttributeType, false);
                     if (attrs.Length == 1) {
                         string elementTypeName = ((ElementTypeAttribute)attrs[0]).Type;
                         AddElementEntry(new ElementEntry(elementTypeName, t), assembly);
@@ -261,7 +268,7 @@ namespace fooTitle.Extending {
         }
 
         private bool ElementTypeExists(string type) {
-            foreach (Object o in _elementsDictionary) {
+            foreach (object o in _elementsDictionary) {
                 if (((ElementEntry)o).TypeName == type)
                     return true;
             }

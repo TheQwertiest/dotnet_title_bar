@@ -55,8 +55,8 @@ namespace fooTitle.Layers
             XmlNode contents = GetFirstChildByName(node, "contents");
 			
 			// read the spacing
-			space = Int32.Parse(GetAttributeValue(contents, "spacing", "20"));
-            angle = Int32.Parse(GetAttributeValue(contents, "angle", "0"));
+			space = GetCastedAttributeValue<int>(contents, "spacing", "20");
+            angle = GetCastedAttributeValue<int>(contents, "angle", "0");
 
             // read the default font
             LabelPart empty = new LabelPart
@@ -66,13 +66,13 @@ namespace fooTitle.Layers
 		        fontName = "Arial",
 		        color = Color.FromArgb(255, 0, 0, 0),
 		        fontSize = 9,
-		        isScaleable = bool.Parse(GetAttributeValue(contents, "scaleable", "false")),
+		        isScaleable = GetCastedAttributeValue<bool>(contents, "scaleable", "false"),
             };
 		    LabelPart def = ReadLabel(contents, empty);
  
 			// read contents
             foreach (XmlNode n in contents.SelectNodes("label")) {
-                addLabel(n, def);
+                AddLabel(n, def);
             }
 
             defaultText = "";
@@ -82,20 +82,20 @@ namespace fooTitle.Layers
             }
  
             if (Main.GetInstance().CurrentSkin != null) {
-                Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += this.OnPlaybackNewTrack;
-                Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += this.OnPlaybackTime;
+                Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += OnPlaybackNewTrack;
+                Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += OnPlaybackTime;
                 Main.GetInstance().CurrentSkin.OnPlaybackStopEvent += CurrentSkin_OnPlaybackStopEvent;
                 Main.GetInstance().CurrentSkin.OnPlaybackPauseEvent += CurrentSkin_OnPlaybackPauseEvent;
             }
 		}
 
         public void CurrentSkin_OnPlaybackPauseEvent(bool state) {
-            updateText();
+            UpdateText();
         }
 
         public void CurrentSkin_OnPlaybackStopEvent(IPlayControl.StopReason reason) {
             if (reason != IPlayControl.StopReason.stop_reason_starting_another) {
-                updateText();
+                UpdateText();
             }
         }
         
@@ -123,7 +123,7 @@ namespace fooTitle.Layers
                 res.fontName = def.fontName;
 
             if (node.Attributes.GetNamedItem("color") != null)
-                res.color = colorFromCode(node.Attributes.GetNamedItem("color").Value);
+                res.color = ColorFromCode(node.Attributes.GetNamedItem("color").Value);
             else
                 res.color = def.color;
 
@@ -142,7 +142,7 @@ namespace fooTitle.Layers
             return res;
         }
 
-		protected virtual void addLabel(XmlNode node, LabelPart def) {
+		protected virtual void AddLabel(XmlNode node, LabelPart def) {
             string position = GetAttributeValue(node, "position", "left");
             LabelPart label = ReadLabel(node, def);
 			switch (position)
@@ -156,7 +156,7 @@ namespace fooTitle.Layers
 			}
 		}
 
-        protected Color colorFromCode(string code) {
+        protected Color ColorFromCode(string code) {
             try {
                 string a = code.Substring(0, 2).ToLower();
                 string r = code.Substring(2, 2).ToLower();
@@ -178,21 +178,21 @@ namespace fooTitle.Layers
 		protected override void DrawImpl() {
             Matrix oldTransform = Display.Canvas.Transform;
 
-            Rectangle bounds = calcRotatedBounds();
+            Rectangle bounds = CalcRotatedBounds();
 
             Display.Canvas.TranslateTransform(-bounds.X, -bounds.Y);
             Display.Canvas.TranslateTransform(ClientRect.X, ClientRect.Y);
 
             Display.Canvas.RotateTransform(angle);
             
-            straightDraw(Display.Canvas);
+            StraightDraw(Display.Canvas);
             Display.Canvas.Transform = oldTransform;
 		}
 
         /// <summary>
         /// Draws at 0,0. Transformation into ClientRect is handled outside.
         /// </summary>
-        protected virtual void straightDraw(Graphics g) {
+        protected virtual void StraightDraw(Graphics g) {
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
             float leftWidth = 0;
             if (!string.IsNullOrEmpty(left.formatted)) {
@@ -207,14 +207,14 @@ namespace fooTitle.Layers
                 // the text is right-aligned, so we must take the size of client rect into account. But
                 // the text can be also rotated, so we must consider different sizes. This will probably
                 // not work very well for arbitrary angles, but is ok for 90*n.
-                float farEdge = getFarPointInClientRect(angle);
+                float farEdge = GetFarPointInClientRect(angle);
                 Rectangle drawInto = new Rectangle {Width = (int) farEdge};
                 g.DrawString(right.formatted, right.font, new SolidBrush(right.color), drawInto, rightFormat);
 
             }
         }
 
-		protected virtual void updateText() {
+		protected virtual void UpdateText() {
             LabelPart[] parts = new LabelPart[2];
             parts[0] = left;
             parts[1] = right;
@@ -243,13 +243,13 @@ namespace fooTitle.Layers
 		}
 
 		protected override Size GetMinimalSizeImpl() {
-            return geometry.GetMinimalSize(calcRotatedBounds().Size);
+            return geometry.GetMinimalSize(CalcRotatedBounds().Size);
 		}
 
         /// <returns>
         /// Size of text, not rotated.
         /// </returns>
-        private Size calcStraightSize() {
+        private Size CalcStraightSize() {
             float width = 0;
             if (!string.IsNullOrEmpty(left.formatted))
                 width += Display.Canvas.MeasureString(left.formatted, left.font).Width;
@@ -267,8 +267,8 @@ namespace fooTitle.Layers
             return new Size((int)width, (int)height);
         }
 
-        private Rectangle calcRotatedBounds() {
-            Size size = calcStraightSize();
+        private Rectangle CalcRotatedBounds() {
+            Size size = CalcStraightSize();
             Matrix transform = new Matrix();
             transform.Rotate(angle);
             Point[] boundPoints = {
@@ -302,21 +302,20 @@ namespace fooTitle.Layers
         /// <remarks>
         /// Only works correctly for 90*n.
         /// </remarks>
-        protected float getFarPointInClientRect(int _angle) {
+        protected float GetFarPointInClientRect(int _angle)
+        {
             if ((_angle < 45 || _angle > (360 - 45)) || (_angle > (180 - 45) && _angle < (180 + 45))) {
                 return ClientRect.Width;
-            } else {
-                return ClientRect.Height;
             }
+            return ClientRect.Height;
         }
 
-		public void OnPlaybackNewTrack(fooManagedWrapper.CMetaDBHandle song) {
-			updateText();
+		public void OnPlaybackNewTrack(CMetaDBHandle song) {
+			UpdateText();
 		}
 
 		public void OnPlaybackTime(double time) {
-			updateText();
+			UpdateText();
 		}
-
 	}
 }

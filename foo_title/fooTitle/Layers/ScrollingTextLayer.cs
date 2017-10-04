@@ -26,28 +26,28 @@ namespace fooTitle.Layers {
     [LayerTypeAttribute("scrolling-text")]
     internal class ScrollingTextLayer : TextLayer, IContiniousRedraw
     {
-        protected int direction = 1;
+        private int _direction = 1;
         /// <summary>
         /// Number of pixels to move the text per second.
         /// </summary>
-        protected float speed = 25F;
+        private readonly float _speed = 25F;
         /// <summary>
-        /// Length of pause in miliseconds when the text arrives to either of its edges. 
+        /// Length of pause in milliseconds when the text arrives to either of its edges. 
         /// </summary>
-        protected int pause = 1000;
-        protected float xpos = 0;
-        protected Bitmap textImage;
-        protected Graphics textCanvas;
-        protected long lastUpdate = System.DateTime.Now.Ticks;
-        protected bool paused = false;
-        protected enum Align
+        private readonly int _pause = 1000;
+        private float _xpos = 0;
+        private Bitmap _textImage;
+        private Graphics _textCanvas;
+        private long _lastUpdate = DateTime.Now.Ticks;
+        private bool _paused = false;
+        private enum Align
         {
             Left,
             Center,
             Right
         }
 
-        protected Align align;
+        private Align _align;
 
         public ScrollingTextLayer(Rectangle parentRect, XmlNode node)
             : base(parentRect, node)
@@ -55,11 +55,11 @@ namespace fooTitle.Layers {
 
             XmlNode contents = GetFirstChildByName(node, "contents");
 
-            speed = float.Parse(GetAttributeValue(contents, "speed", "25"));
-            pause = int.Parse(GetAttributeValue(contents, "pause", "1000"));
+            _speed = GetCastedAttributeValue<float>(contents, "speed", "25");
+            _pause = GetCastedAttributeValue<int>(contents, "pause", "1000");
         }
 
-        protected override void addLabel(XmlNode node, TextLayer.LabelPart def)
+        protected override void AddLabel(XmlNode node, TextLayer.LabelPart def)
         {
             string position = GetAttributeValue(node, "position", "left");
             left = ReadLabel(node, def);
@@ -67,32 +67,32 @@ namespace fooTitle.Layers {
             switch (position)
             {
                 case "left":
-                    align = Align.Left;
+                    _align = Align.Left;
                     break;
                 case "right":
-                    align = Align.Right;
+                    _align = Align.Right;
                     break;
                 case "center":
-                    align = Align.Center;
+                    _align = Align.Center;
                     break;
             }
         }
 
-        protected override void straightDraw(Graphics g)
+        protected override void StraightDraw(Graphics g)
         {
 
             // first move the text
-            long now = System.DateTime.Now.Ticks;
-            long deltaTime = now - lastUpdate;
+            long now = DateTime.Now.Ticks;
+            long deltaTime = now - _lastUpdate;
             float textWidth = g.MeasureString(left.formatted, left.font).Width;
-            float farPoint = this.getFarPointInClientRect(this.angle);
+            float farPoint = this.GetFarPointInClientRect(this.angle);
             float drawAt = 0;
 
             if (textWidth <= farPoint)
             {
                 // no need to move, it's too short
-                xpos = 0;
-                switch (align)
+                _xpos = 0;
+                switch (_align)
                 {
                     case Align.Left:
                         drawAt = 0;
@@ -105,39 +105,39 @@ namespace fooTitle.Layers {
                         break;
                 }
             }
-            else if (!paused)
+            else if (!_paused)
             {
-                xpos += direction * speed * ((float)deltaTime / 10000000F);
-                if (xpos >= textWidth - farPoint)
+                _xpos += _direction * _speed * (deltaTime / 10000000F);
+                if (_xpos >= textWidth - farPoint)
                 {
                     // reached the right end
-                    direction = -1;
-                    xpos = textWidth - farPoint;
-                    paused = true;
+                    _direction = -1;
+                    _xpos = textWidth - farPoint;
+                    _paused = true;
                 }
-                else if (xpos <= 0)
+                else if (_xpos <= 0)
                 {
                     // reached the left end
-                    direction = 1;
-                    xpos = 0;
-                    paused = true;
+                    _direction = 1;
+                    _xpos = 0;
+                    _paused = true;
                 }
             }
 
             // then draw it
-            if (textImage != null)
+            if (_textImage != null)
             {
-                g.DrawImage(textImage, (int)(drawAt), 0, new RectangleF((int)xpos, 0, (int)farPoint, textImage.Height), GraphicsUnit.Pixel);
+                g.DrawImage(_textImage, (int)(drawAt), 0, new RectangleF((int)_xpos, 0, (int)farPoint, _textImage.Height), GraphicsUnit.Pixel);
             }
 
-            if (!paused)
+            if (!_paused)
             {
-                lastUpdate = now;
+                _lastUpdate = now;
             }
-            else if ((deltaTime / 10000) >= pause)
+            else if ((deltaTime / 10000) >= _pause)
             {
-                lastUpdate = now;
-                paused = false;
+                _lastUpdate = now;
+                _paused = false;
             }
         }
 
@@ -154,7 +154,7 @@ namespace fooTitle.Layers {
         /// <summary>
         /// This draws the entire text to a backbuffer. When drawing, the appropriate part of backbuffer is used.
         /// </summary>
-        protected override void updateText()
+        protected override void UpdateText()
         {
             string prevString = left.formatted;
    
@@ -170,13 +170,13 @@ namespace fooTitle.Layers {
             if (left.formatted != null)
             {
                 SizeF textSize = Main.GetInstance().Display.Canvas.MeasureString(left.formatted, left.font);
-                textImage = new Bitmap(
+                _textImage = new Bitmap(
                     Math.Max(10, (int)Math.Ceiling(textSize.Width)), 
                     Math.Max(10, (int)Math.Ceiling(textSize.Height)), 
                     System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                textCanvas = Graphics.FromImage(textImage);
-                textCanvas.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-                textCanvas.DrawString(left.formatted, left.font, new SolidBrush(left.color), new PointF(0, 0));
+                _textCanvas = Graphics.FromImage(_textImage);
+                _textCanvas.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                _textCanvas.DrawString(left.formatted, left.font, new SolidBrush(left.color), new PointF(0, 0));
             }
 
             if (prevString != left.formatted)
@@ -207,16 +207,16 @@ namespace fooTitle.Layers {
         private bool IsScrollingNeeded()
         {
             float textWidth = TextRenderer.MeasureText(left.formatted, left.font).Width;
-            float farPoint = getFarPointInClientRect(this.angle);
+            float farPoint = GetFarPointInClientRect(this.angle);
 
             return textWidth > farPoint;
         }
 
         bool IContiniousRedraw.IsRedrawNeeded()
         {
-            int deltaTime = (int)((DateTime.Now.Ticks - lastUpdate) / 10000);
+            int deltaTime = (int)((DateTime.Now.Ticks - _lastUpdate) / 10000);
 
-            if (paused && deltaTime < pause)
+            if (_paused && deltaTime < _pause)
                 return false;
 
             return true;

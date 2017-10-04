@@ -38,6 +38,7 @@ namespace fooTitle {
 
     public class Main : IComponentClient, IPlayCallbackSender {
         public static IPlayControl PlayControl;
+        public SkinState SkinState;
         /// <summary>
         /// Set to true after everything has been created and can be manipulated
         /// </summary>
@@ -100,6 +101,7 @@ namespace fooTitle {
         protected void SkinPath_OnChanged(string name) {
             if (initDone) {
                 try {
+                    SkinState.ResetState();
                     LoadSkin(SkinPath);
                     // Changing to skin with different anchor type 
                     // may cause window to go beyond screen borders
@@ -309,11 +311,12 @@ namespace fooTitle {
                 if (this.Display == null)
                     ReinitDisplay();
 
-                if (path == null)
+                if (path == null || !Directory.Exists(path))
+                {
                     path = Path.Combine(UserDataDir, "white");
-
-                if (!Directory.Exists(path))
-                    return;
+                    if (!Directory.Exists(path) )
+                        return;
+                }
 
                 System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 
@@ -464,6 +467,9 @@ namespace fooTitle {
             // create geometry factory
             GeometryFactory = new GeometryFactory();
             GeometryFactory.SearchAssembly(Assembly.GetExecutingAssembly());
+
+            // Skin state manager
+            SkinState = new SkinState();
 
             // initialize the display and skin
             ReinitDisplay();

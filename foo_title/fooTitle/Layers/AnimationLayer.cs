@@ -39,27 +39,27 @@ namespace fooTitle.Layers
 
         public AnimationLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
             XmlNode contents = GetFirstChildByName(node, "contents");
-            refreshRate = Math.Max(1,int.Parse(GetAttributeValue(contents, "speed", "15")));
+            refreshRate = Math.Max(1, GetCastedAttributeValue<int>(contents, "speed", "15"));
 
             // load all images
             XPathNavigator nav = node.CreateNavigator();
 			XPathNodeIterator xi = (XPathNodeIterator)nav.Evaluate("contents/frame");
 
             while (xi.MoveNext()) {
-				addImage(xi.Current);
+				AddImage(xi.Current);
 			}
 
 		    Main.GetInstance().AddRedrawRequester(this);
         }
 
-		protected void addImage(XPathNavigator node) {
+		protected void AddImage(XPathNavigator node) {
 			string src = node.GetAttribute("src", "");
 			Bitmap b = Main.GetInstance().CurrentSkin.GetSkinImage(src);
 			images.Add(b);
 		}
 
         protected override void DrawImpl() {
-            long now = System.DateTime.Now.Ticks;
+            long now = DateTime.Now.Ticks;
             int deltaTime = (int)((now - lastUpdate) / 10000);
 
             if (deltaTime >= 1000 / refreshRate)

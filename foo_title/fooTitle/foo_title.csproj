@@ -194,6 +194,7 @@
     <Compile Include="Layers\Skin.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Layers\SkinState.cs" />
     <Compile Include="Layers\TextLayer.cs">
       <SubType>Code</SubType>
     </Compile>

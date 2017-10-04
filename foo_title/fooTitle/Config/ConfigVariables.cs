@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
+using System.Xml;
 
 namespace fooTitle.Config {
 
@@ -312,6 +313,78 @@ namespace fooTitle.Config {
         public new bool Value {
             set => base.Value = value ? 1 : 0;
             get => base.Value != 0;
+        }
+    }
+
+    public class ConfXml : ConfValue
+    {
+        private XmlNode _val;
+        private XmlNode _saved;
+
+        public ConfXml(string name) : base(name)
+        {
+            _val = null;
+
+            Init();
+        }
+
+        public XmlNode Value
+        {
+            get
+            {
+                return _val?.Clone() ?? _val;
+            }
+            set {
+                if (value != _val)
+                {
+                    if (value != null)
+                        _val = value.Clone();
+                    FireOnChanged();
+                }
+            }
+        }
+
+        public void ForceUpdate(XmlNode newVal)
+        {
+            _val = newVal.Clone();
+            FireOnChanged();
+        }
+
+        public override void SaveTo(IConfigStorage to)
+        {
+            to.WriteVal(Name, Value);
+            _saved = Value;
+        }
+
+        public override void LoadFrom(IConfigStorage from)
+        {
+            object res = from.ReadVal<XmlNode>(Name);
+            if (res != null)
+            {
+                Value = (XmlNode)res;
+                _saved = Value;
+            }
+        }
+
+        public override void ReadVisit(IConfigValueVisitor visitor)
+        {
+            // TODO:?
+        }
+
+        public override void WriteVisit(IConfigValueVisitor visitor)
+        {
+            // TODO:?
+        }
+
+        public override void Reset()
+        {
+            Value = null;
+        }
+
+        public override bool HasChanged()
+        {
+            // TODO:?
+            return true;
         }
     }
 }

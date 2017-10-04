@@ -41,9 +41,11 @@ namespace fooTitle.Layers {
 
         public string Type { get; }
 
+        public bool IsPersistent { get; }
+
         public Point Position => geometry.GetPosition();
 
-        public virtual Rectangle ClientRect => geometry.ClientRect;
+        public Rectangle ClientRect => geometry.ClientRect;
         protected Display Display { get; set; }
 
         private bool _enabled = true;
@@ -89,8 +91,9 @@ namespace fooTitle.Layers {
             // read name and type
             Name = node.Attributes.GetNamedItem("name").Value;
             Type = node.Attributes.GetNamedItem("type").Value;
-            _enabled = GetAttributeValue(node, "enabled", "true").ToLowerInvariant() == "true";
-            _clipEnabled = GetAttributeValue(node, "clip", "true").ToLowerInvariant() == "true";
+            IsPersistent = GetCastedAttributeValue<bool>(node, "persistent", "false");
+            _enabled = GetCastedAttributeValue<bool>(node, "enabled", "true");
+            _clipEnabled = GetCastedAttributeValue<bool>(node, "clip", "true");
             HasContent = GetFirstChildByNameOrNull(node, "contents") != null;
 
             // create the geometry

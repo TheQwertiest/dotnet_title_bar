@@ -28,7 +28,7 @@ using fooManagedWrapper;
 using fooTitle.Geometries;
 
 namespace fooTitle.Layers
-{
+{ 
     /// <summary>
     ///     Loads itself from an xml file and handles all drawing.
     /// </summary>
@@ -37,6 +37,8 @@ namespace fooTitle.Layers
         private readonly XmlDocument _document = new XmlDocument();
         private readonly XmlNode _skin;
         public List<Layer> DynamicLayers = new List<Layer>();
+
+        
 
         /// <summary>
         ///     Loads the skin from the specified xml file
@@ -70,9 +72,9 @@ namespace fooTitle.Layers
 
         public ToolTip ToolTip { get; private set; }
 
-        public void Init(Display display_)
+        public void Init(Display display)
         {
-            Display = display_;
+            Display = display;
 
             // register to mouse events
             Display.MouseMove += Display_MouseMove;
@@ -86,8 +88,18 @@ namespace fooTitle.Layers
 
             LoadLayers(_skin);
 
+            SkinState state = Main.GetInstance().SkinState;
+            if (!state.IsStateValid(this))
+            {
+                state.ResetState();
+            }
+            else
+            {
+                state.LoadState(this);
+            }
+
             if (HasToolTipLayer(this))
-                ToolTip = new ToolTip(display_, this);
+                ToolTip = new ToolTip(display, this);
 
             geometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)geometry).Width,
                 ((AbsoluteGeometry)geometry).Height));

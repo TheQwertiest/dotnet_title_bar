@@ -2,7 +2,12 @@
 
 ## [Unreleased]
 ### Added
+- Added 'persistent' attribute to layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#layer)).
 - Added animated .gif support to 'absolute-images' layer.
+
+### Changed 
+- Updated Milk Plate skin to make use of new 'persistent' attribute: now the panel's state is persistent across fb2k launches.
+- Updated White skin to make use of .gif support.
 
 ## [1.0.2] - 2017-09-22
 ### Added
@@ -17,7 +22,7 @@
 
 ## [1.0.1] - 2017-09-14
 ### Added
-- Added 'scaleable' attribute to text layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#text)).
+- Added 'scaleable' attribute to text layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#text)).
 
 ### Fixed
 - Text is not scaled with DPI by default now, thus preserving skins, that are not compatible with scaling, from breaking on high DPI screens.
@@ -25,7 +30,7 @@
 
 ## [1.0.0] - 2017-08-15
 ### Added
-- Added 'speed' property to animation layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#animation)).
+- Added 'speed' property to animation layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#animation)).
 - Added [>>gallery<<](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery) showcasing stock and user-created skins.
 - Updated various user-created skins for v1.0.0 (see [git directory](https://github.com/TheQwertiest/foo_title/tree/master/foo_title/skins/fixed_user_skins)).
 
@@ -42,8 +47,8 @@
 
 ## [0.9.5] - 2017-08-10
 ### Added
-- Added 'clip' property to skin element: set to false to disable clipping (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#Layer)).
-- Added 'no-content' layer type: this layer has no contents itself and is used solely for positioning other layers, it is also transparent for tool-tip layer detection (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#no-content)).
+- Added 'clip' property to skin element: set to false to disable clipping (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Layer)).
+- Added 'no-content' layer type: this layer has no contents itself and is used solely for positioning other layers, it is also transparent for tool-tip layer detection (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#no-content)).
 
 ### Changed
 - Updated Milk Plate skin.
@@ -77,8 +82,8 @@
 
 ## [0.9.3] - 2017-08-01
 ### Added
-- Added double-click action to button layer ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#button)).
-- Added 'minimal' geometry type ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#minimal)).
+- Added double-click action to button layer ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#button)).
+- Added 'minimal' geometry type ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#minimal)).
 
 ### Changed
 - **(!!!)** Renamed anchor_type property to anchor.
@@ -91,7 +96,7 @@
 
 ## [0.9.2] - 2017-07-25
 ### Added
-- Added ability to configure anchor point position in skin.xml ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#Header)).
+- Added ability to configure anchor point position in skin.xml ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Header)).
 - Added ability to display anchor point (see preferences page).
 
 ### Fixed

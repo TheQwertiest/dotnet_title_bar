@@ -114,18 +114,31 @@ namespace fooTitle.Config {
                 _configRoot.AppendChild(el);
             }
             ((XmlElement)el).SetAttribute("id", name);
+
             if (value != null) {
-                el.InnerText = value.ToString();
+                if (value.GetType().IsSubclassOf(typeof(XmlNode)) ) {
+                    while (el.FirstChild != null)
+                        el.RemoveChild(el.FirstChild);
+
+                    XmlNode importNode = _xmlDocument.ImportNode((XmlNode)value, true);
+                    el.AppendChild(importNode);
+                }
+                else {
+                    el.InnerText = value.ToString();
+                }
             }
         }
 
-        public object ReadVal<T>(string name) {
+        public object ReadVal<T>(string name)
+        {
             XmlNode el = FindElementById(name);
-            if (el == null)
-                return null;
 
-            return StringToType<T>(el.InnerText);
+            if (typeof(T) == typeof(XmlNode) )
+                return el?.FirstChild;
 
+            return el == null 
+                ? null 
+                : StringToType<T>(el.InnerText);
         }
 
         public void Save() {

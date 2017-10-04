@@ -52,7 +52,7 @@ namespace fooTitle.Layers {
         protected int clicks;
         protected ScrollDirection scrollDir;
 
-        private static MouseButtons stringToButton(string b) {
+        private static MouseButtons StringToButton(string b) {
             switch (b) {
                 case "left":
                 case "left_doubleclick":
@@ -72,7 +72,7 @@ namespace fooTitle.Layers {
             }
         }
 
-        private static ScrollDirection stringToDir(string d) {
+        private static ScrollDirection StringToDir(string d) {
             switch (d) {
                 case "up":
                     return ScrollDirection.Up;
@@ -87,9 +87,9 @@ namespace fooTitle.Layers {
         public virtual void Init(XmlNode node)
         {
             string buttonStr = Element.GetAttributeValue(node, "button", "left").ToLowerInvariant();
-            button = stringToButton(buttonStr);
+            button = StringToButton(buttonStr);
             clicks = "left_doubleclick" == buttonStr ? 2 : 1;
-            scrollDir = stringToDir(Element.GetAttributeValue(node, "scroll", "none").ToLowerInvariant());
+            scrollDir = StringToDir(Element.GetAttributeValue(node, "scroll", "none").ToLowerInvariant());
 
             if (button != MouseButtons.None && scrollDir != ScrollDirection.None) {
                 throw new ArgumentException("You can't specify both 'button' and 'scroll' attributes on an action tag!");
@@ -113,8 +113,8 @@ namespace fooTitle.Layers {
             return MouseActionType.Click;
         }
 
-        protected bool shouldRun(MouseButtons button, int clicks, int delta) {
-            if (this.scrollDir != ScrollDirection.None) {
+        protected bool ShouldRun(MouseButtons button, int clicks, int delta) {
+            if (scrollDir != ScrollDirection.None) {
                 return (scrollDir == ScrollDirection.Up && delta > 0) || (scrollDir == ScrollDirection.Down && delta < 0);
             }
             return this.button == MouseButtons.None || ( this.button == button && this.clicks == clicks );
@@ -122,14 +122,14 @@ namespace fooTitle.Layers {
     }
 
     internal class MainMenuAction : ButtonAction {
-        private string originalCmd;
-        private CMainMenuCommands cmds;
-        private uint commandIndex;
+        private string _originalCmd;
+        private CMainMenuCommands _cmds;
+        private uint _commandIndex;
 
         private void readCommand(string cmd) {
-            originalCmd = cmd;
+            _originalCmd = cmd;
 
-            if (!MainMenuUtils.FindCommandByPath(cmd, out cmds, out commandIndex))
+            if (!MainMenuUtils.FindCommandByPath(cmd, out _cmds, out _commandIndex))
                 throw new ArgumentException($"Command {cmd} not found.");
         }
 
@@ -140,33 +140,33 @@ namespace fooTitle.Layers {
         }
 
         public override void Run(MouseButtons button, int clicks, int delta) {
-            if (!shouldRun(button, clicks, delta)) {
+            if (!ShouldRun(button, clicks, delta)) {
                 return;
             }
-            cmds.Execute(commandIndex);
+            _cmds.Execute(_commandIndex);
         }
     };
 
     internal class ContextMenuAction : ButtonAction {
-        private Context context;
-        private string cmdPath;
+        private Context _context;
+        private string _cmdPath;
 
         public override void Init(XmlNode node) {
             base.Init(node);
             if (Element.GetAttributeValue(node, "context", "nowplaying").ToLowerInvariant() == "nowplaying") {
-                context = Context.NowPlaying;
+                _context = Context.NowPlaying;
             } else {
-                context = Context.Playlist;
+                _context = Context.Playlist;
             }
 
-            cmdPath = Element.GetNodeValue(node);
+            _cmdPath = Element.GetNodeValue(node);
         }
 
         public override void Run(MouseButtons button, int clicks, int delta) {
-            if (!shouldRun(button, clicks, delta)) {
+            if (!ShouldRun(button, clicks, delta)) {
                 return;
             }
-            if (string.IsNullOrEmpty(cmdPath)) {
+            if (string.IsNullOrEmpty(_cmdPath)) {
                 return;
             }
 
@@ -175,75 +175,75 @@ namespace fooTitle.Layers {
             uint index;
             bool dynamic;
 
-            if (!ContextMenuUtils.FindContextCommandByDefaultPath(cmdPath, context, out cmds, out commandGuid, out index, out dynamic)) {
-                CConsole.Warning($"Contextmenu command {cmdPath} not found.");
+            if (!ContextMenuUtils.FindContextCommandByDefaultPath(_cmdPath, _context, out cmds, out commandGuid, out index, out dynamic)) {
+                CConsole.Warning($"Contextmenu command {_cmdPath} not found.");
             }
 
             if (dynamic) {
-                cmds.Execute(index, commandGuid, context);
+                cmds.Execute(index, commandGuid, _context);
             } else {
-                cmds.Execute(index, context);
+                cmds.Execute(index, _context);
             }
         }
     }
 
     internal class LegacyMainMenuCommand : ButtonAction {
-        private string commandName;
+        private string _commandName;
 
         public override void Init(XmlNode node) {
             base.Init(node);
-            commandName = Element.GetNodeValue(node);
+            _commandName = Element.GetNodeValue(node);
         }
 
         public override void Run(MouseButtons button, int clicks, int delta) {
-            if (!shouldRun(button, clicks, delta)) {
+            if (!ShouldRun(button, clicks, delta)) {
                 return;
             }
-            CManagedWrapper.DoMainMenuCommand(commandName);
+            CManagedWrapper.DoMainMenuCommand(_commandName);
         }
     };
 
     internal class ToggleAction : ButtonAction {
-        private string target;
+        private string _target;
 
         private enum Kind {
             Toggle,
             Enable,
             Disable
         }
-        private Kind only;
+        private Kind _only;
 
         public override void Init(XmlNode node) {
             base.Init(node);
-            target = Element.GetAttributeValue(node, "target", "");
+            _target = Element.GetAttributeValue(node, "target", "");
 
-            string _only = Element.GetAttributeValue(node, "only", "toggle").ToLowerInvariant();
-            switch (_only)
+            string only = Element.GetAttributeValue(node, "only", "toggle").ToLowerInvariant();
+            switch (only)
             {
                 case "enable":
-                    only = Kind.Enable;
+                    _only = Kind.Enable;
                     break;
                 case "toggle":
-                    only = Kind.Toggle;
+                    _only = Kind.Toggle;
                     break;
                 case "disable":
-                    only = Kind.Disable;
+                    _only = Kind.Disable;
                     break;
             }
         }
 
         public override void Run(MouseButtons button, int clicks, int delta) {
-            if (!shouldRun(button, clicks, delta)) {
+            if (!ShouldRun(button, clicks, delta)) {
                 return;
             }
-            Layer root = LayerTools.FindLayerByName(Main.GetInstance().CurrentSkin, target);
+            Layer root = LayerTools.FindLayerByName(Main.GetInstance().CurrentSkin, _target);
             if (root == null) {
-                CConsole.Write($"Enable action couldn't find layer {target}.");
+                CConsole.Write($"Enable action couldn't find layer {_target}.");
                 return;
             }
 
             bool enable = true;
-            switch (only)
+            switch (_only)
             {
                 case Kind.Disable:
                     enable = false;
@@ -276,7 +276,7 @@ namespace fooTitle.Layers {
         protected bool mouseOn;
         protected bool mouseDown;
 
-        private ICollection<IButtonAction> actions;
+        private ICollection<IButtonAction> _actions;
 
         public ButtonLayer(Rectangle parentRect, XmlNode node) : base(parentRect, node) {
             XmlNode contents = GetFirstChildByName(node, "contents");
@@ -317,10 +317,7 @@ namespace fooTitle.Layers {
                 return;
             }
 
-            // run all actions
-            foreach (IButtonAction action in actions) {
-                action.Run(e.Button, e.Clicks ,e.Delta);
-            }
+            RunActions(sender, e);
             Main.GetInstance().RequestRedraw(true);
         }
 
@@ -331,11 +328,7 @@ namespace fooTitle.Layers {
                 return;
             }
 
-            // run all actions
-            foreach (IButtonAction action in actions)
-            {
-                action.Run(e.Button, e.Clicks, e.Delta);
-            }
+            RunActions(sender, e);
             Main.GetInstance().RequestRedraw(true);
         }
 
@@ -346,11 +339,7 @@ namespace fooTitle.Layers {
                 return;
             }
 
-            // run all actions
-            foreach (IButtonAction action in actions)
-            {
-                action.Run(e.Button, e.Clicks, e.Delta);
-            }
+            RunActions(sender, e);
             Main.GetInstance().RequestRedraw(true);
         }
 
@@ -377,6 +366,20 @@ namespace fooTitle.Layers {
             Main.GetInstance().RequestRedraw();
         }
 
+        private void RunActions(object sender, MouseEventArgs e)
+        {
+            bool hasToggle = false;
+            foreach (IButtonAction action in _actions)
+            {
+                if (action.GetType() == typeof(ToggleAction))
+                    hasToggle = true;
+                action.Run(e.Button, e.Clicks, e.Delta);
+            }
+
+            if (hasToggle)
+                Main.GetInstance().SkinState.SaveState(Main.GetInstance().CurrentSkin);
+        }
+
         protected override void DrawImpl() {
             Bitmap toDraw;
             if (mouseDown)
@@ -392,7 +395,7 @@ namespace fooTitle.Layers {
         }
 
         private void ReadActions(XmlNode node) {
-            actions = new List<IButtonAction>();
+            _actions = new List<IButtonAction>();
 
             foreach (XmlNode child in node.ChildNodes) {
                 if (child.Name != "action")
@@ -407,7 +410,7 @@ namespace fooTitle.Layers {
 
                 IButtonAction newAction = naid.ReflectionUtils.ConstructParameterless<IButtonAction>(actionClass);
                 newAction.Init(child);
-                actions.Add(newAction);
+                _actions.Add(newAction);
             }
         }
 
@@ -416,7 +419,7 @@ namespace fooTitle.Layers {
             bool clickIsSet = false;
             bool doubleClickIsSet = false;
             bool wheelIsSet = false;
-            foreach (IButtonAction child in actions)
+            foreach (IButtonAction child in _actions)
             {
                 switch (child.GetMouseActionType())
                 {

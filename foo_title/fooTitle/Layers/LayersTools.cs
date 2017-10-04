@@ -25,7 +25,7 @@ using System.Collections.Generic;
 namespace fooTitle.Layers {
     /// <summary>
     /// This attribute should be used on classes that represent layers accessible from the
-    /// skin's XML file. Type corresponds to the type="..." attribute in the skin's <layer> tag.
+    /// skin's XML file. Type corresponds to the type="..." attribute in the skin's layer tag.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class LayerTypeAttribute : ElementTypeAttribute {
@@ -33,7 +33,6 @@ namespace fooTitle.Layers {
         }
     }
 
-    
     /// <summary>
     /// Keeps track of layer available in this and extension assemblies
     /// </summary>
@@ -85,13 +84,13 @@ namespace fooTitle.Layers {
         public static Layer FindLayerByName(Layer initial, string name) {
             Layer result = null;
 
-            DepthFirstVisit(initial, delegate(Layer l) {
+            DepthFirstVisit(initial, delegate(Layer l)
+            {
                 if (l.Name == name) {
                     result = l;
                     return false;
-                } else {
-                    return true;
                 }
+                return true;
             });
 
             return result;
