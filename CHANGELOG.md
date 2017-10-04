@@ -4,7 +4,7 @@
 
 ## [1.0.3] - 2017-10-04
 ### Added
-- Added 'persistent' attribute to layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#layer)).
+- Added 'persistent' attribute to layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Layer)).
 - Added animated .gif support to 'absolute-images' layer.
 
 ### Changed 
