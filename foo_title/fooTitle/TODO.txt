@@ -1,11 +1,16 @@
-- add optional persistent layer state (i.e. save 'enabled' state)
 - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
 - maybe create the effect of reflecting glass ;)
 - pixel accurate button hit testing
 - click through - could be made .... and buttons wouldn't be click through..
+- think about adding .gif support to all the layers.
+- research possibility of .svg support
+- support for custom fonts load in skin (is it secure?)
+- try adding built-in HighDPI scaling for skin: may be simple doubling of width\height and coordinates will suffice.
 
-- profile for speed 
-- test stability
+new skin ideas:
+    - HP bar (think DMC4 Dante, but buttons instead of styles).
+	- Gieger (pinkish? black\silvery?)
+	- Techno (metallic, terminator style border; blueish display area; might need custom fonts)
 
 cleaning the code:
     - divide the Main class into several smaller classes for easier mantaince
@@ -14,6 +19,10 @@ cleaning the code:
 		- other classes for ..
     - clean up code of fooManagedWrapper (pref pages, CManagedWrapper)
 		- and commenting to use doxygen probably
+
+testing:
+	- profile for speed 
+	- test stability
 
 bugs:
     - Preferences page has some text that is cut-off, when resolution scaling is above 100%.
