@@ -1,6 +1,14 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Added in-built DPI scaling, which is enabled by default (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Preferences_page)).
+
+### Changed 
+- Removed 'scaleable' attribute from text layer.
+
+### Fixed
+- Fixed bug: preferences changes were not always reverting upon exiting without applying changes.
 
 ## [1.0.3] - 2017-10-04
 ### Added
@@ -13,7 +21,7 @@
 
 ## [1.0.2] - 2017-09-22
 ### Added
-- Added foo_title to Preferences -> Components menu.
+- Added foo_title to Preferences > Components menu.
 
 ### Changed 
 - Updated flourish skin ([git directory](https://github.com/TheQwertiest/foo_title/tree/master/foo_title/skins/fixed_user_skins/flourish2)).
