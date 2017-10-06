@@ -5,7 +5,6 @@
 - think about adding .gif support to all the layers.
 - research possibility of .svg support
 - support for custom fonts load in skin (is it secure?)
-- try adding built-in HighDPI scaling for skin: may be simple doubling of width\height and coordinates will suffice.
 
 new skin ideas:
     - HP bar (think DMC4 Dante, but buttons instead of styles).

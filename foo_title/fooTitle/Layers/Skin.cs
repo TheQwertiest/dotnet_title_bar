@@ -264,8 +264,8 @@ namespace fooTitle.Layers
         private void InitAnchor()
         {
             string anchorTypeStr = GetAttributeValue(_skin, "anchor", "top,left");
-            float anchorDx = GetNumberFromAttribute(_skin, "anchor_dx", "0");
-            float anchorDy = GetNumberFromAttribute(_skin, "anchor_dy", "0");
+            float anchorDx = GetNumberFromAttribute(_skin, "anchor_dx", 0);
+            float anchorDy = GetNumberFromAttribute(_skin, "anchor_dy", 0);
 
             DockAnchor.Type anchorType = DockAnchor.Type.None;
             foreach (string i in anchorTypeStr.ToLower().Split(new[] {',', ' '}, StringSplitOptions.RemoveEmptyEntries))

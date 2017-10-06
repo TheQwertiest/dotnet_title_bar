@@ -32,117 +32,117 @@ namespace fooTitle.Geometries {
             Right
         };
 
-        protected Rectangle myParentRect;
+        private readonly Rectangle _myParentRect;
         
         /// <summary>
         /// The expression to calculate width from. May be null if no expression was given.
         /// </summary>
-        protected string myExprWidth;
-        protected int myWidth;
+        private readonly string _myExprWidth;
+        private int _myWidth;
         public int Width {
-            get => myWidth;
+            get => _myWidth;
             set {
-                myWidth = value;
-                Update(myParentRect);
+                _myWidth = value;
+                Update(_myParentRect);
             }
         }
 
         /// <summary>
         /// The expression to calculate height from. May be null if no expression was given.
         /// </summary>
-        protected string myExprHeight;
-        protected int myHeight;
+        private readonly string _myExprHeight;
+        private int _myHeight;
         public int Height {
-            get => myHeight;
+            get => _myHeight;
             set {
-                myHeight = value;
-                Update(myParentRect);
+                _myHeight = value;
+                Update(_myParentRect);
             }
         }
         /// <summary>
         /// The expressions to calculate X and Y coordinates of the position from. Either of them may be
         /// null if no expression was given.
         /// </summary>
-        protected ExpressionPoint myExprPosition;
-        protected Point myPosition;
+        private ExpressionPoint _myExprPosition;
+        private Point _myPosition;
         public Point Position {
-            get => myPosition;
+            get => _myPosition;
             set {
-                myPosition = value;
-                Update(myParentRect);
+                _myPosition = value;
+                Update(_myParentRect);
             }
         }
 
-        protected AlignType myAlign;
+        private AlignType _myAlign;
         public AlignType Align {
-            get => myAlign;
+            get => _myAlign;
             set {
-                myAlign = value;
-                Update(myParentRect);
+                _myAlign = value;
+                Update(_myParentRect);
             }
         }
 
         public AbsoluteGeometry(Rectangle parentRect, XElement node) : base(parentRect, node) {
-            myParentRect = parentRect;
+            _myParentRect = parentRect;
 
             // read description from the xml
             XElement size = GetFirstChildByName(node, "size");
 
             // read and store expressions
-            myExprWidth = GetExpressionFromAttribute(size, "x", "100");
-            myExprHeight = GetExpressionFromAttribute(size, "y", "30");
+            _myExprWidth = GetExpressionFromAttribute(size, "x");
+            _myExprHeight = GetExpressionFromAttribute(size, "y");
 
             // get the actual values
-            myWidth = (int)GetNumberFromAttribute(size, "x", "100");
-            myHeight = (int)GetNumberFromAttribute(size, "y", "30");
+            _myWidth = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(size, "x", 100));
+            _myHeight = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(size, "y", 30));
 
             // read position
             XElement position = GetFirstChildByName(node, "position");
 
             // read and store expressions (if any)
-            myExprPosition.X = GetExpressionFromAttribute(position, "x", "0");
-            myExprPosition.Y = GetExpressionFromAttribute(position, "y", "0");
+            _myExprPosition.X = GetExpressionFromAttribute(position, "x");
+            _myExprPosition.Y = GetExpressionFromAttribute(position, "y");
 
             // TODO: myPosition (i.e. relative to parent) calculation should take align into account
             // get the actual values
-            myPosition.X = (int)GetNumberFromAttribute(position, "x", "0");
-            myPosition.Y = (int)GetNumberFromAttribute(position, "y", "0");
+            _myPosition.X = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(position, "x", 0));
+            _myPosition.Y = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(position, "y", 0));
 
             // read align
             if (GetAttributeValue(position, "align", "left") == "right")
-                myAlign = AlignType.Right;
+                _myAlign = AlignType.Right;
             else
-                myAlign = AlignType.Left;
+                _myAlign = AlignType.Left;
         }
 
         public AbsoluteGeometry(Rectangle parentRect, int width, int height, Point position) {
-            myParentRect = parentRect;
-            myWidth = width;
-            myHeight = height;
-            myPosition = position;
-            myAlign = AlignType.Left;
+            _myParentRect = parentRect;
+            _myWidth = width;
+            _myHeight = height;
+            _myPosition = position;
+            _myAlign = AlignType.Left;
         }
 
         public override void Update(Rectangle parentRect) {
             // calculate parameters 
-            myPosition.X = GetValueFromExpression(myExprPosition.X, myPosition.X);
-            myPosition.Y = GetValueFromExpression(myExprPosition.Y, myPosition.Y);
-            myWidth = GetValueFromExpression(myExprWidth, myWidth);
-            myHeight = GetValueFromExpression(myExprHeight, myHeight);
+            _myPosition.X = GetScaledValueFromExpression(_myExprPosition.X, _myPosition.X);
+            _myPosition.Y = GetScaledValueFromExpression(_myExprPosition.Y, _myPosition.Y);
+            _myWidth = GetScaledValueFromExpression(_myExprWidth, _myWidth);
+            _myHeight = GetScaledValueFromExpression(_myExprHeight, _myHeight);
 
             // now calculate client rect from the parameters
-            myClientRect.Width = myWidth;
-            myClientRect.Height = myHeight;
+            myClientRect.Width = _myWidth;
+            myClientRect.Height = _myHeight;
 
-            switch (myAlign)
+            switch (_myAlign)
             {
                 case AlignType.Left:
-                    myClientRect.X = myPosition.X + parentRect.Left;
-                    myClientRect.Y = myPosition.Y + parentRect.Top;
+                    myClientRect.X = _myPosition.X + parentRect.Left;
+                    myClientRect.Y = _myPosition.Y + parentRect.Top;
                     break;
                 case AlignType.Right:
-                    myClientRect.X = myPosition.X + parentRect.Right - myClientRect.Width;
-                    myClientRect.Y = myPosition.Y + parentRect.Top;
+                    myClientRect.X = _myPosition.X + parentRect.Right - myClientRect.Width;
+                    myClientRect.Y = _myPosition.Y + parentRect.Top;
                     break;
             }
         }
@@ -156,7 +156,7 @@ namespace fooTitle.Geometries {
         }
 
         public override bool IsDynamic() {
-            return (myExprHeight != null || myExprPosition.X != null || myExprPosition.Y != null || myExprWidth != null);
+            return (_myExprHeight != null || _myExprPosition.X != null || _myExprPosition.Y != null || _myExprWidth != null);
         }
     }
 }

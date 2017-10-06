@@ -142,10 +142,13 @@ namespace fooTitle.Extending {
             return def;
         }
 
-        public static T GetCastedAttributeValue<T>(XNode where, string name, string def)
+        public static T GetCastedAttributeValue<T>(XElement where, string name, T def)
         {
+            if (where.Attribute(name) == null)
+                return def;
+
             TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
-            return (T)converter.ConvertFromString(GetAttributeValue((XElement)where, name, def));
+            return (T)converter.ConvertFromString(where.Attribute(name).Value);
         }
 
         /// <summary>
@@ -156,8 +159,11 @@ namespace fooTitle.Extending {
         /// <param name="name">name of the attribute</param>
         /// <param name="def">if the attribute doesn't exist, def is read</param>
         /// <returns>Evaluated expression or number (depending on what's in the attribute)</returns>
-        public static float GetNumberFromAttribute(XNode where, string name, string def) {
-            string val = GetAttributeValue((XElement)where, name, def);
+        public static float GetNumberFromAttribute(XElement where, string name, float def) {
+            if (where.Attribute(name) == null)
+                return def;
+
+            string val = where.Attribute(name).Value;
             try
             {
                 return IsExpression(val) 
@@ -168,7 +174,7 @@ namespace fooTitle.Extending {
             } catch (Exception e) {
                 fooManagedWrapper.CConsole.Warning(e.ToString());
                 fooManagedWrapper.CConsole.Warning(val);
-                return float.Parse(def);
+                return def;
             }
         }
 
@@ -178,10 +184,9 @@ namespace fooTitle.Extending {
         /// </summary>
         /// <param name="where">The node to extract the attribute from</param>
         /// <param name="name">The name of the attribute</param>
-        /// <param name="def">The default value if the attribute is not present</param>
         /// <returns>the expression if it's present or null if there's just a string or a number</returns>
-        public static string GetExpressionFromAttribute(XNode where, string name, string def) {
-            string val = GetAttributeValue((XElement)where, name, def);
+        public static string GetExpressionFromAttribute(XNode where, string name) {
+            string val = GetAttributeValue((XElement)where, name, "");
             if (val == null || !IsExpression(val)) {
                 return null;
             }
@@ -202,6 +207,22 @@ namespace fooTitle.Extending {
             try {
                 return int.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), expr));
             } catch (Exception) {
+                return def;
+            }
+        }
+
+        public static int GetScaledValueFromExpression(string expr, int def)
+        {
+            // TODO: replace this vague function with a more proper one
+            if (expr == null)
+                return def;
+
+            try
+            {
+                return Main.GetInstance().ScaleValue(int.Parse(Main.PlayControl.FormatTitle(Main.PlayControl.GetNowPlaying(), expr)));
+            }
+            catch (Exception)
+            {
                 return def;
             }
         }

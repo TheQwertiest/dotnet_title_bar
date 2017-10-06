@@ -19,6 +19,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,7 +27,7 @@ using fooManagedWrapper;
 using fooTitle.Layers;
 using fooTitle.Geometries;
 using fooTitle.Config;
-
+using Microsoft.Win32;
 
 namespace fooTitle {
  
@@ -39,6 +40,7 @@ namespace fooTitle {
     public class Main : IComponentClient, IPlayCallbackSender {
         public static IPlayControl PlayControl;
         public SkinState SkinState;
+
         /// <summary>
         /// Set to true after everything has been created and can be manipulated
         /// </summary>
@@ -137,7 +139,6 @@ namespace fooTitle {
         {
             Display.SetAnchorPosition(_positionX.Value, _positionY.Value);
         }
-
 
         /// <summary>
         /// Provides access to the current skin. May be null.
@@ -442,6 +443,30 @@ namespace fooTitle {
                    "https://github.com/TheQwertiest/foo_title";
         }
 
+        #region DpiScale
+        // System DPI only
+        private static readonly int CurrentDpi = (int)Graphics.FromHwnd(IntPtr.Zero).DpiX;
+        private static readonly float ScaleCoefficient = (float)CurrentDpi / 96;
+
+        private readonly ConfBool _enableDpiScale = new ConfBool("display/dpiScale", true);
+        public bool IsDpiScalable
+        {
+            set => _enableDpiScale.Value = value;
+            get => _enableDpiScale.Value;
+        }
+        public void enableDpiScale_OnChanged(string name)
+        {
+            ForceAssignSkinPath(SkinPath);
+            RequestRedraw();
+        }
+
+        public int ScaleValue(int oldValue)
+        {
+            return IsDpiScalable ? (int) (ScaleCoefficient * oldValue) : oldValue;
+        }
+
+#endregion
+
         #region Events
         public event OnInitDelegate OnInitEvent;
 
@@ -491,6 +516,7 @@ namespace fooTitle {
             _skinPath.OnChanged += SkinPath_OnChanged;
             _positionX.OnChanged += positionX_OnChanged;
             _positionY.OnChanged += positionY_OnChanged;
+            _enableDpiScale.OnChanged += enableDpiScale_OnChanged;
 
             // init reshower
             _repeatedShowing = new RepeatedShowing();

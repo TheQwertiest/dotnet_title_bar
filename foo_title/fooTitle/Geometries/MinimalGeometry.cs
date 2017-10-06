@@ -54,16 +54,16 @@ namespace fooTitle.Geometries {
             XElement padding = GetFirstChildByName(node, "padding");
 
             // read and store expressions
-            MyExprPadding.Left = GetExpressionFromAttribute(padding, "left", "0");
-            MyExprPadding.Top = GetExpressionFromAttribute(padding, "top", "0");
-            MyExprPadding.Right = GetExpressionFromAttribute(padding, "right", "0");
-            MyExprPadding.Bottom = GetExpressionFromAttribute(padding, "bottom", "0");
+            MyExprPadding.Left = GetExpressionFromAttribute(padding, "left");
+            MyExprPadding.Top = GetExpressionFromAttribute(padding, "top");
+            MyExprPadding.Right = GetExpressionFromAttribute(padding, "right");
+            MyExprPadding.Bottom = GetExpressionFromAttribute(padding, "bottom");
 
             // get the actual values
-            MyPadding.Left = (int)GetNumberFromAttribute(padding, "left", "0");
-            MyPadding.Top = (int)GetNumberFromAttribute(padding, "top", "0");
-            MyPadding.Right = (int)GetNumberFromAttribute(padding, "right", "0");
-            MyPadding.Bottom = (int)GetNumberFromAttribute(padding, "bottom", "0");
+            MyPadding.Left = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "left", 0));
+            MyPadding.Top = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "top", 0));
+            MyPadding.Right = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "right", 0));
+            MyPadding.Bottom = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "bottom", 0));
 
             // read alignment
             XElement positionNode = GetFirstChildByNameOrNull(node, "position");
@@ -96,10 +96,10 @@ namespace fooTitle.Geometries {
         }
 
         public override void Update(Rectangle parentRect) {
-            MyPadding.Left = GetValueFromExpression(MyExprPadding.Left, MyPadding.Left);
-            MyPadding.Top = GetValueFromExpression(MyExprPadding.Top, MyPadding.Top);
-            MyPadding.Right = GetValueFromExpression(MyExprPadding.Right, MyPadding.Right);
-            MyPadding.Bottom = GetValueFromExpression(MyExprPadding.Bottom, MyPadding.Bottom);
+            MyPadding.Left = GetScaledValueFromExpression(MyExprPadding.Left, MyPadding.Left);
+            MyPadding.Top = GetScaledValueFromExpression(MyExprPadding.Top, MyPadding.Top);
+            MyPadding.Right = GetScaledValueFromExpression(MyExprPadding.Right, MyPadding.Right);
+            MyPadding.Bottom = GetScaledValueFromExpression(MyExprPadding.Bottom, MyPadding.Bottom);
 
             int myWidth = Math.Min(parentRect.Width - (MyPadding.Left + MyPadding.Right), _curContentSize.Width);
             int myHeight = Math.Min(parentRect.Height - (MyPadding.Top + MyPadding.Bottom), _curContentSize.Height);

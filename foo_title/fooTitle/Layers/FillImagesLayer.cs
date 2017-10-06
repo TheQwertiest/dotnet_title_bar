@@ -21,6 +21,7 @@ using System;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
 namespace fooTitle.Layers
@@ -28,12 +29,12 @@ namespace fooTitle.Layers
     [LayerTypeAttribute("fill-images")]
 	public class FillImagesLayer : Layer
 	{
-		protected Bitmap leftImage = null;
-		protected Bitmap centerImage = null;
-		protected Bitmap rightImage = null;
-        protected Bitmap centerRepeated;
-        protected Graphics centerRepeatedCanvas;
-		protected bool repeatCenter = false;
+		private Bitmap _leftImage = null;
+		private Bitmap _centerImage = null;
+		private Bitmap _rightImage = null;
+        private Bitmap _centerRepeated;
+        private Graphics _centerRepeatedCanvas;
+		private bool _repeatCenter = false;
 
 		public FillImagesLayer(Rectangle parentRect, XElement node) : base(parentRect, node) {
 			// load all images
@@ -41,83 +42,100 @@ namespace fooTitle.Layers
 			XPathNodeIterator xi = (XPathNodeIterator)nav.Evaluate("contents/image");
 			
 			while (xi.MoveNext()) {
-				addImage(xi.Current);
+				AddImage(xi.Current);
 			}
 		}
 
-		protected void addImage(XPathNavigator node) {
+		protected void AddImage(XPathNavigator node) {
 			string src = node.GetAttribute("src", "");
 			string position = node.GetAttribute("position", "");
-			Bitmap b = Main.GetInstance().CurrentSkin.GetSkinImage(src);
-			if (position == "left") {
-				leftImage = b;
+            // Image need to be DPI scaled, since this layer uses real image sizes
+			Bitmap b = ScaleImage(Main.GetInstance().CurrentSkin.GetSkinImage(src));
+
+            if (position == "left") {
+				_leftImage = b;
 			} else if (position == "center") {
-				centerImage = b;
+				_centerImage = b;
                 if (node.GetAttribute("repeat", "") == "true") 
-                    repeatCenter = true;
+                    _repeatCenter = true;
 			} else if (position == "right") {
-				rightImage = b;
+				_rightImage = b;
 			}
 		}
 
-        private void prepareRepeatImage() {
+        private void PrepareRepeatImage() {
             // can't create 0x0 bitmaps
-            centerRepeated = new Bitmap(Math.Max(10, getRightImageStart() - getLeftImageWidth()), Math.Max(10, ClientRect.Height));
-            centerRepeatedCanvas = Graphics.FromImage(centerRepeated);
+            _centerRepeated = new Bitmap(Math.Max(10, GetRightImageStart() - GetLeftImageWidth()), Math.Max(10, ClientRect.Height));
+            _centerRepeatedCanvas = Graphics.FromImage(_centerRepeated);
 
-            if (centerImage == null)
+            if (_centerImage == null)
                 return;
 
-            if (repeatCenter) {
+            if (_repeatCenter) {
                 ImageAttributes attrs = new ImageAttributes();
-                float count = (getRightImageStart() - getLeftImageWidth()) / (float)centerImage.Width;
+                float count = (GetRightImageStart() - GetLeftImageWidth()) / (float)_centerImage.Width;
 
                 for (int i = 0; i < (count + 1); i++) {
-                    centerRepeatedCanvas.DrawImage(centerImage, new Rectangle(
-                            (int)Math.Round((float)(i * centerImage.Width)),
+                    _centerRepeatedCanvas.DrawImage(_centerImage, new Rectangle(
+                            (int)Math.Round((float)(i * _centerImage.Width)),
                             0,
-                            (int)Math.Round((float)centerImage.Width),
+                            (int)Math.Round((float)_centerImage.Width),
                             ClientRect.Height),
-                        0, 0, centerImage.Width, centerImage.Height,
+                        0, 0, _centerImage.Width, _centerImage.Height,
                         GraphicsUnit.Pixel,
                         attrs);
                 }
             } else {
                 // no repeat
-                centerRepeatedCanvas.DrawImage(centerImage, 0, 0, centerRepeated.Width, centerRepeated.Height);
+                _centerRepeatedCanvas.DrawImage(_centerImage, 0, 0, _centerRepeated.Width, _centerRepeated.Height);
             }
         }
 
         public override void UpdateGeometry(Rectangle parentRect) {
             base.UpdateGeometry(parentRect);
 
-            prepareRepeatImage();
+            PrepareRepeatImage();
         }
 
 		protected override void DrawImpl() {
-			int left = getLeftImageWidth();  // where the center image starts (rel. to layer)
-			int right = getRightImageStart(); // where the center image ends (rel. to layer)
-			if (leftImage != null) {
-				Display.Canvas.DrawImage(leftImage, ClientRect.X, ClientRect.Y, leftImage.Width, ClientRect.Height);
+			int left = GetLeftImageWidth();  // where the center image starts (rel. to layer)
+			int right = GetRightImageStart(); // where the center image ends (rel. to layer)
+			if (_leftImage != null) {
+				Display.Canvas.DrawImage(_leftImage, ClientRect.X, ClientRect.Y, _leftImage.Width, ClientRect.Height);
 			}
 
-            Display.Canvas.DrawImage(centerRepeated, ClientRect.X + left, ClientRect.Y, centerRepeated.Width, ClientRect.Height);
+            Display.Canvas.DrawImage(_centerRepeated, ClientRect.X + left, ClientRect.Y, _centerRepeated.Width, ClientRect.Height);
 
-			if (rightImage != null) {
-				Display.Canvas.DrawImage(rightImage, ClientRect.X + right, ClientRect.Y, rightImage.Width, ClientRect.Height);
+			if (_rightImage != null) {
+				Display.Canvas.DrawImage(_rightImage, ClientRect.X + right, ClientRect.Y, _rightImage.Width, ClientRect.Height);
 			}
 		}
 
-        private int getRightImageStart() {
-            if (rightImage != null) {
-                return ClientRect.Width - rightImage.Width;
+        private int GetRightImageStart() {
+            if (_rightImage != null) {
+                return ClientRect.Width - _rightImage.Width;
             }
             return ClientRect.Width;
         }
 
-        private int getLeftImageWidth()
+        private int GetLeftImageWidth()
         {
-            return leftImage != null ? leftImage.Width : 0;
+            return _leftImage?.Width ?? 0;
         }
-	}
+
+        private static Bitmap ScaleImage(Image image)
+        {
+            Rectangle destRect = new Rectangle(0, 0, Main.GetInstance().ScaleValue(image.Width), Main.GetInstance().ScaleValue(image.Height));
+            Bitmap destImage = new Bitmap(Main.GetInstance().ScaleValue(image.Width), Main.GetInstance().ScaleValue(image.Height));
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            Graphics graphics = Graphics.FromImage(destImage);
+            ImageAttributes wrapMode = new ImageAttributes();
+            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+            graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+
+            return destImage;
+        }
+    }
 }

@@ -30,7 +30,7 @@ namespace fooTitle.Layers {
         /// <summary>
         /// Number of pixels to move the text per second.
         /// </summary>
-        private readonly float _speed = 25F;
+        private readonly int _speed = 25;
         /// <summary>
         /// Length of pause in milliseconds when the text arrives to either of its edges. 
         /// </summary>
@@ -53,10 +53,10 @@ namespace fooTitle.Layers {
             : base(parentRect, node)
         {
 
-            XNode contents = GetFirstChildByName(node, "contents");
+            XElement contents = GetFirstChildByName(node, "contents");
 
-            _speed = GetCastedAttributeValue<float>(contents, "speed", "25");
-            _pause = GetCastedAttributeValue<int>(contents, "pause", "1000");
+            _speed = Main.GetInstance().ScaleValue(GetCastedAttributeValue(contents, "speed", 25));
+            _pause = GetCastedAttributeValue(contents, "pause", 1000);
         }
 
         protected override void AddLabel(XElement node, TextLayer.LabelPart def)

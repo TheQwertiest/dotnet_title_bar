@@ -38,8 +38,8 @@ namespace fooTitle.Layers
         protected long lastUpdate = DateTime.Now.Ticks;
 
         public AnimationLayer(Rectangle parentRect, XElement node) : base(parentRect, node) {
-            XNode contents = GetFirstChildByName(node, "contents");
-            refreshRate = Math.Max(1, GetCastedAttributeValue<int>(contents, "speed", "15"));
+            XElement contents = GetFirstChildByName(node, "contents");
+            refreshRate = Math.Max(1, GetCastedAttributeValue<int>(contents, "speed", 15));
 
             // load all images
             XPathNavigator nav = node.CreateNavigator();

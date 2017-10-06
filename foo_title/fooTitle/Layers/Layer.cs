@@ -91,9 +91,9 @@ namespace fooTitle.Layers {
             // read name and type
             Name = node.Attribute("name").Value;
             Type = node.Attribute("type").Value;
-            IsPersistent = GetCastedAttributeValue<bool>(node, "persistent", "false");
-            _enabled = GetCastedAttributeValue<bool>(node, "enabled", "true");
-            _clipEnabled = GetCastedAttributeValue<bool>(node, "clip", "true");
+            IsPersistent = GetCastedAttributeValue(node, "persistent", false);
+            _enabled = GetCastedAttributeValue(node, "enabled", true);
+            _clipEnabled = GetCastedAttributeValue(node, "clip", true);
             HasContent = GetFirstChildByNameOrNull(node, "contents") != null;
 
             // create the geometry

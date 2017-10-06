@@ -28,46 +28,47 @@ namespace fooTitle.Geometries {
         /// <summary>
         /// Current values of padding
         /// </summary>
-        protected Padding myPadding;
+        private Padding _myPadding;
 
         /// <summary>
         /// Stored expressions to calculate padding from
         /// </summary>
-        protected ExpressionPadding myExprPadding;
+        private ExpressionPadding _myExprPadding;
 
         public FullGeometry(Rectangle parentRect, XElement node) : base(parentRect, node) {
-            XNode padding = GetFirstChildByName(node, "padding");
+            XElement padding = GetFirstChildByName(node, "padding");
 
             // read and store expressions
-            myExprPadding.Left = GetExpressionFromAttribute(padding, "left", "0");
-            myExprPadding.Top = GetExpressionFromAttribute(padding, "top", "0");
-            myExprPadding.Right = GetExpressionFromAttribute(padding, "right", "0");
-            myExprPadding.Bottom = GetExpressionFromAttribute(padding, "bottom", "0");
+            _myExprPadding.Left = GetExpressionFromAttribute(padding, "left");
+            _myExprPadding.Top = GetExpressionFromAttribute(padding, "top");
+            _myExprPadding.Right = GetExpressionFromAttribute(padding, "right");
+            _myExprPadding.Bottom = GetExpressionFromAttribute(padding, "bottom");
 
             // get the actual values
-            myPadding.Left = (int)GetNumberFromAttribute(padding, "left", "0");
-            myPadding.Top = (int)GetNumberFromAttribute(padding, "top", "0");
-            myPadding.Right = (int)GetNumberFromAttribute(padding, "right", "0");
-            myPadding.Bottom = (int)GetNumberFromAttribute(padding, "bottom", "0");
+            _myPadding.Left = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "left", 0));
+            _myPadding.Top = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "top", 0));
+            _myPadding.Right = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "right", 0));
+            _myPadding.Bottom = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "bottom", 0));
             
         }
 
         public override void Update(Rectangle parentRect) {
-            myPadding.Left = GetValueFromExpression(myExprPadding.Left, myPadding.Left);
-            myPadding.Top = GetValueFromExpression(myExprPadding.Top, myPadding.Top);
-            myPadding.Right = GetValueFromExpression(myExprPadding.Right, myPadding.Right);
-            myPadding.Bottom = GetValueFromExpression(myExprPadding.Bottom, myPadding.Bottom);
+            // get the actual values
+            _myPadding.Left = GetScaledValueFromExpression(_myExprPadding.Left, _myPadding.Left);
+            _myPadding.Top = GetScaledValueFromExpression(_myExprPadding.Top, _myPadding.Top);
+            _myPadding.Right = GetScaledValueFromExpression(_myExprPadding.Right, _myPadding.Right);
+            _myPadding.Bottom = GetScaledValueFromExpression(_myExprPadding.Bottom, _myPadding.Bottom);
 
-            myClientRect.X = myPadding.Left + parentRect.Left;
-            myClientRect.Y = myPadding.Top + parentRect.Top;
+            myClientRect.X = _myPadding.Left + parentRect.Left;
+            myClientRect.Y = _myPadding.Top + parentRect.Top;
 
-            myClientRect.Width = parentRect.Width - (myPadding.Left + myPadding.Right);
-            myClientRect.Height = parentRect.Height - (myPadding.Top + myPadding.Bottom);
+            myClientRect.Width = parentRect.Width - (_myPadding.Left + _myPadding.Right);
+            myClientRect.Height = parentRect.Height - (_myPadding.Top + _myPadding.Bottom);
         }
 
         public override Size GetMinimalSize(Size contentSize) {
-            return new Size(myPadding.Left + myPadding.Right + contentSize.Width,
-                            myPadding.Top + myPadding.Bottom + contentSize.Height);
+            return new Size(_myPadding.Left + _myPadding.Right + contentSize.Width,
+                            _myPadding.Top + _myPadding.Bottom + contentSize.Height);
         }
 
         public override Point GetPosition() {
@@ -75,7 +76,7 @@ namespace fooTitle.Geometries {
         }
 
         public override bool IsDynamic() {
-            return (myExprPadding.Bottom != null || myExprPadding.Left != null || myExprPadding.Right != null || myExprPadding.Top != null);
+            return (_myExprPadding.Bottom != null || _myExprPadding.Left != null || _myExprPadding.Right != null || _myExprPadding.Top != null);
         }
     }
 }

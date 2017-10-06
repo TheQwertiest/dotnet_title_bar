@@ -40,7 +40,6 @@ namespace fooTitle.Layers
             public int fontSize;
             public bool isBold;
             public bool isItalic;
-            public bool isScaleable;
         }
  
         protected string defaultText;
@@ -55,8 +54,8 @@ namespace fooTitle.Layers
 		    XElement contents = GetFirstChildByName(node, "contents");
 			
 			// read the spacing
-			space = GetCastedAttributeValue<int>(contents, "spacing", "20");
-            angle = GetCastedAttributeValue<int>(contents, "angle", "0");
+			space = GetCastedAttributeValue(contents, "spacing", 20);
+            angle = GetCastedAttributeValue(contents, "angle", 0);
 
             // read the default font
             LabelPart empty = new LabelPart
@@ -66,7 +65,6 @@ namespace fooTitle.Layers
 		        fontName = "Arial",
 		        color = Color.FromArgb(255, 0, 0, 0),
 		        fontSize = 9,
-		        isScaleable = GetCastedAttributeValue<bool>(contents, "scaleable", "false"),
             };
 		    LabelPart def = ReadLabel(contents, empty);
  
@@ -127,16 +125,15 @@ namespace fooTitle.Layers
             else
                 res.color = def.color;
 
-            
             FontStyle fontStyle = FontStyle.Regular;
             if (res.isItalic)
                 fontStyle |= FontStyle.Italic;
             if (res.isBold)
                 fontStyle |= FontStyle.Bold;
             res.font = new Font(res.fontName,
-                res.isScaleable ? res.fontSize : (int)Math.Round((double)res.fontSize * 96 / 72),
+                Main.GetInstance().IsDpiScalable ? res.fontSize : (int)Math.Round((double)res.fontSize * 96 / 72),
                 fontStyle,
-                res.isScaleable ? GraphicsUnit.Point : GraphicsUnit.Pixel);
+                Main.GetInstance().IsDpiScalable ? GraphicsUnit.Point : GraphicsUnit.Pixel);
             res.text = GetNodeValue(node);
 
             return res;

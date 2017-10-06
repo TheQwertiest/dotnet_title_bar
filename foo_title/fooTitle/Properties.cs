@@ -29,7 +29,7 @@ using fooTitle.Layers;
 
 namespace fooTitle {
    class Properties : fooManagedWrapper.CManagedPrefPage_v3 {
-        //class Properties : Form {
+   //     class Properties : Form {
 
         public override void Reset()
         {
@@ -136,6 +136,8 @@ namespace fooTitle {
         private TableLayoutPanel tableLayoutPanel4;
         private TableLayoutPanel tableLayoutPanel1;
         private TableLayoutPanel tableLayoutPanel5;
+        private CheckBox scaleCheckBox;
+        private GroupBox dpiScaleGroupBox;
         private RadioGroupWrapper enableDraggingWrapper;
 
         public Properties(Main main) : base(new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68), fooManagedWrapper.CManagedPrefPage_v3.guid_display)
@@ -341,6 +343,8 @@ namespace fooTitle {
             this.label31 = new System.Windows.Forms.Label();
             this.label30 = new System.Windows.Forms.Label();
             this.refreshRateBar = new fooTitle.CustomControl.HorizontalFillDockTrackBar();
+            this.dpiScaleGroupBox = new CustomControl.HorizontalFillDockGroupBox();
+            this.scaleCheckBox = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabLayout1.SuspendLayout();
@@ -373,6 +377,7 @@ namespace fooTitle {
             this.tableLayoutPanel5.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.refreshRateBar)).BeginInit();
+            this.dpiScaleGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -819,21 +824,25 @@ namespace fooTitle {
             this.tabLayout2.Controls.Add(this.opacityBox, 0, 0);
             this.tabLayout2.Controls.Add(this.albumArtBox, 1, 0);
             this.tabLayout2.Controls.Add(this.anchorBox, 1, 1);
-            this.tabLayout2.Controls.Add(this.draggingWhenBox, 1, 2);
+            this.tabLayout2.Controls.Add(this.draggingWhenBox, 0, 2);
             this.tabLayout2.Controls.Add(this.refreshRateBox, 0, 1);
+            this.tabLayout2.Controls.Add(this.dpiScaleGroupBox, 1, 3);
             this.tabLayout2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabLayout2.Location = new System.Drawing.Point(3, 3);
             this.tabLayout2.Name = "tabLayout2";
-            this.tabLayout2.RowCount = 3;
+            this.tabLayout2.RowCount = 5;
             this.tabLayout2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tabLayout2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tabLayout2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tabLayout2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tabLayout2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tabLayout2.Size = new System.Drawing.Size(487, 469);
             this.tabLayout2.TabIndex = 0;
             // 
             // opacityBox
             // 
             this.opacityBox.Controls.Add(this.tableLayoutPanel2);
+            this.opacityBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.opacityBox.Location = new System.Drawing.Point(3, 3);
             this.opacityBox.Name = "opacityBox";
             this.opacityBox.Size = new System.Drawing.Size(237, 168);
@@ -1061,9 +1070,10 @@ namespace fooTitle {
             this.anchorBox.Controls.Add(this.positionYNum);
             this.anchorBox.Controls.Add(this.label28);
             this.anchorBox.Controls.Add(this.positionXBox);
-            this.anchorBox.Controls.Add(this.label29);
+            this.anchorBox.Controls.Add(this.label29);            
             this.anchorBox.Location = new System.Drawing.Point(246, 177);
             this.anchorBox.Name = "anchorBox";
+            this.tabLayout2.SetRowSpan(this.anchorBox, 2);
             this.anchorBox.Size = new System.Drawing.Size(238, 128);
             this.anchorBox.TabIndex = 13;
             this.anchorBox.TabStop = false;
@@ -1142,6 +1152,7 @@ namespace fooTitle {
             this.draggingWhenBox.Controls.Add(this.dragAlwaysRadio);
             this.draggingWhenBox.Location = new System.Drawing.Point(246, 311);
             this.draggingWhenBox.Name = "draggingWhenBox";
+            this.tabLayout2.SetRowSpan(this.draggingWhenBox, 2);
             this.draggingWhenBox.Size = new System.Drawing.Size(238, 90);
             this.draggingWhenBox.TabIndex = 14;
             this.draggingWhenBox.TabStop = false;
@@ -1257,6 +1268,27 @@ namespace fooTitle {
             this.refreshRateBar.TickFrequency = 50;
             this.refreshRateBar.Value = 50;
             // 
+            // dpiScaleGroupBox
+            // 
+            this.dpiScaleGroupBox.Controls.Add(this.scaleCheckBox);
+            this.dpiScaleGroupBox.Location = new System.Drawing.Point(246, 407);
+            this.dpiScaleGroupBox.Name = "dpiScaleGroupBox";
+            this.dpiScaleGroupBox.Size = new System.Drawing.Size(238, 46);
+            this.dpiScaleGroupBox.TabIndex = 18;
+            this.dpiScaleGroupBox.TabStop = false;
+            this.dpiScaleGroupBox.Text = "DPI Scaling";
+            // 
+            // scaleCheckBox
+            // 
+            this.scaleCheckBox.AutoSize = true;
+            this.scaleCheckBox.Location = new System.Drawing.Point(9, 19);
+            this.scaleCheckBox.Name = "scaleCheckBox";
+            this.scaleCheckBox.Size = new System.Drawing.Size(116, 17);
+            this.scaleCheckBox.TabIndex = 13;
+            this.scaleCheckBox.Tag = "display/dpiScale";
+            this.scaleCheckBox.Text = "Enable DPI scaling";
+            this.scaleCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Properties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1312,6 +1344,8 @@ namespace fooTitle {
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.refreshRateBar)).EndInit();
+            this.dpiScaleGroupBox.ResumeLayout(false);
+            this.dpiScaleGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
