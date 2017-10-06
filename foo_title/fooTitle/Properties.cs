@@ -1368,7 +1368,7 @@ namespace fooTitle {
                 return;
             }
 
-            _main.SkinPath = ((SkinListEntry)skinsList.SelectedItems[0]).Path;
+            _main.ForceAssignSkinPath(((SkinListEntry)skinsList.SelectedItems[0]).Path);
             OnChange(); // If the control is not wrapped in a ControlWrapper we need to manually call OnChange
         }
 

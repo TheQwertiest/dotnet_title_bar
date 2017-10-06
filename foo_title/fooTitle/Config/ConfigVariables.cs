@@ -210,10 +210,9 @@ namespace fooTitle.Config {
 
         public override void LoadFrom(IConfigStorage from) {
             object res = from.ReadVal<int>(Name);
-            if (res != null) {
-                Value = (int)res;
-                _saved = Value;
-            }
+
+            Value = res != null ? (int)res : _def;
+            _saved = Value;
         }
 
         public override void ReadVisit(IConfigValueVisitor visitor) {
@@ -270,10 +269,9 @@ namespace fooTitle.Config {
 
         public override void LoadFrom(IConfigStorage from) {
             object res = from.ReadVal<string>(Name);
-            if (res != null) {
-                Value = (string)res;
-                _saved = Value;
-            }
+
+            Value = res != null ? (string)res :_def;
+            _saved = Value;
         }
 
         public override void ReadVisit(IConfigValueVisitor visitor) {
@@ -355,11 +353,8 @@ namespace fooTitle.Config {
         public override void LoadFrom(IConfigStorage from)
         {
             object res = from.ReadVal<XElement>(Name);
-            if (res != null)
-            {
-                Value = (XElement)res;
-                _saved = Value;
-            }
+            Value = (XElement)res;
+            _saved = Value;
         }
 
         public override void ReadVisit(IConfigValueVisitor visitor)

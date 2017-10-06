@@ -64,7 +64,10 @@ namespace fooTitle.Layers
             _skinState.Reset();
             State = newNode;
 
-            ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
+            if (!Properties.IsOpen)
+            {// Config should not be written when preferences page is open, since user might not apply changes
+                ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
+            }
         }
 
         private void SaveStateInternal(Layer layer, XElement curNode)

@@ -56,8 +56,17 @@ namespace fooTitle {
         private readonly ConfString _skinPath = new ConfString("base/skinName", null);
         public string SkinPath
         {
-            set => _skinPath.ForceUpdate(value);
+            set => _skinPath.Value = value;
             get => _skinPath.Value;
+        }
+
+        /// <summary>
+        /// Same as assignment to SkinPath, but triggers OnChanged even if the value is the same.
+        /// </summary>
+        /// <param name="value">Value</param>
+        public void ForceAssignSkinPath( string value )
+        {
+            _skinPath.ForceUpdate(value);
         }
 
         private readonly ConfInt _positionX = new ConfInt("display/positionX", 0);
