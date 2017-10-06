@@ -17,7 +17,7 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-using System;
+
 using System.Drawing;
 
 namespace fooTitle
@@ -41,7 +41,7 @@ namespace fooTitle
 			Color drawColor = Color.FromArgb((int)(Frame / (float)MaxFrame * 255.0), this._color);
 			
 			const int MAX_EMPTY_WIDTH = 30;
-			int emptyWidth = (int) ((Frame / MaxFrame) * MAX_EMPTY_WIDTH);
+			int emptyWidth = (Frame / MaxFrame) * MAX_EMPTY_WIDTH;
 			//display.DrawRectangle(emptyWidth, 0, display.GetWidth() - emptyWidth, display.GetHeight(), drawColor);
 			display.Canvas.FillRectangle(new SolidBrush(drawColor), emptyWidth, 0, display.Width - 2*emptyWidth, display.Height);
 		}

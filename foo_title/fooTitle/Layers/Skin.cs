@@ -36,7 +36,6 @@ namespace fooTitle.Layers
     /// </summary>
     public class Skin : Layer, IPlayCallbackSender
     {
-        private readonly XDocument _document;
         private readonly XElement _skin;
         public List<Layer> DynamicLayers = new List<Layer>();
 
@@ -51,10 +50,10 @@ namespace fooTitle.Layers
             SkinDirectory = path;
 
             // load the skin xml file
-            _document = XDocument.Load(GetSkinFilePath("skin.xml"));
+            XDocument document = XDocument.Load(GetSkinFilePath("skin.xml"));
 
             // read the xml document for the basic properties
-            _skin = _document.Elements("skin").First();
+            _skin = document.Elements("skin").First();
 
             int width = int.Parse(_skin.Attribute("width").Value);
             int height = int.Parse(_skin.Attribute("height").Value);

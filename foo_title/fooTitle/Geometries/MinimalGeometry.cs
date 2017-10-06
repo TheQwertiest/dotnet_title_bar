@@ -33,7 +33,7 @@ namespace fooTitle.Geometries {
             Center = 1 << 5
         };
 
-        private AlignType _align;
+        private readonly AlignType _align;
 
         /// <summary>
         /// Current values of padding
@@ -72,7 +72,7 @@ namespace fooTitle.Geometries {
                 alignStr = GetAttributeValue(positionNode, "align", "left,top");
 
             _align = AlignType.None;
-            foreach (string i in alignStr.ToLower().Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (string i in alignStr.ToLower().Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 switch (i)
                 {

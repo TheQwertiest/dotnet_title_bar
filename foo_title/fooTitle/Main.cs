@@ -400,7 +400,7 @@ namespace fooTitle {
             _positionY.Value = anchorPos.y;
 
             if (_draggingEnabled.Value == EnableDragging.Always && !Properties.IsOpen) {
-                ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
+                ConfValuesManager.GetInstance().SaveTo(Config);
             }
         }
 

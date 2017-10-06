@@ -19,10 +19,6 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-
-
 using fooTitle.Config;
 using System.Windows.Forms;
 

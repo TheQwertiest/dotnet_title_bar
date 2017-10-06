@@ -51,11 +51,9 @@ namespace fooTitle.Config {
         /// This method implements the singleton pattern.
         /// </summary>
         /// <returns>An instance of ConfValuesManager. Always returns the same instance.</returns>
-        public static ConfValuesManager GetInstance() {
-            if (_instance == null)
-                _instance = new ConfValuesManager();
-            
-            return _instance;
+        public static ConfValuesManager GetInstance()
+        {
+            return _instance ?? (_instance = new ConfValuesManager());
         }
 
         /// <summary>
@@ -169,10 +167,7 @@ namespace fooTitle.Config {
         /// </summary>
         public static ConfInt CreateIntValue(string name, int _def, int _min, int _max) {
             ConfInt existing = (ConfInt)GetInstance().GetValueByName(name);
-            if (existing != null)
-                return existing;
-
-            return new ConfInt(name, _def, _min, _max);
+            return existing ?? new ConfInt(name, _def, _min, _max);
         }
 
         /// <summary>
@@ -180,10 +175,7 @@ namespace fooTitle.Config {
         /// </summary>
         public static ConfEnum<T> CreateEnumValue<T>(string name, T _def) where T : IConvertible {
             ConfEnum<T> existing = (ConfEnum<T>)GetInstance().GetValueByName(name);
-            if (existing != null)
-                return existing;
-
-            return new ConfEnum<T>(name, _def);
+            return existing ?? new ConfEnum<T>(name, _def);
         }
 
         /// <summary>
@@ -192,10 +184,7 @@ namespace fooTitle.Config {
         public static ConfBool CreateBoolValue(string name, bool _def)
         {
             ConfBool existing = (ConfBool)GetInstance().GetValueByName(name);
-            if (existing != null)
-                return existing;
-
-            return new ConfBool(name, _def);
+            return existing ?? new ConfBool(name, _def);
         }
     }
 

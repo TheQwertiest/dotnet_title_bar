@@ -120,7 +120,7 @@ namespace fooTitle.Extending {
             foreach (XElement i in where.Elements())
                 if (i.Name == name)
                     return i;
-            throw new XmlException($"Node {name} not found under {@where.Name}");
+            throw new XmlException($"Node {name} not found under {where.Name}");
         }
 
         public static XElement GetFirstChildByNameOrNull(XElement where, string name) {

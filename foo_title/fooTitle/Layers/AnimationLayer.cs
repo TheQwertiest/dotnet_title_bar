@@ -35,7 +35,7 @@ namespace fooTitle.Layers
         /// FPS rate of animation.
         /// </summary>
         protected int refreshRate = 15;
-        protected long lastUpdate = System.DateTime.Now.Ticks;
+        protected long lastUpdate = DateTime.Now.Ticks;
 
         public AnimationLayer(Rectangle parentRect, XElement node) : base(parentRect, node) {
             XNode contents = GetFirstChildByName(node, "contents");

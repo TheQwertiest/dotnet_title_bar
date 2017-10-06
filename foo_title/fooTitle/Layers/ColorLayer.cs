@@ -16,7 +16,6 @@
 *  information.
 */
 
-using System;
 using System.Xml.Linq;
 using System.Drawing;
 

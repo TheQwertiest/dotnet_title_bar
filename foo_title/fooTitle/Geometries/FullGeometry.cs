@@ -70,7 +70,7 @@ namespace fooTitle.Geometries {
                             myPadding.Top + myPadding.Bottom + contentSize.Height);
         }
 
-        public override System.Drawing.Point GetPosition() {
+        public override Point GetPosition() {
             return new Point(0, 0);
         }
 

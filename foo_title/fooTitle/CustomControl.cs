@@ -27,7 +27,7 @@ namespace fooTitle
         /// <summary>
         /// A group box that has ability to auto size in horizontal dimension only.
         /// </summary>
-        public class HorizontalFillDockGroupBox : System.Windows.Forms.GroupBox
+        public class HorizontalFillDockGroupBox : GroupBox
         {
             private int _tmpH = 0;
             private bool _isFirstResize = true;
@@ -77,7 +77,7 @@ namespace fooTitle
         /// <summary>
         /// A list view that has ability to auto size in horizontal dimension only.
         /// </summary>
-        public class HorizontalFillDockListView : System.Windows.Forms.ListView
+        public class HorizontalFillDockListView : ListView
         {
             private int _tmpH = 0;
             private bool _isFirstResize = true;
@@ -127,7 +127,7 @@ namespace fooTitle
         /// <summary>
         /// A track bar that has ability to auto size in horizontal dimension only.
         /// </summary>
-        public class HorizontalFillDockTrackBar : System.Windows.Forms.TrackBar
+        public class HorizontalFillDockTrackBar : TrackBar
         {
             private int _tmpH = 0;
             private bool _isFirstResize = true;
@@ -177,9 +177,9 @@ namespace fooTitle
         /// <summary>
         /// A check box that can wrap its text onto multiple lines as needed.
         /// </summary>
-        public class WrappingCheckBox : System.Windows.Forms.CheckBox
+        public class WrappingCheckBox : CheckBox
         {
-            private System.Drawing.Size _cachedSizeOfOneLineOfText = System.Drawing.Size.Empty;
+            private Size _cachedSizeOfOneLineOfText = Size.Empty;
             private readonly Dictionary<Size, Size> _preferredSizeHash = new Dictionary<Size, Size>(3); // typically we've got three different constraints.
 
             public WrappingCheckBox()
@@ -206,7 +206,7 @@ namespace fooTitle
 
                 if (string.IsNullOrEmpty(this.Text))
                 {
-                    _cachedSizeOfOneLineOfText = System.Drawing.Size.Empty;
+                    _cachedSizeOfOneLineOfText = Size.Empty;
                 }
                 else
                 {
@@ -237,10 +237,10 @@ namespace fooTitle
             }
         }
 
-        public class WrappingRadioButton : System.Windows.Forms.RadioButton
+        public class WrappingRadioButton : RadioButton
         {
-            System.Drawing.Size _cachedSizeOfOneLineOfText = System.Drawing.Size.Empty;
-            readonly Dictionary<Size, Size> _preferredSizeHash = new Dictionary<Size, Size>(3); // typically we've got three different constraints.
+            private Size _cachedSizeOfOneLineOfText = Size.Empty;
+            private readonly Dictionary<Size, Size> _preferredSizeHash = new Dictionary<Size, Size>(3); // typically we've got three different constraints.
 
             public WrappingRadioButton()
             {
@@ -266,7 +266,7 @@ namespace fooTitle
 
                 if (string.IsNullOrEmpty(this.Text))
                 {
-                    _cachedSizeOfOneLineOfText = System.Drawing.Size.Empty;
+                    _cachedSizeOfOneLineOfText = Size.Empty;
                 }
                 else
                 {
