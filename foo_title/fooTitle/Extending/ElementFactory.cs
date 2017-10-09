@@ -131,8 +131,9 @@ namespace fooTitle.Extending {
             return null;
         }
 
-        public static string GetNodeValue(XElement a) {
-            return a.Value.Trim(' ', '\n', '\r', '\t');
+        public static string GetNodeValue(XElement a, bool trim = true )
+        {
+            return trim ? a.Value.Trim(' ', '\n', '\r', '\t') : a.Value;
         }
 
         public static string GetAttributeValue(XElement where, string name, string def) {

@@ -80,11 +80,13 @@ namespace fooTitle.Layers {
 
         protected override void StraightDraw(Graphics g)
         {
+            StringFormat sf = new StringFormat(StringFormat.GenericTypographic)
+            { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
 
             // first move the text
             long now = DateTime.Now.Ticks;
             long deltaTime = now - _lastUpdate;
-            float textWidth = g.MeasureString(left.formatted, left.font).Width;
+            float textWidth = g.MeasureString(left.formatted, left.font, new PointF(0, 0), sf).Width;
             float farPoint = this.GetFarPointInClientRect(this.angle);
             float drawAt = 0;
 
@@ -169,7 +171,10 @@ namespace fooTitle.Layers {
   
             if (left.formatted != null)
             {
-                SizeF textSize = Main.GetInstance().Display.Canvas.MeasureString(left.formatted, left.font);
+                StringFormat sf = new StringFormat(StringFormat.GenericTypographic)
+                { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
+
+                SizeF textSize = Main.GetInstance().Display.Canvas.MeasureString(left.formatted, left.font, new PointF(0, 0), sf);
                 _textImage = new Bitmap(
                     Math.Max(10, (int)Math.Ceiling(textSize.Width)), 
                     Math.Max(10, (int)Math.Ceiling(textSize.Height)), 

@@ -76,7 +76,7 @@ namespace fooTitle.Layers
             defaultText = "";
             foreach (XElement n in contents.Elements()) {
                 if (n.Name == "defaultText")
-                    defaultText = GetNodeValue(n);
+                    defaultText = GetNodeValue(n, false);
             }
  
             if (Main.GetInstance().CurrentSkin != null) {
@@ -134,7 +134,7 @@ namespace fooTitle.Layers
                 Main.GetInstance().IsDpiScalable ? res.fontSize : (int)Math.Round((double)res.fontSize * 96 / 72),
                 fontStyle,
                 Main.GetInstance().IsDpiScalable ? GraphicsUnit.Point : GraphicsUnit.Pixel);
-            res.text = GetNodeValue(node);
+            res.text = GetNodeValue(node, false);
 
             return res;
         }
@@ -191,9 +191,9 @@ namespace fooTitle.Layers
         /// </summary>
         protected virtual void StraightDraw(Graphics g) {
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-            float leftWidth = 0;
+            //float leftWidth = 0;
             if (!string.IsNullOrEmpty(left.formatted)) {
-                leftWidth = Display.Canvas.MeasureString(left.formatted, left.font).Width;
+                //leftWidth = Display.Canvas.MeasureString(left.formatted, left.font).Width;
                 g.DrawString(left.formatted, left.font, new SolidBrush(left.color), 0, 0);
             }
 
@@ -248,10 +248,14 @@ namespace fooTitle.Layers
         /// </returns>
         private Size CalcStraightSize() {
             float width = 0;
+
+            StringFormat sf = new StringFormat(StringFormat.GenericTypographic)
+            { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
+
             if (!string.IsNullOrEmpty(left.formatted))
-                width += Display.Canvas.MeasureString(left.formatted, left.font).Width;
+                width += Display.Canvas.MeasureString(left.formatted, left.font, new PointF(0, 0), sf).Width;
             if (!string.IsNullOrEmpty(right.formatted)) {
-                width += Display.Canvas.MeasureString(right.formatted, right.font).Width;
+                width += Display.Canvas.MeasureString(right.formatted, right.font, new PointF(0, 0), sf).Width;
                 width += space;
             }
 
