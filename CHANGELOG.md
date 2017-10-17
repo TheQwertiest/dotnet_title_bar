@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [1.0.4] - 2017-10-17
 ### Added
 - Added in-built DPI scaling, which is enabled by default (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Preferences_page)).
 
@@ -127,7 +129,8 @@
 ## Prior releases
 - See https://github.com/lepkoqq/foo_title/releases
 
-[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.4...HEAD
+[1.0.3]: https://github.com/theqwertiest/foo_title/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/theqwertiest/foo_title/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/theqwertiest/foo_title/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/theqwertiest/foo_title/compare/v1.0.0...v1.0.1
