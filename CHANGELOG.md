@@ -4,13 +4,13 @@
 
 ## [1.0.4] - 2017-10-17
 ### Added
-- Added in-built DPI scaling, which is enabled by default (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Preferences_page)).
+- Added in-built DPI scaling, which is enabled by default (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Advanced)).
 
 ### Changed 
 - Removed 'scaleable' attribute from text layer.
 
 ### Fixed
-- Fixed bug: preferences changes were not always reverting upon exiting without applying changes.
+- Fixed bug: preferences changes were not always reverted, when exiting without applying those changes.
 
 ## [1.0.3] - 2017-10-04
 ### Added
@@ -130,7 +130,7 @@
 - See https://github.com/lepkoqq/foo_title/releases
 
 [Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.4...HEAD
-[1.0.3]: https://github.com/theqwertiest/foo_title/compare/v1.0.3...v1.0.4
+[1.0.4]: https://github.com/theqwertiest/foo_title/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/theqwertiest/foo_title/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/theqwertiest/foo_title/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/theqwertiest/foo_title/compare/v1.0.0...v1.0.1
