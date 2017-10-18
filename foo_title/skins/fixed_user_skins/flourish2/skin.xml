@@ -78,7 +78,7 @@
                     <padding left="1" top="1" right="0" bottom="0"/>
                 </geometry>
                 <contents spacing="0" font="Arial" size="8">
-                    <defaultText>　foobar2000　</defaultText>
+                    <defaultText>foobar2000 </defaultText>
                     <label position="left" color="FF000000">[%artist%  -  ]%title% </label>
                 </contents>
             </layer>
@@ -87,7 +87,7 @@
                     <padding left="0" top="0" right="0" bottom="0"/>
                 </geometry>
                 <contents spacing="0" font="Arial" size="8">
-                    <defaultText>　foobar2000　</defaultText>
+                    <defaultText>foobar2000 </defaultText>
                     <label position="left" color="DDFFFFFF">[%artist%  -  ]%title% </label>
                 </contents>
             </layer>
