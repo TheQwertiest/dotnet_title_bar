@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.0.4a] - 2017-10-18
+### Fixed
+- Fixed text truncation, when DPI scaling is enabled.
+
 ## [1.0.4] - 2017-10-17
 ### Added
 - Added in-built DPI scaling, which is enabled by default (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Advanced)).
@@ -129,7 +133,8 @@
 ## Prior releases
 - See https://github.com/lepkoqq/foo_title/releases
 
-[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.4...HEAD
+[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.4a...HEAD
+[1.0.4a]: https://github.com/theqwertiest/foo_title/compare/v1.0.4...v1.0.4a
 [1.0.4]: https://github.com/theqwertiest/foo_title/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/theqwertiest/foo_title/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/theqwertiest/foo_title/compare/v1.0.1...v1.0.2
