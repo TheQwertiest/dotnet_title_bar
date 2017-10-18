@@ -23,6 +23,7 @@ using System.Drawing;
 using fooManagedWrapper;
 using naid;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 namespace fooTitle.Layers
 {
@@ -249,23 +250,25 @@ namespace fooTitle.Layers
         private Size CalcStraightSize() {
             float width = 0;
 
-            StringFormat sf = new StringFormat(StringFormat.GenericTypographic)
+            StringFormat sf = new StringFormat(StringFormat.GenericDefault)
             { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
 
             if (!string.IsNullOrEmpty(left.formatted))
+            {
                 width += Display.Canvas.MeasureString(left.formatted, left.font, new PointF(0, 0), sf).Width;
+            }
             if (!string.IsNullOrEmpty(right.formatted)) {
                 width += Display.Canvas.MeasureString(right.formatted, right.font, new PointF(0, 0), sf).Width;
                 width += space;
             }
 
-            int height = 0;
+            float height = 0;
             if (!string.IsNullOrEmpty(left.formatted))
-                height = (int)Display.Canvas.MeasureString(left.formatted, left.font).Height;
+                height = Display.Canvas.MeasureString(left.formatted, left.font).Height;
             if (!string.IsNullOrEmpty(right.formatted))
-                height = Math.Max(height, (int)Display.Canvas.MeasureString(right.formatted, right.font).Height);
+                height = Math.Max(height, Display.Canvas.MeasureString(right.formatted, right.font).Height);
 
-            return new Size((int)width, (int)height);
+            return new Size((int)Math.Ceiling(width), (int)Math.Ceiling(height));
         }
 
         private Rectangle CalcRotatedBounds() {

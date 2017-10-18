@@ -80,7 +80,7 @@ namespace fooTitle.Layers {
 
         protected override void StraightDraw(Graphics g)
         {
-            StringFormat sf = new StringFormat(StringFormat.GenericTypographic)
+            StringFormat sf = new StringFormat(StringFormat.GenericDefault)
             { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
 
             // first move the text
@@ -171,7 +171,7 @@ namespace fooTitle.Layers {
   
             if (left.formatted != null)
             {
-                StringFormat sf = new StringFormat(StringFormat.GenericTypographic)
+                StringFormat sf = new StringFormat(StringFormat.GenericDefault)
                 { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
 
                 SizeF textSize = Main.GetInstance().Display.Canvas.MeasureString(left.formatted, left.font, new PointF(0, 0), sf);
