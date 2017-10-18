@@ -4,7 +4,8 @@
 
 ## [1.0.4a] - 2017-10-18
 ### Fixed
-- Fixed text truncation, when DPI scaling is enabled.
+- Fixed text truncation when DPI scaling is enabled.
+- Fixed invalid height of the default text in flourish skin ([link](https://github.com/TheQwertiest/foo_title/wiki/Skin-Gallery#flourish-linkfixed-version)).
 
 ## [1.0.4] - 2017-10-17
 ### Added
