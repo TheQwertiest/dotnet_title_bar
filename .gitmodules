@@ -1,6 +1,6 @@
 [submodule "pfc"]
 	path = pfc
-	url = https://github.com/TheQwertiest/pfc.git
+	url = https://github.com/reupen/pfc.git
 [submodule "foobar2000-sdk"]
 	path = foobar2000-sdk
-	url = https://github.com/TheQwertiest/foobar2000-sdk.git
+	url = https://github.com/reupen/foobar2000-sdk.git

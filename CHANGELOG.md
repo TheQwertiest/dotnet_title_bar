@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.0.5] - 2018-02-21
+### Changed
+- Rebuilt with the latest fb2k SDK (2018-02-05).
+
 ## [1.0.4a] - 2017-10-18
 ### Fixed
 - Fixed text truncation when DPI scaling is enabled.
@@ -134,7 +138,8 @@
 ## Prior releases
 - See https://github.com/lepkoqq/foo_title/releases
 
-[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.4a...HEAD
+[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/theqwertiest/foo_title/compare/v1.0.4a...v1.0.5
 [1.0.4a]: https://github.com/theqwertiest/foo_title/compare/v1.0.4...v1.0.4a
 [1.0.4]: https://github.com/theqwertiest/foo_title/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/theqwertiest/foo_title/compare/v1.0.2...v1.0.3

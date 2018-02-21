@@ -8,7 +8,7 @@ See [>>gallery<<](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery) f
 
 ## Prerequisites
 1. Microsoft .Net Framework 4.5 (https://www.microsoft.com/download/details.aspx?id=42642)
-1. Microsoft Visual Studio 2015 C++ Redistributable (https://www.microsoft.com/download/details.aspx?id=48145)
+1. foobar2000 v1.4+
 
 ## Installation
 1. Extract and install foo_title.fb2k-component (http://wiki.hydrogenaud.io/index.php?title=Foobar2000:How_to_install_a_component).  
@@ -28,4 +28,4 @@ See [>>gallery<<](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery) f
 [LepkoQQ](https://github.com/LepkoQQ): further improvements on the original component.
 
 [CHANGELOG]: ./CHANGELOG.md
-[version-badge]: https://img.shields.io/badge/version-1.0.4a-blue.svg
+[version-badge]: https://img.shields.io/badge/version-1.0.5-blue.svg
