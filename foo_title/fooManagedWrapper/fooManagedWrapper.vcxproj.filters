@@ -7,6 +7,9 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{cf955fc3-ae49-42e8-9923-b16720f79713}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{532d15ce-38db-4ed5-97a2-de855ba1ef39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -33,9 +36,6 @@
     <ClCompile Include="contextMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="initQuit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -60,10 +60,13 @@
     <ClCompile Include="Console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PlayControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="MetaDBHandle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlayControl.cpp">
+    <ClCompile Include="FileInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,16 +80,10 @@
     <ClInclude Include="Command.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ComponentLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="configIOCallback.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FileInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="fooServices.h">
@@ -113,19 +110,22 @@
     <ClInclude Include="component_version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MetaDBHandle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IComponentClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EnumeratorAdapter.h">
+    <ClInclude Include="PlayControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlayControl.h">
+    <ClInclude Include="FileInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaDBHandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumeratorAdapter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

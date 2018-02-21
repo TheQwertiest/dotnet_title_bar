@@ -5,7 +5,8 @@ Modified by Roman Plasil for foo_managedWrapper and foo_title projects
 */
 
 #include "Stdafx.h"
-#include "common.h"
+#include "ManagedWrapper.h"
+
 
 static HINSTANCE g_hIns;
 
