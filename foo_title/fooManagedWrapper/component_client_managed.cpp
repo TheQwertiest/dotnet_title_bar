@@ -1,11 +1,11 @@
 /*
-Part of the foobar2000 0.9 SDK
+Part of the foobar2000 SDK
 Copyright (c) 2001 - 2006, Peter Pawlowski
 Modified by Roman Plasil for foo_managedWrapper and foo_title projects
 */
+
 #include "Stdafx.h"
 #include "common.h"
-
 
 static HINSTANCE g_hIns;
 
@@ -118,24 +118,22 @@ namespace {
 
 static foobar2000_client_impl g_client;
 
-#pragma managed
 extern "C"
 {
 	__declspec(dllexport) foobar2000_client * _cdecl foobar2000_get_interface(foobar2000_api * p_api,HINSTANCE hIns)
 	{
-		g_hIns = hIns;
-		g_foobar2000_api = p_api;
+          g_hIns = hIns;
+          g_foobar2000_api = p_api;
 
-		// find out module path
+          // find out module path
           TCHAR buf[MAX_PATH];
-		GetModuleFileName(hIns, buf, sizeof( buf ));
-		String ^modulePath = gcnew String(buf);
+          GetModuleFileName( hIns, buf, sizeof( buf ) );
+          String ^modulePath = gcnew String( buf );
 
-		// this is to allow creating of IFoobarService's before the component is initialized
-		CManagedWrapper ^managedWrapper = gcnew CManagedWrapper();
-		managedWrapper->Start(modulePath);
+          // this is to allow creating of IFoobarService's before the component is initialized
+          CManagedWrapper ^managedWrapper = gcnew CManagedWrapper();
+          managedWrapper->Start( modulePath );
 
-		return &g_client;
+          return &g_client;
 	}
 }
-#pragma unmanaged

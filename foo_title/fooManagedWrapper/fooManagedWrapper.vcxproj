@@ -130,19 +130,21 @@
     <ClCompile Include="ComponentLoader.cpp" />
     <ClCompile Include="componentMain.cpp" />
     <ClCompile Include="configIOCallback.cpp" />
+    <ClCompile Include="Console.cpp" />
     <ClCompile Include="contextMenu.cpp" />
+    <ClCompile Include="PlayControl.cpp" />
     <ClCompile Include="FileInfo.cpp" />
     <ClCompile Include="initQuit.cpp" />
     <ClCompile Include="mainMenuCommands.cpp" />
     <ClCompile Include="mainMenuGroupPopup.cpp" />
     <ClCompile Include="ManagedWrapper.cpp" />
+    <ClCompile Include="MetaDBHandle.cpp" />
     <ClCompile Include="playCallback.cpp" />
     <ClCompile Include="prefPages_v3.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cfgVars.h" />
@@ -152,15 +154,19 @@
     <ClInclude Include="ComponentLoader.h" />
     <ClInclude Include="component_version.h" />
     <ClInclude Include="configIOCallback.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="PlayControl.h" />
     <ClInclude Include="FileInfo.h" />
     <ClInclude Include="fooServices.h" />
+    <ClInclude Include="IComponentClient.h" />
     <ClInclude Include="initQuit.h" />
     <ClInclude Include="mainMenuCommands.h" />
     <ClInclude Include="ManagedWrapper.h" />
+    <ClInclude Include="MetaDBHandle.h" />
     <ClInclude Include="playCallback.h" />
     <ClInclude Include="prefPages_v3.h" />
     <ClInclude Include="Stdafx.h" />
-    <ClInclude Include="utils.h" />
+    <ClInclude Include="EnumeratorAdapter.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\foobar2000-sdk\SDK\foobar2000_SDK.vcxproj">

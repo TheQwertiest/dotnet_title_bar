@@ -19,20 +19,33 @@
 
 #pragma once
 
-using namespace System;
+#include "FileInfo.h"
+#include "PlayControl.h"
 
-namespace fooManagedWrapper {
-     
-     //! This class represents the base for main menu commands. Implement
-     //! this class to create your own menu command.
-     public ref class CCommand abstract {
-     public:
-          virtual void Execute() = 0;
-          virtual bool GetDescription(String^ %desc) = 0;
-          virtual bool GetDisplay(String^ %text, unsigned int %flags);
-          virtual Guid GetGuid() = 0;
-          virtual String ^GetName() = 0;
-          virtual unsigned int GetFlags();
-     };
 
+namespace fooManagedWrapper
+{
+
+// this is the main entry point for each dotnet_ component - one class must implement it
+public interface class IComponentClient {
+
+     String ^ GetName();
+     String ^ GetVersion();
+     String ^ GetDescription();
+
+     // the component class must create all services in this method
+     void Create();
+
+     // this also gives the component an IPlayControl implementation
+     void OnInit(IPlayControl ^a);
+     void OnQuit();
+
+     // these are the play callbacks
+     void OnPlaybackNewTrack(CMetaDBHandle ^h);
+     void OnPlaybackTime(double time);
+     void OnPlaybackPause(bool state);
+     void OnPlaybackStop(IPlayControl::StopReason reason);
+     void OnPlaybackDynamicInfoTrack(FileInfo ^fileInfo);
 };
+
+}

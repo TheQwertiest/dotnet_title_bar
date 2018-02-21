@@ -19,7 +19,6 @@
 */
 #include "stdafx.h"
 #include "playCallback.h"
-#include "utils.h"
 #include "ManagedWrapper.h"
 
 

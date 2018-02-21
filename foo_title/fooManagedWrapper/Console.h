@@ -21,18 +21,16 @@
 
 using namespace System;
 
-namespace fooManagedWrapper {
-     
-     //! This class represents the base for main menu commands. Implement
-     //! this class to create your own menu command.
-     public ref class CCommand abstract {
-     public:
-          virtual void Execute() = 0;
-          virtual bool GetDescription(String^ %desc) = 0;
-          virtual bool GetDisplay(String^ %text, unsigned int %flags);
-          virtual Guid GetGuid() = 0;
-          virtual String ^GetName() = 0;
-          virtual unsigned int GetFlags();
-     };
+namespace fooManagedWrapper
+{
+
+// a managed wrapper for foobar's console
+public ref class CConsole {
+public:
+	static void Error(String ^a);
+	static void Write(String ^a);
+	static void Warning(String ^a);
 
 };
+
+}

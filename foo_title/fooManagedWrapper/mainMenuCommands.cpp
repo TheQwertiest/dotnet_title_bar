@@ -21,7 +21,6 @@
 #include "stdafx.h"
 #include "mainMenuCommands.h"
 #include "ManagedWrapper.h"
-#include "utils.h"
 
 
 namespace fooManagedWrapper {
@@ -123,7 +122,7 @@ namespace fooManagedWrapper {
 	}
 
 	CMainMenuCommands::~CMainMenuCommands() {
-		NULL_DELETE(ptr);
+		FT_NULL_DELETE(ptr);
 	}
 
 	String ^CMainMenuCommands::GetName(unsigned int index) {

@@ -19,6 +19,7 @@
 */
 #include "stdafx.h"
 #include "initQuit.h"
+#include "Console.h"
 #include "ManagedWrapper.h"
 
 

@@ -18,7 +18,6 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "stdafx.h"
-#include "utils.h"
 #include "FileInfo.h"
 
 namespace fooManagedWrapper
@@ -31,7 +30,7 @@ FileInfo::FileInfo( const file_info &src )
 
 FileInfo::!FileInfo()
 {
-     NULL_DELETE( fileInfo );
+     FT_NULL_DELETE( fileInfo );
 }
 
 bool FileInfo::IsMetaEqual( FileInfo ^info1, FileInfo ^info2 )

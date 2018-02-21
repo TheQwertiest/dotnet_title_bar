@@ -19,20 +19,29 @@
 
 #pragma once
 
+
 using namespace System;
+using namespace System::Drawing;
 
-namespace fooManagedWrapper {
-     
-     //! This class represents the base for main menu commands. Implement
-     //! this class to create your own menu command.
-     public ref class CCommand abstract {
-     public:
-          virtual void Execute() = 0;
-          virtual bool GetDescription(String^ %desc) = 0;
-          virtual bool GetDisplay(String^ %text, unsigned int %flags);
-          virtual Guid GetGuid() = 0;
-          virtual String ^GetName() = 0;
-          virtual unsigned int GetFlags();
-     };
+namespace fooManagedWrapper
+{
 
+// a managed wrapper for metadb_handle
+public ref class CMetaDBHandle 
+{
+public:
+     CMetaDBHandle(const metadb_handle_ptr &src);
+     !CMetaDBHandle();
+     ~CMetaDBHandle();
+
+     metadb_handle_ptr GetHandle();
+     String ^GetPath();
+     double GetLength();
+     Bitmap ^GetArtworkBitmap(Boolean get_stub);
+private:
+     // metadb_handle_ptr is a smart pointer which handles reference counting, so another level of indirection
+     // is rather cumbersome, but it is required by C++/CLI
+     metadb_handle_ptr *handle;
 };
+
+}

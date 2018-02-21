@@ -28,7 +28,7 @@ CMainMenuGroup::CMainMenuGroup(const service_ptr_t<mainmenu_group> &existingPtr)
 }
 
 CMainMenuGroup::~CMainMenuGroup() {
-	NULL_DELETE(ptr);
+	FT_NULL_DELETE(ptr);
 }
 
 // this creates and registers a new menu group popup
@@ -55,8 +55,8 @@ CMainMenuGroupPopup::CMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popu
 
 CMainMenuGroupPopup::~CMainMenuGroupPopup()
 {
-     NULL_DELETE( wrapper );
-     NULL_DELETE( castPtr );
+     FT_NULL_DELETE( wrapper );
+     FT_NULL_DELETE( castPtr );
 }
 
 };

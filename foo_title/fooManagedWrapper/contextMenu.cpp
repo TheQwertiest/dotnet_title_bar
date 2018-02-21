@@ -29,7 +29,7 @@ CContextMenuItem::CContextMenuItem(const service_ptr_t<contextmenu_item> &existi
 
 CContextMenuItem::~CContextMenuItem()
 {
-     NULL_DELETE( ptr );
+     FT_NULL_DELETE( ptr );
 }
 
 String ^CContextMenuItem::GetName(unsigned int index) {

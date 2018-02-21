@@ -21,6 +21,7 @@
 #include "fooServices.h"
 #include "ComponentLoader.h"
 #include "ManagedWrapper.h"
+#include "Console.h"
 #include "prefPages_v3.h"
 #include "mainMenuCommands.h"
 
@@ -44,7 +45,7 @@ namespace fooManagedWrapper {
 	}
 
 	CManagedWrapper::!CManagedWrapper() {
-          NULL_DELETE( UIControlInstance );		
+          FT_NULL_DELETE( UIControlInstance );		
 	}
 
 	void CManagedWrapper::Start(String ^_modulePath) {
