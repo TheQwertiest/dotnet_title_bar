@@ -7,9 +7,6 @@ Modified by Roman Plasil for foo_managedWrapper and foo_title projects
 #include "common.h"
 
 
-using namespace fooManagedWrapper;
-
-
 static HINSTANCE g_hIns;
 
 static pfc::string_simple g_name,g_full_path;
@@ -17,6 +14,7 @@ static pfc::string_simple g_name,g_full_path;
 static bool g_services_available = false, g_initialized = false;
 
 
+using namespace fooManagedWrapper;
 
 namespace core_api
 {
@@ -129,10 +127,9 @@ extern "C"
 		g_foobar2000_api = p_api;
 
 		// find out module path
-		TCHAR *buf = new TCHAR[300];
-		GetModuleFileName(hIns, buf, 300);
+          TCHAR buf[MAX_PATH];
+		GetModuleFileName(hIns, buf, sizeof( buf ));
 		String ^modulePath = gcnew String(buf);
-		delete[] buf;
 
 		// this is to allow creating of IFoobarService's before the component is initialized
 		CManagedWrapper ^managedWrapper = gcnew CManagedWrapper();

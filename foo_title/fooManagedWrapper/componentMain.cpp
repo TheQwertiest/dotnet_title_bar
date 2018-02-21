@@ -54,15 +54,15 @@ void get_file_name( pfc::string_base & out )
 }	
 void get_component_name( pfc::string_base & out )
 {
-     out = CManagedWrapper::ToStdString( CManagedWrapper::getInstance()->GetNetComponentName() ).c_str();
+     out = CManagedWrapper::StringToPfcString( CManagedWrapper::getInstance()->GetNetComponentName() );
 }	
 void get_component_version( pfc::string_base & out )
 {
-     out = CManagedWrapper::ToStdString( CManagedWrapper::getInstance()->GetNetComponentVersion() ).c_str();
+     out = CManagedWrapper::StringToPfcString( CManagedWrapper::getInstance()->GetNetComponentVersion() );
 }	
 void get_about_message( pfc::string_base & out )
 {
-     out = CManagedWrapper::ToStdString( CManagedWrapper::getInstance()->GetNetComponentDescription() ).c_str();
+     out = CManagedWrapper::StringToPfcString( CManagedWrapper::getInstance()->GetNetComponentDescription() );
 }	
 };
 

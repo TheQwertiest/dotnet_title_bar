@@ -21,19 +21,22 @@
 #include "utils.h"
 #include "FileInfo.h"
 
-using namespace fooManagedWrapper;
+namespace fooManagedWrapper
+{
 
-FileInfo::FileInfo(const file_info &src) {
-	fileInfo = new file_info_impl(src);
+FileInfo::FileInfo( const file_info &src )
+{
+     fileInfo = new file_info_impl( src );
 }
 
-FileInfo::!FileInfo() {
-	if (fileInfo != NULL) {
-		delete fileInfo;
-		fileInfo = NULL;
-	}
+FileInfo::!FileInfo()
+{
+     NULL_DELETE( fileInfo );
 }
 
-bool FileInfo::IsMetaEqual(FileInfo ^info1, FileInfo ^info2) {
-	return file_info::g_is_meta_equal(*info1->fileInfo, *info2->fileInfo);
+bool FileInfo::IsMetaEqual( FileInfo ^info1, FileInfo ^info2 )
+{
+     return file_info::g_is_meta_equal( *info1->fileInfo, *info2->fileInfo );
 }
+
+}// namespace fooManagedWrapper

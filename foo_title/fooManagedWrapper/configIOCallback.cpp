@@ -22,10 +22,6 @@
 #include "configIOCallback.h"
 
 
-using namespace fooManagedWrapper;
-using namespace System;
-using namespace std;
-
 namespace fooManagedWrapper {
 	static service_factory_t<CConfigIO> configIOInstance;
 

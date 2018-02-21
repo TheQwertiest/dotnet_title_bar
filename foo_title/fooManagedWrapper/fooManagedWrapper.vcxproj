@@ -132,7 +132,6 @@
     <ClCompile Include="configIOCallback.cpp" />
     <ClCompile Include="contextMenu.cpp" />
     <ClCompile Include="FileInfo.cpp" />
-    <ClCompile Include="fooServices.cpp" />
     <ClCompile Include="initQuit.cpp" />
     <ClCompile Include="mainMenuCommands.cpp" />
     <ClCompile Include="mainMenuGroupPopup.cpp" />
@@ -155,7 +154,6 @@
     <ClInclude Include="configIOCallback.h" />
     <ClInclude Include="FileInfo.h" />
     <ClInclude Include="fooServices.h" />
-    <ClInclude Include="IClient.h" />
     <ClInclude Include="initQuit.h" />
     <ClInclude Include="mainMenuCommands.h" />
     <ClInclude Include="ManagedWrapper.h" />

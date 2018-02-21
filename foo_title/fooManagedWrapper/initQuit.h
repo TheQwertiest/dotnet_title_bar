@@ -39,14 +39,15 @@ namespace fooManagedWrapper {
 
 	class CInitQuit : public initquit {
 	public:
-		gcroot<CManagedInitQuit^> managedInitQuit;
-		CPlayCallback *playCallback;
-
-		void createPlayCallback();
-
 		virtual void on_init();
-		virtual void on_quit();
-		virtual void on_system_shutdown();
+		virtual void on_quit();		
+
+     private:
+          void createPlayCallback();
+
+     private:
+          gcroot<CManagedInitQuit^> managedInitQuit;
+          CPlayCallback *playCallback;
 	};
 
 }

@@ -35,6 +35,7 @@ namespace fooManagedWrapper {
 		CManagedPrefPage_v3(System::Guid ^myGuid, System::Guid ^parentGuid);
 		virtual ~CManagedPrefPage_v3();
 		!CManagedPrefPage_v3();
+
 		virtual void Reset() {};
 		virtual void Apply() {};
 		virtual bool HasChanged() { return false; };

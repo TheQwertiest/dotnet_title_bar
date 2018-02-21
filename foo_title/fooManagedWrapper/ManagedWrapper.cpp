@@ -29,10 +29,6 @@
 
 using namespace msclr::interop;
 
-using namespace System;
-using namespace fooManagedWrapper;
-using namespace System::Text;
-
 namespace fooManagedWrapper {
 
 	CManagedWrapper::CManagedWrapper() {
@@ -48,9 +44,7 @@ namespace fooManagedWrapper {
 	}
 
 	CManagedWrapper::!CManagedWrapper() {
-		if (UIControlInstance)
-			delete UIControlInstance;
-		UIControlInstance = NULL;
+          NULL_DELETE( UIControlInstance );		
 	}
 
 	void CManagedWrapper::Start(String ^_modulePath) {

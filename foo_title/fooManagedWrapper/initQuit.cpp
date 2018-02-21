@@ -21,61 +21,68 @@
 #include "initQuit.h"
 #include "ManagedWrapper.h"
 
-using namespace std;
 
 namespace fooManagedWrapper {
 
-	CManagedInitQuit::CManagedInitQuit() {
+static initquit_factory_t< CInitQuit > initQuit;
 
-	}
+CManagedInitQuit::CManagedInitQuit()
+{
 
-	void CManagedInitQuit::on_init() {
-		try {
-			playControl = gcnew CPlayControl();
+}
 
-			CManagedWrapper::getInstance()->OnInit();
+void CManagedInitQuit::on_init()
+{
+     try
+     {
+          playControl = gcnew CPlayControl();
 
-			for each (IComponentClient ^cl in CManagedWrapper::getInstance()) {
-				try {
-					cl->OnInit(playControl);
-				} catch (Exception ^e) {
-					fooManagedWrapper::CConsole::Error(e->ToString());
-				}
-			}
-		} catch (Exception ^e) {
-			fooManagedWrapper::CConsole::Error(e->ToString());
-		}
+          CManagedWrapper::getInstance()->OnInit();
 
-	}
+          for each ( IComponentClient ^cl in CManagedWrapper::getInstance() )
+          {
+               try
+               {
+                    cl->OnInit( playControl );
+               }
+               catch ( Exception ^e )
+               {
+                    fooManagedWrapper::CConsole::Error( e->ToString() );
+               }
+          }
+     }
+     catch ( Exception ^e )
+     {
+          fooManagedWrapper::CConsole::Error( e->ToString() );
+     }
 
-	void CManagedInitQuit::on_quit() {
-		for each (IComponentClient ^cl in CManagedWrapper::getInstance()) {
-			cl->OnQuit();
-		}
-	}
+}
+
+void CManagedInitQuit::on_quit()
+{
+     for each ( IComponentClient ^cl in CManagedWrapper::getInstance() )
+     {
+          cl->OnQuit();
+     }
+}
 
 
-	void CInitQuit::createPlayCallback() {
-		playCallback = new CPlayCallback();
-	}
+void CInitQuit::createPlayCallback()
+{
+     playCallback = new CPlayCallback();
+}
 
-	void CInitQuit::on_init() {
-		managedInitQuit = gcnew CManagedInitQuit();
-		managedInitQuit->on_init();
-		createPlayCallback();
-	}
+void CInitQuit::on_init()
+{
+     managedInitQuit = gcnew CManagedInitQuit();
+     managedInitQuit->on_init();
+     createPlayCallback();
+}
 
-	void CInitQuit::on_quit() {
-		managedInitQuit->on_quit();
-		delete playCallback;
-	}
-
-	void CInitQuit::on_system_shutdown() {
-		// System shutdown is handled like a normal
-		// application exit here.
-		on_quit();
-	}
-
-	static initquit_factory_t< CInitQuit > initQuit;
+void CInitQuit::on_quit()
+{
+     managedInitQuit->on_quit();
+     delete playCallback;
+}
 
 }

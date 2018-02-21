@@ -20,8 +20,6 @@
 #include "stdafx.h"
 #include "cfgVars.h"
 
-using namespace System;
-using namespace std;
 
 namespace fooManagedWrapper {
 

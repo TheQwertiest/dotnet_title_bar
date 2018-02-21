@@ -36,9 +36,6 @@
     <ClCompile Include="FileInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="fooServices.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="initQuit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -87,9 +84,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="fooServices.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="initQuit.h">

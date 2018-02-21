@@ -24,11 +24,6 @@
 #include "utils.h"
 
 
-using namespace fooManagedWrapper;
-using namespace std;
-using namespace System::Collections::Generic;
-using namespace System::Text;
-
 namespace fooManagedWrapper {
 
 	CMainMenuCommandsImpl::CMainMenuCommandsImpl(List<CCommand ^> ^_cmds) {
@@ -121,15 +116,14 @@ namespace fooManagedWrapper {
 		p_text = CManagedWrapper::StringToPfcString(str);
 		return res;
 	}
-
-
+     
 
 	CMainMenuCommands::CMainMenuCommands(const service_ptr_t<mainmenu_commands> &_ptr) {
 		this->ptr = new service_ptr_t<mainmenu_commands>(_ptr);
 	}
 
 	CMainMenuCommands::~CMainMenuCommands() {
-		SAFE_DELETE(ptr);
+		NULL_DELETE(ptr);
 	}
 
 	String ^CMainMenuCommands::GetName(unsigned int index) {

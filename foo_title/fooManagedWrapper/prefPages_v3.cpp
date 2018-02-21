@@ -20,8 +20,6 @@
 #include "prefPages_v3.h"
 #include "ManagedWrapper.h"
 
-using namespace fooManagedWrapper;
-using namespace std;
 
 namespace fooManagedWrapper {
 	CCustomPrefPage_v3::CCustomPrefPage_v3() {
@@ -45,7 +43,7 @@ namespace fooManagedWrapper {
 
 	bool CCustomPrefPage_v3::get_help_url(pfc::string_base& p_out)
 	{
-		p_out = "http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managedWrapper)#Preferences_page";
+		p_out = "http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Preferences_page";
 		return true;
 	}
 

@@ -71,10 +71,7 @@ namespace fooManagedWrapper {
 		// this constructor wraps an existing menu group popup
 		CMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popup> &existingPtr);
 
-		virtual ~CMainMenuGroupPopup() {
-			SAFE_DELETE(wrapper);
-			SAFE_DELETE(castPtr);
-		}
+          virtual ~CMainMenuGroupPopup();
 
 		property String ^Name {
 			String ^get() {
@@ -120,9 +117,7 @@ namespace fooManagedWrapper {
 	public:
 		CContextMenuItem(const service_ptr_t<contextmenu_item> &existingPtr);
 
-		virtual ~CContextMenuItem() {
-			SAFE_DELETE(ptr);
-		}
+          virtual ~CContextMenuItem();
 
 		String ^GetName(unsigned int index);
 		String ^GetDefaultPath(unsigned int index);

@@ -22,7 +22,6 @@
 #include "utils.h"
 #include "ManagedWrapper.h"
 
-using namespace fooManagedWrapper;
 
 namespace fooManagedWrapper {
 

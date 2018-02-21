@@ -37,5 +37,3 @@ namespace fooManagedWrapper {
      };
 
 };
-
-using namespace fooManagedWrapper;

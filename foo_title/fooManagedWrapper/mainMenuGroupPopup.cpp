@@ -28,9 +28,8 @@ CMainMenuGroup::CMainMenuGroup(const service_ptr_t<mainmenu_group> &existingPtr)
 }
 
 CMainMenuGroup::~CMainMenuGroup() {
-	SAFE_DELETE(ptr);
+	NULL_DELETE(ptr);
 }
-
 
 // this creates and registers a new menu group popup
 CMainMenuGroupPopup::CMainMenuGroupPopup(Guid ^guid, Guid ^parent, int priority, String ^ name) {
@@ -52,6 +51,12 @@ CMainMenuGroupPopup::CMainMenuGroupPopup(const service_ptr_t<mainmenu_group_popu
 	// not adding this service to the CManagedWrapper's list because we are not creating a new one
 	wrapper = NULL;
 	castPtr = new service_ptr_t<mainmenu_group_popup>(existingPtr);
+}
+
+CMainMenuGroupPopup::~CMainMenuGroupPopup()
+{
+     NULL_DELETE( wrapper );
+     NULL_DELETE( castPtr );
 }
 
 };

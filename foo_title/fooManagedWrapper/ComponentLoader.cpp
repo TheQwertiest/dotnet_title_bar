@@ -21,60 +21,74 @@
 #include "utils.h"
 #include "ManagedWrapper.h"
 
-using namespace fooManagedWrapper;
-using namespace System;
+
 using namespace System::Reflection;
-using namespace System::IO;
 
+namespace fooManagedWrapper
+{
 
-IComponentClient ^CComponentLoader::LoadComponent(System::String ^assemblyName) {
-	Type ^iclient = fooManagedWrapper::IComponentClient::typeid;
-	Assembly ^a = Assembly::LoadFrom(assemblyName);
+IComponentClient ^CComponentLoader::LoadComponent( System::String ^assemblyName )
+{
+     Type ^iclient = fooManagedWrapper::IComponentClient::typeid;
+     Assembly ^a = Assembly::LoadFrom( assemblyName );
 
-	array<Type ^> ^types = a->GetTypes();
-	for each (Type ^t in types) {
-		if (iclient->IsAssignableFrom(t)) {
-			return createInstance(t);
-		}
-	}
+     array<Type ^> ^types = a->GetTypes();
+     for each ( Type ^t in types )
+     {
+          if ( iclient->IsAssignableFrom( t ) )
+          {
+               return createInstance( t );
+          }
+     }
 
-	return nullptr;
+     return nullptr;
 };
 
-IComponentClient ^CComponentLoader::createInstance(Type ^type) {
-	ConstructorInfo ^conInfo = type->GetConstructor(Type::EmptyTypes);
-	IComponentClient ^cl = dynamic_cast<IComponentClient ^>(conInfo->Invoke(nullptr));
-	return cl;
+IComponentClient ^CComponentLoader::createInstance( Type ^type )
+{
+     ConstructorInfo ^conInfo = type->GetConstructor( Type::EmptyTypes );
+     IComponentClient ^cl = dynamic_cast<IComponentClient ^>( conInfo->Invoke( nullptr ) );
+     return cl;
 }
 
-TComponentClients ^CComponentLoader::LoadComponentsInDir(System::String ^dirName, System::String ^filePrefix) {
-	try {
-		DirectoryInfo ^di = gcnew DirectoryInfo(dirName);
-		array<System::IO::FileInfo^> ^files = di->GetFiles(filePrefix + "*.dll");
+TComponentClients ^CComponentLoader::LoadComponentsInDir( System::String ^dirName, System::String ^filePrefix )
+{
+     try
+     {
+          DirectoryInfo ^di = gcnew DirectoryInfo( dirName );
+          array<System::IO::FileInfo^> ^files = di->GetFiles( filePrefix + "*.dll" );
 
-		TComponentClients ^res = gcnew TComponentClients();
-		for each (System::IO::FileInfo^ f in files) {
-			try {
+          TComponentClients ^res = gcnew TComponentClients();
+          for each ( System::IO::FileInfo^ f in files )
+          {
+               try
+               {
                     if ( f->Name == "foo_managed_wrapper.dll" )
                          continue;
-				res->Add(LoadComponent(f->FullName));
-			} catch (Exception ^e) {
-				String ^msg = gcnew String("Error loading .NET component ");
-				msg += f->FullName;
-				msg += " error message : ";
-				msg += e->Message;
-				fooManagedWrapper::CConsole::Error(msg);
-				// a problem occured, ok, don't load this component
-			}
-		}
-		return res;
-	} catch (Exception ^e) {
-		String ^msg = gcnew String("Error loading .NET components from directory ");
-		msg += dirName;
-		msg += " error message : ";
-		msg += e->Message;
-		msg += ". You should probably run foobar2000 from the directory containing the components directory.";
-		fooManagedWrapper::CConsole::Error(msg);
-		return gcnew TComponentClients(); // to avoid crashing
-	}
+                    res->Add( LoadComponent( f->FullName ) );
+               }
+               catch ( Exception ^e )
+               {
+                    String ^msg = gcnew String( "Error loading .NET component " );
+                    msg += f->FullName;
+                    msg += " error message : ";
+                    msg += e->Message;
+                    fooManagedWrapper::CConsole::Error( msg );
+                    // a problem occurred, ok, don't load this component
+               }
+          }
+          return res;
+     }
+     catch ( Exception ^e )
+     {
+          String ^msg = gcnew String( "Error loading .NET components from directory " );
+          msg += dirName;
+          msg += " error message : ";
+          msg += e->Message;
+          msg += ". You should probably run foobar2000 from the directory containing the components directory.";
+          fooManagedWrapper::CConsole::Error( msg );
+          return gcnew TComponentClients(); // to avoid crashing
+     }
 }
+
+} // namespace fooManagedWrapper

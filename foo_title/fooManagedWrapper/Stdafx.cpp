@@ -17,8 +17,5 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-// stdafx.cpp : source file that includes just the standard includes
-// fooServices.pch will be the pre-compiled header
-// stdafx.obj will contain the pre-compiled type information
 
 #include "stdafx.h"

@@ -20,18 +20,21 @@
 #include "stdafx.h"
 #include "Command.h"
 
-using namespace fooManagedWrapper;
-using namespace System;
 
+namespace fooManagedWrapper
+{
 
-bool CCommand::GetDisplay(String^ %text, unsigned int %flags) {
-	text = GetName();
-	flags = GetFlags();
-	return true;
+bool CCommand::GetDisplay( String^ %text, unsigned int %flags )
+{
+     text = GetName();
+     flags = GetFlags();
+     return true;
 }
 
 unsigned int CCommand::GetFlags()
 {
      return 0;
 }
+
+} // namespace fooManagedWrapper
 

@@ -27,14 +27,7 @@ using namespace System::Drawing;
 
 namespace fooManagedWrapper
 {
-	template<typename T> void safe_delete(T &ptr) {
-		if (ptr != NULL) {
-			delete ptr;
-			ptr = NULL;
-		}
-	}
-
-#define SAFE_DELETE(p) {if ((p) != NULL) { delete (p); (p) = NULL;};}
+#define NULL_DELETE(p) { delete (p); (p) = NULL; }
 
 	// a managed wrapper for metadb_handle
 	public ref class CMetaDBHandle 
@@ -122,7 +115,7 @@ namespace fooManagedWrapper
 		}
 
 		~CEnumeratorAdapterBase() {
-			SAFE_DELETE(enumerator);
+			NULL_DELETE(enumerator);
 		}
 
 		virtual void Reset() {
@@ -167,7 +160,7 @@ namespace fooManagedWrapper
 		}
 
 		virtual ~CEnumeratorAdapter() {
-			SAFE_DELETE(current);
+			NULL_DELETE(current);
 		}
 
 		!CEnumeratorAdapter() {
