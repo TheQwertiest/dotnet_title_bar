@@ -50,7 +50,7 @@ namespace fooTitle {
         /// <summary>
         /// Returns the foo_title data directory located in the foobar2000 user directory (documents and settings)
         /// </summary>
-        public static string UserDataDir => Path.Combine(CManagedWrapper.getInstance().GetProfilePath(), myDataDir.Value);
+        public static string UserDataDir => Path.Combine(CManagedWrapper.GetInstance().GetProfilePath(), myDataDir.Value);
 
         /// <summary>
         /// The name of the currently used skin. Can be changed

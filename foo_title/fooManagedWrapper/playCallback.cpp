@@ -42,33 +42,33 @@ namespace fooManagedWrapper {
 	void CPlayCallback::on_playback_new_track(metadb_handle_ptr p_track) {
 		CMetaDBHandle ^h = gcnew CMetaDBHandle(p_track);
 		
-		for each (IComponentClient ^cl in CManagedWrapper::getInstance()) {
+		for each (IComponentClient ^cl in CManagedWrapper::GetInstance()) {
 			cl->OnPlaybackNewTrack(h);
 		}
 		
 	}
 
 	void CPlayCallback::on_playback_time(double p_time) {
-		for each (IComponentClient ^cl in CManagedWrapper::getInstance()) {
+		for each (IComponentClient ^cl in CManagedWrapper::GetInstance()) {
 			cl->OnPlaybackTime(p_time);
 		}
 	}
 
 	void CPlayCallback::on_playback_pause(bool p_state) {
-		for each (IComponentClient ^cl in CManagedWrapper::getInstance()) {
+		for each (IComponentClient ^cl in CManagedWrapper::GetInstance()) {
 			cl->OnPlaybackPause(p_state);
 		}
 	}
 
 	void CPlayCallback::on_playback_stop(play_control::t_stop_reason reason) {
-		for each (IComponentClient ^cl in CManagedWrapper::getInstance()) {
+		for each (IComponentClient ^cl in CManagedWrapper::GetInstance()) {
 			cl->OnPlaybackStop((IPlayControl::StopReason)reason);
 		}
 	}
 
 
 	void CPlayCallback::on_playback_dynamic_info_track(const file_info &p_info) {
-		for each (IComponentClient ^cl in CManagedWrapper::getInstance()) {
+		for each (IComponentClient ^cl in CManagedWrapper::GetInstance()) {
 			cl->OnPlaybackDynamicInfoTrack(gcnew fooManagedWrapper::FileInfo(p_info));
 		}
 	}

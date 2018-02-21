@@ -28,33 +28,30 @@ using namespace System::IO;
 namespace fooManagedWrapper {
 	// this is the main class of the plugin - created in the entrypoint
 	public ref class CManagedWrapper : System::Collections::IEnumerable {
-	protected:
-		// for singleton
-		static CManagedWrapper ^instance;
-
-          bool isStarted = false;
-
-		CComponentLoader ^componentLoader;
-		// loaded .NET clients
-		TComponentClients ^componentClients;
-
-		// list of created services
-		// it's used to prevent the services from being destroyed by the GC before the component quits
-		// because foobar2000 wouldn't like that
-		List<IFoobarService^> ^services;
-
-		String ^modulePath;
-
-		static_api_ptr_t<ui_control> *UIControlInstance;
-
 	public:
 		CManagedWrapper();
 		~CManagedWrapper();
 		!CManagedWrapper();
 
+          // for singleton
+          static CManagedWrapper ^GetInstance();
+     public:
+
+          String ^ GetProfilePath();
+          String ^GetModuleDirectory();
+
+          // TODO provide a better implementation
+          static void DoMainMenuCommand( String ^name );
+          bool IsFoobarActivated();
+          Icon ^GetMainIcon();
+
+          // TODO: remove this
+          String ^GetAllCommands();
+
+     internal:
 		// this loads all .netcomponents and calls their Create() method
 		// the parameter is require for this to know the directory where are the .netcomponents
-		void Start(String ^_modulePath);
+          void Start(String ^_modulePath);
 
           String ^ GetNetComponentName();
           String ^ GetNetComponentVersion();
@@ -65,27 +62,34 @@ namespace fooManagedWrapper {
 
 		void AddService(IFoobarService ^a);
 
-		// for singleton
-		static CManagedWrapper ^getInstance();
-
 		// this provides access to all loaded .netcomponents
 		virtual System::Collections::IEnumerator ^GetClients() = System::Collections::IEnumerable::GetEnumerator;
+
+          static _GUID ToGUID( Guid^ guid );
+          static Guid ^FromGUID( const _GUID& guid );
 
 		static pfc::string8 StringToPfcString(String ^a);
 		static String ^PfcStringToString(const pfc::string8 &stringToConvert);
 
           static std::string ToStdString( String^ string );
 
-		static _GUID ToGUID(Guid^ guid);
-		static Guid ^FromGUID(const _GUID& guid);
+     private:
+          // for singleton
+          static CManagedWrapper ^instance;
 
-		String ^GetProfilePath();
-		String ^GetModuleDirectory();
+          bool isStarted = false;
 
-		// TODO provide a better implementation
-		static void DoMainMenuCommand(String ^name);
-		bool IsFoobarActivated();
-		Icon ^GetMainIcon();
-		String ^GetAllCommands();
+          CComponentLoader ^componentLoader;
+          // loaded .NET clients
+          TComponentClients ^componentClients;
+
+          // list of created services
+          // it's used to prevent the services from being destroyed by the GC before the component quits
+          // because foobar2000 wouldn't like that
+          List<IFoobarService^> ^services;
+
+          String ^modulePath;
+
+          static_api_ptr_t<ui_control> *UIControlInstance;
 	};
 };

@@ -48,7 +48,7 @@ using namespace System::Collections::Generic;
 
 namespace fooManagedWrapper {
 
-	public ref class ServicesDoneException : public Exception {
+	private ref class ServicesDoneException : public Exception {
 	public:
 		property String ^ Message {
 			virtual String ^get() override {
@@ -62,7 +62,7 @@ namespace fooManagedWrapper {
 	/// Constructor must call CManagedWrapper::getInstance()->AddService(this) as the first thing it does
 	/// to ensure checking for the ServicesDoneException
 	/// </remarks>
-	public interface class IFoobarService {
+	private interface class IFoobarService {
 		
 	};
 

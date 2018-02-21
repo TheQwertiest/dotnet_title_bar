@@ -7,9 +7,6 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{cf955fc3-ae49-42e8-9923-b16720f79713}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\utils">
-      <UniqueIdentifier>{532d15ce-38db-4ed5-97a2-de855ba1ef39}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -25,9 +22,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ComponentLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="componentMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="configIOCallback.cpp">
@@ -67,6 +61,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FileInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="component_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

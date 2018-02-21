@@ -28,15 +28,14 @@ namespace fooManagedWrapper {
 	
 	typedef List<IComponentClient^> TComponentClients;
 
-	public ref class CComponentLoader {
+	private ref class CComponentLoader {
 	public:
 
 		IComponentClient ^LoadComponent(String ^assemblyName);
 		TComponentClients ^LoadComponentsInDir(String ^dirName, String ^filePrefix);
 		
-	protected:
-		IComponentClient ^createInstance(Type ^type);
-
+	private:
+		IComponentClient ^CreateInstance(Type ^type);
 	};
 
 }

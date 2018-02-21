@@ -38,9 +38,9 @@ void CManagedInitQuit::on_init()
      {
           playControl = gcnew CPlayControl();
 
-          CManagedWrapper::getInstance()->OnInit();
+          CManagedWrapper::GetInstance()->OnInit();
 
-          for each ( IComponentClient ^cl in CManagedWrapper::getInstance() )
+          for each ( IComponentClient ^cl in CManagedWrapper::GetInstance() )
           {
                try
                {
@@ -61,7 +61,7 @@ void CManagedInitQuit::on_init()
 
 void CManagedInitQuit::on_quit()
 {
-     for each ( IComponentClient ^cl in CManagedWrapper::getInstance() )
+     for each ( IComponentClient ^cl in CManagedWrapper::GetInstance() )
      {
           cl->OnQuit();
      }

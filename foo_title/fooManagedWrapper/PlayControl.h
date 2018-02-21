@@ -40,7 +40,7 @@ public interface class IPlayControl {
 	bool IsPaused();
 };
 
-public ref class CPlayControl : public IPlayControl {
+private ref class CPlayControl : public IPlayControl {
 public:
 	virtual CMetaDBHandle ^GetNowPlaying();
 	virtual String ^FormatTitle(CMetaDBHandle ^dbHandle, String ^spec);

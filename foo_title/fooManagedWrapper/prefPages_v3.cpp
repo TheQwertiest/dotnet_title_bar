@@ -79,7 +79,7 @@ namespace fooManagedWrapper {
 	}
 
 	CManagedPrefPage_v3::CManagedPrefPage_v3(System::Guid ^myGuid, System::Guid ^parentGuid) {
-		CManagedWrapper::getInstance()->AddService(this);
+		CManagedWrapper::GetInstance()->AddService(this);
 
 		wrapper = new CPrefPageFactoryWrapper_v3();
 		wrapper->prefPage.get_static_instance().SetManagedPrefPage(this);

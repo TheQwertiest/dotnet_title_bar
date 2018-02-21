@@ -48,6 +48,68 @@ namespace fooManagedWrapper {
           FT_NULL_DELETE( UIControlInstance );		
 	}
 
+	CManagedWrapper ^CManagedWrapper::GetInstance() {
+		return instance;
+	}
+
+	String ^CManagedWrapper::GetProfilePath() {
+		String ^result = gcnew String(core_api::get_profile_path());
+		if (result->StartsWith("file://")) {
+			result = result->Substring(7);
+		}
+		return result;
+	}
+
+	String ^CManagedWrapper::GetModuleDirectory() {
+		return System::IO::Path::GetDirectoryName(modulePath);
+	}
+
+	void CManagedWrapper::DoMainMenuCommand(String ^name) {
+		if (core_api::is_main_thread()) {
+               std::string c_name( CManagedWrapper::ToStdString( name ) );
+			GUID guid;
+			mainmenu_commands::g_find_by_name(c_name.c_str(), guid);
+			mainmenu_commands::g_execute(guid);
+		} else {
+			pfc::crash();
+		}
+	}
+
+	bool CManagedWrapper::IsFoobarActivated() {
+		return (*UIControlInstance).get_ptr()->is_visible();
+	}
+
+	Icon ^CManagedWrapper::GetMainIcon() {
+		HICON hIcon = (*UIControlInstance).get_ptr()->get_main_icon();
+		return Icon::FromHandle((IntPtr)hIcon);
+	}
+
+	String ^CManagedWrapper::GetAllCommands() {
+		String ^res = gcnew String(">");
+
+		service_enum_t<contextmenu_item> ec;
+
+		service_ptr_t<contextmenu_item> ptr;
+		while (ec.next(ptr)) {
+			unsigned int count = ptr->get_num_items();
+
+			for (unsigned int i = 0; i < count; i++) {
+				pfc::string8 str;
+				ptr->get_item_name(i, str);
+
+				res += PfcStringToString(str);
+				res += " ";
+
+				ptr->get_item_default_path(i, str);
+
+				res += PfcStringToString(str);
+				res += "\n";
+			}
+		}
+
+		return res;
+	}
+
 	void CManagedWrapper::Start(String ^_modulePath) {
 		modulePath = _modulePath;
 
@@ -127,10 +189,6 @@ namespace fooManagedWrapper {
 		UIControlInstance = new static_api_ptr_t<ui_control>();
 	}
 
-	CManagedWrapper ^CManagedWrapper::getInstance() {
-		return instance;
-	}
-
 	System::Collections::IEnumerator ^CManagedWrapper::GetClients() {
 		return componentClients->GetEnumerator();
 	}
@@ -155,64 +213,6 @@ namespace fooManagedWrapper {
 			guid.Data4[2], guid.Data4[3],
 			guid.Data4[4], guid.Data4[5],
 			guid.Data4[6], guid.Data4[7]);
-	}
-
-	String ^CManagedWrapper::GetModuleDirectory() {
-		return System::IO::Path::GetDirectoryName(modulePath);
-	}
-
-	String ^CManagedWrapper::GetProfilePath() {
-		String ^result = gcnew String(core_api::get_profile_path());
-		if (result->StartsWith("file://")) {
-			result = result->Substring(7);
-		}
-		return result;
-	}
-
-	void CManagedWrapper::DoMainMenuCommand(String ^name) {
-		if (core_api::is_main_thread()) {
-               std::string c_name( CManagedWrapper::ToStdString( name ) );
-			GUID guid;
-			mainmenu_commands::g_find_by_name(c_name.c_str(), guid);
-			mainmenu_commands::g_execute(guid);
-		} else {
-			pfc::crash();
-		}
-	}
-
-	String ^CManagedWrapper::GetAllCommands() {
-		String ^res = gcnew String(">");
-
-		service_enum_t<contextmenu_item> ec;
-
-		service_ptr_t<contextmenu_item> ptr;
-		while (ec.next(ptr)) {
-			unsigned int count = ptr->get_num_items();
-
-			for (unsigned int i = 0; i < count; i++) {
-				pfc::string8 str;
-				ptr->get_item_name(i, str);
-
-				res += PfcStringToString(str);
-				res += " ";
-
-				ptr->get_item_default_path(i, str);
-
-				res += PfcStringToString(str);
-				res += "\n";
-			}
-		}
-
-		return res;
-	}
-
-	bool CManagedWrapper::IsFoobarActivated() {
-		return (*UIControlInstance).get_ptr()->is_visible();
-	}
-
-	Icon ^CManagedWrapper::GetMainIcon() {
-		HICON hIcon = (*UIControlInstance).get_ptr()->get_main_icon();
-		return Icon::FromHandle((IntPtr)hIcon);
 	}
 
 	pfc::string8 CManagedWrapper::StringToPfcString(String ^a) {

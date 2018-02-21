@@ -127,7 +127,7 @@ namespace fooTitle {
         {
             if (_showWhen.Value == ShowWhenEnum.Always || NotPlayingSat())
             {
-                if (!CManagedWrapper.getInstance().IsFoobarActivated())
+                if (!CManagedWrapper.GetInstance().IsFoobarActivated())
                     StartTriggerAnimation(false);
             }
         }
@@ -150,7 +150,7 @@ namespace fooTitle {
             {
                 case EnableWhenEnum.WhenMinimized:
                     // can show only if minimized
-                    if (!CManagedWrapper.getInstance().IsFoobarActivated())
+                    if (!CManagedWrapper.GetInstance().IsFoobarActivated())
                         _main.EnableFooTitle();
                     break;
                 case EnableWhenEnum.Never:

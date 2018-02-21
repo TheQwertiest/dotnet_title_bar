@@ -136,7 +136,7 @@ namespace fooTitle {
             this.ClientSize = new Size(480, 96);
             this.ControlBox = false;
             this.FormBorderStyle = FormBorderStyle.None;
-            this.Icon = fooManagedWrapper.CManagedWrapper.getInstance().GetMainIcon();
+            this.Icon = fooManagedWrapper.CManagedWrapper.GetInstance().GetMainIcon();
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Display";

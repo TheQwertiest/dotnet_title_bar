@@ -28,7 +28,7 @@ namespace fooManagedWrapper {
 		virtual void on_write(bool reset);
 	};
 
-	public ref class CManagedConfigIOCallback {
+	private ref class CManagedConfigIOCallback {
 	public:
 		delegate void OnReadDelegate();
 		delegate void OnWriteDelegate(bool reset);

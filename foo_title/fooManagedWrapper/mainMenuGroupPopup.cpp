@@ -33,7 +33,7 @@ CMainMenuGroup::~CMainMenuGroup() {
 
 // this creates and registers a new menu group popup
 CMainMenuGroupPopup::CMainMenuGroupPopup(Guid ^guid, Guid ^parent, int priority, String ^ name) {
-	CManagedWrapper::getInstance()->AddService(this);
+	CManagedWrapper::GetInstance()->AddService(this);
      std::string c_name( CManagedWrapper::ToStdString( name ) );
 	wrapper = new mainmenu_group_popup_factory(
 		CManagedWrapper::ToGUID(guid),

@@ -29,7 +29,7 @@ namespace fooManagedWrapper {
 	public ref class CCfgVar abstract : public IFoobarService {
 	public:
 		CCfgVar() {
-			CManagedWrapper::getInstance()->AddService(this);
+			CManagedWrapper::GetInstance()->AddService(this);
 		}
 	};
 

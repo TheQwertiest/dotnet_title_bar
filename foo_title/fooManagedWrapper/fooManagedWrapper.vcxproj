@@ -128,7 +128,7 @@
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="component_client_managed.cpp" />
     <ClCompile Include="ComponentLoader.cpp" />
-    <ClCompile Include="componentMain.cpp" />
+    <ClCompile Include="component_main.cpp" />
     <ClCompile Include="configIOCallback.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="contextMenu.cpp" />

@@ -36,7 +36,7 @@ namespace fooManagedWrapper {
 
 	void CMainMenuCommandsImpl::commonInit() {
 		cmds = gcnew List<CCommand ^>();
-		CManagedWrapper::getInstance()->AddService(this);
+		CManagedWrapper::GetInstance()->AddService(this);
 
 		wrapper = new CMainMenuCommandsFactoryWrapper();
 		wrapper->mainMenuCommands.get_static_instance().SetImplementation(this);

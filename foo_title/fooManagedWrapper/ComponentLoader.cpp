@@ -37,14 +37,14 @@ IComponentClient ^CComponentLoader::LoadComponent( System::String ^assemblyName 
      {
           if ( iclient->IsAssignableFrom( t ) )
           {
-               return createInstance( t );
+               return CreateInstance( t );
           }
      }
 
      return nullptr;
 };
 
-IComponentClient ^CComponentLoader::createInstance( Type ^type )
+IComponentClient ^CComponentLoader::CreateInstance( Type ^type )
 {
      ConstructorInfo ^conInfo = type->GetConstructor( Type::EmptyTypes );
      IComponentClient ^cl = dynamic_cast<IComponentClient ^>( conInfo->Invoke( nullptr ) );
