@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <Platforms>Win32</Platforms>
+    <AssemblyName>dotnet_title_bar</AssemblyName>
+    <RootNamespace>DotNetTitleBar</RootNamespace>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Authors>Roman Plasil;Miha Lepej;Yury Shutenko</Authors>
+    <Company>foobar0200 community</Company>
+    <Product>Title Bar</Product>
+    <Description>dotnet_title_bar is a .NET component for foobar2000 player, which displays the currently playing song on the top of the screen (something like Winamp's WindowShade Mode).
+
+It supports custom-made skins and is written in C#.
+
+Note: must be used in conjunction with `foo_dotnet_component_host`.</Description>
+    <Copyright></Copyright>
+    <PackageLicenseExpression>LGPL-2.1</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="CustomControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Properties.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TODO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ElementFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="dotnet_component_interface" Version="1.0.0" />
+  </ItemGroup>
+  <Import Project="$(SolutionDir)\..\props\submodules\submodules.props" />
+  <Import Project="$(SubmodulesDirectory)fb2k_utils\props\env\BuildEnvCommon.props" />
+  <Import Project="$(SubmodulesDirectory)fb2k_utils\props\env\BuildEnvCSharp.props" />
+</Project>

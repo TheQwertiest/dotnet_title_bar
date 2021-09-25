@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "foo_title": {
+      "commandName": "Executable",
+      "executablePath": "X:\\foobar_test\\_scratch\\foobar2000.exe",
+      "nativeDebugging": true
+    }
+  }
+}
