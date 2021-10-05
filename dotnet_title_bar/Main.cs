@@ -48,7 +48,7 @@ namespace fooTitle
 
         private IPlaybackCallbacks _fb2kPlaybackCallbacks;
 
-        private static readonly ConfString _myDataDir = new ConfString("base/dataDir", "foo_title\\");
+        private static readonly ConfString _skinsDir = new("base/dataDir", "dotnet_title_bar\\skins\\");
 
         /// <summary>
         /// The name of the currently used skin. Can be changed
@@ -201,8 +201,8 @@ namespace fooTitle
             // initialize menu commands
             var menuGroup = servicesManager.GetMainMenuGroup(Fb2kUtils.Fb2kGuid(Fb2kGuidId.MainMenuGroups_View));
             var commandSection = menuGroup.AddCommandSection();
-            commandSection.AddCommand(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 56, 1), "Toggle foo_title", "Enables or disables foo_title popup.", () => Hotkey_PopupToggle());
-            var peekCmd = commandSection.AddCommand(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 56, 2), "Peek foo_title", "Shows foo_title popup briefly.", () => Hotkey_PopupPeek());
+            commandSection.AddCommand(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 56, 1), "Toggle Title Bar", "Enables or disables dotnet_title_bar popup.", () => Hotkey_PopupToggle());
+            var peekCmd = commandSection.AddCommand(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 56, 2), "Peek Title Bar", "Shows dotnet_title_bar popup briefly.", () => Hotkey_PopupPeek());
             peekCmd.IsDefaultHidden = true;
         }
 
@@ -364,26 +364,6 @@ namespace fooTitle
             Display.SetAnchorPosition(_positionX.Value, _positionY.Value);
         }
 
-        public string GetName()
-        {
-            return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
-        }
-        public string GetVersion()
-        {
-            return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-        }
-
-        public string GetDescription()
-        {
-            return "foo_title\n" +
-                   "Displays a title-bar (like Winamp's WindowShade mode)\n\n" +
-                   "Copyright( c ) 2005-2006 by Roman Plasil\n\n" +
-                   "Copyright( c ) 2016 by Miha Lepej\n" +
-                   "https://github.com/LepkoQQ/foo_title \n\n" +
-                   "Copyright( c ) 2017 by TheQwertiest\n" +
-                   "https://github.com/TheQwertiest/foo_title";
-        }
-
         protected void SkinPath_OnChanged(string name)
         {
             if (_initDone)
@@ -400,7 +380,7 @@ namespace fooTitle
                 catch (Exception e)
                 {
                     CurrentSkin = null;
-                    System.Windows.Forms.MessageBox.Show($"foo_title - There was an error loading skin {SkinPath}:\n {e.Message} \n {e}", "foo_title");
+                    System.Windows.Forms.MessageBox.Show($"dotnet_title_bar - There was an error loading skin {SkinPath}:\n {e.Message} \n {e}", "dotnet_title_bar");
                 }
             }
         }
@@ -431,14 +411,14 @@ namespace fooTitle
         {
             try
             {
-                // create foo_title folder (does nothing if exists)
+                // create dotnet_title_bar folder (does nothing if exists)
                 Directory.CreateDirectory(UserDataDir);
             }
             catch (Exception e)
             {
                 System.Windows.Forms.MessageBox.Show(
-                    $"foo_title - Failed to create default directory.\nPath:\n{UserDataDir}\nError message:\n{e.Message}\nError details:\n{e}"
-                    , "foo_title");
+                    $"dotnet_title_bar - Failed to create default directory.\nPath:\n{UserDataDir}\nError message:\n{e.Message}\nError details:\n{e}"
+                    , "dotnet_title_bar");
             }
         }
 
@@ -510,8 +490,8 @@ namespace fooTitle
                 CurrentSkin?.Free();
                 CurrentSkin = null;
                 System.Windows.Forms.MessageBox.Show(
-                    $"foo_title - There was an error loading skin {path}:\n {e.Message} \n {e}"
-                    , "foo_title");
+                    $"dotnet_title_bar - There was an error loading skin {path}:\n {e.Message} \n {e}"
+                    , "dotnet_title_bar");
             }
         }
 
@@ -564,8 +544,7 @@ namespace fooTitle
         /// </summary>
         private void OnInit()
         {
-            UserDataDir = Path.Combine(Fb2kUtils.ProfilePath(), _myDataDir.Value);
-
+            UserDataDir = Path.Combine(Fb2kUtils.ProfilePath(), _skinsDir.Value);
             CreateDefaultDir();
 
             Config.Load();

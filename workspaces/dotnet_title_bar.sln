@@ -16,8 +16,8 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{916A762F-B98C-4700-B236-31981B959A40}.Debug|Win32.ActiveCfg = Debug|Win32
-		{916A762F-B98C-4700-B236-31981B959A40}.Debug|Win32.Build.0 = Debug|Win32
+		{916A762F-B98C-4700-B236-31981B959A40}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{916A762F-B98C-4700-B236-31981B959A40}.Debug|Win32.Build.0 = Debug|Any CPU
 		{916A762F-B98C-4700-B236-31981B959A40}.Release|Win32.ActiveCfg = Release|Win32
 		{916A762F-B98C-4700-B236-31981B959A40}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection

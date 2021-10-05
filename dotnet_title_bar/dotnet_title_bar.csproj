@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0-windows</TargetFramework>
-    <PlatformTarget>x86</PlatformTarget>
-    <Platforms>Win32</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <AssemblyName>dotnet_title_bar</AssemblyName>
     <RootNamespace>DotNetTitleBar</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
@@ -16,6 +15,9 @@ It supports custom-made skins and is written in C#.
 Note: must be used in conjunction with `foo_dotnet_component_host`.</Description>
     <Copyright></Copyright>
     <PackageLicenseExpression>LGPL-2.1</PackageLicenseExpression>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);MSB3270</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="CustomControl.cs">
