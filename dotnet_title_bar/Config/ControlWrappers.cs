@@ -40,7 +40,7 @@ namespace fooTitle.Config
             AssociateValue();
             //ConfValuesManager.GetInstance().OnValueChanged += new ConfValuesManager.ValueChangedDelegate(onValueChanged);
             if (value == null)
-                ConfValuesManager.GetInstance().OnValueCreated += value_OnCreated;
+                ConfValuesManager.GetInstance().ValueCreated += value_OnCreated;
         }
 
         private void AssociateValue()
@@ -52,7 +52,7 @@ namespace fooTitle.Config
 
             if (value != null)
             {
-                value.OnChanged += value_OnChanged;
+                value.Changed += value_OnChanged;
             }
         }
 

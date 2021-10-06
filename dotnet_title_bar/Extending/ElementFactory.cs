@@ -19,22 +19,17 @@
 */
 using System;
 using System.Collections;
-using System.ComponentModel;
-using System.Globalization;
 using System.Reflection;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace fooTitle.Extending
 {
 
-    #region Exceptions
     public class MultipleElementTypesException : ApplicationException
     {
         private readonly Type _onElement;
 
         public override string Message =>
-            $"Can't have more than one ElementTypeAttribute on single class : {_onElement.ToString()} ";
+            $"Can't have more than one ElementTypeAttribute on single class : {_onElement} ";
 
         public MultipleElementTypesException(Type onElement)
         {
@@ -49,7 +44,7 @@ namespace fooTitle.Extending
         private readonly Assembly _assembly;
 
         public override string Message =>
-            $"Duplicate element type {_elementType} found in assembly {_assembly.ToString()} on class {_elementClass.ToString()}.";
+            $"Duplicate element type {_elementType} found in assembly {_assembly} on class {_elementClass}.";
 
         public DuplicateElementTypeException(string elementType, Type elementClass, Assembly assembly)
         {
@@ -66,7 +61,7 @@ namespace fooTitle.Extending
         private readonly string _auxMsg;
 
         public override string Message =>
-            $"No suitable constructor for element type {_elementType} class {_elementClass.ToString()} found {_auxMsg}.";
+            $"No suitable constructor for element type {_elementType} class {_elementClass} found {_auxMsg}.";
 
         public NoSuitableConstructorException(string elementType, Type elementClass)
         {
@@ -116,176 +111,14 @@ namespace fooTitle.Extending
         }
     }
 
-    #endregion
-
     [AttributeUsage(AttributeTargets.Class)]
     public class ElementTypeAttribute : Attribute
     {
-        public string Type;
+        public readonly string Type;
 
         public ElementTypeAttribute(string type)
         {
             Type = type;
-        }
-    }
-
-
-    public class Element
-    {
-        public static XElement GetFirstChildByName(XElement where, string name)
-        {
-            foreach (XElement i in where.Elements())
-                if (i.Name == name)
-                    return i;
-            throw new XmlException($"Node {name} not found under {where.Name}");
-        }
-
-        public static XElement GetFirstChildByNameOrNull(XElement where, string name)
-        {
-            foreach (XElement i in where.Elements())
-                if (i.Name == name)
-                    return i;
-
-            return null;
-        }
-
-        public static string GetNodeValue(XElement a, bool trim = true)
-        {
-            return trim ? a.Value.Trim(' ', '\n', '\r', '\t') : a.Value;
-        }
-
-        public static string GetAttributeValue(XElement where, string name, string def)
-        {
-            if (where.Attribute(name) != null)
-                return where.Attribute(name).Value;
-
-            return def;
-        }
-
-        public static T GetCastedAttributeValue<T>(XElement where, string name, T def)
-        {
-            if (where.Attribute(name) == null)
-                return def;
-
-            TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
-            return (T)converter.ConvertFromString(where.Attribute(name).Value);
-        }
-
-        /// <summary>
-        /// If the attribute contains an expression, it is evaluated and the result is returned. 
-        /// If the attribute is a number, the number is returned
-        /// </summary>
-        /// <param name="where">the node</param>
-        /// <param name="name">name of the attribute</param>
-        /// <param name="def">if the attribute doesn't exist, def is read</param>
-        /// <returns>Evaluated expression or number (depending on what's in the attribute)</returns>
-        public static float GetNumberFromAttribute(XElement where, string name, float def)
-        {
-            if (where.Attribute(name) == null)
-                return def;
-
-            string val = where.Attribute(name).Value;
-            try
-            {
-                if (IsExpression(val))
-                {
-                    var tf = Main.GetInstance().Fb2kControls.TitleFormat(val);
-                    return float.Parse(tf.Eval(force: true));
-                }
-                else
-                {
-                    // just a plain number
-                    return float.Parse(val, NumberFormatInfo.InvariantInfo);
-                }
-            }
-            catch (Exception e)
-            {
-                Main.Console.LogWarning(e.ToString());
-                Main.Console.LogWarning(val);
-                return def;
-            }
-        }
-
-        /// <summary>
-        /// Reads an expression from XML node attribute. If the node contains no expression, returns null
-        /// (to indicate that it's not an expression and no evaluation should be done)
-        /// </summary>
-        /// <param name="where">The node to extract the attribute from</param>
-        /// <param name="name">The name of the attribute</param>
-        /// <returns>the expression if it's present or null if there's just a string or a number</returns>
-        public static string GetExpressionFromAttribute(XNode where, string name)
-        {
-            string val = GetAttributeValue((XElement)where, name, "");
-            if (val == null || !IsExpression(val))
-            {
-                return null;
-            }
-
-            return val;
-        }
-
-        /// <summary>
-        /// Calculates the expression using the currently playing song. If the expression is null, returns the default valued
-        /// </summary>
-        /// <param name="expr">the expression to evaluate</param>
-        /// <param name="def">the default value which is evaluated if expr is null</param>
-        /// <returns>An integer result</returns>
-        public static int GetValueFromExpression(string expr, int def)
-        {
-            if (expr == null)
-                return def;
-
-            try
-            {
-                var tf = Main.GetInstance().Fb2kControls.TitleFormat(expr);
-                return int.Parse(tf.Eval(force: true));
-            }
-            catch (Exception)
-            {
-                return def;
-            }
-        }
-
-        public static int GetScaledValueFromExpression(string expr, int def)
-        {
-            // TODO: replace this vague function with a more proper one
-            if (expr == null)
-                return def;
-
-            try
-            {
-                var tf = Main.GetInstance().Fb2kControls.TitleFormat(expr);
-                return Main.GetInstance().ScaleValue(int.Parse(tf.Eval(force: true)));
-            }
-            catch (Exception)
-            {
-                return def;
-            }
-        }
-
-        public static string GetStringFromExpression(string expr, string def)
-        {
-            if (expr == null)
-                return def;
-
-            if (!IsExpression(expr))
-            {
-                return expr;
-            }
-            try
-            {
-                var tf = Main.GetInstance().Fb2kControls.TitleFormat(expr);
-                return tf.Eval(force: true);
-            }
-            catch (Exception)
-            {
-                return def;
-            }
-        }
-
-        public static bool IsExpression(string expr)
-        {
-            return (expr.IndexOfAny(new[] { '%', '$' }) != -1);
         }
     }
 
@@ -307,16 +140,11 @@ namespace fooTitle.Extending
             }
         }
 
-        private readonly ArrayList _elementsDictionary;
+        private readonly ArrayList _elementsDictionary = new();
         /// the type of element to search for - set in inheriting classes
         protected Type elementType;
         /// the type of attribute to search for - set in inheriting classes
         protected Type elementTypeAttributeType;
-
-        protected ElementFactory()
-        {
-            _elementsDictionary = new ArrayList();
-        }
 
         /// finds all elements in assembly and adds them to list of elements which can be created later
         public void SearchAssembly(Assembly assembly)
@@ -325,18 +153,21 @@ namespace fooTitle.Extending
 
             foreach (Type t in types)
             {
-                if (elementType.IsAssignableFrom(t))
+                if (!elementType.IsAssignableFrom(t))
                 {
-                    object[] attrs = t.GetCustomAttributes(elementTypeAttributeType, false);
-                    if (attrs.Length == 1)
-                    {
-                        string elementTypeName = ((ElementTypeAttribute)attrs[0]).Type;
-                        AddElementEntry(new ElementEntry(elementTypeName, t), assembly);
-                    }
-                    else if (attrs.Length > 1)
-                    {
-                        throw new MultipleElementTypesException(t);
-                    }
+                    continue;
+                }
+
+                object[] attrs = t.GetCustomAttributes(elementTypeAttributeType, false);
+                if (attrs.Length > 1)
+                {
+                    throw new MultipleElementTypesException(t);
+                }
+
+                if (attrs.Length == 1)
+                {
+                    string elementTypeName = ((ElementTypeAttribute)attrs[0]).Type;
+                    AddElementEntry(new ElementEntry(elementTypeName, t), assembly);
                 }
             }
         }
@@ -346,7 +177,9 @@ namespace fooTitle.Extending
             foreach (object o in _elementsDictionary)
             {
                 if (((ElementEntry)o).TypeName == type)
+                {
                     return true;
+                }
             }
             return false;
         }
@@ -378,27 +211,19 @@ namespace fooTitle.Extending
             throw new ElementTypeNotFoundException(type);
         }
 
-        private Element CreateElement(Type elementClass, string type, object[] parameters)
+        private static Element CreateElement(Type elementClass, string type, object[] parameters)
         {
             // construct list of types of parameters going to the constructor
-            Type[] paramTypes = new Type[parameters.Length];
-            int i = 0;
-
-            foreach (object par in parameters)
-            {
-                paramTypes[i] = par.GetType();
-                i++;
-
-            }
+            Type[] paramTypes = Array.ConvertAll(parameters, p => p.GetType());
 
             // find the appropriate constructor
             ConstructorInfo cons = elementClass.GetConstructor(paramTypes);
-            if (cons != null)
+            if (cons == null)
             {
-                return (Element)cons.Invoke(parameters);
+                throw new NoSuitableConstructorException(type, elementClass);
             }
 
-            throw new NoSuitableConstructorException(type, elementClass);
+            return (Element)cons.Invoke(parameters);
         }
     }
 

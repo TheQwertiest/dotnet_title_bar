@@ -22,17 +22,6 @@ namespace fooTitle
 {
     internal class DockAnchor
     {
-        [Flags]
-        public enum Type
-        {
-            None = 0,
-            Left = 1,
-            Right = 1 << 1,
-            Top = 1 << 2,
-            Bottom = 1 << 3,
-            Center = 1 << 4,            
-        }
-
         private readonly Display _display;
         private double _anchorDx = 0;
         private double _anchorDy = 0;
@@ -43,6 +32,17 @@ namespace fooTitle
         internal DockAnchor(Display display)
         {
             _display = display;
+        }
+
+        [Flags]
+        public enum Type
+        {
+            None = 0,
+            Left = 1,
+            Right = 1 << 1,
+            Top = 1 << 2,
+            Bottom = 1 << 3,
+            Center = 1 << 4,
         }
 
         internal void Initialize(DockAnchor.Type type, double dx, double dy)

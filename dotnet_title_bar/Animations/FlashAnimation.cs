@@ -22,28 +22,33 @@ using System.Drawing;
 
 namespace fooTitle
 {
-	public class FlashAnimation : Animation
-	{
-	    private readonly Color _color;
+    public class FlashAnimation : Animation
+    {
+        private readonly Color _color;
 
-		public FlashAnimation(Display display) : base(display)
-		{
-			_color = Color.FromArgb(255, 255, 255);
-			myMaxFrame = 4;
-		}
+        public FlashAnimation(Display display) : base(display)
+        {
+            _color = Color.FromArgb(255, 255, 255);
+            myMaxFrame = 4;
+        }
 
-		public override void Draw() {
-			if (Frame <= 0) return;
-			base.Draw();
+        public override void Draw()
+        {
+            if (Frame <= 0)
+            {
+                return;
+            }
 
-			// sets the drawing color to some alpha-blend of this.Color
-			// the first frame is fully solid, the last frame is fully transparent
-			Color drawColor = Color.FromArgb((int)(Frame / (float)MaxFrame * 255.0), this._color);
-			
-			const int MAX_EMPTY_WIDTH = 30;
-			int emptyWidth = (Frame / MaxFrame) * MAX_EMPTY_WIDTH;
-			//display.DrawRectangle(emptyWidth, 0, display.GetWidth() - emptyWidth, display.GetHeight(), drawColor);
-			display.Canvas.FillRectangle(new SolidBrush(drawColor), emptyWidth, 0, display.Width - 2*emptyWidth, display.Height);
-		}
-	}
+            base.Draw();
+
+            // sets the drawing color to some alpha-blend of this.Color
+            // the first frame is fully solid, the last frame is fully transparent
+            Color drawColor = Color.FromArgb((int)(Frame / (float)MaxFrame * 255.0), this._color);
+
+            const int MAX_EMPTY_WIDTH = 30;
+            int emptyWidth = (Frame / MaxFrame) * MAX_EMPTY_WIDTH;
+            //display.DrawRectangle(emptyWidth, 0, display.GetWidth() - emptyWidth, display.GetHeight(), drawColor);
+            display.Canvas.FillRectangle(new SolidBrush(drawColor), emptyWidth, 0, display.Width - 2 * emptyWidth, display.Height);
+        }
+    }
 }

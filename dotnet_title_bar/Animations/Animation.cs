@@ -20,32 +20,38 @@
 
 namespace fooTitle
 {
-	public class Animation
-	{
-		protected Display display;
+    public class Animation
+    {
+        public int Frame
+        {
+            get => myFrame;
+            set => myFrame = value;
+        }
+        public int MaxFrame => myMaxFrame;
 
-		protected int myFrame;
-		public int Frame {
-			get => myFrame;
-		    set => myFrame = value;
-		}
+        protected Display display;
+        protected int myFrame;
+        protected int myMaxFrame;
 
-		protected int myMaxFrame;
-		public int MaxFrame => myMaxFrame;
+        public Animation(Display display)
+        {
+            myFrame = 0;
+            this.display = display;
+        }
 
-	    public Animation(Display display)
-		{
-			myFrame = 0;
-			this.display = display;
-		}
+        public virtual void Draw()
+        {
+            if (Frame <= 0)
+            {
+                return;
+            }
 
-		public virtual void Draw() {
-			if (Frame <= 0) return;
-			myFrame --;
-		}
+            myFrame--;
+        }
 
-		public void Start() {
-			Frame = MaxFrame;
-		}
-	}
+        public void Start()
+        {
+            Frame = MaxFrame;
+        }
+    }
 }

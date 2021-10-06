@@ -15,24 +15,14 @@
 *  information.
 */
 
+using fooTitle.Config;
 using System;
 using System.Windows.Forms;
-using fooTitle.Config;
 
 namespace fooTitle
 {
     public class AnimationManager
     {
-        public delegate void OnAnimationStopDelegate();
-
-        public enum Animation
-        {
-            FadeInNormal,
-            FadeInOver,
-            FadeOut,
-            FadeOutFull
-        }
-
         private readonly Display _display;
 
         /// <summary>
@@ -45,10 +35,10 @@ namespace fooTitle
         /// </summary>
         private readonly ConfInt _overOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
 
-        private OnAnimationStopDelegate _mouseOverSavedCallback;
-        private OnAnimationStopDelegate _onAnimationStopEvent;
+        private AnimationStoppedEventHandler _mouseOverSavedCallback;
+        private AnimationStoppedEventHandler _onAnimationStopEvent;
 
-        private readonly object _animationLock = new object();
+        private readonly object _animationLock = new();
         private readonly Timer _animationTimer;
         private Fade _fadeAnimation;
         private OpacityFallbackType _opacityFallbackType = OpacityFallbackType.Normal;
@@ -59,10 +49,10 @@ namespace fooTitle
         {
             _display = display;
 
-            _display.MouseEnter += Display_MouseEnter;
-            _display.MouseLeave += Display_MouseLeave;
-            _animationTimer = new Timer {Interval = 33};
-            _animationTimer.Tick += AnimationTimer_Tick;
+            _display.MouseEnter += Display_MouseEnterEventHandler;
+            _display.MouseLeave += Display_MouseLeaveEventHandler;
+            _animationTimer = new Timer { Interval = 33 };
+            _animationTimer.Tick += AnimationTimer_TickEventHandler;
         }
 
         /// <summary>
@@ -73,7 +63,23 @@ namespace fooTitle
             _animationTimer.Stop();
         }
 
-        public void StartAnimation(Animation animName, OnAnimationStopDelegate actionAfterAnimation = null,
+        public delegate void AnimationStoppedEventHandler();
+
+        public enum Animation
+        {
+            FadeInNormal,
+            FadeInOver,
+            FadeOut,
+            FadeOutFull
+        }
+
+        private enum OpacityFallbackType
+        {
+            Normal,
+            Transparent
+        }
+
+        public void StartAnimation(Animation animName, AnimationStoppedEventHandler actionAfterAnimation = null,
             bool forceAnimation = false)
         {
             lock (_animationLock)
@@ -95,7 +101,9 @@ namespace fooTitle
                 }
 
                 if (_animationTimer.Enabled)
+                {
                     _animationTimer.Stop();
+                }
 
                 switch (animName)
                 {
@@ -119,7 +127,7 @@ namespace fooTitle
                 }
                 _curAnimationName = animName;
 
-                _animationTimer.Start();                
+                _animationTimer.Start();
             }
         }
 
@@ -128,11 +136,13 @@ namespace fooTitle
             lock (_animationLock)
             {
                 if (_fadeAnimation != null)
+                {
                     _display.MyOpacity = _fadeAnimation.GetOpacity();
+                }
             }
         }
 
-        private void AnimationTimer_Tick(object sender, EventArgs e)
+        private void AnimationTimer_TickEventHandler(object sender, EventArgs e)
         {
             int prevOpacity = _display.MyOpacity;
             lock (_animationLock)
@@ -150,10 +160,12 @@ namespace fooTitle
                 }
             }
             if (prevOpacity != _display.MyOpacity)
+            {
                 Main.GetInstance().RequestRedraw(true);
+            }
         }
 
-        private void Display_MouseLeave(object sender, EventArgs e)
+        private void Display_MouseLeaveEventHandler(object sender, EventArgs e)
         {
             _mouseIn = false;
             Animation animName = _opacityFallbackType == OpacityFallbackType.Normal
@@ -161,20 +173,14 @@ namespace fooTitle
                 : Animation.FadeOutFull;
             StartAnimation(animName, _mouseOverSavedCallback);
             _mouseOverSavedCallback = null;
-            
+
         }
 
-        private void Display_MouseEnter(object sender, EventArgs e)
+        private void Display_MouseEnterEventHandler(object sender, EventArgs e)
         {
             _mouseOverSavedCallback = _onAnimationStopEvent;
             _mouseIn = true;
             StartAnimation(Animation.FadeInOver, forceAnimation: true);
-        }
-
-        private enum OpacityFallbackType
-        {
-            Normal,
-            Transparent
         }
 
         private class Fade
@@ -200,15 +206,23 @@ namespace fooTitle
 
                 // special cases
                 if (now == _startTime)
+                {
                     return _startVal;
+                }
+
                 if (_length == 0)
+                {
                     _phase = 1; // end it now
+                }
 
                 // normal processing
-                _phase = (now - _startTime) / (float) _length;
+                _phase = (now - _startTime) / (float)_length;
                 if (_phase > 1)
+                {
                     _phase = 1;
-                return (int) (_startVal + _phase * (_stopVal - _startVal));
+                }
+
+                return (int)(_startVal + _phase * (_stopVal - _startVal));
             }
 
             public bool Done()

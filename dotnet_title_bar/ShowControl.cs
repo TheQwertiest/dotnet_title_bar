@@ -70,16 +70,16 @@ namespace fooTitle
         {
             _main = Main.GetInstance();
 
-            _main.OnPlaybackNewTrackEvent += main_OnPlaybackNewTrackEvent;
-            _main.OnPlaybackDynamicInfoTrackEvent += main_OnPlaybackDynamicInfoTrackEvent;
-            _main.OnPlaybackPauseEvent += main_OnPlaybackPauseEvent;
-            _main.OnPlaybackStopEvent += main_OnPlaybackStopEvent;
-            _main.OnPlaybackTimeEvent += main_OnPlaybackTimeEvent;
+            _main.PlaybackAdvancedToNewTrack += main_OnPlaybackNewTrackEvent;
+            _main.DynamicTrackInfoChanged += main_OnPlaybackDynamicInfoTrackEvent;
+            _main.PlaybackPausedStateChanged += main_OnPlaybackPauseEvent;
+            _main.PlaybackStopped += main_OnPlaybackStopEvent;
+            _main.TrackPlaybackPositionChanged += main_OnPlaybackTimeEvent;
 
             // react to settings change
-            _showWhen.OnChanged += showWhen_OnChanged;
-            _showWhenNotPlaying.OnChanged += showWhenNotPlaying_OnChanged;
-            _enableWhen.OnChanged += enableWhen_OnChanged;
+            _showWhen.Changed += showWhen_OnChanged;
+            _showWhenNotPlaying.Changed += showWhenNotPlaying_OnChanged;
+            _enableWhen.Changed += enableWhen_OnChanged;
 
             // init the timers
             _hideAfterSongStart.Tick += hideAfterSongStart_Tick;
@@ -187,8 +187,8 @@ namespace fooTitle
         {
             AnimationManager.Animation animName =
                 (_showWhen.Value == ShowWhenEnum.Always) ? AnimationManager.Animation.FadeOut : AnimationManager.Animation.FadeOutFull;
-            AnimationManager.OnAnimationStopDelegate onStop =
-                (_showWhen.Value != ShowWhenEnum.Always) ? DoDisable : (AnimationManager.OnAnimationStopDelegate)null;
+            AnimationManager.AnimationStoppedEventHandler onStop =
+                (_showWhen.Value != ShowWhenEnum.Always) ? DoDisable : (AnimationManager.AnimationStoppedEventHandler)null;
             _main.StartDisplayAnimation(animName, onStop);
         }
 

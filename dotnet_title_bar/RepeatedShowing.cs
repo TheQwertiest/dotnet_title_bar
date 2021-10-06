@@ -18,52 +18,61 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-using System;
 using fooTitle.Config;
+using System;
 using System.Windows.Forms;
 
-namespace fooTitle {
+namespace fooTitle
+{
     /// <summary>
     /// This class ensures that the window is placed on top from time to time partially solving windows's bug
     /// that always on top windows sometimes fall down.
     /// </summary>
-    public class RepeatedShowing {
+    public class RepeatedShowing
+    {
         private readonly ConfBool _reShowOnTop;
-        private readonly Timer _timer = new Timer {Interval = 1000 * 1 * 60};// every minute
+        private readonly Timer _timer = new() { Interval = 1000 * 1 * 60 };// every minute
         private readonly Main _main;
 
-        public RepeatedShowing() {
+        public RepeatedShowing()
+        {
             _main = Main.GetInstance();
 
-            this._timer.Tick += timer_Tick;
+            this._timer.Tick += Timer_TickEventHandler;
 
             this._reShowOnTop = new ConfBool("display/reShowOnTop", true);
-            this._reShowOnTop.OnChanged += reShowOnTop_OnChanged;
+            this._reShowOnTop.Changed += ReShowOnTop_OnChangedEventHandler;
 
-            _main.Display.WindowPosition.OnChanged += WindowPosition_OnChanged;
+            _main.Display.WindowPosition.Changed += WindowPosition_OnChangedEventHandler;
 
-            this.updateTimerState();
+            this.UpdateTimerState();
         }
 
-        private void updateTimerState() {
-            if (_reShowOnTop.Value && _main.Display.WindowPosition.Value == Win32.WindowPosition.Topmost) {
+        private void UpdateTimerState()
+        {
+            if (_reShowOnTop.Value && _main.Display.WindowPosition.Value == Win32.WindowPosition.Topmost)
+            {
                 _timer.Start();
-            } else {
+            }
+            else
+            {
                 _timer.Stop();
             }
         }
 
-        private void WindowPosition_OnChanged(string name) {
-            updateTimerState();
+        private void WindowPosition_OnChangedEventHandler(string name)
+        {
+            UpdateTimerState();
         }
 
-        private void timer_Tick(object sender, EventArgs e)
+        private void Timer_TickEventHandler(object sender, EventArgs e)
         {
             _main.Display?.SetWindowsPos(Win32.WindowPosition.Topmost);
         }
 
-        private void reShowOnTop_OnChanged(string name) {
-            updateTimerState();
+        private void ReShowOnTop_OnChangedEventHandler(string name)
+        {
+            UpdateTimerState();
         }
     }
 }

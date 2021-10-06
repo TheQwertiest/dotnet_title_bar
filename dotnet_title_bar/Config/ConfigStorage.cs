@@ -30,13 +30,11 @@ using System.Xml.Linq;
 
 namespace fooTitle.Config
 {
-    #region Exceptions
-
     internal class UnsupportedTypeException : ApplicationException
     {
         private readonly Type _type;
 
-        public override string Message => $"This type is not supported for reading : {_type.ToString()}";
+        public override string Message => $"This type is not supported for reading : {_type}";
 
         public UnsupportedTypeException(Type t)
         {
@@ -44,52 +42,6 @@ namespace fooTitle.Config
         }
     }
 
-    #endregion
-
-    #region IConfigStorage
-    /// <summary>
-    /// This is the interface for configuration database storage implementors
-    /// </summary>
-    public interface IConfigStorage
-    {
-        /// <summary>
-        /// Writes a value under a name. The value can be of any type as it's ToString() method is used to serialize.
-        /// However, only the basic types are supported for reading.
-        /// </summary>
-        /// <param name="name">The name under which the value should be stored. '/' characters are used for 
-        /// building a tree structure.</param>
-        /// <param name="value">The boxed value to store.</param>
-        void WriteVal(string name, object value);
-
-        /// <summary>
-        /// Reads a value by it's name 
-        /// </summary>
-        /// <typeparam name="T">The type that the stored value should be converted to.</typeparam>
-        /// <param name="name">The name of the value under which it is stored.</param>
-        /// <returns>The boxed value if present in the storage or null if it can't be found.</returns>
-        /// <exception cref="UnsupportedTypeException">Throws if an unsupported type is required in T.</exception>
-        object ReadVal<T>(string name);
-
-
-        /// <summary>
-        /// Invoke explicit save. Implementors of this interface may save the contents implicitly, or only when this method is invoked.
-        /// </summary>
-        void Save();
-
-        /// <summary>
-        /// Invokes loading from the storage.
-        /// </summary>
-        void Load();
-
-        /// <summary>
-        /// Used mostly for debugging purposes.
-        /// </summary>
-        /// <returns>Returns a string representation of the stored data.</returns>
-        string ToString();
-    }
-    #endregion
-
-    #region XmlConfigStorage
     /// <summary>
     /// This is the XML in foobar's configuration variables implementation of IConfigStorage.
     /// </summary>
@@ -107,7 +59,6 @@ namespace fooTitle.Config
             _cfgEntry = cfgEntry;
         }
 
-        #region IConfig Members
         public void Load()
         {
             _xmlDocument = XDocument.Parse(_cfgEntry.Get());
@@ -144,10 +95,14 @@ namespace fooTitle.Config
         {
             XElement el = FindElementById(name);
             if (el == null)
+            {
                 return null;
+            }
 
-            if (el.Elements().Count() != 0)
+            if (el.Elements().Any())
+            {
                 return el.FirstNode;
+            }
 
             return el.Value == "" ? null : StringToType<T>(el.Value);
         }
@@ -156,22 +111,31 @@ namespace fooTitle.Config
         {
             _cfgEntry.Set(_xmlDocument.ToString());
         }
-        #endregion
 
         public override string ToString()
         {
             return _xmlDocument.ToString();
         }
 
-        protected object StringToType<T>(string str)
+        protected static object StringToType<T>(string str)
         {
-            if (typeof(T) == typeof(int))
+            var type = typeof(T);
+            if (type == typeof(int))
+            {
                 return int.Parse(str);
-            if (typeof(T) == typeof(string))
+            }
+
+            if (type == typeof(string))
+            {
                 return str;
-            if (typeof(T) == typeof(float))
+            }
+
+            if (type == typeof(float))
+            {
                 return float.Parse(str);
-            throw new UnsupportedTypeException(typeof(T));
+            }
+
+            throw new UnsupportedTypeException(type);
         }
 
         protected XElement FindElementById(string id)
@@ -188,5 +152,4 @@ namespace fooTitle.Config
         }
 
     }
-    #endregion
 }

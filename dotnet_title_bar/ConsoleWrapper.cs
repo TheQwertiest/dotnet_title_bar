@@ -1,16 +1,11 @@
 ﻿using Qwr.ComponentInterface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace fooTitle
 {
     public class ConsoleWrapper
     {
-        private IConsole _console;
-        private string _componentName;
+        private readonly IConsole _console;
+        private readonly string _componentName;
 
         public ConsoleWrapper(IConsole console)
         {

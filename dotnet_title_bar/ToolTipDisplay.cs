@@ -18,8 +18,12 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace fooTitle {
-    public class ToolTipDisplay : PerPixelAlphaForm {
+namespace fooTitle
+{
+    public class ToolTipDisplay : PerPixelAlphaForm
+    {
+
+        protected override bool ShowWithoutActivation => true;
 
         private static readonly Color backgroundColor = Color.White;
         private static readonly Color textColor = Color.FromArgb(87, 87, 87);
@@ -29,11 +33,13 @@ namespace fooTitle {
         private string _text;
         private Rectangle _borderRectangle;
 
-        public ToolTipDisplay() {
+        public ToolTipDisplay()
+        {
             this.InitializeComponent();
         }
 
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.SuspendLayout();
             // 
             // ToolTipDisplay
@@ -46,6 +52,7 @@ namespace fooTitle {
             this.ShowInTaskbar = false;
             this.Text = "ToolTipDisplay";
             this.TopMost = false;
+
             // Passthrough hack
             int initialStyle = Win32.GetWindowLong(this.Handle, -20);
             Win32.SetWindowLong(this.Handle, -20, initialStyle | 0x80000 | 0x20);
@@ -53,9 +60,11 @@ namespace fooTitle {
             this.ResumeLayout(false);
         }
 
-        private void UpdateBitmap() {
+        private void UpdateBitmap()
+        {
             Bitmap b = new Bitmap(Width, Height);
-            using (Graphics g = Graphics.FromImage(b)) {
+            using (Graphics g = Graphics.FromImage(b))
+            {
                 g.Clear(backgroundColor);
                 g.DrawRectangle(borderPen, _borderRectangle);
                 TextRenderer.DrawText(g, _text, textFont, new Point(3, 2), textColor, backgroundColor);
@@ -63,8 +72,10 @@ namespace fooTitle {
             SetBitmap(b);
         }
 
-        public void SetText(string newText) {
-            if (newText != null && _text != newText) {
+        public void SetText(string newText)
+        {
+            if (newText != null && _text != newText)
+            {
                 _text = newText;
                 SizeF textSize = TextRenderer.MeasureText(_text, textFont);
                 Width = (int)textSize.Width + 6;
@@ -74,7 +85,5 @@ namespace fooTitle {
                 UpdateBitmap();
             }
         }
-
-        protected override bool ShowWithoutActivation => true;
     }
 }

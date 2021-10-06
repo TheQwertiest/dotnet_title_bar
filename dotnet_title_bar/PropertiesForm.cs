@@ -1520,7 +1520,9 @@ namespace fooTitle
             }
             catch (Exception ex)
             {
-                MessageBox.Show("dotnet_title_bar - There was an error opening directory " + Main.UserDataDir + ":\n" + ex.Message, "dotnet_title_bar");
+                Utils.ReportErrorWithPopup($"There was an error opening directory {Main.UserDataDir}:\n"
+                                             + $"{ex.Message}\n"
+                                             + $"{ex}");
             }
         }
 

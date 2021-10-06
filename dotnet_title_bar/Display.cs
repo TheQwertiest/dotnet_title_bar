@@ -17,15 +17,16 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+using fooTitle.Config;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
-using fooTitle.Config;
-
-namespace fooTitle {
-    public class Display : PerPixelAlphaForm {
+namespace fooTitle
+{
+    public class Display : PerPixelAlphaForm
+    {
 
         private readonly System.ComponentModel.Container _components = null;
         private Bitmap _canvasBitmap;
@@ -64,7 +65,8 @@ namespace fooTitle {
         /// </summary>
         private readonly ConfBool _shouldDrawAnchor = ConfValuesManager.CreateBoolValue("display/drawAnchor", false);
 
-        public Display(int width, int height) {
+        public Display(int width, int height)
+        {
             InitializeComponent();
 
             _canvasBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -79,15 +81,16 @@ namespace fooTitle {
             minOpacity = normalOpacity.Value;
             AnimManager = new AnimationManager(this);
 
-            normalOpacity.OnChanged += normalOpacity_OnChanged;
-            overOpacity.OnChanged += overOpacity_OnChanged;
-            WindowPosition.OnChanged += windowPosition_OnChanged;
+            normalOpacity.Changed += normalOpacity_OnChanged;
+            overOpacity.Changed += overOpacity_OnChanged;
+            WindowPosition.Changed += windowPosition_OnChanged;
 
             _dockAnchor = new DockAnchor(this);
             SetWindowsPos(WindowPosition.Value);
         }
 
-        void windowPosition_OnChanged(string name) {
+        void windowPosition_OnChanged(string name)
+        {
             SetWindowsPos(WindowPosition.Value);
         }
 
@@ -109,16 +112,17 @@ namespace fooTitle {
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
-        protected override void Dispose(bool disposing) {
+        protected override void Dispose(bool disposing)
+        {
             if (disposing)
             {
                 AnimManager.Dispose();
                 _components?.Dispose();
 
                 // need to remove this from the events on the configuration values
-                normalOpacity.OnChanged -= normalOpacity_OnChanged;
-                overOpacity.OnChanged -= overOpacity_OnChanged;
-                WindowPosition.OnChanged -= windowPosition_OnChanged;
+                normalOpacity.Changed -= normalOpacity_OnChanged;
+                overOpacity.Changed -= overOpacity_OnChanged;
+                WindowPosition.Changed -= windowPosition_OnChanged;
             }
             base.Dispose(disposing);
         }
@@ -128,7 +132,8 @@ namespace fooTitle {
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             // 
             // Display
             // 
@@ -141,7 +146,7 @@ namespace fooTitle {
             this.MinimizeBox = false;
             this.Name = "Display";
             this.ShowInTaskbar = false;
-            this.Text = "foo_title";
+            this.Text = "dotnet_title_bar";
             this.MouseDown += Display_MouseDown;
             this.MouseUp += Display_MouseUp;
             this.MouseMove += Display_MouseMove;
@@ -181,28 +186,34 @@ namespace fooTitle {
 
         #region Bottom
 
-        private void Display_Activated(object sender, EventArgs e) {
-            if (WindowPosition.Value == Win32.WindowPosition.Bottom) {
+        private void Display_Activated(object sender, EventArgs e)
+        {
+            if (WindowPosition.Value == Win32.WindowPosition.Bottom)
+            {
                 SetWindowsPos(Win32.WindowPosition.Bottom);
             }
         }
 #pragma warning disable 0168, 219, 67
-        protected override void WndProc(ref Message m) {
-            if (WindowPosition.Value == Win32.WindowPosition.Bottom) {
+        protected override void WndProc(ref Message m)
+        {
+            if (WindowPosition.Value == Win32.WindowPosition.Bottom)
+            {
                 const int WM_MOUSEACTIVATE = 0x21;
                 const int MA_ACTIVATE = 1;
                 const int MA_ACTIVATEANDEAT = 2;
                 const int MA_NOACTIVATE = 3;
                 const int MA_NOACTIVATEANDEAT = 4;
 
-                if (m.Msg == WM_MOUSEACTIVATE) {
+                if (m.Msg == WM_MOUSEACTIVATE)
+                {
                     m.Result = (IntPtr)MA_NOACTIVATE;
                     return;
                 }
             }
 
             const int WM_CLOSE = 0x0010;
-            if (m.Msg == WM_CLOSE) {
+            if (m.Msg == WM_CLOSE)
+            {
                 return;
             }
 
@@ -212,16 +223,20 @@ namespace fooTitle {
         #endregion
 
         #region Dragging
-        private void Display_MouseDown(object sender, MouseEventArgs e) {
-            if (Main.GetInstance().CanDragDisplay) {
+        private void Display_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (Main.GetInstance().CanDragDisplay)
+            {
                 dragging = true;
                 dragX = e.X;
                 dragY = e.Y;
             }
         }
 
-        private void Display_MouseUp(object sender, MouseEventArgs e) {
-            if (dragging) {
+        private void Display_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (dragging)
+            {
                 dragging = false;
 
                 // save position
@@ -229,8 +244,10 @@ namespace fooTitle {
             }
         }
 
-        private void Display_MouseMove(object sender, MouseEventArgs e) {
-            if (dragging) {
+        private void Display_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (dragging)
+            {
                 Point mouse = this.PointToScreen(new Point(e.X, e.Y));
                 Screen screen = Screen.FromPoint(mouse);
 
@@ -240,14 +257,20 @@ namespace fooTitle {
         }
 
         // snapping
-        private int DoSnapping(int pos, int size, int border, int oppositeBorder) {
-            if (Main.GetInstance().EdgeSnapEnabled && (Control.ModifierKeys & Keys.Control) == 0) {
+        private int DoSnapping(int pos, int size, int border, int oppositeBorder)
+        {
+            if (Main.GetInstance().EdgeSnapEnabled && (Control.ModifierKeys & Keys.Control) == 0)
+            {
                 int borderDist = Math.Abs(pos - border);
                 int oppositeBorderDist = Math.Abs(pos + size - oppositeBorder);
-                if (borderDist < SnapDist || oppositeBorderDist < SnapDist) {
-                    if (borderDist < oppositeBorderDist) {
+                if (borderDist < SnapDist || oppositeBorderDist < SnapDist)
+                {
+                    if (borderDist < oppositeBorderDist)
+                    {
                         return border;
-                    } else {
+                    }
+                    else
+                    {
                         return oppositeBorder - size;
                     }
                 }
@@ -265,7 +288,8 @@ namespace fooTitle {
             }
         }
 
-        internal void SetSize(int width, int height) {
+        internal void SetSize(int width, int height)
+        {
             this.Width = width;
             this.Height = height;
 

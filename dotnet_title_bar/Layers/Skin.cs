@@ -60,10 +60,10 @@ namespace fooTitle.Layers
             geometry = new AbsoluteGeometry(new Rectangle(0, 0, width, height), width, height, new Point(0, 0));
 
             // register to main for playback events
-            Main.GetInstance().OnPlaybackNewTrackEvent += OnPlaybackNewTrack;
-            Main.GetInstance().OnPlaybackTimeEvent += OnPlaybackTime;
-            Main.GetInstance().OnPlaybackPauseEvent += OnPlaybackPause;
-            Main.GetInstance().OnPlaybackStopEvent += OnPlaybackStop;
+            Main.GetInstance().PlaybackAdvancedToNewTrack += OnPlaybackNewTrack;
+            Main.GetInstance().TrackPlaybackPositionChanged += OnPlaybackTime;
+            Main.GetInstance().PlaybackPausedStateChanged += OnPlaybackPause;
+            Main.GetInstance().PlaybackStopped += OnPlaybackStop;
         }
 
         /// <summary>
@@ -112,10 +112,10 @@ namespace fooTitle.Layers
         /// </summary>
         public void Free()
         {
-            Main.GetInstance().OnPlaybackNewTrackEvent -= OnPlaybackNewTrack;
-            Main.GetInstance().OnPlaybackTimeEvent -= OnPlaybackTime;
-            Main.GetInstance().OnPlaybackStopEvent -= OnPlaybackStop;
-            Main.GetInstance().OnPlaybackPauseEvent -= OnPlaybackPause;
+            Main.GetInstance().PlaybackAdvancedToNewTrack -= OnPlaybackNewTrack;
+            Main.GetInstance().TrackPlaybackPositionChanged -= OnPlaybackTime;
+            Main.GetInstance().PlaybackStopped -= OnPlaybackStop;
+            Main.GetInstance().PlaybackPausedStateChanged -= OnPlaybackPause;
 
             Display.MouseMove -= Display_MouseMove;
             Display.MouseDown -= Display_MouseDown;
@@ -247,7 +247,7 @@ namespace fooTitle.Layers
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString(), "Error");
+                Utils.ReportErrorWithPopup(e.ToString());
             }
         }
 
@@ -314,13 +314,13 @@ namespace fooTitle.Layers
         #region IPlayCallbackSender Members
 
 #pragma warning disable 0168, 219, 67
-        public event OnPlaybackTimeDelegate OnPlaybackTimeEvent;
-        public event OnPlaybackNewTrackDelegate OnPlaybackNewTrackEvent;
-        public event OnQuitDelegate OnQuitEvent;
-        public event OnInitDelegate OnInitEvent;
-        public event OnPlaybackStopDelegate OnPlaybackStopEvent;
-        public event OnPlaybackPauseDelegate OnPlaybackPauseEvent;
-        public event OnPlaybackDynamicInfoTrackDelegate OnPlaybackDynamicInfoTrackEvent;
+        public event TrackPlaybackPositionChangedEventHandler TrackPlaybackPositionChanged;
+        public event PlaybackAdvancedToNewTrackEventHandler PlaybackAdvancedToNewTrack;
+        public event QuitEventHandler Quit;
+        public event InitializedEventHandler Initialized;
+        public event PlaybackStoppedEventhandler PlaybackStopped;
+        public event PlaybackPausedStateChangedEventHandler PlaybackPausedStateChanged;
+        public event DynamicTrackInfoChangedEventHandler DynamicTrackInfoChanged;
 #pragma warning restore 0168, 219, 67
 
         #endregion
@@ -335,20 +335,20 @@ namespace fooTitle.Layers
         public void OnPlaybackTime(double time)
         {
             // pass it on
-            SendEvent(OnPlaybackTimeEvent, time);
+            SendEvent(TrackPlaybackPositionChanged, time);
         }
 
         public void OnPlaybackNewTrack(IMetadbHandle song)
         {
             // pass it on
-            SendEvent(OnPlaybackNewTrackEvent, song);
+            SendEvent(PlaybackAdvancedToNewTrack, song);
             CheckSize();
         }
 
         public void OnPlaybackStop(PlaybackStopReason reason)
         {
             // pass it on
-            SendEvent(OnPlaybackStopEvent, reason);
+            SendEvent(PlaybackStopped, reason);
             if (reason != PlaybackStopReason.StartingAnother)
                 CheckSize();
         }
@@ -356,7 +356,7 @@ namespace fooTitle.Layers
         public void OnPlaybackPause(bool state)
         {
             // pass it on
-            SendEvent(OnPlaybackPauseEvent, state);
+            SendEvent(PlaybackPausedStateChanged, state);
         }
 
         #endregion // Event handling (public)

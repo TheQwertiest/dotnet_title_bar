@@ -20,30 +20,30 @@
 using System;
 using System.Collections.Generic;
 
-namespace fooTitle.Config {
-    #region Exceptions
+namespace fooTitle.Config
+{
     /// <summary>
     /// Thrown when user attempts to create multiple values of the same name.
     /// </summary>
-    public class ValueAlreadyExistsException : Exception {
+    public class ValueAlreadyExistsException : Exception
+    {
         private readonly string _name;
 
         public override string Message => $"Value {_name} is already registered with the ConfValuesManager.";
 
-        public ValueAlreadyExistsException(string name) {
+        public ValueAlreadyExistsException(string name)
+        {
             _name = name;
         }
     }
 
-    #endregion
-
-    #region ConfValuesManager
     /// <summary>
     /// This class stores the available configuration values, handles loading and saving and notifying 
     /// other classes when a value changes.
     /// </summary>
-    public class ConfValuesManager {
-        private readonly List<ConfValue> _values = new List<ConfValue>();
+    public class ConfValuesManager
+    {
+        private readonly List<ConfValue> _values = new();
         private static ConfValuesManager _instance;
         private IConfigStorage _savedStorage;
 
@@ -53,63 +53,75 @@ namespace fooTitle.Config {
         /// <returns>An instance of ConfValuesManager. Always returns the same instance.</returns>
         public static ConfValuesManager GetInstance()
         {
-            return _instance ?? (_instance = new ConfValuesManager());
+            return _instance ??= new ConfValuesManager();
         }
 
         /// <summary>
         /// Adds a value to this manager to handle.
         /// </summary>
-        public void AddVal(ConfValue v) {
+        public void AddValue(ConfValue v)
+        {
             if (GetValueByName(v.Name) != null)
+            {
                 throw new ValueAlreadyExistsException(v.Name);
+            }
 
             _values.Add(v);
 
-            OnValueCreated?.Invoke(v.Name);
+            ValueCreated?.Invoke(v.Name);
 
-            // register this as the receiver for v's OnChanged
-            v.OnChanged += FireValueChanged;
+            // register this as the receiver for v's Changed
+            v.Changed += OnValueChanged;
 
             // if there is a storage set, load the value from it
             if (_savedStorage != null)
+            {
                 v.LoadFrom(_savedStorage);
+            }
         }
 
         /// <summary>
         /// Removes a value from this manager's care.
         /// </summary>
-        public void RemoveVal(ConfValue v) {
+        public void RemoveValue(ConfValue v)
+        {
             _values.Remove(v);
         }
 
         /// <summary>
         /// Notifies registered classes that the value by the name has been changed.
         /// </summary>
-        public void FireValueChanged(string name) {
+        public void OnValueChanged(string name)
+        {
             if (GetValueByName(name) == null)
+            {
                 throw new InvalidOperationException(
-                    $"Cannot fire the OnValueChanged event for value named {name}. There is no such variable registered.");
+                    $"Cannot fire the Changed event for value named {name}. There is no such variable registered.");
+            }
 
             // check if anyone's listening
-            OnValueChanged?.Invoke(name);
+            ValueChanged?.Invoke(name);
         }
 
-        public delegate void ValueChangedDelegate(string name);
-        public event ValueChangedDelegate OnValueChanged;
-        public event ValueChangedDelegate OnValueCreated;
+        public delegate void ChangedEventHandler(string name);
+        public event ChangedEventHandler ValueChanged;
+        public event ChangedEventHandler ValueCreated;
 
         /// <summary>
         /// Sets a IConfigStorage instance to use to load values of newly created variables from.
         /// </summary>
-        public void SetStorage(IConfigStorage a) {
+        public void SetStorage(IConfigStorage a)
+        {
             _savedStorage = a;
         }
 
         /// <summary>
         /// Saves all handled values to a config storage
         /// </summary>
-        public void SaveTo(IConfigStorage to) {
-            foreach (ConfValue v in _values) {
+        public void SaveTo(IConfigStorage to)
+        {
+            foreach (ConfValue v in _values)
+            {
                 v.SaveTo(to);
             }
 
@@ -120,8 +132,10 @@ namespace fooTitle.Config {
         /// <summary>
         /// Loads all currently registered values from a config storage.
         /// </summary>
-        public void LoadFrom(IConfigStorage from) {
-            foreach (ConfValue v in _values) {
+        public void LoadFrom(IConfigStorage from)
+        {
+            foreach (ConfValue v in _values)
+            {
                 v.LoadFrom(from);
             }
         }
@@ -130,33 +144,26 @@ namespace fooTitle.Config {
         /// Finds a value by its name.
         /// </summary>
         /// <returns>The ConfValue if found, otherwise null.</returns>
-        public ConfValue GetValueByName(string name) {
-            foreach (ConfValue v in _values) {
-                if (v.Name == name) {
-                    return v;
-                }
-            }
-
-            return null;
+        public ConfValue GetValueByName(string name)
+        {
+            return _values.Find(v => v.Name == name);
         }
 
 
         /// <summary>
         /// Resets all values to default
         /// </summary>
-        public void Reset() {
-            foreach (ConfValue v in _values) {
+        public void Reset()
+        {
+            foreach (ConfValue v in _values)
+            {
                 v.Reset();
             }
         }
 
-        public bool HasChanged() {
-            foreach (ConfValue v in _values) {
-                if (v.HasChanged()) {
-                    return true;
-                }
-            }
-            return false;
+        public bool HasChanged()
+        {
+            return _values.Find(v => v.HasChanged()) != null;
         }
 
         /// <summary>
@@ -165,7 +172,8 @@ namespace fooTitle.Config {
         /// that it will be called multiple times (one value can be created
         /// only once).
         /// </summary>
-        public static ConfInt CreateIntValue(string name, int _def, int _min, int _max) {
+        public static ConfInt CreateIntValue(string name, int _def, int _min, int _max)
+        {
             ConfInt existing = (ConfInt)GetInstance().GetValueByName(name);
             return existing ?? new ConfInt(name, _def, _min, _max);
         }
@@ -173,7 +181,8 @@ namespace fooTitle.Config {
         /// <summary>
         /// <see cref="CreateIntValue"/>
         /// </summary>
-        public static ConfEnum<T> CreateEnumValue<T>(string name, T _def) where T : IConvertible {
+        public static ConfEnum<T> CreateEnumValue<T>(string name, T _def) where T : IConvertible
+        {
             ConfEnum<T> existing = (ConfEnum<T>)GetInstance().GetValueByName(name);
             return existing ?? new ConfEnum<T>(name, _def);
         }
@@ -188,5 +197,4 @@ namespace fooTitle.Config {
         }
     }
 
-    #endregion
 }

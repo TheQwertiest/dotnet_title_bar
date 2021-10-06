@@ -51,9 +51,9 @@ namespace fooTitle.Layers
                 noCover = null;
             }
 
-            Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += CurrentSkin_OnPlaybackNewTrackEvent;
-            Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += CurrentSkin_OnPlaybackTimeEvent;
-            Main.GetInstance().CurrentSkin.OnPlaybackStopEvent += CurrentSkin_OnPlaybackStopEvent;
+            Main.GetInstance().CurrentSkin.PlaybackAdvancedToNewTrack += CurrentSkin_OnPlaybackNewTrackEvent;
+            Main.GetInstance().CurrentSkin.TrackPlaybackPositionChanged += CurrentSkin_OnPlaybackTimeEvent;
+            Main.GetInstance().CurrentSkin.PlaybackStopped += CurrentSkin_OnPlaybackStopEvent;
         }
 
         private void LoadArtwork(IMetadbHandle song)

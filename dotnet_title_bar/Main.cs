@@ -11,35 +11,32 @@ using System.Reflection;
 
 namespace fooTitle
 {
-
-    public enum EnableDragging
-    {
-        Always,
-        WhenPropertiesOpen,
-        Never,
-    }
-
     public class Main : IComponent, ICallbackSender
     {
+        private enum EnableDragging
+        {
+            Always,
+            WhenPropertiesOpen,
+            Never,
+        }
 
+        public static readonly string ComponentNameUnderscored = "dotnet_title_bar";
+        public static readonly string ComponentName = "Title Bar";
+
+        // TODO: replace with properties
         public IConfigStorage Config;
         public IUtils Fb2kUtils;
         public IDynamicServicesManager Fb2kServices;
         public IControls Fb2kControls;
         public IPlaybackControls Fb2kPlaybackControls;
-        static public ConsoleWrapper Console;
-        static public string ComponentNameUnderscored = "dotnet_title_bar";
-        static public string ComponentName = "Title Bar";
+        public static ConsoleWrapper Console;
         public SkinState SkinState;
 
         public IConfigStorage TestConfig;
 
-        // TODO: remove?
-        // public Tests.TestServices TestServicesInstance;
-
         public ToolTipDisplay Ttd;
 
-        protected ShowControl showControl;
+        private ShowControl _showControl;
 
         /// <summary>
         /// Set to true after everything has been created and can be manipulated
@@ -53,13 +50,13 @@ namespace fooTitle
         /// <summary>
         /// The name of the currently used skin. Can be changed
         /// </summary>
-        private readonly ConfString _skinPath = new ConfString("base/skinName", null);
-        private readonly ConfInt _positionX = new ConfInt("display/positionX", 0);
-        private readonly ConfInt _positionY = new ConfInt("display/positionY", 0);
-        private readonly ConfBool _edgeSnap = new ConfBool("display/edgeSnap", true);
-        private readonly ConfEnum<EnableDragging> _draggingEnabled = new ConfEnum<EnableDragging>("display/enableDragging", EnableDragging.Always);
-        private readonly ConfInt _artLoadEvery = new ConfInt("display/artLoadEvery", 10, 1, int.MaxValue);
-        private readonly ConfInt _artLoadMaxTimes = new ConfInt("display/artLoadMaxTimes", 2, -1, int.MaxValue);
+        private readonly ConfString _skinPath = new("base/skinName", null);
+        private readonly ConfInt _positionX = new("display/positionX", 0);
+        private readonly ConfInt _positionY = new("display/positionY", 0);
+        private readonly ConfBool _edgeSnap = new("display/edgeSnap", true);
+        private readonly ConfEnum<EnableDragging> _draggingEnabled = new("display/enableDragging", EnableDragging.Always);
+        private readonly ConfInt _artLoadEvery = new("display/artLoadEvery", 10, 1, int.MaxValue);
+        private readonly ConfInt _artLoadMaxTimes = new("display/artLoadMaxTimes", 2, -1, int.MaxValue);
         private System.Windows.Forms.Timer _redrawTimer;
 
         private IMetadbHandle _lastSong;
@@ -74,12 +71,12 @@ namespace fooTitle
         /// <summary>
         /// How often the display should be redrawn (in FPS)
         /// </summary>
-        private readonly ConfInt _updateInterval = new ConfInt("display/refreshRate", 30, 1, 250);
+        private readonly ConfInt _updateInterval = new("display/refreshRate", 30, 1, 250);
 
         /// <summary>
         /// List of layers, that need continuous redrawing (e.g. animation, scrolling text)
         /// </summary>
-        private readonly HashSet<IContiniousRedraw> _redrawRequesters = new HashSet<IContiniousRedraw>();
+        private readonly HashSet<IContiniousRedraw> _redrawRequesters = new();
 
         private bool _needToRedraw = false;
 
@@ -138,17 +135,13 @@ namespace fooTitle
         {
             get
             {
-                switch (_draggingEnabled.Value)
+                return _draggingEnabled.Value switch
                 {
-                    case EnableDragging.Always:
-                        return _isMouseOnDragLayer;
-                    case EnableDragging.WhenPropertiesOpen:
-                        return Properties.IsOpen;
-                    case EnableDragging.Never:
-                        return false;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                    EnableDragging.Always => _isMouseOnDragLayer,
+                    EnableDragging.WhenPropertiesOpen => Properties.IsOpen,
+                    EnableDragging.Never => false,
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
             }
             set
             {
@@ -179,30 +172,23 @@ namespace fooTitle
             _instance = this;
             Fb2kUtils = utils;
 
-            // create the property sheet form
-            servicesManager.RegisterPreferencesPage(Properties.Info, typeof(Properties));
-
-            // TODO: remove?
-            //// create the services for testing
-            // TestServicesInstance = new Tests.TestServices();
-
             // create a notifying string value for saving the configuration
-            var cfgEntry = servicesManager.RegisterConfigVar(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 47, 13), "<config/>");
+            var cfgEntry = servicesManager.RegisterConfigVar(Guids.Config, "<config/>");
 
             // create the configuration manager
             Config = new XmlConfigStorage(cfgEntry);
 
-            // TODO: remove?
-            //TestConfig = new XmlConfigStorage(TestServicesInstance.testConfigStorage);
+            // create the property sheet form
+            servicesManager.RegisterPreferencesPage(Properties.Info, typeof(Properties));
 
             // initialize show control
-            showControl = new ShowControl();
+            _showControl = new ShowControl();
 
             // initialize menu commands
             var menuGroup = servicesManager.GetMainMenuGroup(Fb2kUtils.Fb2kGuid(Fb2kGuidId.MainMenuGroups_View));
             var commandSection = menuGroup.AddCommandSection();
-            commandSection.AddCommand(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 56, 1), "Toggle Title Bar", "Enables or disables dotnet_title_bar popup.", () => Hotkey_PopupToggle());
-            var peekCmd = commandSection.AddCommand(new Guid(457, 784, 488, 36, 48, 79, 54, 12, 36, 56, 2), "Peek Title Bar", "Shows dotnet_title_bar popup briefly.", () => Hotkey_PopupPeek());
+            commandSection.AddCommand(Guids.MainMenu_ToggleTitleBar, "Toggle Title Bar", "Enables or disables dotnet_title_bar popup.", () => Hotkey_PopupToggle());
+            var peekCmd = commandSection.AddCommand(Guids.MainMenu_PeekTitleBar, "Peek Title Bar", "Shows dotnet_title_bar popup briefly.", () => Hotkey_PopupPeek());
             peekCmd.IsDefaultHidden = true;
         }
 
@@ -211,34 +197,34 @@ namespace fooTitle
             Fb2kServices = servicesManager;
             Fb2kControls = controls;
             Fb2kPlaybackControls = controls.PlaybackControls();
-            // TODO: make public?
+
             _fb2kPlaybackCallbacks = servicesManager.RegisterForPlaybackCallbacks();
             Console = new ConsoleWrapper(Fb2kControls.Console());
 
             // TODO: cleanup
-            _fb2kPlaybackCallbacks.DynamicTrackInfoChanged += (sender, args) =>
+            _fb2kPlaybackCallbacks.DynamicTrackInfoChanged += (sender, e) =>
             {
                 var currentTrack = Fb2kControls.PlaybackControls().NowPlaying();
-                OnPlaybackDynamicInfoTrack(currentTrack.FileInfo());
+                OnDynamicTrackInfoChanged(currentTrack.FileInfo());
             };
-            _fb2kPlaybackCallbacks.PlaybackAdvancedToNewTrack += (sender, args) =>
+            _fb2kPlaybackCallbacks.PlaybackAdvancedToNewTrack += (sender, e) =>
             {
-                OnPlaybackNewTrack(args.Value);
+                OnPlaybackAdvancedToNewTrack(e.Value);
             };
-            _fb2kPlaybackCallbacks.PlaybackPausedStateChanged += (sender, args) =>
+            _fb2kPlaybackCallbacks.PlaybackPausedStateChanged += (sender, e) =>
             {
-                OnPlaybackPause(args.Value);
+                OnPlaybackPausedStateChanged(e.Value);
             };
-            _fb2kPlaybackCallbacks.PlaybackStopped += (sender, args) =>
+            _fb2kPlaybackCallbacks.PlaybackStopped += (sender, e) =>
             {
-                OnPlaybackStop(args.Value);
+                OnPlaybackStopped(e.Value);
             };
-            _fb2kPlaybackCallbacks.TrackPlaybackPositionChanged += (sender, args) =>
+            _fb2kPlaybackCallbacks.TrackPlaybackPositionChanged += (sender, e) =>
             {
-                OnPlaybackTime(args.Value);
+                OnTrackPlaybackPositionChanged(e.Value);
             };
 
-            OnInit();
+            OnInitialized();
         }
 
         public void Shutdown()
@@ -258,7 +244,9 @@ namespace fooTitle
         public void RequestRedraw(bool force = false)
         {
             if (Display == null || !Display.Visible)
+            {
                 return;
+            }
 
             if (force)
             {
@@ -270,11 +258,11 @@ namespace fooTitle
             }
         }
 
-        public void positionX_OnChanged(string name)
+        public void PositionX_OnChanged(string name)
         {
             Display.SetAnchorPosition(_positionX.Value, _positionY.Value);
         }
-        public void positionY_OnChanged(string name)
+        public void PositionY_OnChanged(string name)
         {
             Display.SetAnchorPosition(_positionX.Value, _positionY.Value);
         }
@@ -282,7 +270,9 @@ namespace fooTitle
         public void EnableFooTitle()
         {
             if (!_initDone || Display.Visible)
+            {
                 return;
+            }
 
             Display.Show();
             RequestRedraw(true);
@@ -291,12 +281,14 @@ namespace fooTitle
         public void DisableFooTitle()
         {
             if (!_initDone || !Display.Visible)
+            {
                 return;
+            }
 
             Display.Hide();
         }
 
-        public void StartDisplayAnimation(AnimationManager.Animation animationName, AnimationManager.OnAnimationStopDelegate onStopCallback = null)
+        public void StartDisplayAnimation(AnimationManager.Animation animationName, AnimationManager.AnimationStoppedEventHandler onStopCallback = null)
         {
             if (_initDone && Display.Visible)
             {
@@ -306,12 +298,12 @@ namespace fooTitle
 
         public void Hotkey_PopupToggle()
         {
-            showControl.TogglePopup();
+            _showControl.TogglePopup();
         }
 
         public void Hotkey_PopupPeek()
         {
-            showControl.TriggerPopup();
+            _showControl.TriggerPopup();
         }
 
         public static Main GetInstance()
@@ -366,32 +358,39 @@ namespace fooTitle
 
         protected void SkinPath_OnChanged(string name)
         {
-            if (_initDone)
+            if (!_initDone)
             {
-                try
-                {
-                    SkinState.ResetState();
-                    LoadSkin(SkinPath);
-                    // Changing to skin with different anchor type 
-                    // may cause window to go beyond screen borders
-                    Display.ReadjustPosition();
-                    SavePosition();
-                }
-                catch (Exception e)
-                {
-                    CurrentSkin = null;
-                    System.Windows.Forms.MessageBox.Show($"dotnet_title_bar - There was an error loading skin {SkinPath}:\n {e.Message} \n {e}", "dotnet_title_bar");
-                }
+                return;
+            }
+
+            try
+            {
+                SkinState.ResetState();
+                LoadSkin(SkinPath);
+                // Changing to skin with different anchor type 
+                // may cause window to go beyond screen borders
+                Display.ReadjustPosition();
+                SavePosition();
+            }
+            catch (Exception e)
+            {
+                CurrentSkin = null;
+                Utils.ReportErrorWithPopup($"There was an error loading skin {SkinPath}:\n"
+                                         + $"{e.Message}\n"
+                                         + $"{e}");
             }
         }
 
         protected void UpdateInterval_OnChanged(string name)
         {
-            if (_initDone)
-                _redrawTimer.Interval = 1000 / _updateInterval.Value;
+            if (!_initDone)
+            {
+                return;
+            }
+            _redrawTimer.Interval = 1000 / _updateInterval.Value;
         }
 
-        private void _redrawTimer_Tick(object sender, EventArgs e)
+        private void RedrawTimer_Tick(object sender, EventArgs e)
         {
             if (_needToRedraw)
             {
@@ -416,9 +415,13 @@ namespace fooTitle
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show(
-                    $"dotnet_title_bar - Failed to create default directory.\nPath:\n{UserDataDir}\nError message:\n{e.Message}\nError details:\n{e}"
-                    , "dotnet_title_bar");
+                Utils.ReportErrorWithPopup("Failed to create default directory:\n"
+                                            + "Path:\n"
+                                            + $"{UserDataDir}\n"
+                                            + "Error message:\n"
+                                            + $"{e.Message}\n"
+                                            + "Error details:\n"
+                                            + $"{e}");
             }
         }
 
@@ -430,15 +433,15 @@ namespace fooTitle
         {
             // initialize the form displaying the images
             _display = new Display(300, 22);
-            _display.Closing -= myDisplay_Closing;
-            _display.Closing += myDisplay_Closing;
+            _display.Closing -= MyDisplay_Closing;
+            _display.Closing += MyDisplay_Closing;
             _display.Show();
             _redrawTimer.Start();
         }
 
-        void myDisplay_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        void MyDisplay_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _display.Closing -= myDisplay_Closing;
+            _display.Closing -= MyDisplay_Closing;
             _redrawTimer.Stop();
             UnloadSkin();
             _display = null;
@@ -457,16 +460,20 @@ namespace fooTitle
                 UnloadSkin();
 
                 if (Display == null)
+                {
                     ReinitDisplay();
+                }
 
                 if (path == null || !Directory.Exists(path))
                 {
                     path = Path.Combine(UserDataDir, "white");
                     if (!Directory.Exists(path))
+                    {
                         return;
+                    }
                 }
 
-                System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+                var sw = System.Diagnostics.Stopwatch.StartNew();
 
                 CurrentSkin = new Skin(path);
                 CurrentSkin.Init(Display);
@@ -475,9 +482,13 @@ namespace fooTitle
 
                 // need to tell it about the currently playing song
                 if (_lastSong != null)
+                {
                     CurrentSkin.OnPlaybackNewTrack(_lastSong);
+                }
                 else
+                {
                     CurrentSkin.OnPlaybackStop(PlaybackStopReason.User);
+                }
 
                 CurrentSkin.FirstCheckSize();
 
@@ -489,9 +500,10 @@ namespace fooTitle
             {
                 CurrentSkin?.Free();
                 CurrentSkin = null;
-                System.Windows.Forms.MessageBox.Show(
-                    $"dotnet_title_bar - There was an error loading skin {path}:\n {e.Message} \n {e}"
-                    , "dotnet_title_bar");
+
+                Utils.ReportErrorWithPopup($"There was an error loading skin {SkinPath}:\n"
+                                             + $"{e.Message}\n"
+                                             + $"{e}");
             }
         }
 
@@ -502,18 +514,17 @@ namespace fooTitle
             CurrentSkin = null;
         }
 
-        #region DpiScale
         // System DPI only
         private static readonly int CurrentDpi = (int)Graphics.FromHwnd(IntPtr.Zero).DpiX;
         private static readonly float ScaleCoefficient = (float)CurrentDpi / 96;
 
-        private readonly ConfBool _enableDpiScale = new ConfBool("display/dpiScale", true);
+        private readonly ConfBool _enableDpiScale = new("display/dpiScale", true);
         public bool IsDpiScalable
         {
             set => _enableDpiScale.Value = value;
             get => _enableDpiScale.Value;
         }
-        public void enableDpiScale_OnChanged(string name)
+        public void EnableDpiScale_OnChanged(string name)
         {
             ForceAssignSkinPath(SkinPath);
             RequestRedraw();
@@ -524,25 +535,18 @@ namespace fooTitle
             return IsDpiScalable ? (int)(ScaleCoefficient * oldValue) : oldValue;
         }
 
-        #endregion
-
-        #region Events
-        public event OnInitDelegate OnInitEvent;
-
-        public event OnQuitDelegate OnQuitEvent;
-
-        public event OnPlaybackNewTrackDelegate OnPlaybackNewTrackEvent;
-
-        public event OnPlaybackTimeDelegate OnPlaybackTimeEvent;
-
-        public event OnPlaybackStopDelegate OnPlaybackStopEvent;
-        public event OnPlaybackPauseDelegate OnPlaybackPauseEvent;
-        public event OnPlaybackDynamicInfoTrackDelegate OnPlaybackDynamicInfoTrackEvent;
+        public event InitializedEventHandler Initialized;
+        public event QuitEventHandler Quit;
+        public event PlaybackAdvancedToNewTrackEventHandler PlaybackAdvancedToNewTrack;
+        public event TrackPlaybackPositionChangedEventHandler TrackPlaybackPositionChanged;
+        public event PlaybackStoppedEventhandler PlaybackStopped;
+        public event PlaybackPausedStateChangedEventHandler PlaybackPausedStateChanged;
+        public event DynamicTrackInfoChangedEventHandler DynamicTrackInfoChanged;
 
         /// <summary>
         /// Called by init_quit, creates form, loads skin,...
         /// </summary>
-        private void OnInit()
+        private void OnInitialized()
         {
             UserDataDir = Path.Combine(Fb2kUtils.ProfilePath(), _skinsDir.Value);
             CreateDefaultDir();
@@ -552,11 +556,11 @@ namespace fooTitle
             ConfValuesManager.GetInstance().SetStorage(Config);
 
             // init registered clients
-            OnInitEvent?.Invoke();
+            Initialized?.Invoke();
 
             // start a timer updating the display
             _redrawTimer = new System.Windows.Forms.Timer { Interval = 1000 / _updateInterval.Value };
-            _redrawTimer.Tick += _redrawTimer_Tick;
+            _redrawTimer.Tick += RedrawTimer_Tick;
 
             // create layer factory
             LayerFactory = new LayerFactory();
@@ -576,11 +580,11 @@ namespace fooTitle
             Ttd = new ToolTipDisplay();
 
             // register response events on some variables
-            _updateInterval.OnChanged += UpdateInterval_OnChanged;
-            _skinPath.OnChanged += SkinPath_OnChanged;
-            _positionX.OnChanged += positionX_OnChanged;
-            _positionY.OnChanged += positionY_OnChanged;
-            _enableDpiScale.OnChanged += enableDpiScale_OnChanged;
+            _updateInterval.Changed += UpdateInterval_OnChanged;
+            _skinPath.Changed += SkinPath_OnChanged;
+            _positionX.Changed += PositionX_OnChanged;
+            _positionY.Changed += PositionY_OnChanged;
+            _enableDpiScale.Changed += EnableDpiScale_OnChanged;
 
             // init reshower
             _repeatedShowing = new RepeatedShowing();
@@ -590,36 +594,38 @@ namespace fooTitle
 
         private void OnQuit()
         {
-            OnQuitEvent?.Invoke();
+            Quit?.Invoke();
             Display?.Hide();
             Ttd?.Hide();
         }
 
-        private void OnPlaybackNewTrack(IMetadbHandle song)
+        private void OnPlaybackAdvancedToNewTrack(IMetadbHandle song)
         {
             _lastSong = song;
-            SendEvent(OnPlaybackNewTrackEvent, song);
+            SendEvent(PlaybackAdvancedToNewTrack, song);
         }
 
-        private void OnPlaybackTime(double time)
+        private void OnTrackPlaybackPositionChanged(double time)
         {
-            SendEvent(OnPlaybackTimeEvent, time);
+            SendEvent(TrackPlaybackPositionChanged, time);
         }
 
-        private void OnPlaybackStop(PlaybackStopReason reason)
+        private void OnPlaybackStopped(PlaybackStopReason reason)
         {
             if (reason != PlaybackStopReason.StartingAnother)
+            {
                 _lastSong = null;
-            SendEvent(OnPlaybackStopEvent, reason);
+            }
+            SendEvent(PlaybackStopped, reason);
         }
 
-        private void SendEvent(object _event, params object[] p)
+        private static void SendEvent(object _event, params object[] p)
         {
             try
             {
                 if (_event != null)
                 {
-                    Delegate d = (Delegate)_event;
+                    var d = (Delegate)_event;
                     d.DynamicInvoke(p);
                 }
             }
@@ -629,16 +635,14 @@ namespace fooTitle
             }
         }
 
-        public void OnPlaybackPause(bool state)
+        public void OnPlaybackPausedStateChanged(bool state)
         {
-            SendEvent(OnPlaybackPauseEvent, state);
+            SendEvent(PlaybackPausedStateChanged, state);
         }
 
-        public void OnPlaybackDynamicInfoTrack(IFileInfo fileInfo)
+        public void OnDynamicTrackInfoChanged(IFileInfo fileInfo)
         {
-            SendEvent(OnPlaybackDynamicInfoTrackEvent, fileInfo);
+            SendEvent(DynamicTrackInfoChanged, fileInfo);
         }
-
-        #endregion
     }
 }

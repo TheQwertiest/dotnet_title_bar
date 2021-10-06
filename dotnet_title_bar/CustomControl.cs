@@ -16,9 +16,9 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace fooTitle
 {
@@ -180,7 +180,7 @@ namespace fooTitle
         public class WrappingCheckBox : CheckBox
         {
             private Size _cachedSizeOfOneLineOfText = Size.Empty;
-            private readonly Dictionary<Size, Size> _preferredSizeHash = new Dictionary<Size, Size>(3); // typically we've got three different constraints.
+            private readonly Dictionary<Size, Size> _preferredSizeHash = new(3); // typically we've got three different constraints.
 
             public WrappingCheckBox()
             {
@@ -240,7 +240,7 @@ namespace fooTitle
         public class WrappingRadioButton : RadioButton
         {
             private Size _cachedSizeOfOneLineOfText = Size.Empty;
-            private readonly Dictionary<Size, Size> _preferredSizeHash = new Dictionary<Size, Size>(3); // typically we've got three different constraints.
+            private readonly Dictionary<Size, Size> _preferredSizeHash = new(3); // typically we've got three different constraints.
 
             public WrappingRadioButton()
             {

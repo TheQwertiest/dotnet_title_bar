@@ -85,10 +85,10 @@ namespace fooTitle.Layers
 
             if (Main.GetInstance().CurrentSkin != null)
             {
-                Main.GetInstance().CurrentSkin.OnPlaybackNewTrackEvent += OnPlaybackNewTrack;
-                Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += OnPlaybackTime;
-                Main.GetInstance().CurrentSkin.OnPlaybackStopEvent += CurrentSkin_OnPlaybackStopEvent;
-                Main.GetInstance().CurrentSkin.OnPlaybackPauseEvent += CurrentSkin_OnPlaybackPauseEvent;
+                Main.GetInstance().CurrentSkin.PlaybackAdvancedToNewTrack += OnPlaybackNewTrack;
+                Main.GetInstance().CurrentSkin.TrackPlaybackPositionChanged += OnPlaybackTime;
+                Main.GetInstance().CurrentSkin.PlaybackStopped += CurrentSkin_OnPlaybackStopEvent;
+                Main.GetInstance().CurrentSkin.PlaybackPausedStateChanged += CurrentSkin_OnPlaybackPauseEvent;
             }
         }
 

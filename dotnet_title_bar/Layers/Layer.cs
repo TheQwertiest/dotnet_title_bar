@@ -17,16 +17,17 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+using fooTitle.Geometries;
 using System;
-using System.Xml.Linq;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using fooTitle.Geometries;
-using System.Collections.Generic;
+using System.Xml.Linq;
 
 
-namespace fooTitle.Layers {
+namespace fooTitle.Layers
+{
     public interface IContiniousRedraw
     {
         bool IsRedrawNeeded();
@@ -36,7 +37,8 @@ namespace fooTitle.Layers {
     /// Layers exist in a hierarchical structure
     /// </summary>
     [LayerTypeAttribute("empty")]
-    public class Layer : fooTitle.Extending.Element {
+    public class Layer : fooTitle.Extending.Element
+    {
         public string Name { get; }
 
         public string Type { get; }
@@ -87,7 +89,8 @@ namespace fooTitle.Layers {
         public virtual bool HasToolTip { get; } = false;
         public string ToolTipText { get; }
 
-        public Layer(Rectangle parentRect, XElement node) {
+        public Layer(Rectangle parentRect, XElement node)
+        {
             // read name and type
             Name = node.Attribute("name").Value;
             Type = node.Attribute("type").Value;
@@ -118,7 +121,7 @@ namespace fooTitle.Layers {
             Main.GetInstance().CurrentSkin.OnMouseLeave += OnMouseLeave;
             if (HasToolTip && hasDynamicToolTip)
             {
-                Main.GetInstance().CurrentSkin.OnPlaybackTimeEvent += OnPlaybackTime;
+                Main.GetInstance().CurrentSkin.TrackPlaybackPositionChanged += OnPlaybackTime;
             }
         }
 
@@ -132,17 +135,19 @@ namespace fooTitle.Layers {
             }
         }
 
-        private void OnMouseLeave(object sender, EventArgs e) {
+        private void OnMouseLeave(object sender, EventArgs e)
+        {
             IsMouseOver = false;
         }
 
-        private void OnMouseMove(object sender, MouseEventArgs e) {
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
             IsMouseOver = ClientRect.Contains(e.X, e.Y);
         }
 
         protected virtual void OnLayerEnable()
         {
-            
+
         }
 
         protected virtual void OnLayerDisable()
@@ -150,19 +155,23 @@ namespace fooTitle.Layers {
 
         }
 
-        protected virtual void LoadLayers(XElement node) {
-            foreach (XElement i in node.Elements()) {
+        protected virtual void LoadLayers(XElement node)
+        {
+            foreach (XElement i in node.Elements())
+            {
                 if (i.Name == "layer")
                     AddLayer(i);
             }
         }
 
-        private void AddLayer(XElement node) {
+        private void AddLayer(XElement node)
+        {
             string type = node.Attribute("type").Value;
 
             Layer layer = Main.GetInstance().LayerFactory.CreateLayer(type, this.ClientRect, node);
 
-            if (layer != null) {
+            if (layer != null)
+            {
                 layer.Display = this.Display;
                 layer.ParentLayer = this;
                 layer.LoadLayers(node);
@@ -170,21 +179,26 @@ namespace fooTitle.Layers {
             }
         }
 
-        public virtual void UpdateGeometry(Rectangle parentRect) {
+        public virtual void UpdateGeometry(Rectangle parentRect)
+        {
             geometry.Update(parentRect);
 
             // now update all sub-layers
-            foreach (Layer i in layers) {
+            foreach (Layer i in layers)
+            {
                 i.UpdateGeometry(ClientRect);
             }
         }
 
-        public void UpdateThisLayerGeometry(Rectangle parentRect) {
+        public void UpdateThisLayerGeometry(Rectangle parentRect)
+        {
             geometry.Update(parentRect);
         }
 
-        protected void DrawSubLayers() {
-            foreach (Layer i in layers) {
+        protected void DrawSubLayers()
+        {
+            foreach (Layer i in layers)
+            {
                 i.Draw();
             }
         }
@@ -192,7 +206,8 @@ namespace fooTitle.Layers {
         /// <summary>
         /// Draws the layer.
         /// </summary>
-		public void Draw() {
+		public void Draw()
+        {
             if (!Enabled)
                 return;
 
@@ -206,7 +221,7 @@ namespace fooTitle.Layers {
             DrawImpl();
             DrawSubLayers();
 
-            Display.Canvas.SetClip(prevClipRegion);            
+            Display.Canvas.SetClip(prevClipRegion);
         }
 
         /// <summary>
@@ -223,16 +238,19 @@ namespace fooTitle.Layers {
             return Enabled ? GetMinimalSizeImpl() : new Size(0, 0);
         }
 
-        protected virtual Size GetMinimalSizeImpl() {
+        protected virtual Size GetMinimalSizeImpl()
+        {
             return geometry.GetMinimalSize(GetContentSize());
         }
 
         /// <summary>
         /// This calculates the size of this's content. Does not take geometry into account.
         /// </summary>
-        protected Size GetContentSize() {
+        protected Size GetContentSize()
+        {
             Size minSize = new Size(0, 0);
-            foreach (Layer i in layers) {
+            foreach (Layer i in layers)
+            {
                 Size layerSize = i.GetMinimalSize();
                 if (i.Position.X + layerSize.Width > minSize.Width)
                     minSize.Width = i.Position.X + layerSize.Width;

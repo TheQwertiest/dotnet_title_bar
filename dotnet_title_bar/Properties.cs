@@ -27,10 +27,6 @@ namespace fooTitle
             }
         }
 
-        [DllImport("user32")]
-        static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-
-
         public Properties()
         {
         }
@@ -40,7 +36,7 @@ namespace fooTitle
             PreferencesCallback = callback;
 
             _impl = new PropertiesForm(this);
-            SetParent(_impl.Handle, parentHandle);
+            Win32.SetParent(_impl.Handle, parentHandle);
             _impl.Anchor = (AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right |
                            AnchorStyles.Bottom);
             _impl.Show();
