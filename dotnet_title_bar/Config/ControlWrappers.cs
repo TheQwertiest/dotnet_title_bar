@@ -40,45 +40,47 @@ namespace fooTitle.Config
             AssociateValue();
             //ConfValuesManager.GetInstance().OnValueChanged += new ConfValuesManager.ValueChangedDelegate(onValueChanged);
             if (value == null)
-                ConfValuesManager.GetInstance().ValueCreated += value_OnCreated;
+            {
+                ConfValuesManager.GetInstance().ValueCreated += Value_OnCreated;
+            }
         }
 
         private void AssociateValue()
         {
             if (value != null)
+            {
                 return;
+            }
 
             value = ConfValuesManager.GetInstance().GetValueByName(_valueName);
 
             if (value != null)
             {
-                value.Changed += value_OnChanged;
+                value.Changed += Value_OnChanged;
             }
         }
 
-        private void value_OnChanged(string name)
+        private void Value_OnChanged(string name)
         {
             value.ReadVisit(this);
             _parentCallback.OnStateChanged();
         }
 
-        private void value_OnCreated(string name)
+        private void Value_OnCreated(string name)
         {
             if (name != _valueName)
+            {
                 return;
+            }
 
             AssociateValue();
             value.ReadVisit(this);
         }
 
-        #region IConfigValueVisitor Members
-
         public virtual void ReadInt(ConfInt val) { }
         public virtual void ReadString(ConfString val) { }
         public virtual void WriteInt(ConfInt val) { }
         public virtual void WriteString(ConfString val) { }
-
-        #endregion
     }
 
     public class TextBoxWrapper : ControlWrapper
@@ -98,15 +100,17 @@ namespace fooTitle.Config
         void textBox_TextChanged(object sender, EventArgs e)
         {
             if (value == null)
+            {
                 return;
+            }
 
             if (_textBox.Text.Length == 0)
+            {
                 return;
+            }
 
             value.WriteVisit(this);
         }
-
-        #region IConfigValueVisitor Members
 
         public override void ReadInt(ConfInt val)
         {
@@ -120,15 +124,13 @@ namespace fooTitle.Config
 
         public override void WriteInt(ConfInt val)
         {
-            val.Value = Int32.Parse(_textBox.Text);
+            val.Value = int.Parse(_textBox.Text);
         }
 
         public override void WriteString(ConfString val)
         {
             val.Value = _textBox.Text;
         }
-
-        #endregion
     }
 
     public class TrackBarWrapper : ControlWrapper
@@ -163,8 +165,6 @@ namespace fooTitle.Config
             _trackBar.SmallChange = (_trackBar.Maximum - _trackBar.Minimum) / smallChangeCount;
         }
 
-        #region IConfigValueVisitor Members
-
         public override void ReadInt(ConfInt val)
         {
             _trackBar.Minimum = val.Min;
@@ -178,8 +178,6 @@ namespace fooTitle.Config
         {
             val.Value = _trackBar.Value;
         }
-
-        #endregion
     }
 
     public class NumericUpDownWrapper : ControlWrapper
@@ -199,8 +197,6 @@ namespace fooTitle.Config
             value?.WriteVisit(this);
         }
 
-        #region IConfigValueVisitor Members
-
         public override void ReadInt(ConfInt val)
         {
             _numericUpDown.Minimum = val.Min;
@@ -212,8 +208,6 @@ namespace fooTitle.Config
         {
             val.Value = (int)_numericUpDown.Value;
         }
-
-        #endregion
     }
 
     /// <summary>
@@ -272,7 +266,9 @@ namespace fooTitle.Config
         {
             // only check for checked on
             if (!((RadioButton)sender).Checked)
+            {
                 return;
+            }
 
             _checkedIndex = GetCheckedIndex(sender);
             value.WriteVisit(this);
@@ -300,7 +296,9 @@ namespace fooTitle.Config
         public override void ReadInt(ConfInt val)
         {
             if ((val.Value >= _radioButtons.Count) || (val.Value < 0))
+            {
                 throw new InvalidOperationException("The associated value is larger than the number of radiobuttons registered.");
+            }
 
             _radioButtons[val.Value].Checked = true;
         }
@@ -347,8 +345,6 @@ namespace fooTitle.Config
             value?.ReadVisit(this);
         }
 
-        #region IConfigValueVisitor Members
-
         public override void ReadInt(ConfInt val)
         {
             _label.Text = val.Value.ToString();
@@ -362,8 +358,6 @@ namespace fooTitle.Config
         public override void WriteInt(ConfInt val) { }
 
         public override void WriteString(ConfString val) { }
-
-        #endregion
     }
 
     public class AutoWrapperCreator
@@ -385,30 +379,33 @@ namespace fooTitle.Config
 
                 Control value = (Control)f.GetValue(_instance);
                 if (value?.Tag == null)
+                {
                     continue;
+                }
+
                 CreateWrapper(f, value, parentCallback);
             }
         }
 
         private void CreateWrapper(FieldInfo f, Control value, IPreferencesPageCallback parentCallback)
         {
-            if (f.FieldType == typeof(TextBox))
+            if (f.FieldType.IsAssignableTo(typeof(TextBox)))
             {
                 _controlWrappers.Add(new TextBoxWrapper((TextBox)value, (string)value.Tag, parentCallback));
             }
-            else if (f.FieldType == typeof(TrackBar))
+            else if (f.FieldType.IsAssignableTo(typeof(TrackBar)))
             {
                 _controlWrappers.Add(new TrackBarWrapper((TrackBar)value, (string)value.Tag, parentCallback));
             }
-            else if (f.FieldType == typeof(CheckBox))
+            else if (f.FieldType.IsAssignableTo(typeof(CheckBox)))
             {
                 _controlWrappers.Add(new CheckBoxWrapper((CheckBox)value, (string)value.Tag, parentCallback));
             }
-            else if (f.FieldType == typeof(Label))
+            else if (f.FieldType.IsAssignableTo(typeof(Label)))
             {
                 _controlWrappers.Add(new LabelWrapper((Label)value, (string)value.Tag, parentCallback));
             }
-            else if (f.FieldType == typeof(NumericUpDown))
+            else if (f.FieldType.IsAssignableTo(typeof(NumericUpDown)))
             {
                 _controlWrappers.Add(new NumericUpDownWrapper((NumericUpDown)value, (string)value.Tag, parentCallback));
             }

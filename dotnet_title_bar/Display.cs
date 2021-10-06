@@ -44,26 +44,10 @@ namespace fooTitle
 
         private readonly DockAnchor _dockAnchor;
 
-        /// <summary>
-        /// The opacity in normal state
-        /// </summary>
-        private readonly ConfInt normalOpacity = ConfValuesManager.CreateIntValue("display/normalOpacity", 255, 5, 255);
-        /// <summary>
-        /// The opacity when the mouse is over foo_title
-        /// </summary>
-        private readonly ConfInt overOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
-        /// <summary>
-        /// The opacity when the foo_title display is triggered
-        /// </summary>
-        private ConfInt triggerOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
-        /// <summary>
-        /// The z position of the window - either always on top or on the bottom.
-        /// </summary>
-        public ConfEnum<Win32.WindowPosition> WindowPosition = ConfValuesManager.CreateEnumValue("display/windowPosition", Win32.WindowPosition.Topmost);
-        /// <summary>
-        /// Indicates the need to draw anchor
-        /// </summary>
-        private readonly ConfBool _shouldDrawAnchor = ConfValuesManager.CreateBoolValue("display/drawAnchor", false);
+        public ConfEnum<Win32.WindowPosition> WindowPosition = Configs.Display_WindowPosition;
+        private readonly ConfInt _normalOpacity = Configs.Display_NormalOpacity;
+        private readonly ConfInt _overOpacity = Configs.Display_MouseOverOpacity;
+        private readonly ConfBool _shouldDrawAnchor = Configs.Display_ShouldDrawAnchor;
 
         public Display(int width, int height)
         {
@@ -77,29 +61,30 @@ namespace fooTitle
             this.Left = 250;
             this.Top = 0;
 
-            MyOpacity = normalOpacity.Value;
-            minOpacity = normalOpacity.Value;
+            MyOpacity = _normalOpacity.Value;
+            minOpacity = _normalOpacity.Value;
             AnimManager = new AnimationManager(this);
 
-            normalOpacity.Changed += normalOpacity_OnChanged;
-            overOpacity.Changed += overOpacity_OnChanged;
-            WindowPosition.Changed += windowPosition_OnChanged;
+            _normalOpacity.Changed += NormalOpacity_OnChanged;
+            _overOpacity.Changed += overOpacity_OnChanged;
+            WindowPosition.Changed += WindowPosition_OnChanged;
+            _shouldDrawAnchor.Changed += ShouldDrawAnchor_ChangedEventHandler;
 
             _dockAnchor = new DockAnchor(this);
             SetWindowsPos(WindowPosition.Value);
         }
 
-        void windowPosition_OnChanged(string name)
+        void WindowPosition_OnChanged(string name)
         {
             SetWindowsPos(WindowPosition.Value);
         }
 
-        private void normalOpacity_OnChanged(string name)
+        private void NormalOpacity_OnChanged(string name)
         {
-            MyOpacity = normalOpacity.Value;
+            MyOpacity = _normalOpacity.Value;
             if (minOpacity != 0)
             {
-                minOpacity = normalOpacity.Value;
+                minOpacity = _normalOpacity.Value;
             }
             Display_OnPaint(null, null);
         }
@@ -107,6 +92,11 @@ namespace fooTitle
         private void overOpacity_OnChanged(string name)
         {
             Display_OnPaint(null, null);
+        }
+
+        private void ShouldDrawAnchor_ChangedEventHandler(string name)
+        {
+            Main.GetInstance().RequestRedraw(true);
         }
 
         /// <summary>
@@ -120,9 +110,10 @@ namespace fooTitle
                 _components?.Dispose();
 
                 // need to remove this from the events on the configuration values
-                normalOpacity.Changed -= normalOpacity_OnChanged;
-                overOpacity.Changed -= overOpacity_OnChanged;
-                WindowPosition.Changed -= windowPosition_OnChanged;
+                _normalOpacity.Changed -= NormalOpacity_OnChanged;
+                _overOpacity.Changed -= overOpacity_OnChanged;
+                WindowPosition.Changed -= WindowPosition_OnChanged;
+                _shouldDrawAnchor.Changed -= ShouldDrawAnchor_ChangedEventHandler;
             }
             base.Dispose(disposing);
         }
@@ -179,12 +170,10 @@ namespace fooTitle
             {
                 _dockAnchor.Draw();
             }
-            //AnimManager.UpdateOpacity();
             SetBitmap(_canvasBitmap, (byte)MyOpacity);
             Canvas.Clear(Color.Transparent);
-        }
 
-        #region Bottom
+        }
 
         private void Display_Activated(object sender, EventArgs e)
         {
@@ -220,9 +209,6 @@ namespace fooTitle
             base.WndProc(ref m);
         }
 #pragma warning restore 0168, 219, 67
-        #endregion
-
-        #region Dragging
         private void Display_MouseDown(object sender, MouseEventArgs e)
         {
             if (Main.GetInstance().CanDragDisplay)
@@ -277,7 +263,6 @@ namespace fooTitle
             }
             return pos;
         }
-        #endregion
 
         private void Display_OnPaint(object sender, EventArgs e)
         {
@@ -295,6 +280,7 @@ namespace fooTitle
 
             _canvasBitmap = new Bitmap(this.Width, this.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Canvas = Graphics.FromImage(_canvasBitmap);
+            // Redraw immediately to avoid flickering because of the size change
             FrameRedraw();
 
             AdjustPositionByAnchor();
@@ -357,6 +343,7 @@ namespace fooTitle
             {
                 this.Left = screen.WorkingArea.Right - this.Width;
             }
+
             Main.GetInstance().RequestRedraw(true);
         }
     }

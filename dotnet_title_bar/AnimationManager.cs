@@ -25,15 +25,8 @@ namespace fooTitle
     {
         private readonly Display _display;
 
-        /// <summary>
-        ///     The opacity in normal state
-        /// </summary>
-        private readonly ConfInt _normalOpacity = ConfValuesManager.CreateIntValue("display/normalOpacity", 255, 5, 255);
-
-        /// <summary>
-        ///     The opacity when the mouse is over foo_title
-        /// </summary>
-        private readonly ConfInt _overOpacity = ConfValuesManager.CreateIntValue("display/overOpacity", 255, 5, 255);
+        private readonly ConfInt _normalOpacity = Configs.Display_NormalOpacity;
+        private readonly ConfInt _overOpacity = Configs.Display_MouseOverOpacity;
 
         private AnimationStoppedEventHandler _mouseOverSavedCallback;
         private AnimationStoppedEventHandler _onAnimationStopEvent;

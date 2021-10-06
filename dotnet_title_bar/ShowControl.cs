@@ -25,6 +25,18 @@ using System.Windows.Forms;
 
 namespace fooTitle
 {
+    enum EnableWhenEnum
+    {
+        Always,
+        WhenMinimized,
+        Never
+    }
+    enum ShowWhenEnum
+    {
+        Always,
+        OnTrigger
+    }
+
     /// <summary>
     /// This class controls when to show and when to hide foo_title. There can be several
     /// options like show only on song start when foobar is minimized and such.
@@ -34,29 +46,17 @@ namespace fooTitle
     /// </summary>
     public class ShowControl
     {
-        private enum EnableWhenEnum
-        {
-            Always,
-            WhenMinimized,
-            Never
-        }
-        private enum ShowWhenEnum
-        {
-            Always,
-            OnTrigger
-        }
+        private readonly ConfEnum<EnableWhenEnum> _enableWhen = Configs.ShowControl_EnableWhen;
+        private readonly ConfEnum<ShowWhenEnum> _showWhen = Configs.ShowControl_ShowPopupWhen;
+        private readonly ConfBool _onSongStart = Configs.ShowControl_ShouldShow_OnSongStart;
+        private readonly ConfBool _beforeSongEnds = Configs.ShowControl_ShouldShow_OnSongEnd;
+        private readonly ConfInt _onSongStartStay = Configs.ShowControl_StayDelay_OnSongStart;
+        private readonly ConfInt _beforeSongEndsStay = Configs.ShowControl_StayDelay_OnSongEnd;
+        private readonly ConfBool _showWhenNotPlaying = Configs.ShowControl_ShouldShow_WhenNotPlaying;
+        private readonly ConfInt _timeBeforeFade = Configs.ShowControl_StayDelay_OnPeek;
 
-        private readonly ConfEnum<EnableWhenEnum> _enableWhen = new ConfEnum<EnableWhenEnum>("showControl/enableWhen", EnableWhenEnum.Always);
-        private readonly ConfEnum<ShowWhenEnum> _showWhen = new ConfEnum<ShowWhenEnum>("showControl/popupShowing", ShowWhenEnum.Always);
-        private readonly ConfBool _onSongStart = new ConfBool("showControl/onSongStart", true);
-        private readonly ConfBool _beforeSongEnds = new ConfBool("showControl/beforeSongEnds", true);
-        private readonly ConfInt _onSongStartStay = new ConfInt("showControl/onSongStartStay", 5, 0, int.MaxValue);
-        private readonly ConfInt _beforeSongEndsStay = new ConfInt("showControl/beforeSongEndsStay", 5, 0, int.MaxValue);
-        private readonly ConfBool _showWhenNotPlaying = new ConfBool("showControl/showWhenNotPlaying", false);
-        private readonly ConfInt _timeBeforeFade = new ConfInt("showControl/timeBeforeFade", 2, 0, int.MaxValue);
-
-        private readonly Timer _hideAfterSongStart = new Timer();
-        private readonly Timer _reshowWhenMinimizedTimer = new Timer { Interval = 100 };
+        private readonly Timer _hideAfterSongStart = new();
+        private readonly Timer _reshowWhenMinimizedTimer = new() { Interval = 100 };
 
         private bool _reachedEndSat = false;
         private bool _newSongSat = false;
@@ -70,42 +70,45 @@ namespace fooTitle
         {
             _main = Main.GetInstance();
 
-            _main.PlaybackAdvancedToNewTrack += main_OnPlaybackNewTrackEvent;
-            _main.DynamicTrackInfoChanged += main_OnPlaybackDynamicInfoTrackEvent;
-            _main.PlaybackPausedStateChanged += main_OnPlaybackPauseEvent;
-            _main.PlaybackStopped += main_OnPlaybackStopEvent;
-            _main.TrackPlaybackPositionChanged += main_OnPlaybackTimeEvent;
+            _main.PlaybackAdvancedToNewTrack += Main_OnPlaybackNewTrackEvent;
+            _main.DynamicTrackInfoChanged += Main_OnPlaybackDynamicInfoTrackEvent;
+            _main.PlaybackPausedStateChanged += Main_OnPlaybackPauseEvent;
+            _main.PlaybackStopped += Main_OnPlaybackStopEvent;
+            _main.TrackPlaybackPositionChanged += Main_OnPlaybackTimeEvent;
 
             // react to settings change
-            _showWhen.Changed += showWhen_OnChanged;
-            _showWhenNotPlaying.Changed += showWhenNotPlaying_OnChanged;
-            _enableWhen.Changed += enableWhen_OnChanged;
+            _showWhen.Changed += ShowWhen_ChangedEventHandler;
+            _showWhenNotPlaying.Changed += ShowWhenNotPlaying_ChangedEventHandler;
+            _enableWhen.Changed += EnableWhen_ChangedEventHandler;
 
             // init the timers
-            _hideAfterSongStart.Tick += hideAfterSongStart_Tick;
+            _hideAfterSongStart.Tick += HideAfterSongStart_TickEventHandler;
 
-            _reshowWhenMinimizedTimer.Tick += _reshowWhenMinimizedTimer_Tick;
-
-            // Init popup state
-            enableWhen_OnChanged("");
+            _reshowWhenMinimizedTimer.Tick += ReshowWhenMinimizedTimer_TickEventHandler;
         }
 
-        #region Event handling
+        /// <summary>
+        /// Init popup state
+        /// </summary>
+        public void InitializeState()
+        {
+            DoEnable();
+        }
 
         /// <summary>
         /// When the showing option changes, check the situation and disable/enable foo_title as needed
         /// </summary>
-        private void showWhen_OnChanged(string name)
+        private void ShowWhen_ChangedEventHandler(string name)
         {
             ShowByCriteria();
         }
 
-        private void showWhenNotPlaying_OnChanged(string name)
+        private void ShowWhenNotPlaying_ChangedEventHandler(string name)
         {
             ShowByCriteria();
         }
 
-        private void enableWhen_OnChanged(string name)
+        private void EnableWhen_ChangedEventHandler(string name)
         {
             _reshowWhenMinimizedTimer.Stop();
             switch (_enableWhen.Value)
@@ -121,30 +124,30 @@ namespace fooTitle
                     _reshowWhenMinimizedTimer.Start();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new Exception("Internal error: unexpected `enable when` value");
             }
         }
 
         /// <summary>
         /// We don't have callback on foobar minimized state, so we have to update manually
         /// </summary>
-        private void _reshowWhenMinimizedTimer_Tick(object sender, EventArgs e)
+        private void ReshowWhenMinimizedTimer_TickEventHandler(object sender, EventArgs e)
         {
             if (_showWhen.Value == ShowWhenEnum.Always || NotPlayingSat())
             {
                 if (Main.GetInstance().Fb2kUtils.IsFb2kMinimized())
+                {
                     StartTriggerAnimation(false);
+                }
             }
         }
 
-        private void hideAfterSongStart_Tick(object sender, EventArgs e)
+        private void HideAfterSongStart_TickEventHandler(object sender, EventArgs e)
         {
             ShowByCriteria();
             _hideAfterSongStart.Stop();
         }
-        #endregion //Event handling
 
-        #region Showing and hiding functions
         /// <summary>
         /// This enables foo_title, but only if it's enabled in the preferences
         /// Should be called from functions that check if it's time to show
@@ -156,13 +159,16 @@ namespace fooTitle
                 case EnableWhenEnum.WhenMinimized:
                     // can show only if minimized
                     if (Main.GetInstance().Fb2kUtils.IsFb2kMinimized())
-                        _main.EnableFooTitle();
+                    {
+                        _main.EnableTitleBar();
+                    }
+
                     break;
                 case EnableWhenEnum.Never:
                     // nothing
                     break;
                 case EnableWhenEnum.Always:
-                    _main.EnableFooTitle();
+                    _main.EnableTitleBar();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -172,7 +178,7 @@ namespace fooTitle
         private void DoDisable()
         {
             // can always hide
-            _main.DisableFooTitle();
+            _main.DisableTitleBar();
         }
 
         private void StartTriggerAnimation(bool useOverAnimation)
@@ -206,9 +212,13 @@ namespace fooTitle
         public void TogglePopup()
         {
             if (_enableWhen.Value == EnableWhenEnum.Always)
+            {
                 _enableWhen.Value = EnableWhenEnum.Never;
+            }
             else
+            {
                 _enableWhen.Value = EnableWhenEnum.Always;
+            }
         }
 
         private void StartFadeOutTimer()
@@ -218,20 +228,22 @@ namespace fooTitle
             _hideAfterSongStart.Stop(); // without this the timer is not reset and fires in the old planned time
             _hideAfterSongStart.Start();
         }
-        #endregion
 
-        #region Main event handling
         /// <summary>
         /// Checks time and displays foo_title when time has come
         /// </summary>
-        private void main_OnPlaybackTimeEvent(double time)
+        private void Main_OnPlaybackTimeEvent(double time)
         {
             if (_lastSong == null)
+            {
                 return;
+            }
 
             // streams
             if (_lastSong.Length() <= 0)
+            {
                 return;
+            }
 
             if (_onSongStart.Value && time < _onSongStartStay.Value)
             {
@@ -260,7 +272,7 @@ namespace fooTitle
         /// <summary>
         /// Displays foo_title when it's set to display on new song and also hides foo_title if not set
         /// </summary>
-        private void main_OnPlaybackNewTrackEvent(IMetadbHandle song)
+        private void Main_OnPlaybackNewTrackEvent(IMetadbHandle song)
         {
             // store the song
             _lastSong = song;
@@ -280,27 +292,27 @@ namespace fooTitle
         /// the last one and if it is, shows foo_title. Used for displaying on
         /// stream title change.
         /// </summary>
-        private void main_OnPlaybackDynamicInfoTrackEvent(IFileInfo fileInfo)
+        private void Main_OnPlaybackDynamicInfoTrackEvent(IFileInfo fileInfo)
         {
             // if not stored yet, show
             if (_lastFileInfo == null)
             {
-                main_OnPlaybackNewTrackEvent(_lastSong);
+                Main_OnPlaybackNewTrackEvent(_lastSong);
                 _lastFileInfo = fileInfo;
                 return;
             }
 
             _lastFileInfo = fileInfo;
-            main_OnPlaybackNewTrackEvent(_lastSong);
+            Main_OnPlaybackNewTrackEvent(_lastSong);
         }
 
 
-        private void main_OnPlaybackStopEvent(PlaybackStopReason reason)
+        private void Main_OnPlaybackStopEvent(PlaybackStopReason reason)
         {
             ShowByCriteria();
         }
 
-        private void main_OnPlaybackPauseEvent(bool state)
+        private void Main_OnPlaybackPauseEvent(bool state)
         {
             if (state)
             {
@@ -309,10 +321,6 @@ namespace fooTitle
             }
             ShowByCriteria();
         }
-
-        #endregion
-
-        #region Criteria satisfaction queries
 
         /// <summary>
         /// Returns true if foo_title should be shown according to the timing criteria - n seconds after song start
@@ -375,7 +383,5 @@ namespace fooTitle
                 EndTriggerAnimation();
             }
         }
-
-        #endregion
     }
 }

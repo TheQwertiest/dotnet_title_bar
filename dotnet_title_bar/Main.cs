@@ -11,15 +11,15 @@ using System.Reflection;
 
 namespace fooTitle
 {
+    enum EnableDragging
+    {
+        Always,
+        WhenPropertiesOpen,
+        Never,
+    }
+
     public class Main : IComponent, ICallbackSender
     {
-        private enum EnableDragging
-        {
-            Always,
-            WhenPropertiesOpen,
-            Never,
-        }
-
         public static readonly string ComponentNameUnderscored = "dotnet_title_bar";
         public static readonly string ComponentName = "Title Bar";
 
@@ -45,18 +45,20 @@ namespace fooTitle
 
         private IPlaybackCallbacks _fb2kPlaybackCallbacks;
 
-        private static readonly ConfString _skinsDir = new("base/dataDir", "dotnet_title_bar\\skins\\");
+        private static readonly ConfString _skinsDir = Configs.Base_SkinsDir;
 
         /// <summary>
         /// The name of the currently used skin. Can be changed
         /// </summary>
-        private readonly ConfString _skinPath = new("base/skinName", null);
-        private readonly ConfInt _positionX = new("display/positionX", 0);
-        private readonly ConfInt _positionY = new("display/positionY", 0);
-        private readonly ConfBool _edgeSnap = new("display/edgeSnap", true);
-        private readonly ConfEnum<EnableDragging> _draggingEnabled = new("display/enableDragging", EnableDragging.Always);
-        private readonly ConfInt _artLoadEvery = new("display/artLoadEvery", 10, 1, int.MaxValue);
-        private readonly ConfInt _artLoadMaxTimes = new("display/artLoadMaxTimes", 2, -1, int.MaxValue);
+        private readonly ConfString _skinPath = Configs.Base_CurrentSkinName;
+        private readonly ConfInt _positionX = Configs.Display_PositionX;
+        private readonly ConfInt _positionY = Configs.Display_PositionY;
+        private readonly ConfBool _edgeSnap = Configs.Display_ShouldEdgeSnap;
+        private readonly ConfEnum<EnableDragging> _draggingEnabled = Configs.Display_IsDraggingEnabled;
+        private readonly ConfInt _artLoadEvery = Configs.Display_ArtLoadRetryFrequency;
+        private readonly ConfInt _artLoadMaxTimes = Configs.Display_ArtLoadMaxRetries;
+        private readonly ConfInt _updateInterval = Configs.Display_RefreshRate;
+
         private System.Windows.Forms.Timer _redrawTimer;
 
         private IMetadbHandle _lastSong;
@@ -68,10 +70,6 @@ namespace fooTitle
         // singleton
         private static Main _instance;
 
-        /// <summary>
-        /// How often the display should be redrawn (in FPS)
-        /// </summary>
-        private readonly ConfInt _updateInterval = new("display/refreshRate", 30, 1, 250);
 
         /// <summary>
         /// List of layers, that need continuous redrawing (e.g. animation, scrolling text)
@@ -267,7 +265,7 @@ namespace fooTitle
             Display.SetAnchorPosition(_positionX.Value, _positionY.Value);
         }
 
-        public void EnableFooTitle()
+        public void EnableTitleBar()
         {
             if (!_initDone || Display.Visible)
             {
@@ -278,7 +276,7 @@ namespace fooTitle
             RequestRedraw(true);
         }
 
-        public void DisableFooTitle()
+        public void DisableTitleBar()
         {
             if (!_initDone || !Display.Visible)
             {
@@ -425,17 +423,11 @@ namespace fooTitle
             }
         }
 
-        /// <summary>
-        /// When the Display window is closed for some reason and we want to
-        /// show it again, it must be re-created and reinitialized.
-        /// </summary>
-        private void ReinitDisplay()
+        private void InitializeDisplay()
         {
             // initialize the form displaying the images
             _display = new Display(300, 22);
-            _display.Closing -= MyDisplay_Closing;
             _display.Closing += MyDisplay_Closing;
-            _display.Show();
             _redrawTimer.Start();
         }
 
@@ -456,13 +448,7 @@ namespace fooTitle
         {
             try
             {
-                // delete the old one
                 UnloadSkin();
-
-                if (Display == null)
-                {
-                    ReinitDisplay();
-                }
 
                 if (path == null || !Directory.Exists(path))
                 {
@@ -476,7 +462,7 @@ namespace fooTitle
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
                 CurrentSkin = new Skin(path);
-                CurrentSkin.Init(Display);
+                CurrentSkin.Initialize(Display);
 
                 RestorePosition();
 
@@ -498,7 +484,7 @@ namespace fooTitle
             }
             catch (Exception e)
             {
-                CurrentSkin?.Free();
+                CurrentSkin?.Dispose();
                 CurrentSkin = null;
 
                 Utils.ReportErrorWithPopup($"There was an error loading skin {SkinPath}:\n"
@@ -510,7 +496,7 @@ namespace fooTitle
         private void UnloadSkin()
         {
             _redrawRequesters.Clear();
-            CurrentSkin?.Free();
+            CurrentSkin?.Dispose();
             CurrentSkin = null;
         }
 
@@ -518,7 +504,7 @@ namespace fooTitle
         private static readonly int CurrentDpi = (int)Graphics.FromHwnd(IntPtr.Zero).DpiX;
         private static readonly float ScaleCoefficient = (float)CurrentDpi / 96;
 
-        private readonly ConfBool _enableDpiScale = new("display/dpiScale", true);
+        private readonly ConfBool _enableDpiScale = Configs.Display_IsDpiScalingEnabled;
         public bool IsDpiScalable
         {
             set => _enableDpiScale.Value = value;
@@ -574,7 +560,7 @@ namespace fooTitle
             SkinState = new SkinState();
 
             // initialize the display and skin
-            ReinitDisplay();
+            InitializeDisplay();
             LoadSkin(SkinPath);
 
             Ttd = new ToolTipDisplay();
@@ -590,6 +576,9 @@ namespace fooTitle
             _repeatedShowing = new RepeatedShowing();
 
             _initDone = true;
+
+            // Now we are ready to show stuff
+            _showControl.InitializeState();
         }
 
         private void OnQuit()

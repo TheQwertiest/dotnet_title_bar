@@ -137,21 +137,21 @@ namespace fooTitle
             InitializeComponent();
             Font = new Font(new FontFamily("Microsoft Sans Serif"), 8f);
 
-            showWhenWrapper = new RadioGroupWrapper("showControl/enableWhen", preferencesCallback);
+            showWhenWrapper = new RadioGroupWrapper(Configs.ShowControl_EnableWhen.Name, preferencesCallback);
             showWhenWrapper.AddRadioButton(alwaysRadio);
             showWhenWrapper.AddRadioButton(minimizedRadio);
             showWhenWrapper.AddRadioButton(neverRadio);
 
-            windowPositionWrapper = new RadioGroupWrapper("display/windowPosition", preferencesCallback);
+            windowPositionWrapper = new RadioGroupWrapper(Configs.Display_WindowPosition.Name, preferencesCallback);
             windowPositionWrapper.AddRadioButton(alwaysOnTopRadio);
             windowPositionWrapper.AddRadioButton(onDesktopRadio);
             windowPositionWrapper.AddRadioButton(normalRadio);
 
-            popupShowingWrapper = new RadioGroupWrapper("showControl/popupShowing", preferencesCallback);
+            popupShowingWrapper = new RadioGroupWrapper(Configs.ShowControl_ShowPopupWhen.Name, preferencesCallback);
             popupShowingWrapper.AddRadioButton(allTheTimeRadio);
             popupShowingWrapper.AddRadioButton(onlyTriggerRadio);
 
-            enableDraggingWrapper = new RadioGroupWrapper("display/enableDragging", preferencesCallback);
+            enableDraggingWrapper = new RadioGroupWrapper(Configs.Display_IsDraggingEnabled.Name, preferencesCallback);
             enableDraggingWrapper.AddRadioButton(dragAlwaysRadio);
             enableDraggingWrapper.AddRadioButton(dragOnPrefRadio);
             enableDraggingWrapper.AddRadioButton(dragNeverRadio);
@@ -254,12 +254,13 @@ namespace fooTitle
             ConfValuesManager.GetInstance().LoadFrom(Main.GetInstance().Config);
         }
 
+        private SafeTabControl tabControl1;
+
         #region Windows Form Designer generated code
-        private TabControl tabControl1;
 
         private void InitializeComponent()
         {
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabControl1 = new fooTitle.SafeTabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabLayout1 = new System.Windows.Forms.TableLayoutPanel();
             this.zOrderBox = new fooTitle.CustomControl.HorizontalFillDockGroupBox();
@@ -450,7 +451,7 @@ namespace fooTitle
             this.restoreTopmostCheckbox.Name = "restoreTopmostCheckbox";
             this.restoreTopmostCheckbox.Size = new System.Drawing.Size(231, 34);
             this.restoreTopmostCheckbox.TabIndex = 1;
-            this.restoreTopmostCheckbox.Tag = "display/reShowOnTop";
+            this.restoreTopmostCheckbox.Tag = Configs.Display_ShouldRefreshOnTop.Name;
             this.restoreTopmostCheckbox.Text = "Restore topmost position every minute\r\nto work around the Windows problem.";
             this.restoreTopmostCheckbox.UseVisualStyleBackColor = true;
             // 
@@ -673,7 +674,7 @@ namespace fooTitle
             this.songEndNum.Name = "songEndNum";
             this.songEndNum.Size = new System.Drawing.Size(76, 23);
             this.songEndNum.TabIndex = 18;
-            this.songEndNum.Tag = "showControl/beforeSongEndsStay";
+            this.songEndNum.Tag = Configs.ShowControl_StayDelay_OnSongEnd.Name;
             // 
             // label11
             // 
@@ -702,7 +703,7 @@ namespace fooTitle
             this.songStartNum.Name = "songStartNum";
             this.songStartNum.Size = new System.Drawing.Size(76, 23);
             this.songStartNum.TabIndex = 15;
-            this.songStartNum.Tag = "showControl/onSongStartStay";
+            this.songStartNum.Tag = Configs.ShowControl_StayDelay_OnSongStart.Name;
             // 
             // songEndCheckBox
             // 
@@ -712,7 +713,7 @@ namespace fooTitle
             this.songEndCheckBox.Name = "songEndCheckBox";
             this.songEndCheckBox.Size = new System.Drawing.Size(117, 19);
             this.songEndCheckBox.TabIndex = 14;
-            this.songEndCheckBox.Tag = "showControl/beforeSongEnds";
+            this.songEndCheckBox.Tag = Configs.ShowControl_ShouldShow_OnSongEnd.Name;
             this.songEndCheckBox.Text = "Before song ends";
             this.songEndCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -724,7 +725,7 @@ namespace fooTitle
             this.songStartCheckBox.Name = "songStartCheckBox";
             this.songStartCheckBox.Size = new System.Drawing.Size(199, 19);
             this.songStartCheckBox.TabIndex = 3;
-            this.songStartCheckBox.Tag = "showControl/onSongStart";
+            this.songStartCheckBox.Tag = Configs.ShowControl_ShouldShow_OnSongStart.Name;
             this.songStartCheckBox.Text = "On song start / track title change";
             this.songStartCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -771,7 +772,7 @@ namespace fooTitle
             this.beforeFadeNum.Name = "beforeFadeNum";
             this.beforeFadeNum.Size = new System.Drawing.Size(76, 23);
             this.beforeFadeNum.TabIndex = 19;
-            this.beforeFadeNum.Tag = "showControl/timeBeforeFade";
+            this.beforeFadeNum.Tag = Configs.ShowControl_StayDelay_OnPeek.Name;
             // 
             // label23
             // 
@@ -806,7 +807,7 @@ namespace fooTitle
             this.notPlayingCheckBox.Name = "notPlayingCheckBox";
             this.notPlayingCheckBox.Size = new System.Drawing.Size(150, 19);
             this.notPlayingCheckBox.TabIndex = 22;
-            this.notPlayingCheckBox.Tag = "showControl/showWhenNotPlaying";
+            this.notPlayingCheckBox.Tag = Configs.ShowControl_ShouldShow_WhenNotPlaying.Name;
             this.notPlayingCheckBox.Text = "Show when not playing";
             this.notPlayingCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -950,7 +951,7 @@ namespace fooTitle
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(49, 15);
             this.label13.TabIndex = 6;
-            this.label13.Tag = "display/overOpacity";
+            this.label13.Tag = Configs.Display_MouseOverOpacity.Name;
             this.label13.Text = "dummy";
             this.label13.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
@@ -966,7 +967,7 @@ namespace fooTitle
             this.overOpacityBar.Name = "overOpacityBar";
             this.overOpacityBar.Size = new System.Drawing.Size(252, 45);
             this.overOpacityBar.TabIndex = 2;
-            this.overOpacityBar.Tag = "display/overOpacity";
+            this.overOpacityBar.Tag = Configs.Display_MouseOverOpacity.Name;
             this.overOpacityBar.TickFrequency = 16;
             this.overOpacityBar.Value = 5;
             // 
@@ -997,7 +998,7 @@ namespace fooTitle
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(49, 15);
             this.label7.TabIndex = 7;
-            this.label7.Tag = "display/normalOpacity";
+            this.label7.Tag = Configs.Display_NormalOpacity.Name;
             this.label7.Text = "dummy";
             this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
@@ -1013,7 +1014,7 @@ namespace fooTitle
             this.normalOpacityBar.Name = "normalOpacityBar";
             this.normalOpacityBar.Size = new System.Drawing.Size(252, 45);
             this.normalOpacityBar.TabIndex = 3;
-            this.normalOpacityBar.Tag = "display/normalOpacity";
+            this.normalOpacityBar.Tag = Configs.Display_NormalOpacity.Name;
             this.normalOpacityBar.TickFrequency = 16;
             this.normalOpacityBar.Value = 5;
             // 
@@ -1087,7 +1088,7 @@ namespace fooTitle
             this.artMaxTriesNum.Name = "artMaxTriesNum";
             this.artMaxTriesNum.Size = new System.Drawing.Size(76, 23);
             this.artMaxTriesNum.TabIndex = 4;
-            this.artMaxTriesNum.Tag = "display/artLoadMaxTimes";
+            this.artMaxTriesNum.Tag = Configs.Display_ArtLoadMaxRetries.Name;
             // 
             // label24
             // 
@@ -1116,7 +1117,7 @@ namespace fooTitle
             this.artReloadEveryNum.Name = "artReloadEveryNum";
             this.artReloadEveryNum.Size = new System.Drawing.Size(76, 23);
             this.artReloadEveryNum.TabIndex = 1;
-            this.artReloadEveryNum.Tag = "display/artLoadEvery";
+            this.artReloadEveryNum.Tag = Configs.Display_ArtLoadRetryFrequency.Name;
             // 
             // label26
             // 
@@ -1156,7 +1157,7 @@ namespace fooTitle
             this.showAnchorCheckBox.Name = "showAnchorCheckBox";
             this.showAnchorCheckBox.Size = new System.Drawing.Size(104, 19);
             this.showAnchorCheckBox.TabIndex = 14;
-            this.showAnchorCheckBox.Tag = "display/drawAnchor";
+            this.showAnchorCheckBox.Tag = Configs.Display_ShouldDrawAnchor.Name;
             this.showAnchorCheckBox.Text = "Display anchor";
             this.showAnchorCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1179,7 +1180,7 @@ namespace fooTitle
             this.edgeSnapCheckBox_2.Name = "edgeSnapCheckBox_2";
             this.edgeSnapCheckBox_2.Size = new System.Drawing.Size(142, 19);
             this.edgeSnapCheckBox_2.TabIndex = 12;
-            this.edgeSnapCheckBox_2.Tag = "display/edgeSnap";
+            this.edgeSnapCheckBox_2.Tag = Configs.Display_ShouldEdgeSnap.Name;
             this.edgeSnapCheckBox_2.Text = "Enable edge snapping";
             this.edgeSnapCheckBox_2.UseVisualStyleBackColor = true;
             // 
@@ -1190,7 +1191,7 @@ namespace fooTitle
             this.positionYNum.Name = "positionYNum";
             this.positionYNum.Size = new System.Drawing.Size(76, 23);
             this.positionYNum.TabIndex = 11;
-            this.positionYNum.Tag = "display/positionY";
+            this.positionYNum.Tag = Configs.Display_PositionY.Name;
             // 
             // label28
             // 
@@ -1209,7 +1210,7 @@ namespace fooTitle
             this.positionXBox.Name = "positionXBox";
             this.positionXBox.Size = new System.Drawing.Size(76, 23);
             this.positionXBox.TabIndex = 9;
-            this.positionXBox.Tag = "display/positionX";
+            this.positionXBox.Tag = Configs.Display_PositionX.Name;
             // 
             // label29
             // 
@@ -1337,7 +1338,7 @@ namespace fooTitle
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(38, 15);
             this.label30.TabIndex = 8;
-            this.label30.Tag = "display/refreshRate";
+            this.label30.Tag = Configs.Display_RefreshRate.Name;
             this.label30.Text = "label8";
             this.label30.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
@@ -1355,7 +1356,7 @@ namespace fooTitle
             this.refreshRateBar.Size = new System.Drawing.Size(252, 45);
             this.refreshRateBar.SmallChange = 10;
             this.refreshRateBar.TabIndex = 2;
-            this.refreshRateBar.Tag = "display/refreshRate";
+            this.refreshRateBar.Tag = Configs.Display_RefreshRate.Name; ;
             this.refreshRateBar.TickFrequency = 50;
             this.refreshRateBar.Value = 50;
             // 
@@ -1380,7 +1381,7 @@ namespace fooTitle
             this.scaleCheckBox.Name = "scaleCheckBox";
             this.scaleCheckBox.Size = new System.Drawing.Size(122, 19);
             this.scaleCheckBox.TabIndex = 13;
-            this.scaleCheckBox.Tag = "display/dpiScale";
+            this.scaleCheckBox.Tag = Configs.Display_IsDpiScalingEnabled.Name;
             this.scaleCheckBox.Text = "Enable DPI scaling";
             this.scaleCheckBox.UseVisualStyleBackColor = true;
             // 

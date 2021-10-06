@@ -108,9 +108,16 @@ namespace fooTitle
 
             Color anchorCol = Color.FromArgb(0xFF, 0xFF, 0xFF, 0x70);
 
+            var prevClip = _display.Canvas.ClipBounds;
+
+            _display.Canvas.ResetClip();
             _display.Canvas.FillRectangle(new SolidBrush(anchorCol), anchorRelativeX - 1, anchorRelativeY - 1, 3, 3);
-            _display.Canvas.DrawLine(new Pen(anchorCol), anchorRelativeX - 25, anchorRelativeY, anchorRelativeX + 25, anchorRelativeY);
-            _display.Canvas.DrawLine(new Pen(anchorCol), anchorRelativeX, anchorRelativeY - 25, anchorRelativeX, anchorRelativeY + 25);
+            using (var pen = new Pen(anchorCol))
+            {
+                _display.Canvas.DrawLine(pen, anchorRelativeX - 25, anchorRelativeY, anchorRelativeX + 25, anchorRelativeY);
+                _display.Canvas.DrawLine(pen, anchorRelativeX, anchorRelativeY - 25, anchorRelativeX, anchorRelativeY + 25);
+            }
+            _display.Canvas.SetClip(prevClip);
         }
 
         private Win32.Point CalculatePositionFromWindow()

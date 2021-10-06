@@ -6,7 +6,6 @@ using System.Windows.Forms;
 
 namespace fooTitle
 {
-
     class Properties : IPreferencesPage
     {
         public IPreferencesPageCallback PreferencesCallback;
@@ -68,6 +67,6 @@ namespace fooTitle
             return _impl.Handle;
         }
 
-        static public bool IsOpen => PropertiesForm.IsOpen;
+        public static bool IsOpen => PropertiesForm.IsOpen;
     }
 }

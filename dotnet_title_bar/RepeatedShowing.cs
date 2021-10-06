@@ -40,7 +40,7 @@ namespace fooTitle
 
             this._timer.Tick += Timer_TickEventHandler;
 
-            this._reShowOnTop = new ConfBool("display/reShowOnTop", true);
+            this._reShowOnTop = Configs.Display_ShouldRefreshOnTop;
             this._reShowOnTop.Changed += ReShowOnTop_OnChangedEventHandler;
 
             _main.Display.WindowPosition.Changed += WindowPosition_OnChangedEventHandler;

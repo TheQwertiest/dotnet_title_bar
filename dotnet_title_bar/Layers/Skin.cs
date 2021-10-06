@@ -34,7 +34,7 @@ namespace fooTitle.Layers
     /// <summary>
     ///     Loads itself from an xml file and handles all drawing.
     /// </summary>
-    public class Skin : Layer, ICallbackSender
+    public class Skin : Layer, ICallbackSender, IDisposable
     {
         private readonly XElement _skin;
         public List<Layer> DynamicLayers = new List<Layer>();
@@ -73,7 +73,7 @@ namespace fooTitle.Layers
 
         public ToolTip ToolTip { get; private set; }
 
-        public void Init(Display display)
+        public void Initialize(Display display)
         {
             Display = display;
 
@@ -107,10 +107,7 @@ namespace fooTitle.Layers
                 ((AbsoluteGeometry)geometry).Height));
         }
 
-        /// <summary>
-        ///     Call to free this skin (unregistering events, unregistering layer events,...)
-        /// </summary>
-        public void Free()
+        public void Dispose()
         {
             Main.GetInstance().PlaybackAdvancedToNewTrack -= OnPlaybackNewTrack;
             Main.GetInstance().TrackPlaybackPositionChanged -= OnPlaybackTime;

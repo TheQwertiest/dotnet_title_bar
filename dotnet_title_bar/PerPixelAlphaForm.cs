@@ -1,5 +1,5 @@
 //
-// Copyright � 2002 Rui Godinho Lopes <rui@ruilopes.com>
+// Copyright 2002 Rui Godinho Lopes <rui@ruilopes.com>
 // All rights reserved.
 //
 // This source file(s) may be redistributed unmodified by any means
@@ -56,7 +56,7 @@ namespace fooTitle
                 pos = HWND_NOTOPMOST;
             }
 
-            Win32.SetWindowPos(Handle, (IntPtr)pos, 0, 0, 100, 100, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            Win32.SetWindowPos(Handle, (IntPtr)pos, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
         }
 
         /// <para>Changes the current bitmap.</para>
@@ -112,7 +112,7 @@ namespace fooTitle
                 if (hBitmap != IntPtr.Zero)
                 {
                     Win32.SelectObject(memDc, oldBitmap);
-                    //Windows.DeleteObject(hBitmap); // The documentation says that we have to use the Windows.DeleteObject... but since there is no such method I use the normal DeleteObject from Win32 GDI and it's working fine without any resource leak.
+                    // The documentation says that we have to use the Windows.DeleteObject... but since there is no such method I use the normal DeleteObject from Win32 GDI and it's working fine without any resource leak.
                     Win32.DeleteObject(hBitmap);
                 }
                 Win32.DeleteDC(memDc);
