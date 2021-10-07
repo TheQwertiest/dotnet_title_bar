@@ -51,6 +51,7 @@ namespace fooTitle
 
         public Display(int width, int height)
         {
+            this.AutoScaleMode = AutoScaleMode.None;
             InitializeComponent();
 
             _canvasBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
