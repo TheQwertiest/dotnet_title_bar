@@ -15,11 +15,11 @@
 *  information.
 */
 
+using fooTitle.Extending;
+using fooTitle.Layers;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using fooTitle.Extending;
-using fooTitle.Layers;
 
 namespace fooTitle
 {
@@ -46,7 +46,7 @@ namespace fooTitle
             _toolTipTimer = new Timer { Interval = 500 };
             _toolTipTimer.Tick += ToolTipTimer_OnTick;
         }
-        
+
         public void OnMouseMove(object sender, MouseEventArgs e)
         {
             if (_isMouseDown)
@@ -86,7 +86,7 @@ namespace fooTitle
         {
             lock (_tooltipLock)
             {
-                if (!_wasShowCalled )
+                if (!_wasShowCalled)
                 {
                     _wasShowCalled = true;
                     _tooltipText = toolTipText;
@@ -143,13 +143,13 @@ namespace fooTitle
         private static Layer GetTopLayerUnderMouse(Layer parent)
         {
             for (int i = parent.SubLayers.Count - 1; i >= 0; --i)
-            {// Last layer is the top one
+            { // Last layer is the top one
                 Layer layer = parent.SubLayers[i];
                 if (!layer.IsMouseOver)
                     continue;
 
                 Layer tmpLayer = GetTopLayerUnderMouse(layer);
-                if (tmpLayer.HasContent)                
+                if (tmpLayer.HasContent)
                     return tmpLayer;
             }
             return parent;
@@ -166,6 +166,5 @@ namespace fooTitle
 
             _toolTipTimer.Stop();
         }
-
     }
 }

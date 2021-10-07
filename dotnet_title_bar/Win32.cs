@@ -18,13 +18,12 @@
 // That's not much to ask considering the amount of work that went into
 // this.
 //
-// THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED. USE IT AT YOUT OWN RISK. THE AUTHOR ACCEPTS NO
 // LIABILITY FOR ANY DATA DAMAGE/LOSS THAT THIS PRODUCT MAY CAUSE.
 //
 
 // Modified by Roman Plasil for foo_managedWrapper and foo_title projects
-
 
 using System;
 using System.Runtime.InteropServices;
@@ -39,7 +38,7 @@ namespace fooTitle
         {
             False = 0,
             True
-        };
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct Point
@@ -47,7 +46,11 @@ namespace fooTitle
             public int x;
             public int y;
 
-            public Point(int x, int y) { this.x = x; this.y = y; }
+            public Point(int x, int y)
+            {
+                this.x = x;
+                this.y = y;
+            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -56,7 +59,11 @@ namespace fooTitle
             public int cx;
             public int cy;
 
-            public Size(int cx, int cy) { this.cx = cx; this.cy = cy; }
+            public Size(int cx, int cy)
+            {
+                this.cx = cx;
+                this.cy = cy;
+            }
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -76,7 +83,6 @@ namespace fooTitle
             public byte SourceConstantAlpha;
             public byte AlphaFormat;
         }
-
 
         public const int ULW_COLORKEY = 0x00000001;
         public const int ULW_ALPHA = 0x00000002;
@@ -117,6 +123,9 @@ namespace fooTitle
 
         [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
         public static extern Bool DeleteObject(IntPtr hObject);
+
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+        public static extern int StrCmpLogicalW(String x, String y);
 
         public enum WindowPosition
         {

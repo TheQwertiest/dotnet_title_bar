@@ -1,0 +1,102 @@
+﻿---
+BasedOnStyle: Mozilla
+AccessModifierOffset: '-4'
+AlwaysBreakAfterDefinitionReturnType: 'false'
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: None
+AlignConsecutiveMacros: None
+AlignEscapedNewlines: Left
+AlignOperands: Align
+AllowShortBlocksOnASingleLine: 'false'
+AllowShortCaseLabelsOnASingleLine: 'false'
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: 'false'
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: 'false'
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: 'true'
+BinPackParameters: 'true'
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: 'true'
+  AfterClass: 'true'
+  AfterControlStatement: Always
+  AfterEnum: 'true'
+  AfterFunction: 'true'
+  AfterNamespace: 'true'
+  AfterObjCDeclaration: 'true'
+  AfterStruct: 'true'
+  AfterUnion: 'true'
+  AfterExternBlock: 'true'
+  BeforeCatch: 'true'
+  BeforeElse: 'true'
+  BeforeLambdaBody: 'false'
+  BeforeWhile: 'false'
+  IndentBraces: 'false'
+  SplitEmptyFunction: 'true'
+  SplitEmptyRecord: 'true'
+  SplitEmptyNamespace: 'true'
+BreakConstructorInitializers: BeforeColon
+BreakInheritanceList: BeforeColon
+ColumnLimit: '0'
+ConstructorInitializerIndentWidth: '4' 
+ContinuationIndentWidth: '4'
+Cpp11BracedListStyle: 'false'
+EmptyLineBeforeAccessModifier: Always
+FixNamespaceComments: 'true'
+IncludeBlocks: Regroup
+IncludeCategories: 
+  # precompiled headers
+  - Regex:           '^<stdafx.h|pch.h|precompiled.h>'
+    Priority:        -1
+  # "header"
+  - Regex:           '"[[:alnum:]_]+'
+    Priority:        1
+  # <dependency/header>
+  - Regex:           '^<(acfu-sdk|columns_ui-sdk|fmt|foobar2000|js|nlohmann|nonstd|qwr|range|tim)/'
+    Priority:        4 
+  # <dependency_header>
+  - Regex:           '^<(atl.*\.h|jsapi\.h|jsfriendapi\.h|ILexer.\h|Lexilla.\h|SciLexer\.h|Scintilla\.h)>'
+    Priority:        5
+  # <subdir/header.h>|<subdir/header.hpp>
+  - Regex:           '<[[:alnum:]_]+/.+\.(h|hpp)>'
+    Priority:        2
+  # <header.h>|<header.hpp>
+  - Regex:           '<[[:alnum:]_]+\.(h|hpp)>'
+    Priority:        3
+  # <header>
+  - Regex:           '<[[:alnum:]_]+>'
+    Priority:        6
+IncludeIsMainRegex: '$'
+IndentCaseLabels: true
+IndentPPDirectives: AfterHash
+IndentWidth: '4'
+IndentWrappedFunctionNames: true
+Language: CSharp
+# clang 13+
+# LambdaBodyIndentation: OuterScope
+MacroBlockBegin: "^BEGIN_*"
+MacroBlockEnd: "^END_*"
+MaxEmptyLinesToKeep: '1'
+NamespaceIndentation: All
+PointerAlignment: Left
+ReflowComments: 'true'
+SortIncludes: 'false'
+SpaceAfterCStyleCast: 'false'
+SpaceAfterTemplateKeyword : 'true'
+SpaceBeforeAssignmentOperators: 'true'
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: 'false'
+SpaceInEmptyParentheses: 'false'
+SpacesInAngles: 'false'
+SpacesInCStyleCastParentheses: 'false'
+SpacesInParentheses: 'false'
+SpacesInSquareBrackets: 'false'
+SortIncludes: 'true'
+Standard: c++20
+TabWidth: '4'
+TypenameMacros: ['STDMETHOD', 'STDMETHODIMP_']
+UseTab: Never
+
+...

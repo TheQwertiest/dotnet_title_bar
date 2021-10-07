@@ -40,7 +40,7 @@ namespace fooTitle
     /// <summary>
     /// This class controls when to show and when to hide foo_title. There can be several
     /// options like show only on song start when foobar is minimized and such.
-    /// 
+    ///
     /// It receives events and shows/hides foo_title by itself, so it does not need any external
     /// agent to activate and works completely independently on other classes.
     /// </summary>
@@ -248,7 +248,7 @@ namespace fooTitle
             if (_onSongStart.Value && time < _onSongStartStay.Value)
             {
                 if (!_newSongSat)
-                {// We don't want to trigger animation every time
+                { // We don't want to trigger animation every time
                     StartTriggerAnimation(true);
                     _newSongSat = true;
                 }
@@ -256,13 +256,13 @@ namespace fooTitle
             else if (_beforeSongEnds.Value && (_lastSong.Length() - _beforeSongEndsStay.Value <= time))
             {
                 if (!_reachedEndSat)
-                {// We don't want to trigger animation every time
+                { // We don't want to trigger animation every time
                     StartTriggerAnimation(true);
                     _reachedEndSat = true;
                 }
             }
             else if (!_hideAfterSongStart.Enabled)
-            {// Do not skip wait event
+            { // Do not skip wait event
                 _newSongSat = false;
                 _reachedEndSat = false;
                 EndTriggerAnimation();
@@ -305,7 +305,6 @@ namespace fooTitle
             _lastFileInfo = fileInfo;
             Main_OnPlaybackNewTrackEvent(_lastSong);
         }
-
 
         private void Main_OnPlaybackStopEvent(PlaybackStopReason reason)
         {
@@ -362,7 +361,6 @@ namespace fooTitle
             var pc = Main.GetInstance().Fb2kPlaybackControls;
             return (!pc.IsPlaying() || pc.IsPaused());
         }
-
 
         /// <summary>
         /// Evaluates current state of criteria and shows or hides foo_title.

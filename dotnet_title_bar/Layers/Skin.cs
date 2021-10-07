@@ -39,15 +39,17 @@ namespace fooTitle.Layers
         private readonly XElement _skin;
         public List<Layer> DynamicLayers = new List<Layer>();
 
-
-
         /// <summary>
         ///     Loads the skin from the specified xml file
         /// </summary>
         /// <param name="path">Path to the skin directory.</param>
-        public Skin(string path)
+        public Skin(SkinDirType skinDirType, string skinDir)
         {
-            SkinDirectory = path;
+            _skinDirectory = Path.Combine(Main.SkinEnumToRootPath(skinDirType), skinDir);
+            if (!Directory.Exists(_skinDirectory))
+            {
+                throw new Exception($"Can't find the skin in the following path: {_skinDirectory}");
+            }
 
             // load the skin xml file
             XDocument document = XDocument.Load(GetSkinFilePath("skin.xml"));
@@ -69,7 +71,7 @@ namespace fooTitle.Layers
         /// <summary>
         ///     Returns the directory of the skin. Can be used for loading images and other data files.
         /// </summary>
-        private string SkinDirectory { get; }
+        private string _skinDirectory { get; }
 
         public ToolTip ToolTip { get; private set; }
 
@@ -101,10 +103,11 @@ namespace fooTitle.Layers
             }
 
             if (HasToolTipLayer(this))
+            {
                 ToolTip = new ToolTip(display, this);
+            }
 
-            geometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)geometry).Width,
-                ((AbsoluteGeometry)geometry).Height));
+            geometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)geometry).Width, ((AbsoluteGeometry)geometry).Height));
         }
 
         public void Dispose()
@@ -136,7 +139,10 @@ namespace fooTitle.Layers
         {
             ((AbsoluteGeometry)geometry).Width = newSize.Width;
             ((AbsoluteGeometry)geometry).Height = newSize.Height;
-            foreach (Layer l in layers) l.UpdateGeometry(ClientRect);
+            foreach (Layer l in layers)
+            {
+                l.UpdateGeometry(ClientRect);
+            }
         }
 
         /// <summary>
@@ -145,8 +151,7 @@ namespace fooTitle.Layers
         public void CheckSize()
         {
             Size size = GetMinimalSize();
-            if (size.Width != ((AbsoluteGeometry)geometry).Width ||
-                size.Height != ((AbsoluteGeometry)geometry).Height)
+            if (size.Width != ((AbsoluteGeometry)geometry).Width || size.Height != ((AbsoluteGeometry)geometry).Height)
             {
                 Resize(size);
                 Main.GetInstance().Display.SetSize(ClientRect.Width, ClientRect.Height);
@@ -172,7 +177,9 @@ namespace fooTitle.Layers
         public void UpdateDynamicGeometry(Rectangle parentRect)
         {
             foreach (Layer l in DynamicLayers)
+            {
                 l.UpdateThisLayerGeometry(l.ParentLayer.ClientRect);
+            }
         }
 
         /// <summary>
@@ -197,11 +204,13 @@ namespace fooTitle.Layers
             public string Author;
             public string Name;
         }
-        public static SkinInfo GetSkinInfo(string skinPath)
+        public static SkinInfo GetSkinInfo(SkinDirType skinDirType, string skinPath)
         {
-            string skinFullPath = Path.Combine(skinPath, "skin.xml");
+            string skinFullPath = Path.Combine(Main.SkinEnumToRootPath(skinDirType), skinPath, "skin.xml");
             if (!File.Exists(skinFullPath))
+            {
                 return null;
+            }
 
             try
             {
@@ -217,7 +226,8 @@ namespace fooTitle.Layers
             }
             catch (XmlException e)
             {
-                Main.Console.LogError($"Failed to parse skin from {skinPath}:\n{e}");
+                Main.Console.LogError($"Failed to parse skin from {skinPath}:\n\n"
+                                      + $"{e}");
                 return null;
             }
         }
@@ -255,7 +265,7 @@ namespace fooTitle.Layers
         /// <returns>Path composed of app's data directory and skin's directory.</returns>
         private string GetSkinFilePath(string fileName)
         {
-            return Path.Combine(SkinDirectory, fileName);
+            return Path.Combine(_skinDirectory, fileName);
         }
 
         private void InitAnchor()
@@ -266,6 +276,7 @@ namespace fooTitle.Layers
 
             DockAnchor.Type anchorType = DockAnchor.Type.None;
             foreach (string i in anchorTypeStr.ToLower().Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries))
+            {
                 switch (i)
                 {
                     case "top":
@@ -284,6 +295,7 @@ namespace fooTitle.Layers
                         anchorType |= DockAnchor.Type.Center;
                         break;
                 }
+            }
 
             Display.InitializeAnchor(anchorType, anchorDx, anchorDy);
         }
@@ -291,8 +303,12 @@ namespace fooTitle.Layers
         private static bool HasToolTipLayer(Layer layer)
         {
             foreach (Layer i in layer.SubLayers)
+            {
                 if (i.HasToolTip || HasToolTipLayer(i))
+                {
                     return true;
+                }
+            }
 
             return false;
         }
@@ -300,13 +316,17 @@ namespace fooTitle.Layers
         private static bool IsMouseOverButton(Layer layer)
         {
             foreach (Layer i in layer.SubLayers)
+            {
                 if (i.Type == "button" && i.IsMouseOver || IsMouseOverButton(i))
+                {
                     return true;
+                }
+            }
 
             return false;
         }
 
-        #region Event handling (public)
+        #region Event handling(public)
 
         #region IPlayCallbackSender Members
 
@@ -347,7 +367,9 @@ namespace fooTitle.Layers
             // pass it on
             SendEvent(PlaybackStopped, reason);
             if (reason != PlaybackStopReason.StartingAnother)
+            {
                 CheckSize();
+            }
         }
 
         public void OnPlaybackPause(bool state)
@@ -358,7 +380,7 @@ namespace fooTitle.Layers
 
         #endregion // Event handling (public)
 
-        #region Event handling (private)
+        #region Event handling(private)
 
         private void Display_MouseUp(object sender, MouseEventArgs e)
         {

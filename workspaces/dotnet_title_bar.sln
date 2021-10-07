@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet_title_bar", "..\dotn
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D43D42C4-3A83-4D98-80D9-A3EC38A6EB16}"
 	ProjectSection(SolutionItems) = preProject
+		..\.clang-format = ..\.clang-format
 		..\.editorconfig = ..\.editorconfig
 	EndProjectSection
 EndProject

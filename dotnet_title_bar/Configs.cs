@@ -5,12 +5,16 @@ namespace fooTitle
 {
     internal class Configs
     {
-        public static ConfString Base_SkinsDir = new("base/dataDir", "dotnet_title_bar\\skins\\");
+        /// <summary>
+        /// Used to retain compatibility with foo_title
+        /// </summary>
+        private static ConfString _base_SkinDir = new("base/dataDir", null);
+        public static ConfEnum<SkinDirType> Base_SkinDirType = new("base/skinDirType", _base_SkinDir.Value == null ? SkinDirType.Component : SkinDirType.ProfileOld);
 
         /// <summary>
-        /// The name of the currently used skin. Can be changed
+        /// The name of the currently used skin.
         /// </summary>
-        public static ConfString Base_CurrentSkinName = new("base/skinName", null);
+        public static ConfString Base_CurrentSkinName = new("base/skinName", "white");
         public static ConfInt Display_ArtLoadRetryFrequency = new("display/artLoadEvery", 10, 1, int.MaxValue);
         public static ConfInt Display_ArtLoadMaxRetries = new("display/artLoadMaxTimes", 2, -1, int.MaxValue);
         public static ConfEnum<EnableDragging> Display_IsDraggingEnabled = new("display/enableDragging", EnableDragging.Always);

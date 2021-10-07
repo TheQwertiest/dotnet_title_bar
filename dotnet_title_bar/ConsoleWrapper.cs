@@ -16,21 +16,21 @@ namespace fooTitle
         public void LogInfo(string message)
         {
             _console.Log($"{_componentName}:\n"
-                       + $"{message}\n");
+                         + $"{message}\n");
         }
 
         public void LogWarning(string message)
         {
             _console.Log($"{_componentName}:\n"
-                       + "Warning:\n"
-                       + $"{message}\n");
+                         + "Warning:\n"
+                         + $"{message}\n");
         }
 
         public void LogError(string message)
         {
             _console.Log($"{_componentName}:\n"
-                       + "Error:\n"
-                       + $"{message}\n");
+                         + "Error:\n"
+                         + $"{message}\n");
         }
     }
 }

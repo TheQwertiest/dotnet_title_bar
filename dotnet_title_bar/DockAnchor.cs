@@ -49,8 +49,8 @@ namespace fooTitle
         {
             _anchorType = type;
 
-            _anchorDx = 0.5/*dx*/;
-            _anchorDy = 0.5/*dy*/;
+            _anchorDx = 0.5 /*dx*/;
+            _anchorDy = 0.5 /*dy*/;
 
             if ((_anchorType & DockAnchor.Type.Left) != 0)
             {

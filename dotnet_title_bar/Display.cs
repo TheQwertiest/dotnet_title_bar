@@ -126,9 +126,9 @@ namespace fooTitle
         /// </summary>
         private void InitializeComponent()
         {
-            // 
+            //
             // Display
-            // 
+            //
             this.AutoScaleBaseSize = new Size(5, 13);
             this.ClientSize = new Size(480, 96);
             this.ControlBox = false;
@@ -173,7 +173,6 @@ namespace fooTitle
             }
             SetBitmap(_canvasBitmap, (byte)MyOpacity);
             Canvas.Clear(Color.Transparent);
-
         }
 
         private void Display_Activated(object sender, EventArgs e)

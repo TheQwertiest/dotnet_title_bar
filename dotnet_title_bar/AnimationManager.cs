@@ -73,7 +73,7 @@ namespace fooTitle
         }
 
         public void StartAnimation(Animation animName, AnimationStoppedEventHandler actionAfterAnimation = null,
-            bool forceAnimation = false)
+                                   bool forceAnimation = false)
         {
             lock (_animationLock)
             {
@@ -162,11 +162,10 @@ namespace fooTitle
         {
             _mouseIn = false;
             Animation animName = _opacityFallbackType == OpacityFallbackType.Normal
-                ? Animation.FadeOut
-                : Animation.FadeOutFull;
+                                     ? Animation.FadeOut
+                                     : Animation.FadeOutFull;
             StartAnimation(animName, _mouseOverSavedCallback);
             _mouseOverSavedCallback = null;
-
         }
 
         private void Display_MouseEnterEventHandler(object sender, EventArgs e)

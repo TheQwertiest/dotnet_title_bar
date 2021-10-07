@@ -31,7 +31,7 @@ namespace fooTitle
     public class RepeatedShowing
     {
         private readonly ConfBool _reShowOnTop;
-        private readonly Timer _timer = new() { Interval = 1000 * 1 * 60 };// every minute
+        private readonly Timer _timer = new() { Interval = 1000 * 1 * 60 }; // every minute
         private readonly Main _main;
 
         public RepeatedShowing()

@@ -11,11 +11,18 @@ using System.Reflection;
 
 namespace fooTitle
 {
-    enum EnableDragging
+    public enum EnableDragging
     {
         Always,
         WhenPropertiesOpen,
         Never,
+    }
+
+    public enum SkinDirType
+    {
+        Component,
+        Profile,
+        ProfileOld,
     }
 
     public class Main : IComponent, ICallbackSender
@@ -45,8 +52,6 @@ namespace fooTitle
 
         private IPlaybackCallbacks _fb2kPlaybackCallbacks;
 
-        private static readonly ConfString _skinsDir = Configs.Base_SkinsDir;
-
         /// <summary>
         /// The name of the currently used skin. Can be changed
         /// </summary>
@@ -70,7 +75,6 @@ namespace fooTitle
         // singleton
         private static Main _instance;
 
-
         /// <summary>
         /// List of layers, that need continuous redrawing (e.g. animation, scrolling text)
         /// </summary>
@@ -83,13 +87,9 @@ namespace fooTitle
         /// <summary>
         /// Returns the foo_title data directory located in the foobar2000 user directory (documents and settings)
         /// </summary>
-        public static string UserDataDir;
-
-        public string SkinPath
-        {
-            set => _skinPath.Value = value;
-            get => _skinPath.Value;
-        }
+        public static string ComponentSkinsDir;
+        public static string ProfileSkinsDir;
+        public static string ProfileSkinsDirOld;
 
         public bool EdgeSnapEnabled => _edgeSnap.Value;
 
@@ -230,13 +230,44 @@ namespace fooTitle
             OnQuit();
         }
 
+        public static SkinDirType SkinRootPathToEnum(string rootPath)
+        {
+            if (rootPath.StartsWith(ComponentSkinsDir))
+            {
+                return SkinDirType.Component;
+            }
+            else if (rootPath.StartsWith(ProfileSkinsDir))
+            {
+                return SkinDirType.Profile;
+            }
+            else if (rootPath.StartsWith(ProfileSkinsDirOld))
+            {
+                return SkinDirType.ProfileOld;
+            }
+            else
+            {
+                throw new Exception("Internal error: unexpected skin root path `{rootPath}`");
+            }
+        }
+
+        public static string SkinEnumToRootPath(SkinDirType skinDirType)
+        {
+            return skinDirType switch
+            {
+                SkinDirType.Component => ComponentSkinsDir,
+                SkinDirType.Profile => ProfileSkinsDir,
+                SkinDirType.ProfileOld => ProfileSkinsDirOld,
+                _ => throw new Exception("Internal error: unexpected skin dir type path `{skinDirType}`")
+            };
+        }
+
         /// <summary>
         /// Same as assignment to SkinPath, but triggers OnChanged even if the value is the same.
         /// </summary>
-        /// <param name="value">Value</param>
-        public void ForceAssignSkinPath(string value)
+        public void ForceAssignSkinPath(SkinDirType dirType, string skinDir)
         {
-            _skinPath.ForceUpdate(value);
+            Configs.Base_SkinDirType.Value = dirType;
+            Configs.Base_CurrentSkinName.ForceUpdate(skinDir);
         }
 
         public void RequestRedraw(bool force = false)
@@ -354,6 +385,11 @@ namespace fooTitle
             Display.SetAnchorPosition(_positionX.Value, _positionY.Value);
         }
 
+        public static bool IsCurrentSkin(SkinDirType dirType, string skinDir)
+        {
+            return (dirType == Configs.Base_SkinDirType.Value && skinDir == Configs.Base_CurrentSkinName.Value);
+        }
+
         protected void SkinPath_OnChanged(string name)
         {
             if (!_initDone)
@@ -364,8 +400,8 @@ namespace fooTitle
             try
             {
                 SkinState.ResetState();
-                LoadSkin(SkinPath);
-                // Changing to skin with different anchor type 
+                LoadSkin();
+                // Changing to skin with different anchor type
                 // may cause window to go beyond screen borders
                 Display.ReadjustPosition();
                 SavePosition();
@@ -373,9 +409,9 @@ namespace fooTitle
             catch (Exception e)
             {
                 CurrentSkin = null;
-                Utils.ReportErrorWithPopup($"There was an error loading skin {SkinPath}:\n"
-                                         + $"{e.Message}\n"
-                                         + $"{e}");
+                Utils.ReportErrorWithPopup($"There was an error loading skin:\n"
+                                           + $"{e.Message}\n\n"
+                                           + $"{e}");
             }
         }
 
@@ -404,25 +440,6 @@ namespace fooTitle
             }
         }
 
-        private void CreateDefaultDir()
-        {
-            try
-            {
-                // create dotnet_title_bar folder (does nothing if exists)
-                Directory.CreateDirectory(UserDataDir);
-            }
-            catch (Exception e)
-            {
-                Utils.ReportErrorWithPopup("Failed to create default directory:\n"
-                                            + "Path:\n"
-                                            + $"{UserDataDir}\n"
-                                            + "Error message:\n"
-                                            + $"{e.Message}\n"
-                                            + "Error details:\n"
-                                            + $"{e}");
-            }
-        }
-
         private void InitializeDisplay()
         {
             // initialize the form displaying the images
@@ -439,29 +456,15 @@ namespace fooTitle
             _display = null;
         }
 
-        /// <summary>
-        /// Loads skin by from the given path. If the path is not absolute,
-        /// the application directory is used to load the skin from.
-        /// </summary>
-        /// <param name="path">The name of the skin's directory</param>
-        private void LoadSkin(string path)
+        private void LoadSkin()
         {
             try
             {
                 UnloadSkin();
 
-                if (path == null || !Directory.Exists(path))
-                {
-                    path = Path.Combine(UserDataDir, "white");
-                    if (!Directory.Exists(path))
-                    {
-                        return;
-                    }
-                }
-
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                CurrentSkin = new Skin(path);
+                CurrentSkin = new Skin(Configs.Base_SkinDirType.Value, Configs.Base_CurrentSkinName.Value);
                 CurrentSkin.Initialize(Display);
 
                 RestorePosition();
@@ -487,9 +490,9 @@ namespace fooTitle
                 CurrentSkin?.Dispose();
                 CurrentSkin = null;
 
-                Utils.ReportErrorWithPopup($"There was an error loading skin {SkinPath}:\n"
-                                             + $"{e.Message}\n"
-                                             + $"{e}");
+                Utils.ReportErrorWithPopup($"There was an error loading skin `{Configs.Base_CurrentSkinName.Value}`:\n"
+                                           + $"{e.Message}\n\n"
+                                           + $"{e}");
             }
         }
 
@@ -512,7 +515,7 @@ namespace fooTitle
         }
         public void EnableDpiScale_OnChanged(string name)
         {
-            ForceAssignSkinPath(SkinPath);
+            ForceAssignSkinPath(Configs.Base_SkinDirType.Value, Configs.Base_CurrentSkinName.Value);
             RequestRedraw();
         }
 
@@ -534,8 +537,9 @@ namespace fooTitle
         /// </summary>
         private void OnInitialized()
         {
-            UserDataDir = Path.Combine(Fb2kUtils.ProfilePath(), _skinsDir.Value);
-            CreateDefaultDir();
+            ComponentSkinsDir = Path.Combine(Assembly.GetExecutingAssembly().Location, "skins");
+            ProfileSkinsDir = Path.Combine(Fb2kUtils.ProfilePath(), ComponentNameUnderscored, "skins");
+            ProfileSkinsDirOld = Path.Combine(Fb2kUtils.ProfilePath(), "foo_title");
 
             Config.Load();
             ConfValuesManager.GetInstance().LoadFrom(Config);
@@ -561,7 +565,7 @@ namespace fooTitle
 
             // initialize the display and skin
             InitializeDisplay();
-            LoadSkin(SkinPath);
+            LoadSkin();
 
             Ttd = new ToolTipDisplay();
 

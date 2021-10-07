@@ -41,9 +41,9 @@ namespace fooTitle
         private void InitializeComponent()
         {
             this.SuspendLayout();
-            // 
+            //
             // ToolTipDisplay
-            // 
+            //
             this.ClientSize = new Size(10, 10);
             this.ControlBox = false;
             this.FormBorderStyle = FormBorderStyle.None;

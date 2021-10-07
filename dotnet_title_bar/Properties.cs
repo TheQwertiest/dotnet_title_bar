@@ -36,8 +36,7 @@ namespace fooTitle
 
             _impl = new PropertiesForm(this);
             Win32.SetParent(_impl.Handle, parentHandle);
-            _impl.Anchor = (AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right |
-                           AnchorStyles.Bottom);
+            _impl.Anchor = (AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom);
             _impl.Show();
         }
 

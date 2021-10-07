@@ -18,13 +18,12 @@
 // That's not much to ask considering the amount of work that went into
 // this.
 //
-// THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED. USE IT AT YOUT OWN RISK. THE AUTHOR ACCEPTS NO
 // LIABILITY FOR ANY DATA DAMAGE/LOSS THAT THIS PRODUCT MAY CAUSE.
 //
 
 // Modified by Roman Plasil for foo_managedWrapper and foo_title projects
-
 
 using System;
 using System.Drawing;
@@ -90,7 +89,7 @@ namespace fooTitle
 
             try
             {
-                hBitmap = bitmap.GetHbitmap(Color.FromArgb(0));  // grab a GDI handle from this GDI+ bitmap
+                hBitmap = bitmap.GetHbitmap(Color.FromArgb(0)); // grab a GDI handle from this GDI+ bitmap
                 oldBitmap = Win32.SelectObject(memDc, hBitmap);
 
                 var size = new Win32.Size(bitmap.Width, bitmap.Height);
