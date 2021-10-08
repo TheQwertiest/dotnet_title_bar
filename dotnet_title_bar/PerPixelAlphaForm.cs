@@ -9,7 +9,7 @@
 //
 // Any use of the software in source or binary forms, with or without
 // modification, must include, in the user documentation ("About" box and
-// printed documentation) and internal comments to the code, notices to
+// printed documentation) and public comments to the code, notices to
 // the end user as follows:
 //
 // "Portions Copyright � 2002 Rui Godinho Lopes"

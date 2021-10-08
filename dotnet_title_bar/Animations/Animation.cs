@@ -29,11 +29,11 @@ namespace fooTitle
         }
         public int MaxFrame => myMaxFrame;
 
-        protected Display display;
+        protected SkinForm display;
         protected int myFrame;
         protected int myMaxFrame;
 
-        public Animation(Display display)
+        public Animation(SkinForm display)
         {
             myFrame = 0;
             this.display = display;

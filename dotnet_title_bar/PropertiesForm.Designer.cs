@@ -1,55 +1,10 @@
-/*
-*  This file is part of foo_title.
-*  Copyright 2005 - 2006 Roman Plasil (http://foo-title.sourceforge.net)
-*  Copyright 2016 Miha Lepej (https://github.com/LepkoQQ/foo_title)
-*  Copyright 2017 TheQwertiest (https://github.com/TheQwertiest/foo_title)
-*
-*  This library is free software; you can redistribute it and/or
-*  modify it under the terms of the GNU Lesser General Public
-*  License as published by the Free Software Foundation; either
-*  version 2.1 of the License, or (at your option) any later version.
-*
-*  This library is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*
-*  See the file COPYING included with this distribution for more
-*  information.
-*/
-
 using fooTitle.Config;
-using fooTitle.Layers;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace fooTitle
 {
-    class PropertiesForm : UserControl
+    partial class PropertiesForm : UserControl
     {
-        private Properties _parent;
-        private Main _main;
-
-        private class SkinListEntry : ListViewItem
-        {
-            public readonly SkinDirType DirType;
-            public readonly string SkinDir;
-
-            public SkinListEntry(SkinDirType dirType, string skinDir, string name, string author)
-                : base(new[] { name, author })
-            {
-                DirType = dirType;
-                SkinDir = skinDir;
-            }
-        }
-
-        private readonly AutoWrapperCreator autoWrapperCreator = new AutoWrapperCreator();
         private RadioGroupWrapper showWhenWrapper;
         private RadioGroupWrapper windowPositionWrapper;
         private RadioGroupWrapper popupShowingWrapper;
@@ -132,149 +87,9 @@ namespace fooTitle
         private CheckBox scaleCheckBox;
         private CustomControl.HorizontalFillDockGroupBox dpiScaleGroupBox;
         private RadioGroupWrapper enableDraggingWrapper;
-
-        public PropertiesForm(Properties parent)
-        {
-            _main = Main.GetInstance();
-            _parent = parent;
-            var preferencesCallback = _parent.PreferencesCallback;
-
-            InitializeComponent();
-            Font = new Font(new FontFamily("Microsoft Sans Serif"), 8f);
-
-            showWhenWrapper = new RadioGroupWrapper(Configs.ShowControl_EnableWhen.Name, preferencesCallback);
-            showWhenWrapper.AddRadioButton(alwaysRadio);
-            showWhenWrapper.AddRadioButton(minimizedRadio);
-            showWhenWrapper.AddRadioButton(neverRadio);
-
-            windowPositionWrapper = new RadioGroupWrapper(Configs.Display_WindowPosition.Name, preferencesCallback);
-            windowPositionWrapper.AddRadioButton(alwaysOnTopRadio);
-            windowPositionWrapper.AddRadioButton(onDesktopRadio);
-            windowPositionWrapper.AddRadioButton(normalRadio);
-
-            popupShowingWrapper = new RadioGroupWrapper(Configs.ShowControl_ShowPopupWhen.Name, preferencesCallback);
-            popupShowingWrapper.AddRadioButton(allTheTimeRadio);
-            popupShowingWrapper.AddRadioButton(onlyTriggerRadio);
-
-            enableDraggingWrapper = new RadioGroupWrapper(Configs.Display_IsDraggingEnabled.Name, preferencesCallback);
-            enableDraggingWrapper.AddRadioButton(dragAlwaysRadio);
-            enableDraggingWrapper.AddRadioButton(dragOnPrefRadio);
-            enableDraggingWrapper.AddRadioButton(dragNeverRadio);
-
-            autoWrapperCreator.CreateWrappers(this, preferencesCallback);
-        }
-
-        #region SkinList_Handling
-
-        private CancellationTokenSource _cts;
-
-        private async Task<List<ListViewItem>> GetSkinItems(CancellationToken token)
-        {
-            try
-            {
-                var skinDirGroup = new[] { SkinDirType.Profile, SkinDirType.ProfileOld, SkinDirType.Component }
-                                       .Select(dirEnum => Main.SkinEnumToRootPath(dirEnum))
-                                       .Where(dir => Directory.Exists(dir))
-                                       .Select(dir => (
-                                                   Main.SkinRootPathToEnum(dir),
-                                                   Directory.GetDirectories(dir).Select(x => Path.GetFileName(x)).ToArray()))
-                                       .ToArray();
-
-                var totalLength = skinDirGroup.Select(x => x.Item2.Length).Sum();
-
-                List<ListViewItem> items = new List<ListViewItem>();
-                int i = 0;
-                foreach (var (dirType, skinDirs) in skinDirGroup)
-                {
-                    List<ListViewItem> itemsLocal = new List<ListViewItem>();
-                    foreach (var skinDir in skinDirs)
-                    {
-                        token.ThrowIfCancellationRequested();
-
-                        var skinInfo = Skin.GetSkinInfo(dirType, skinDir);
-                        if (skinInfo?.Name != null)
-                        {
-                            var current = new SkinListEntry(dirType, skinDir, skinInfo.Name, skinInfo.Author);
-                            if (Main.IsCurrentSkin(dirType, skinDir))
-                            {
-                                current.Selected = true;
-                                current.EnsureVisible();
-                            }
-                            itemsLocal.Add(current);
-                            await Task.Delay(1, token);
-                        }
-
-                        _skinListProgressTimer.Progress = (float)((++i) * 100) / totalLength;
-                    }
-
-                    items.AddRange(itemsLocal.OrderBy(x => x.Text.ToLower(), new Utils.ExplorerLikeSort()));
-                }
-
-                return items;
-            }
-            catch (Exception e)
-            {
-                Main.Console.LogError($"Skin enumeration failed:\n\n"
-                                      + $"{e}");
-                return new List<ListViewItem>();
-            }
-        }
-
-        private ProgressTimer _skinListProgressTimer;
-
-        private void UpdateSkinListProgress(object sender, float progress)
-        {
-            skinsList.Items[0].SubItems[0].Text = $"Loading skins... ({(int)progress}%)";
-        }
-
-        private void StartSkinListFill()
-        {
-            skinsList.Items.Clear();
-            skinsList.Items.Add(new SkinListEntry(SkinDirType.Component, "", "", ""));
-            UpdateSkinListProgress(null, 0);
-            ResizeListView(skinsList);
-        }
-
-        private void CompleteSkinListFill(ListViewItem[] items)
-        {
-            skinsList.Items.Clear();
-            if (items.Length == 0)
-            {
-                return;
-            }
-
-            skinsList.BeginUpdate();
-            skinsList.Items.AddRange(items);
-            if (skinsList.SelectedIndices.Count != 0)
-            {
-                skinsList.EnsureVisible(skinsList.SelectedIndices[0]);
-            }
-            ResizeListView(skinsList);
-            skinsList.EndUpdate();
-        }
-
-        private async Task FillSkinListAsync(CancellationToken token)
-        {
-            StartSkinListFill();
-
-            _skinListProgressTimer = new ProgressTimer(UpdateSkinListProgress);
-            _skinListProgressTimer.Start();
-            List<ListViewItem> items = await GetSkinItems(token);
-            _skinListProgressTimer.Stop();
-
-            CompleteSkinListFill(items.ToArray());
-        }
-
-        #endregion //SkinList
-
-        public void DiscardChanges()
-        {
-            ConfValuesManager.GetInstance().LoadFrom(Main.GetInstance().Config);
-        }
-
         private SafeTabControl tabControl1;
 
-        #region Windows Form Designer generated code
+#region Windows Form Designer generated code
 
         private void InitializeComponent()
         {
@@ -391,9 +206,9 @@ namespace fooTitle
             ((System.ComponentModel.ISupportInitialize)(this.refreshRateBar)).BeginInit();
             this.dpiScaleGroupBox.SuspendLayout();
             this.SuspendLayout();
-            //
+            // 
             // tabControl1
-            //
+            // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -403,9 +218,9 @@ namespace fooTitle
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(584, 578);
             this.tabControl1.TabIndex = 14;
-            //
+            // 
             // tabPage1
-            //
+            // 
             this.tabPage1.Controls.Add(this.tabLayout1);
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -415,9 +230,9 @@ namespace fooTitle
             this.tabPage1.TabIndex = 1;
             this.tabPage1.Text = "Main";
             this.tabPage1.UseVisualStyleBackColor = true;
-            //
+            // 
             // tabLayout1
-            //
+            // 
             this.tabLayout1.ColumnCount = 2;
             this.tabLayout1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tabLayout1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -442,9 +257,9 @@ namespace fooTitle
             this.tabLayout1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tabLayout1.Size = new System.Drawing.Size(568, 544);
             this.tabLayout1.TabIndex = 0;
-            //
+            // 
             // zOrderBox
-            //
+            // 
             this.zOrderBox.Controls.Add(this.restoreTopmostCheckbox);
             this.zOrderBox.Controls.Add(this.onDesktopRadio);
             this.zOrderBox.Controls.Add(this.normalRadio);
@@ -459,9 +274,9 @@ namespace fooTitle
             this.zOrderBox.TabIndex = 25;
             this.zOrderBox.TabStop = false;
             this.zOrderBox.Text = "Position";
-            //
+            // 
             // restoreTopmostCheckbox
-            //
+            // 
             this.restoreTopmostCheckbox.AutoSize = true;
             this.restoreTopmostCheckbox.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
             this.restoreTopmostCheckbox.Location = new System.Drawing.Point(19, 48);
@@ -469,12 +284,12 @@ namespace fooTitle
             this.restoreTopmostCheckbox.Name = "restoreTopmostCheckbox";
             this.restoreTopmostCheckbox.Size = new System.Drawing.Size(231, 34);
             this.restoreTopmostCheckbox.TabIndex = 1;
-            this.restoreTopmostCheckbox.Tag = Configs.Display_ShouldRefreshOnTop.Name;
+            this.restoreTopmostCheckbox.Tag = "display/reShowOnTop";
             this.restoreTopmostCheckbox.Text = "Restore topmost position every minute\r\nto work around the Windows problem.";
             this.restoreTopmostCheckbox.UseVisualStyleBackColor = true;
-            //
+            // 
             // onDesktopRadio
-            //
+            // 
             this.onDesktopRadio.AutoSize = true;
             this.onDesktopRadio.Location = new System.Drawing.Point(7, 117);
             this.onDesktopRadio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -484,9 +299,9 @@ namespace fooTitle
             this.onDesktopRadio.TabStop = true;
             this.onDesktopRadio.Text = "On desktop";
             this.onDesktopRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // normalRadio
-            //
+            // 
             this.normalRadio.AutoSize = true;
             this.normalRadio.Location = new System.Drawing.Point(7, 90);
             this.normalRadio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -496,9 +311,9 @@ namespace fooTitle
             this.normalRadio.TabStop = true;
             this.normalRadio.Text = "Normal";
             this.normalRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // alwaysOnTopRadio
-            //
+            // 
             this.alwaysOnTopRadio.AutoSize = true;
             this.alwaysOnTopRadio.Location = new System.Drawing.Point(7, 22);
             this.alwaysOnTopRadio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -508,9 +323,9 @@ namespace fooTitle
             this.alwaysOnTopRadio.TabStop = true;
             this.alwaysOnTopRadio.Text = "Always on top";
             this.alwaysOnTopRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // installedSkinsBox
-            //
+            // 
             this.installedSkinsBox.Controls.Add(this.installedSkinsLayout);
             this.installedSkinsBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.installedSkinsBox.Location = new System.Drawing.Point(4, 3);
@@ -522,9 +337,9 @@ namespace fooTitle
             this.installedSkinsBox.TabIndex = 17;
             this.installedSkinsBox.TabStop = false;
             this.installedSkinsBox.Text = "Installed skins";
-            //
+            // 
             // installedSkinsLayout
-            //
+            // 
             this.installedSkinsLayout.ColumnCount = 2;
             this.installedSkinsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.installedSkinsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -540,9 +355,9 @@ namespace fooTitle
             this.installedSkinsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.installedSkinsLayout.Size = new System.Drawing.Size(268, 299);
             this.installedSkinsLayout.TabIndex = 0;
-            //
+            // 
             // openSkinDirBtn
-            //
+            // 
             this.openSkinDirBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.openSkinDirBtn.Location = new System.Drawing.Point(138, 268);
             this.openSkinDirBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -551,10 +366,10 @@ namespace fooTitle
             this.openSkinDirBtn.TabIndex = 3;
             this.openSkinDirBtn.Text = "Open directory";
             this.openSkinDirBtn.UseVisualStyleBackColor = true;
-            this.openSkinDirBtn.Click += new System.EventHandler(this.openSkinDirBtn_Click);
-            //
+            this.openSkinDirBtn.Click += new System.EventHandler(this.OpenSkinDirBtn_Click);
+            // 
             // applySkinBtn
-            //
+            // 
             this.applySkinBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.applySkinBtn.Location = new System.Drawing.Point(4, 268);
             this.applySkinBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -563,14 +378,14 @@ namespace fooTitle
             this.applySkinBtn.TabIndex = 2;
             this.applySkinBtn.Text = "Apply skin";
             this.applySkinBtn.UseVisualStyleBackColor = true;
-            this.applySkinBtn.Click += new System.EventHandler(this.applySkinBtn_Click);
-            //
+            this.applySkinBtn.Click += new System.EventHandler(this.ApplySkinBtn_Click);
+            // 
             // skinsList
-            //
+            // 
+            this.skinsList.AllowDrop = true;
             this.skinsList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-                this.nameColumn,
-                this.authorColumn
-            });
+            this.nameColumn,
+            this.authorColumn});
             this.installedSkinsLayout.SetColumnSpan(this.skinsList, 2);
             this.skinsList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.skinsList.FullRowSelect = true;
@@ -580,22 +395,21 @@ namespace fooTitle
             this.skinsList.MultiSelect = false;
             this.skinsList.Name = "skinsList";
             this.skinsList.Size = new System.Drawing.Size(260, 259);
-            this.skinsList.Sorting = System.Windows.Forms.SortOrder.None;
             this.skinsList.TabIndex = 1;
             this.skinsList.UseCompatibleStateImageBehavior = false;
             this.skinsList.View = System.Windows.Forms.View.Details;
-            this.skinsList.DoubleClick += new System.EventHandler(this.skinsList_DoubleClick);
-            //
+            this.skinsList.DoubleClick += new System.EventHandler(this.SkinsList_DoubleClick);
+            // 
             // nameColumn
-            //
+            // 
             this.nameColumn.Text = "Name";
-            //
+            // 
             // authorColumn
-            //
+            // 
             this.authorColumn.Text = "Author";
-            //
+            // 
             // enableWhenBox
-            //
+            // 
             this.enableWhenBox.Controls.Add(this.neverRadio);
             this.enableWhenBox.Controls.Add(this.minimizedRadio);
             this.enableWhenBox.Controls.Add(this.alwaysRadio);
@@ -609,9 +423,9 @@ namespace fooTitle
             this.enableWhenBox.TabIndex = 18;
             this.enableWhenBox.TabStop = false;
             this.enableWhenBox.Text = "Enabled";
-            //
+            // 
             // neverRadio
-            //
+            // 
             this.neverRadio.AutoSize = true;
             this.neverRadio.Location = new System.Drawing.Point(7, 75);
             this.neverRadio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -621,9 +435,9 @@ namespace fooTitle
             this.neverRadio.TabStop = true;
             this.neverRadio.Text = "Never";
             this.neverRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // minimizedRadio
-            //
+            // 
             this.minimizedRadio.AutoSize = true;
             this.minimizedRadio.Location = new System.Drawing.Point(7, 48);
             this.minimizedRadio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -633,9 +447,9 @@ namespace fooTitle
             this.minimizedRadio.TabStop = true;
             this.minimizedRadio.Text = "When foobar2000 is minimized";
             this.minimizedRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // alwaysRadio
-            //
+            // 
             this.alwaysRadio.AutoSize = true;
             this.alwaysRadio.Location = new System.Drawing.Point(7, 22);
             this.alwaysRadio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -645,9 +459,9 @@ namespace fooTitle
             this.alwaysRadio.TabStop = true;
             this.alwaysRadio.Text = "Always";
             this.alwaysRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // triggersBox
-            //
+            // 
             this.triggersBox.Controls.Add(this.label9);
             this.triggersBox.Controls.Add(this.label10);
             this.triggersBox.Controls.Add(this.songEndNum);
@@ -665,9 +479,9 @@ namespace fooTitle
             this.triggersBox.TabIndex = 23;
             this.triggersBox.TabStop = false;
             this.triggersBox.Text = "Popup Triggers";
-            //
+            // 
             // label9
-            //
+            // 
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(140, 105);
             this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -675,9 +489,9 @@ namespace fooTitle
             this.label9.Size = new System.Drawing.Size(50, 15);
             this.label9.TabIndex = 20;
             this.label9.Text = "seconds";
-            //
+            // 
             // label10
-            //
+            // 
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(19, 105);
             this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -685,18 +499,18 @@ namespace fooTitle
             this.label10.Size = new System.Drawing.Size(29, 15);
             this.label10.TabIndex = 19;
             this.label10.Text = "Stay";
-            //
+            // 
             // songEndNum
-            //
+            // 
             this.songEndNum.Location = new System.Drawing.Point(58, 102);
             this.songEndNum.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.songEndNum.Name = "songEndNum";
             this.songEndNum.Size = new System.Drawing.Size(76, 23);
             this.songEndNum.TabIndex = 18;
-            this.songEndNum.Tag = Configs.ShowControl_StayDelay_OnSongEnd.Name;
-            //
+            this.songEndNum.Tag = "showControl/beforeSongEndsStay";
+            // 
             // label11
-            //
+            // 
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(140, 48);
             this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -704,9 +518,9 @@ namespace fooTitle
             this.label11.Size = new System.Drawing.Size(50, 15);
             this.label11.TabIndex = 17;
             this.label11.Text = "seconds";
-            //
+            // 
             // label12
-            //
+            // 
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(19, 48);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -714,42 +528,42 @@ namespace fooTitle
             this.label12.Size = new System.Drawing.Size(29, 15);
             this.label12.TabIndex = 16;
             this.label12.Text = "Stay";
-            //
+            // 
             // songStartNum
-            //
+            // 
             this.songStartNum.Location = new System.Drawing.Point(58, 45);
             this.songStartNum.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.songStartNum.Name = "songStartNum";
             this.songStartNum.Size = new System.Drawing.Size(76, 23);
             this.songStartNum.TabIndex = 15;
-            this.songStartNum.Tag = Configs.ShowControl_StayDelay_OnSongStart.Name;
-            //
+            this.songStartNum.Tag = "showControl/onSongStartStay";
+            // 
             // songEndCheckBox
-            //
+            // 
             this.songEndCheckBox.AutoSize = true;
             this.songEndCheckBox.Location = new System.Drawing.Point(19, 78);
             this.songEndCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.songEndCheckBox.Name = "songEndCheckBox";
             this.songEndCheckBox.Size = new System.Drawing.Size(117, 19);
             this.songEndCheckBox.TabIndex = 14;
-            this.songEndCheckBox.Tag = Configs.ShowControl_ShouldShow_OnSongEnd.Name;
+            this.songEndCheckBox.Tag = "showControl/beforeSongEnds";
             this.songEndCheckBox.Text = "Before song ends";
             this.songEndCheckBox.UseVisualStyleBackColor = true;
-            //
+            // 
             // songStartCheckBox
-            //
+            // 
             this.songStartCheckBox.AutoSize = true;
             this.songStartCheckBox.Location = new System.Drawing.Point(19, 22);
             this.songStartCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.songStartCheckBox.Name = "songStartCheckBox";
             this.songStartCheckBox.Size = new System.Drawing.Size(199, 19);
             this.songStartCheckBox.TabIndex = 3;
-            this.songStartCheckBox.Tag = Configs.ShowControl_ShouldShow_OnSongStart.Name;
+            this.songStartCheckBox.Tag = "showControl/onSongStart";
             this.songStartCheckBox.Text = "On song start / track title change";
             this.songStartCheckBox.UseVisualStyleBackColor = true;
-            //
+            // 
             // popupPeekBox
-            //
+            // 
             this.popupPeekBox.Controls.Add(this.label21);
             this.popupPeekBox.Controls.Add(this.label22);
             this.popupPeekBox.Controls.Add(this.beforeFadeNum);
@@ -763,9 +577,9 @@ namespace fooTitle
             this.popupPeekBox.TabIndex = 24;
             this.popupPeekBox.TabStop = false;
             this.popupPeekBox.Text = "Popup Peek";
-            //
+            // 
             // label21
-            //
+            // 
             this.label21.AutoSize = true;
             this.label21.Location = new System.Drawing.Point(141, 44);
             this.label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -773,9 +587,9 @@ namespace fooTitle
             this.label21.Size = new System.Drawing.Size(50, 15);
             this.label21.TabIndex = 21;
             this.label21.Text = "seconds";
-            //
+            // 
             // label22
-            //
+            // 
             this.label22.AutoSize = true;
             this.label22.Location = new System.Drawing.Point(19, 44);
             this.label22.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -783,18 +597,18 @@ namespace fooTitle
             this.label22.Size = new System.Drawing.Size(29, 15);
             this.label22.TabIndex = 20;
             this.label22.Text = "Stay";
-            //
+            // 
             // beforeFadeNum
-            //
+            // 
             this.beforeFadeNum.Location = new System.Drawing.Point(58, 42);
             this.beforeFadeNum.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.beforeFadeNum.Name = "beforeFadeNum";
             this.beforeFadeNum.Size = new System.Drawing.Size(76, 23);
             this.beforeFadeNum.TabIndex = 19;
-            this.beforeFadeNum.Tag = Configs.ShowControl_StayDelay_OnPeek.Name;
-            //
+            this.beforeFadeNum.Tag = "showControl/timeBeforeFade";
+            // 
             // label23
-            //
+            // 
             this.label23.AutoSize = true;
             this.label23.Location = new System.Drawing.Point(19, 20);
             this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -802,9 +616,9 @@ namespace fooTitle
             this.label23.Size = new System.Drawing.Size(126, 15);
             this.label23.TabIndex = 0;
             this.label23.Text = "Time before fade away";
-            //
+            // 
             // showWhenBox
-            //
+            // 
             this.showWhenBox.Controls.Add(this.notPlayingCheckBox);
             this.showWhenBox.Controls.Add(this.onlyTriggerRadio);
             this.showWhenBox.Controls.Add(this.allTheTimeRadio);
@@ -817,21 +631,21 @@ namespace fooTitle
             this.showWhenBox.TabIndex = 26;
             this.showWhenBox.TabStop = false;
             this.showWhenBox.Text = "Show Popup";
-            //
+            // 
             // notPlayingCheckBox
-            //
+            // 
             this.notPlayingCheckBox.AutoSize = true;
             this.notPlayingCheckBox.Location = new System.Drawing.Point(19, 70);
             this.notPlayingCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.notPlayingCheckBox.Name = "notPlayingCheckBox";
             this.notPlayingCheckBox.Size = new System.Drawing.Size(150, 19);
             this.notPlayingCheckBox.TabIndex = 22;
-            this.notPlayingCheckBox.Tag = Configs.ShowControl_ShouldShow_WhenNotPlaying.Name;
+            this.notPlayingCheckBox.Tag = "showControl/showWhenNotPlaying";
             this.notPlayingCheckBox.Text = "Show when not playing";
             this.notPlayingCheckBox.UseVisualStyleBackColor = true;
-            //
+            // 
             // onlyTriggerRadio
-            //
+            // 
             this.onlyTriggerRadio.AutoSize = true;
             this.onlyTriggerRadio.Location = new System.Drawing.Point(7, 45);
             this.onlyTriggerRadio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -841,9 +655,9 @@ namespace fooTitle
             this.onlyTriggerRadio.TabStop = true;
             this.onlyTriggerRadio.Text = "On trigger";
             this.onlyTriggerRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // allTheTimeRadio
-            //
+            // 
             this.allTheTimeRadio.AutoSize = true;
             this.allTheTimeRadio.Checked = true;
             this.allTheTimeRadio.Location = new System.Drawing.Point(7, 18);
@@ -854,9 +668,9 @@ namespace fooTitle
             this.allTheTimeRadio.TabStop = true;
             this.allTheTimeRadio.Text = "Always";
             this.allTheTimeRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // versionLabel
-            //
+            // 
             this.versionLabel.AutoSize = true;
             this.versionLabel.Location = new System.Drawing.Point(7, 448);
             this.versionLabel.Margin = new System.Windows.Forms.Padding(7, 0, 4, 0);
@@ -864,9 +678,9 @@ namespace fooTitle
             this.versionLabel.Size = new System.Drawing.Size(31, 15);
             this.versionLabel.TabIndex = 27;
             this.versionLabel.Text = "0.0.0";
-            //
+            // 
             // tabPage2
-            //
+            // 
             this.tabPage2.Controls.Add(this.tabLayout2);
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -876,9 +690,9 @@ namespace fooTitle
             this.tabPage2.TabIndex = 3;
             this.tabPage2.Text = "Advanced";
             this.tabPage2.UseVisualStyleBackColor = true;
-            //
+            // 
             // tabLayout2
-            //
+            // 
             this.tabLayout2.ColumnCount = 2;
             this.tabLayout2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tabLayout2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -900,9 +714,9 @@ namespace fooTitle
             this.tabLayout2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
             this.tabLayout2.Size = new System.Drawing.Size(568, 544);
             this.tabLayout2.TabIndex = 0;
-            //
+            // 
             // opacityBox
-            //
+            // 
             this.opacityBox.Controls.Add(this.tableLayoutPanel2);
             this.opacityBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.opacityBox.Location = new System.Drawing.Point(4, 3);
@@ -913,9 +727,9 @@ namespace fooTitle
             this.opacityBox.TabIndex = 11;
             this.opacityBox.TabStop = false;
             this.opacityBox.Text = "Opacity";
-            //
+            // 
             // tableLayoutPanel2
-            //
+            // 
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 0, 3);
@@ -931,9 +745,9 @@ namespace fooTitle
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 45F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(268, 172);
             this.tableLayoutPanel2.TabIndex = 9;
-            //
+            // 
             // tableLayoutPanel4
-            //
+            // 
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -949,9 +763,9 @@ namespace fooTitle
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel4.Size = new System.Drawing.Size(260, 73);
             this.tableLayoutPanel4.TabIndex = 1;
-            //
+            // 
             // label16
-            //
+            // 
             this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label16.AutoSize = true;
             this.label16.Location = new System.Drawing.Point(4, 0);
@@ -960,9 +774,9 @@ namespace fooTitle
             this.label16.Size = new System.Drawing.Size(106, 15);
             this.label16.TabIndex = 1;
             this.label16.Text = "Opacity on trigger:";
-            //
+            // 
             // label13
-            //
+            // 
             this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(207, 0);
@@ -970,12 +784,12 @@ namespace fooTitle
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(49, 15);
             this.label13.TabIndex = 6;
-            this.label13.Tag = Configs.Display_MouseOverOpacity.Name;
+            this.label13.Tag = "display/overOpacity";
             this.label13.Text = "dummy";
             this.label13.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
+            // 
             // overOpacityBar
-            //
+            // 
             this.overOpacityBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.tableLayoutPanel4.SetColumnSpan(this.overOpacityBar, 2);
             this.overOpacityBar.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -986,12 +800,12 @@ namespace fooTitle
             this.overOpacityBar.Name = "overOpacityBar";
             this.overOpacityBar.Size = new System.Drawing.Size(252, 45);
             this.overOpacityBar.TabIndex = 2;
-            this.overOpacityBar.Tag = Configs.Display_MouseOverOpacity.Name;
+            this.overOpacityBar.Tag = "display/overOpacity";
             this.overOpacityBar.TickFrequency = 16;
             this.overOpacityBar.Value = 5;
-            //
+            // 
             // tableLayoutPanel3
-            //
+            // 
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -1007,9 +821,9 @@ namespace fooTitle
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(260, 71);
             this.tableLayoutPanel3.TabIndex = 0;
-            //
+            // 
             // label7
-            //
+            // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(207, 0);
@@ -1017,12 +831,12 @@ namespace fooTitle
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(49, 15);
             this.label7.TabIndex = 7;
-            this.label7.Tag = Configs.Display_NormalOpacity.Name;
+            this.label7.Tag = "display/normalOpacity";
             this.label7.Text = "dummy";
             this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
+            // 
             // normalOpacityBar
-            //
+            // 
             this.normalOpacityBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.tableLayoutPanel3.SetColumnSpan(this.normalOpacityBar, 2);
             this.normalOpacityBar.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1033,12 +847,12 @@ namespace fooTitle
             this.normalOpacityBar.Name = "normalOpacityBar";
             this.normalOpacityBar.Size = new System.Drawing.Size(252, 45);
             this.normalOpacityBar.TabIndex = 3;
-            this.normalOpacityBar.Tag = Configs.Display_NormalOpacity.Name;
+            this.normalOpacityBar.Tag = "display/normalOpacity";
             this.normalOpacityBar.TickFrequency = 16;
             this.normalOpacityBar.Value = 5;
-            //
+            // 
             // label17
-            //
+            // 
             this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(4, 0);
@@ -1047,9 +861,9 @@ namespace fooTitle
             this.label17.Size = new System.Drawing.Size(92, 15);
             this.label17.TabIndex = 0;
             this.label17.Text = "Normal opacity:";
-            //
+            // 
             // albumArtBox
-            //
+            // 
             this.albumArtBox.Controls.Add(this.label18);
             this.albumArtBox.Controls.Add(this.label19);
             this.albumArtBox.Controls.Add(this.label20);
@@ -1067,9 +881,9 @@ namespace fooTitle
             this.albumArtBox.TabIndex = 12;
             this.albumArtBox.TabStop = false;
             this.albumArtBox.Text = "Album Art Reloading";
-            //
+            // 
             // label18
-            //
+            // 
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(7, 18);
             this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -1077,9 +891,9 @@ namespace fooTitle
             this.label18.Size = new System.Drawing.Size(195, 15);
             this.label18.TabIndex = 7;
             this.label18.Text = "If there is no album art loaded retry:";
-            //
+            // 
             // label19
-            //
+            // 
             this.label19.AutoSize = true;
             this.label19.ForeColor = System.Drawing.SystemColors.GrayText;
             this.label19.Location = new System.Drawing.Point(7, 108);
@@ -1087,10 +901,11 @@ namespace fooTitle
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(231, 75);
             this.label19.TabIndex = 6;
-            this.label19.Text = "* 0 = never, -1 = no maximum\r\n\r\nUse this if you use an external album art\r\nloader" + " that starts loading art after the song\r\nhas already started playing.";
-            //
+            this.label19.Text = "* 0 = never, -1 = no maximum\r\n\r\nUse this if you use an external album art\r\nloader" +
+    " that starts loading art after the song\r\nhas already started playing.";
+            // 
             // label20
-            //
+            // 
             this.label20.AutoSize = true;
             this.label20.Location = new System.Drawing.Point(156, 78);
             this.label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -1098,18 +913,18 @@ namespace fooTitle
             this.label20.Size = new System.Drawing.Size(98, 15);
             this.label20.TabIndex = 5;
             this.label20.Text = "time(s) per song*";
-            //
+            // 
             // artMaxTriesNum
-            //
+            // 
             this.artMaxTriesNum.Location = new System.Drawing.Point(74, 76);
             this.artMaxTriesNum.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.artMaxTriesNum.Name = "artMaxTriesNum";
             this.artMaxTriesNum.Size = new System.Drawing.Size(76, 23);
             this.artMaxTriesNum.TabIndex = 4;
-            this.artMaxTriesNum.Tag = Configs.Display_ArtLoadMaxRetries.Name;
-            //
+            this.artMaxTriesNum.Tag = "display/artLoadMaxTimes";
+            // 
             // label24
-            //
+            // 
             this.label24.AutoSize = true;
             this.label24.Location = new System.Drawing.Point(7, 78);
             this.label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -1117,9 +932,9 @@ namespace fooTitle
             this.label24.Size = new System.Drawing.Size(62, 15);
             this.label24.TabIndex = 3;
             this.label24.Text = "Maximum";
-            //
+            // 
             // label25
-            //
+            // 
             this.label25.AutoSize = true;
             this.label25.Location = new System.Drawing.Point(156, 48);
             this.label25.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -1127,18 +942,18 @@ namespace fooTitle
             this.label25.Size = new System.Drawing.Size(58, 15);
             this.label25.TabIndex = 2;
             this.label25.Text = "second(s)";
-            //
+            // 
             // artReloadEveryNum
-            //
+            // 
             this.artReloadEveryNum.Location = new System.Drawing.Point(74, 46);
             this.artReloadEveryNum.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.artReloadEveryNum.Name = "artReloadEveryNum";
             this.artReloadEveryNum.Size = new System.Drawing.Size(76, 23);
             this.artReloadEveryNum.TabIndex = 1;
-            this.artReloadEveryNum.Tag = Configs.Display_ArtLoadRetryFrequency.Name;
-            //
+            this.artReloadEveryNum.Tag = "display/artLoadEvery";
+            // 
             // label26
-            //
+            // 
             this.label26.AutoSize = true;
             this.label26.Location = new System.Drawing.Point(7, 48);
             this.label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -1146,9 +961,9 @@ namespace fooTitle
             this.label26.Size = new System.Drawing.Size(35, 15);
             this.label26.TabIndex = 0;
             this.label26.Text = "Every";
-            //
+            // 
             // anchorBox
-            //
+            // 
             this.anchorBox.Controls.Add(this.showAnchorCheckBox);
             this.anchorBox.Controls.Add(this.label27);
             this.anchorBox.Controls.Add(this.edgeSnapCheckBox_2);
@@ -1166,21 +981,21 @@ namespace fooTitle
             this.anchorBox.TabIndex = 13;
             this.anchorBox.TabStop = false;
             this.anchorBox.Text = "Anchor Position";
-            //
+            // 
             // showAnchorCheckBox
-            //
+            // 
             this.showAnchorCheckBox.AutoSize = true;
             this.showAnchorCheckBox.Location = new System.Drawing.Point(10, 59);
             this.showAnchorCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.showAnchorCheckBox.Name = "showAnchorCheckBox";
             this.showAnchorCheckBox.Size = new System.Drawing.Size(104, 19);
             this.showAnchorCheckBox.TabIndex = 14;
-            this.showAnchorCheckBox.Tag = Configs.Display_ShouldDrawAnchor.Name;
+            this.showAnchorCheckBox.Tag = "display/drawAnchor";
             this.showAnchorCheckBox.Text = "Display anchor";
             this.showAnchorCheckBox.UseVisualStyleBackColor = true;
-            //
+            // 
             // label27
-            //
+            // 
             this.label27.AutoSize = true;
             this.label27.ForeColor = System.Drawing.SystemColors.GrayText;
             this.label27.Location = new System.Drawing.Point(7, 108);
@@ -1189,30 +1004,30 @@ namespace fooTitle
             this.label27.Size = new System.Drawing.Size(223, 30);
             this.label27.TabIndex = 13;
             this.label27.Text = "If edge snapping is enabled you can hold\r\nCTRL to disable it while dragging.";
-            //
+            // 
             // edgeSnapCheckBox_2
-            //
+            // 
             this.edgeSnapCheckBox_2.AutoSize = true;
             this.edgeSnapCheckBox_2.Location = new System.Drawing.Point(10, 85);
             this.edgeSnapCheckBox_2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.edgeSnapCheckBox_2.Name = "edgeSnapCheckBox_2";
             this.edgeSnapCheckBox_2.Size = new System.Drawing.Size(142, 19);
             this.edgeSnapCheckBox_2.TabIndex = 12;
-            this.edgeSnapCheckBox_2.Tag = Configs.Display_ShouldEdgeSnap.Name;
+            this.edgeSnapCheckBox_2.Tag = "display/edgeSnap";
             this.edgeSnapCheckBox_2.Text = "Enable edge snapping";
             this.edgeSnapCheckBox_2.UseVisualStyleBackColor = true;
-            //
+            // 
             // positionYNum
-            //
+            // 
             this.positionYNum.Location = new System.Drawing.Point(160, 28);
             this.positionYNum.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.positionYNum.Name = "positionYNum";
             this.positionYNum.Size = new System.Drawing.Size(76, 23);
             this.positionYNum.TabIndex = 11;
-            this.positionYNum.Tag = Configs.Display_PositionY.Name;
-            //
+            this.positionYNum.Tag = "display/positionY";
+            // 
             // label28
-            //
+            // 
             this.label28.AutoSize = true;
             this.label28.Location = new System.Drawing.Point(133, 30);
             this.label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -1220,18 +1035,18 @@ namespace fooTitle
             this.label28.Size = new System.Drawing.Size(17, 15);
             this.label28.TabIndex = 10;
             this.label28.Text = "Y:";
-            //
+            // 
             // positionXBox
-            //
+            // 
             this.positionXBox.Location = new System.Drawing.Point(34, 28);
             this.positionXBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.positionXBox.Name = "positionXBox";
             this.positionXBox.Size = new System.Drawing.Size(76, 23);
             this.positionXBox.TabIndex = 9;
-            this.positionXBox.Tag = Configs.Display_PositionX.Name;
-            //
+            this.positionXBox.Tag = "display/positionX";
+            // 
             // label29
-            //
+            // 
             this.label29.AutoSize = true;
             this.label29.Location = new System.Drawing.Point(7, 30);
             this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -1239,9 +1054,9 @@ namespace fooTitle
             this.label29.Size = new System.Drawing.Size(17, 15);
             this.label29.TabIndex = 8;
             this.label29.Text = "X:";
-            //
+            // 
             // draggingWhenBox
-            //
+            // 
             this.draggingWhenBox.Controls.Add(this.dragNeverRadio);
             this.draggingWhenBox.Controls.Add(this.dragOnPrefRadio);
             this.draggingWhenBox.Controls.Add(this.dragAlwaysRadio);
@@ -1255,9 +1070,9 @@ namespace fooTitle
             this.draggingWhenBox.TabIndex = 14;
             this.draggingWhenBox.TabStop = false;
             this.draggingWhenBox.Text = "Enable Dragging";
-            //
+            // 
             // dragNeverRadio
-            //
+            // 
             this.dragNeverRadio.AutoSize = true;
             this.dragNeverRadio.Location = new System.Drawing.Point(7, 75);
             this.dragNeverRadio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1267,9 +1082,9 @@ namespace fooTitle
             this.dragNeverRadio.TabStop = true;
             this.dragNeverRadio.Text = "Never";
             this.dragNeverRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // dragOnPrefRadio
-            //
+            // 
             this.dragOnPrefRadio.AutoSize = true;
             this.dragOnPrefRadio.Location = new System.Drawing.Point(7, 48);
             this.dragOnPrefRadio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1279,9 +1094,9 @@ namespace fooTitle
             this.dragOnPrefRadio.TabStop = true;
             this.dragOnPrefRadio.Text = "Only when these preferences are open";
             this.dragOnPrefRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // dragAlwaysRadio
-            //
+            // 
             this.dragAlwaysRadio.AutoSize = true;
             this.dragAlwaysRadio.Location = new System.Drawing.Point(7, 22);
             this.dragAlwaysRadio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1291,9 +1106,9 @@ namespace fooTitle
             this.dragAlwaysRadio.TabStop = true;
             this.dragAlwaysRadio.Text = "Always";
             this.dragAlwaysRadio.UseVisualStyleBackColor = true;
-            //
+            // 
             // refreshRateBox
-            //
+            // 
             this.refreshRateBox.Controls.Add(this.tableLayoutPanel5);
             this.refreshRateBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.refreshRateBox.Location = new System.Drawing.Point(4, 203);
@@ -1303,9 +1118,9 @@ namespace fooTitle
             this.refreshRateBox.Size = new System.Drawing.Size(276, 97);
             this.refreshRateBox.TabIndex = 17;
             this.refreshRateBox.TabStop = false;
-            //
+            // 
             // tableLayoutPanel5
-            //
+            // 
             this.tableLayoutPanel5.ColumnCount = 1;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel5.Controls.Add(this.tableLayoutPanel1, 0, 0);
@@ -1317,9 +1132,9 @@ namespace fooTitle
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(268, 75);
             this.tableLayoutPanel5.TabIndex = 10;
-            //
+            // 
             // tableLayoutPanel1
-            //
+            // 
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -1335,9 +1150,9 @@ namespace fooTitle
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(260, 69);
             this.tableLayoutPanel1.TabIndex = 9;
-            //
+            // 
             // label31
-            //
+            // 
             this.label31.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label31.AutoSize = true;
             this.label31.Location = new System.Drawing.Point(4, 0);
@@ -1346,9 +1161,9 @@ namespace fooTitle
             this.label31.Size = new System.Drawing.Size(138, 15);
             this.label31.TabIndex = 3;
             this.label31.Text = "Max refresh rate (in FPS):";
-            //
+            // 
             // label30
-            //
+            // 
             this.label30.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label30.AutoSize = true;
             this.label30.Location = new System.Drawing.Point(218, 0);
@@ -1356,12 +1171,12 @@ namespace fooTitle
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(38, 15);
             this.label30.TabIndex = 8;
-            this.label30.Tag = Configs.Display_RefreshRate.Name;
+            this.label30.Tag = "display/refreshRate";
             this.label30.Text = "label8";
             this.label30.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
+            // 
             // refreshRateBar
-            //
+            // 
             this.refreshRateBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.tableLayoutPanel1.SetColumnSpan(this.refreshRateBar, 2);
             this.refreshRateBar.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1374,13 +1189,12 @@ namespace fooTitle
             this.refreshRateBar.Size = new System.Drawing.Size(252, 45);
             this.refreshRateBar.SmallChange = 10;
             this.refreshRateBar.TabIndex = 2;
-            this.refreshRateBar.Tag = Configs.Display_RefreshRate.Name;
-            ;
+            this.refreshRateBar.Tag = "display/refreshRate";
             this.refreshRateBar.TickFrequency = 50;
             this.refreshRateBar.Value = 50;
-            //
+            // 
             // dpiScaleGroupBox
-            //
+            // 
             this.dpiScaleGroupBox.Controls.Add(this.scaleCheckBox);
             this.dpiScaleGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dpiScaleGroupBox.Location = new System.Drawing.Point(288, 357);
@@ -1391,21 +1205,21 @@ namespace fooTitle
             this.dpiScaleGroupBox.TabIndex = 18;
             this.dpiScaleGroupBox.TabStop = false;
             this.dpiScaleGroupBox.Text = "DPI Scaling";
-            //
+            // 
             // scaleCheckBox
-            //
+            // 
             this.scaleCheckBox.AutoSize = true;
             this.scaleCheckBox.Location = new System.Drawing.Point(10, 22);
             this.scaleCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.scaleCheckBox.Name = "scaleCheckBox";
             this.scaleCheckBox.Size = new System.Drawing.Size(122, 19);
             this.scaleCheckBox.TabIndex = 13;
-            this.scaleCheckBox.Tag = Configs.Display_IsDpiScalingEnabled.Name;
+            this.scaleCheckBox.Tag = "display/dpiScale";
             this.scaleCheckBox.Text = "Enable DPI scaling";
             this.scaleCheckBox.UseVisualStyleBackColor = true;
-            //
+            // 
             // PropertiesForm
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tabControl1);
@@ -1461,116 +1275,10 @@ namespace fooTitle
             this.dpiScaleGroupBox.ResumeLayout(false);
             this.dpiScaleGroupBox.PerformLayout();
             this.ResumeLayout(false);
+
         }
-        #endregion
-
-        public static bool IsOpen { get; private set; } = false;
-
-        private Task _fillSkinTask;
-
-        private async void Properties_HandleCreated(object sender, EventArgs e)
-        {
-            var myAssembly = Assembly.GetExecutingAssembly();
-            versionLabel.Text = "Version: " + myAssembly.GetName().Version;
-            IsOpen = true;
-
-            if (_cts != null)
-            {
-                _cts.Cancel();
-                _cts = null;
-            }
-            _cts = new CancellationTokenSource();
-            try
-            {
-                _fillSkinTask = FillSkinListAsync(_cts.Token);
-                await _fillSkinTask;
-            }
-            finally
-            {
-                _cts = null;
-            }
-        }
-
-        private void Properties_HandleDestroyed(object sender, EventArgs e)
-        {
-            DiscardChanges();
-
-            _cts?.Cancel();
-            while (_fillSkinTask != null && _fillSkinTask.Status == TaskStatus.Running)
-            {
-                Thread.Sleep(10);
-            }
-            _cts = null;
-
-            IsOpen = false;
-        }
-
-        private void skinsList_DoubleClick(object sender, EventArgs e)
-        {
-            applySkinBtn_Click(null, null);
-        }
-
-        private void applySkinBtn_Click(object sender, EventArgs e)
-        {
-            if (skinsList.SelectedItems.Count == 0)
-            {
-                return;
-            }
-
-            var skinEntry = (SkinListEntry)skinsList.SelectedItems[0];
-            _main.ForceAssignSkinPath(skinEntry.DirType, skinEntry.SkinDir);
-            _parent.PreferencesCallback.OnStateChanged(); // If the control is not wrapped in a ControlWrapper we need to manually call OnChange
-        }
-
-        private void openSkinDirBtn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (skinsList.SelectedItems.Count == 0)
-                {
-                    var psi = new System.Diagnostics.ProcessStartInfo() { FileName = Main.ComponentSkinsDir, UseShellExecute = true };
-                    System.Diagnostics.Process.Start(psi);
-                }
-                else
-                {
-                    var skinEntry = (SkinListEntry)skinsList.SelectedItems[0];
-                    var skinFullPath = Path.Combine(Main.SkinEnumToRootPath(skinEntry.DirType), skinEntry.SkinDir);
-                    System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{skinFullPath}\"");
-                }
-            }
-            catch (Exception ex)
-            {
-                Utils.ReportErrorWithPopup($"There was an error opening directory {Main.ComponentSkinsDir}:\n"
-                                           + $"{ex.Message}\n"
-                                           + $"{ex}");
-            }
-        }
-
-        private void ResizeListView(ListView lv)
-        {
-            if (lv == null || lv.Columns.Count < 2)
-                return;
-
-            lv.Columns[0].Width = CalculateColumnWidth(lv.Columns[0], lv.Font);
-            lv.Columns[1].Width = CalculateColumnWidth(lv.Columns[1], lv.Font);
-
-            bool scrollBarDisplayed = (lv.Items.Count > 0) && (lv.ClientSize.Height < (lv.Items.Count + 1) * lv.Items[0].Bounds.Height);
-
-            if (lv.Columns[0].Width + lv.Columns[1].Width < lv.ClientSize.Width)
-            {
-                lv.Columns[0].Width = lv.ClientSize.Width - lv.Columns[1].Width - (scrollBarDisplayed ? SystemInformation.VerticalScrollBarWidth : 0);
-            }
-            else if ((lv.ClientSize.Width - lv.Columns[0].Width) > 15)
-            {
-                lv.Columns[1].Width = lv.ClientSize.Width - lv.Columns[0].Width - (scrollBarDisplayed ? SystemInformation.VerticalScrollBarWidth : 0);
-            }
-        }
-
-        private int CalculateColumnWidth(ColumnHeader column, Font font)
-        {
-            column.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
-            column.AutoResize(ColumnHeaderAutoResizeStyle.None);
-            return Math.Max(column.Width, TextRenderer.MeasureText(column.Text, font).Width + 10);
-        }
+#endregion
     }
 }
+
+

@@ -27,10 +27,9 @@ using System.Xml.Linq;
 // - easy binding to the configuration panel
 // - maybe multiple config sources (for skin, for extension, ...)
 
-
 namespace fooTitle.Config
 {
-    internal class UnsupportedTypeException : ApplicationException
+    public class UnsupportedTypeException : ApplicationException
     {
         private readonly Type _type;
 
@@ -150,6 +149,5 @@ namespace fooTitle.Config
 
             return null;
         }
-
     }
 }

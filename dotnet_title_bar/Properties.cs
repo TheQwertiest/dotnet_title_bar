@@ -16,18 +16,14 @@ namespace fooTitle
             get
             {
                 PreferencesPageInfo info;
+                info.Name = Constants.ComponentName;
+                info.Guid = Guids.PreferencesPage_Main;
+                info.ParentGuid = Main.Get().Fb2kUtils.Fb2kGuid(Fb2kGuidId.PrefPage_Display);
                 // TODO: fill properly
-                info.Name = Main.ComponentName;
-                info.Guid = new Guid(1414, 548, 7868, 98, 46, 78, 12, 35, 14, 47, 68);
-                info.ParentGuid = Main.GetInstance().Fb2kUtils.Fb2kGuid(Fb2kGuidId.PrefPage_Display);
                 info.HelpUrl = null;
 
                 return info;
             }
-        }
-
-        public Properties()
-        {
         }
 
         public void Initialize(IntPtr parentHandle, IPreferencesPageCallback callback)
@@ -47,7 +43,7 @@ namespace fooTitle
 
         public void Apply()
         {
-            ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
+            ConfValuesManager.GetInstance().SaveTo(Main.Get().Config);
         }
 
         public PreferencesPageState State()

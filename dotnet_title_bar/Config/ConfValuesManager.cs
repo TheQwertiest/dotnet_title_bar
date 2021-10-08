@@ -38,7 +38,7 @@ namespace fooTitle.Config
     }
 
     /// <summary>
-    /// This class stores the available configuration values, handles loading and saving and notifying 
+    /// This class stores the available configuration values, handles loading and saving and notifying
     /// other classes when a value changes.
     /// </summary>
     public class ConfValuesManager
@@ -103,9 +103,9 @@ namespace fooTitle.Config
             ValueChanged?.Invoke(name);
         }
 
-        public delegate void ChangedEventHandler(string name);
-        public event ChangedEventHandler ValueChanged;
-        public event ChangedEventHandler ValueCreated;
+        public delegate void Changed_EventHandler(string name);
+        public event Changed_EventHandler ValueChanged;
+        public event Changed_EventHandler ValueCreated;
 
         /// <summary>
         /// Sets a IConfigStorage instance to use to load values of newly created variables from.
@@ -128,7 +128,6 @@ namespace fooTitle.Config
             to.Save();
         }
 
-
         /// <summary>
         /// Loads all currently registered values from a config storage.
         /// </summary>
@@ -148,7 +147,6 @@ namespace fooTitle.Config
         {
             return _values.Find(v => v.Name == name);
         }
-
 
         /// <summary>
         /// Resets all values to default
@@ -181,7 +179,8 @@ namespace fooTitle.Config
         /// <summary>
         /// <see cref="CreateIntValue"/>
         /// </summary>
-        public static ConfEnum<T> CreateEnumValue<T>(string name, T _def) where T : IConvertible
+        public static ConfEnum<T> CreateEnumValue<T>(string name, T _def)
+            where T : IConvertible
         {
             ConfEnum<T> existing = (ConfEnum<T>)GetInstance().GetValueByName(name);
             return existing ?? new ConfEnum<T>(name, _def);

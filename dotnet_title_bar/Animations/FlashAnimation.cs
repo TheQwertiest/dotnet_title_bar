@@ -26,7 +26,7 @@ namespace fooTitle
     {
         private readonly Color _color;
 
-        public FlashAnimation(Display display) : base(display)
+        public FlashAnimation(SkinForm display) : base(display)
         {
             _color = Color.FromArgb(255, 255, 255);
             myMaxFrame = 4;

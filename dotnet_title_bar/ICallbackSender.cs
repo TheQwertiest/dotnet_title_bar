@@ -2,23 +2,22 @@ using Qwr.ComponentInterface;
 
 namespace fooTitle
 {
-
-    public delegate void QuitEventHandler();
-    public delegate void InitializedEventHandler();
-    public delegate void TrackPlaybackPositionChangedEventHandler(double time);
-    public delegate void PlaybackAdvancedToNewTrackEventHandler(IMetadbHandle metadb);
+    public delegate void Quit_EventHandler();
+    public delegate void Initialized_EventHandler();
+    public delegate void TrackPlaybackPositionChanged_EventHandler(double time);
+    public delegate void PlaybackAdvancedToNewTrack_EventHandler(IMetadbHandle metadb);
     public delegate void PlaybackStoppedEventhandler(PlaybackStopReason reason);
-    public delegate void PlaybackPausedStateChangedEventHandler(bool isPaused);
-    public delegate void DynamicTrackInfoChangedEventHandler(IFileInfo fileInfo);
+    public delegate void PlaybackPausedStateChanged_EventHandler(bool isPaused);
+    public delegate void DynamicTrackInfoChanged_EventHandler(IFileInfo fileInfo);
 
     public interface ICallbackSender
     {
-        event QuitEventHandler Quit;
-        event InitializedEventHandler Initialized;
-        event TrackPlaybackPositionChangedEventHandler TrackPlaybackPositionChanged;
-        event PlaybackAdvancedToNewTrackEventHandler PlaybackAdvancedToNewTrack;
+        event Quit_EventHandler Quit;
+        event Initialized_EventHandler Initialized;
+        event TrackPlaybackPositionChanged_EventHandler TrackPlaybackPositionChanged;
+        event PlaybackAdvancedToNewTrack_EventHandler PlaybackAdvancedToNewTrack;
         event PlaybackStoppedEventhandler PlaybackStopped;
-        event PlaybackPausedStateChangedEventHandler PlaybackPausedStateChanged;
-        event DynamicTrackInfoChangedEventHandler DynamicTrackInfoChanged;
+        event PlaybackPausedStateChanged_EventHandler PlaybackPausedStateChanged;
+        event DynamicTrackInfoChanged_EventHandler DynamicTrackInfoChanged;
     }
 }

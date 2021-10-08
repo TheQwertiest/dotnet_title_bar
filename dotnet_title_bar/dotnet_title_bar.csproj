@@ -24,6 +24,7 @@ Note: must be used in conjunction with `foo_dotnet_component_host`.</Description
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="Properties.cs" />
+    <Compile Update="PropertiesForm.User.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TODO.txt" />
@@ -32,8 +33,7 @@ Note: must be used in conjunction with `foo_dotnet_component_host`.</Description
     <Compile Remove="ElementFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="dotnet_component_interface" Version="1.*-*" />
-    <PackageReference Include="dotnet_component_interface" Version="1.*" />
+    <PackageReference Include="dotnet_component_interface" Version="*-*" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\..\props\submodules\submodules.props" />
   <Import Project="$(SubmodulesDirectory)fb2k_utils\props\env\BuildEnvCommon.props" />

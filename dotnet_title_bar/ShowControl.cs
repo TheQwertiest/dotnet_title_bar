@@ -1,23 +1,3 @@
-/*
-    Copyright 2005 - 2006 Roman Plasil
-    http://foo-title.sourceforge.net
-    This file is part of foo_title.
-
-    foo_title is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation; either version 2.1 of the License, or
-    (at your option) any later version.
-
-    foo_title is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with foo_title; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-
 using fooTitle.Config;
 using Qwr.ComponentInterface;
 using System;
@@ -25,23 +5,11 @@ using System.Windows.Forms;
 
 namespace fooTitle
 {
-    enum EnableWhenEnum
-    {
-        Always,
-        WhenMinimized,
-        Never
-    }
-    enum ShowWhenEnum
-    {
-        Always,
-        OnTrigger
-    }
-
     /// <summary>
     /// This class controls when to show and when to hide foo_title. There can be several
     /// options like show only on song start when foobar is minimized and such.
     ///
-    /// It receives events and shows/hides foo_title by itself, so it does not need any external
+    /// It receives events and shows/hides dotnet_title_bar by itself, so it does not need any external
     /// agent to activate and works completely independently on other classes.
     /// </summary>
     public class ShowControl
@@ -68,23 +36,23 @@ namespace fooTitle
 
         public ShowControl()
         {
-            _main = Main.GetInstance();
+            _main = Main.Get();
 
-            _main.PlaybackAdvancedToNewTrack += Main_OnPlaybackNewTrackEvent;
-            _main.DynamicTrackInfoChanged += Main_OnPlaybackDynamicInfoTrackEvent;
-            _main.PlaybackPausedStateChanged += Main_OnPlaybackPauseEvent;
-            _main.PlaybackStopped += Main_OnPlaybackStopEvent;
-            _main.TrackPlaybackPositionChanged += Main_OnPlaybackTimeEvent;
+            _main.PlaybackAdvancedToNewTrack += Main_PlaybackAdvancedToNewTrack_EventHandler;
+            _main.DynamicTrackInfoChanged += Main_DynamicTrackInfoChanged_EventHandler;
+            _main.PlaybackPausedStateChanged += Main_PlaybackPausedStateChanged_EventHandler;
+            _main.PlaybackStopped += Main_PlaybackStopped_EventHandler;
+            _main.TrackPlaybackPositionChanged += Main_TrackPlaybackPositionChanged_EventHandler;
 
             // react to settings change
-            _showWhen.Changed += ShowWhen_ChangedEventHandler;
-            _showWhenNotPlaying.Changed += ShowWhenNotPlaying_ChangedEventHandler;
-            _enableWhen.Changed += EnableWhen_ChangedEventHandler;
+            _showWhen.Changed += ShowWhen_Changed_EventHandler;
+            _showWhenNotPlaying.Changed += ShowWhenNotPlaying_Changed_EventHandler;
+            _enableWhen.Changed += EnableWhen_Changed_EventHandler;
 
             // init the timers
-            _hideAfterSongStart.Tick += HideAfterSongStart_TickEventHandler;
+            _hideAfterSongStart.Tick += HideAfterSongStart_Tick_EventHandler;
 
-            _reshowWhenMinimizedTimer.Tick += ReshowWhenMinimizedTimer_TickEventHandler;
+            _reshowWhenMinimizedTimer.Tick += ReshowWhenMinimizedTimer_Tick_EventHandler;
         }
 
         /// <summary>
@@ -95,20 +63,38 @@ namespace fooTitle
             DoEnable();
         }
 
+        public void TriggerPopup()
+        {
+            DoEnable();
+            _main.StartDisplayAnimation(FadeAnimation.FadeInOver, StartFadeOutTimer);
+        }
+
+        public void TogglePopup()
+        {
+            if (_enableWhen.Value == EnableWhenEnum.Always)
+            {
+                _enableWhen.Value = EnableWhenEnum.Never;
+            }
+            else
+            {
+                _enableWhen.Value = EnableWhenEnum.Always;
+            }
+        }
+
         /// <summary>
         /// When the showing option changes, check the situation and disable/enable foo_title as needed
         /// </summary>
-        private void ShowWhen_ChangedEventHandler(string name)
+        private void ShowWhen_Changed_EventHandler(string name)
         {
             ShowByCriteria();
         }
 
-        private void ShowWhenNotPlaying_ChangedEventHandler(string name)
+        private void ShowWhenNotPlaying_Changed_EventHandler(string name)
         {
             ShowByCriteria();
         }
 
-        private void EnableWhen_ChangedEventHandler(string name)
+        private void EnableWhen_Changed_EventHandler(string name)
         {
             _reshowWhenMinimizedTimer.Stop();
             switch (_enableWhen.Value)
@@ -131,25 +117,29 @@ namespace fooTitle
         /// <summary>
         /// We don't have callback on foobar minimized state, so we have to update manually
         /// </summary>
-        private void ReshowWhenMinimizedTimer_TickEventHandler(object sender, EventArgs e)
+        private void ReshowWhenMinimizedTimer_Tick_EventHandler(object sender, EventArgs e)
         {
             if (_showWhen.Value == ShowWhenEnum.Always || NotPlayingSat())
             {
-                if (Main.GetInstance().Fb2kUtils.IsFb2kMinimized())
+                if (_main.Fb2kUtils.IsFb2kMinimized())
                 {
                     StartTriggerAnimation(false);
+                }
+                else
+                {
+                    DoDisableWithAnimation();
                 }
             }
         }
 
-        private void HideAfterSongStart_TickEventHandler(object sender, EventArgs e)
+        private void HideAfterSongStart_Tick_EventHandler(object sender, EventArgs e)
         {
             ShowByCriteria();
             _hideAfterSongStart.Stop();
         }
 
         /// <summary>
-        /// This enables foo_title, but only if it's enabled in the preferences
+        /// This enables dotnet_title_bar, but only if it's enabled in the preferences
         /// Should be called from functions that check if it's time to show
         /// </summary>
         private void DoEnable()
@@ -158,9 +148,9 @@ namespace fooTitle
             {
                 case EnableWhenEnum.WhenMinimized:
                     // can show only if minimized
-                    if (Main.GetInstance().Fb2kUtils.IsFb2kMinimized())
+                    if (_main.Fb2kUtils.IsFb2kMinimized())
                     {
-                        _main.EnableTitleBar();
+                        _main.ShowTitleBar();
                     }
 
                     break;
@@ -168,7 +158,7 @@ namespace fooTitle
                     // nothing
                     break;
                 case EnableWhenEnum.Always:
-                    _main.EnableTitleBar();
+                    _main.ShowTitleBar();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -178,61 +168,40 @@ namespace fooTitle
         private void DoDisable()
         {
             // can always hide
-            _main.DisableTitleBar();
+            _main.HideTitleBar();
         }
 
         private void StartTriggerAnimation(bool useOverAnimation)
         {
             DoEnable();
-            AnimationManager.Animation animName =
-                useOverAnimation ? AnimationManager.Animation.FadeInOver : AnimationManager.Animation.FadeInNormal;
+            var animName = (useOverAnimation ? FadeAnimation.FadeInOver : FadeAnimation.FadeInNormal);
             _main.StartDisplayAnimation(animName);
         }
 
         private void EndTriggerAnimation()
         {
-            AnimationManager.Animation animName =
-                (_showWhen.Value == ShowWhenEnum.Always) ? AnimationManager.Animation.FadeOut : AnimationManager.Animation.FadeOutFull;
-            AnimationManager.AnimationStoppedEventHandler onStop =
-                (_showWhen.Value != ShowWhenEnum.Always) ? DoDisable : (AnimationManager.AnimationStoppedEventHandler)null;
+            var animName = (_showWhen.Value == ShowWhenEnum.Always ? FadeAnimation.FadeOut : FadeAnimation.FadeOutFull);
+            var onStop = (_showWhen.Value != ShowWhenEnum.Always ? DoDisable : (Action)null);
             _main.StartDisplayAnimation(animName, onStop);
         }
 
         private void DoDisableWithAnimation()
         {
-            _main.StartDisplayAnimation(AnimationManager.Animation.FadeOutFull, DoDisable);
-        }
-
-        public void TriggerPopup()
-        {
-            DoEnable();
-            _main.StartDisplayAnimation(AnimationManager.Animation.FadeInOver, StartFadeOutTimer);
-        }
-
-        public void TogglePopup()
-        {
-            if (_enableWhen.Value == EnableWhenEnum.Always)
-            {
-                _enableWhen.Value = EnableWhenEnum.Never;
-            }
-            else
-            {
-                _enableWhen.Value = EnableWhenEnum.Always;
-            }
+            _main.StartDisplayAnimation(FadeAnimation.FadeOutFull, DoDisable);
         }
 
         private void StartFadeOutTimer()
         {
             // plan a hide event
-            _hideAfterSongStart.Interval = _timeBeforeFade.Value * 1000;
             _hideAfterSongStart.Stop(); // without this the timer is not reset and fires in the old planned time
+            _hideAfterSongStart.Interval = _timeBeforeFade.Value * 1000;
             _hideAfterSongStart.Start();
         }
 
         /// <summary>
         /// Checks time and displays foo_title when time has come
         /// </summary>
-        private void Main_OnPlaybackTimeEvent(double time)
+        private void Main_TrackPlaybackPositionChanged_EventHandler(double time)
         {
             if (_lastSong == null)
             {
@@ -270,9 +239,9 @@ namespace fooTitle
         }
 
         /// <summary>
-        /// Displays foo_title when it's set to display on new song and also hides foo_title if not set
+        /// Displays dotnet_title_bar when it's set to display on new song and also hides foo_title if not set
         /// </summary>
-        private void Main_OnPlaybackNewTrackEvent(IMetadbHandle song)
+        private void Main_PlaybackAdvancedToNewTrack_EventHandler(IMetadbHandle song)
         {
             // store the song
             _lastSong = song;
@@ -292,26 +261,26 @@ namespace fooTitle
         /// the last one and if it is, shows foo_title. Used for displaying on
         /// stream title change.
         /// </summary>
-        private void Main_OnPlaybackDynamicInfoTrackEvent(IFileInfo fileInfo)
+        private void Main_DynamicTrackInfoChanged_EventHandler(IFileInfo fileInfo)
         {
             // if not stored yet, show
             if (_lastFileInfo == null)
             {
-                Main_OnPlaybackNewTrackEvent(_lastSong);
+                Main_PlaybackAdvancedToNewTrack_EventHandler(_lastSong);
                 _lastFileInfo = fileInfo;
                 return;
             }
 
             _lastFileInfo = fileInfo;
-            Main_OnPlaybackNewTrackEvent(_lastSong);
+            Main_PlaybackAdvancedToNewTrack_EventHandler(_lastSong);
         }
 
-        private void Main_OnPlaybackStopEvent(PlaybackStopReason reason)
+        private void Main_PlaybackStopped_EventHandler(PlaybackStopReason reason)
         {
             ShowByCriteria();
         }
 
-        private void Main_OnPlaybackPauseEvent(bool state)
+        private void Main_PlaybackPausedStateChanged_EventHandler(bool state)
         {
             if (state)
             {
@@ -327,7 +296,7 @@ namespace fooTitle
         /// </summary>
         private bool SongStartSat()
         {
-            var pc = Main.GetInstance().Fb2kPlaybackControls;
+            var pc = _main.Fb2kPlaybackControls;
             if (!_onSongStart.Value || !pc.IsPlaying() || pc.IsPaused())
             {
                 return false;
@@ -341,7 +310,7 @@ namespace fooTitle
         /// <returns></returns>
         private bool BeforeSongEndSat()
         {
-            var pc = Main.GetInstance().Fb2kPlaybackControls;
+            var pc = _main.Fb2kPlaybackControls;
             if (!_beforeSongEnds.Value || !pc.IsPlaying() || pc.IsPaused())
             {
                 return false;
@@ -358,7 +327,7 @@ namespace fooTitle
             {
                 return false;
             }
-            var pc = Main.GetInstance().Fb2kPlaybackControls;
+            var pc = _main.Fb2kPlaybackControls;
             return (!pc.IsPlaying() || pc.IsPaused());
         }
 

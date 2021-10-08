@@ -1,51 +1,42 @@
-/*
-*  This file is part of foo_title.
-*  Copyright 2017 TheQwertiest (https://github.com/TheQwertiest/foo_title)
-*  
-*  This library is free software; you can redistribute it and/or
-*  modify it under the terms of the GNU Lesser General Public
-*  License as published by the Free Software Foundation; either
-*  version 2.1 of the License, or (at your option) any later version.
-*  
-*  This library is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-*  
-*  See the file COPYING included with this distribution for more
-*  information.
-*/
-
 using fooTitle.Config;
 using System;
 using System.Windows.Forms;
 
 namespace fooTitle
 {
+    public enum FadeAnimation
+    {
+        FadeInNormal,
+        FadeInOver,
+        FadeOut,
+        FadeOutFull
+    }
+
     public class AnimationManager
     {
-        private readonly Display _display;
+        private readonly SkinForm _display;
 
         private readonly ConfInt _normalOpacity = Configs.Display_NormalOpacity;
         private readonly ConfInt _overOpacity = Configs.Display_MouseOverOpacity;
 
-        private AnimationStoppedEventHandler _mouseOverSavedCallback;
-        private AnimationStoppedEventHandler _onAnimationStopEvent;
+        private Action _mouseOverSavedCallback;
+        private Action _onAnimationStopCallback;
 
         private readonly object _animationLock = new();
         private readonly Timer _animationTimer;
         private Fade _fadeAnimation;
         private OpacityFallbackType _opacityFallbackType = OpacityFallbackType.Normal;
-        private Animation _curAnimationName;
+        private FadeAnimation _curAnimationName;
         private bool _mouseIn;
 
-        public AnimationManager(Display display)
+        public AnimationManager(SkinForm display)
         {
             _display = display;
 
-            _display.MouseEnter += Display_MouseEnterEventHandler;
-            _display.MouseLeave += Display_MouseLeaveEventHandler;
+            _display.MouseEnter += Display_MouseEnter_EventHandler;
+            _display.MouseLeave += Display_MouseLeave_EventHandler;
             _animationTimer = new Timer { Interval = 33 };
-            _animationTimer.Tick += AnimationTimer_TickEventHandler;
+            _animationTimer.Tick += AnimationTimer_Tick_EventHandler;
         }
 
         /// <summary>
@@ -56,36 +47,26 @@ namespace fooTitle
             _animationTimer.Stop();
         }
 
-        public delegate void AnimationStoppedEventHandler();
-
-        public enum Animation
-        {
-            FadeInNormal,
-            FadeInOver,
-            FadeOut,
-            FadeOutFull
-        }
-
         private enum OpacityFallbackType
         {
             Normal,
             Transparent
         }
 
-        public void StartAnimation(Animation animName, AnimationStoppedEventHandler actionAfterAnimation = null,
+        public void StartAnimation(FadeAnimation animName, Action actionAfterAnimation = null,
                                    bool forceAnimation = false)
         {
             lock (_animationLock)
             {
                 if (_curAnimationName != animName)
                 {
-                    _onAnimationStopEvent = null;
+                    _onAnimationStopCallback = null;
                     _fadeAnimation = null;
                 }
 
                 if (!_mouseIn)
                 {
-                    _onAnimationStopEvent = actionAfterAnimation;
+                    _onAnimationStopCallback = actionAfterAnimation;
                 }
                 else if (!forceAnimation)
                 {
@@ -100,19 +81,19 @@ namespace fooTitle
 
                 switch (animName)
                 {
-                    case Animation.FadeInNormal:
-                        _fadeAnimation = new Fade(_display.MyOpacity, _normalOpacity.Value, 100 /*fadeLength.Value*/);
+                    case FadeAnimation.FadeInNormal:
+                        _fadeAnimation = new Fade(_display.CurrentOpacity, _normalOpacity.Value, 100 /*fadeLength.Value*/);
                         _opacityFallbackType = OpacityFallbackType.Normal;
                         break;
-                    case Animation.FadeInOver:
-                        _fadeAnimation = new Fade(_display.MyOpacity, _overOpacity.Value, 100 /*fadeLength.Value*/);
+                    case FadeAnimation.FadeInOver:
+                        _fadeAnimation = new Fade(_display.CurrentOpacity, _overOpacity.Value, 100 /*fadeLength.Value*/);
                         break;
-                    case Animation.FadeOut:
-                        _fadeAnimation = new Fade(_display.MyOpacity, _normalOpacity.Value, 400 /*fadeLength.Value*/);
+                    case FadeAnimation.FadeOut:
+                        _fadeAnimation = new Fade(_display.CurrentOpacity, _normalOpacity.Value, 400 /*fadeLength.Value*/);
                         _opacityFallbackType = OpacityFallbackType.Normal;
                         break;
-                    case Animation.FadeOutFull:
-                        _fadeAnimation = new Fade(_display.MyOpacity, 0, 400 /*fadeLength.Value*/);
+                    case FadeAnimation.FadeOutFull:
+                        _fadeAnimation = new Fade(_display.CurrentOpacity, 0, 400 /*fadeLength.Value*/);
                         _opacityFallbackType = OpacityFallbackType.Transparent;
                         break;
                     default:
@@ -130,49 +111,49 @@ namespace fooTitle
             {
                 if (_fadeAnimation != null)
                 {
-                    _display.MyOpacity = _fadeAnimation.GetOpacity();
+                    _display.CurrentOpacity = _fadeAnimation.GetOpacity();
                 }
             }
         }
 
-        private void AnimationTimer_TickEventHandler(object sender, EventArgs e)
+        private void AnimationTimer_Tick_EventHandler(object sender, EventArgs e)
         {
-            int prevOpacity = _display.MyOpacity;
+            int prevOpacity = _display.CurrentOpacity;
             lock (_animationLock)
             {
                 if (_fadeAnimation != null)
                 {
-                    _display.MyOpacity = _fadeAnimation.GetOpacity();
+                    _display.CurrentOpacity = _fadeAnimation.GetOpacity();
                     if (_fadeAnimation.Done())
                     {
                         _animationTimer.Stop();
                         _fadeAnimation = null;
-                        _onAnimationStopEvent?.Invoke();
-                        _onAnimationStopEvent = null;
+                        _onAnimationStopCallback?.Invoke();
+                        _onAnimationStopCallback = null;
                     }
                 }
             }
-            if (prevOpacity != _display.MyOpacity)
+            if (prevOpacity != _display.CurrentOpacity)
             {
-                Main.GetInstance().RequestRedraw(true);
+                Main.Get().RedrawTitleBar(true);
             }
         }
 
-        private void Display_MouseLeaveEventHandler(object sender, EventArgs e)
+        private void Display_MouseLeave_EventHandler(object sender, EventArgs e)
         {
             _mouseIn = false;
-            Animation animName = _opacityFallbackType == OpacityFallbackType.Normal
-                                     ? Animation.FadeOut
-                                     : Animation.FadeOutFull;
+            var animName = _opacityFallbackType == OpacityFallbackType.Normal
+                               ? FadeAnimation.FadeOut
+                               : FadeAnimation.FadeOutFull;
             StartAnimation(animName, _mouseOverSavedCallback);
             _mouseOverSavedCallback = null;
         }
 
-        private void Display_MouseEnterEventHandler(object sender, EventArgs e)
+        private void Display_MouseEnter_EventHandler(object sender, EventArgs e)
         {
-            _mouseOverSavedCallback = _onAnimationStopEvent;
+            _mouseOverSavedCallback = _onAnimationStopCallback;
             _mouseIn = true;
-            StartAnimation(Animation.FadeInOver, forceAnimation: true);
+            StartAnimation(FadeAnimation.FadeInOver, forceAnimation: true);
         }
 
         private class Fade

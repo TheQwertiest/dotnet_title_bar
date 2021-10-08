@@ -19,9 +19,11 @@ using System;
 using System.Drawing;
 using System.Xml.Linq;
 
-namespace fooTitle.Geometries {
-    [GeometryTypeAttribute("minimal")]
-    internal class MinimalGeometry : Geometry{
+namespace fooTitle.Geometries
+{
+    [GeometryType("minimal")]
+    public class MinimalGeometry : Geometry
+    {
         [Flags]
         public enum AlignType
         {
@@ -31,7 +33,8 @@ namespace fooTitle.Geometries {
             Top = 1 << 2,
             Bottom = 1 << 4,
             Center = 1 << 5
-        };
+        }
+        ;
 
         private readonly AlignType _align;
 
@@ -50,7 +53,9 @@ namespace fooTitle.Geometries {
         private Point _relPosition;
         public Point Position => _relPosition;
 
-        public MinimalGeometry(Rectangle parentRect, XElement node) : base(parentRect, node) {
+        public MinimalGeometry(Rectangle parentRect, XElement node)
+            : base(parentRect, node)
+        {
             XElement padding = GetFirstChildByName(node, "padding");
 
             // read and store expressions
@@ -60,15 +65,15 @@ namespace fooTitle.Geometries {
             MyExprPadding.Bottom = GetExpressionFromAttribute(padding, "bottom");
 
             // get the actual values
-            MyPadding.Left = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "left", 0));
-            MyPadding.Top = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "top", 0));
-            MyPadding.Right = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "right", 0));
-            MyPadding.Bottom = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "bottom", 0));
+            MyPadding.Left = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(padding, "left", 0));
+            MyPadding.Top = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(padding, "top", 0));
+            MyPadding.Right = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(padding, "right", 0));
+            MyPadding.Bottom = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(padding, "bottom", 0));
 
             // read alignment
             XElement positionNode = GetFirstChildByNameOrNull(node, "position");
             string alignStr = "left,top";
-            if (positionNode != null )
+            if (positionNode != null)
                 alignStr = GetAttributeValue(positionNode, "align", "left,top");
 
             _align = AlignType.None;
@@ -95,7 +100,8 @@ namespace fooTitle.Geometries {
             }
         }
 
-        public override void Update(Rectangle parentRect) {
+        public override void Update(Rectangle parentRect)
+        {
             MyPadding.Left = GetScaledValueFromExpression(MyExprPadding.Left, MyPadding.Left);
             MyPadding.Top = GetScaledValueFromExpression(MyExprPadding.Top, MyPadding.Top);
             MyPadding.Right = GetScaledValueFromExpression(MyExprPadding.Right, MyPadding.Right);
@@ -129,7 +135,7 @@ namespace fooTitle.Geometries {
             }
             else
             {
-                _relPosition.Y = (parentRect.Height - (myClientRect.Height + MyPadding.Bottom - MyPadding.Top))/2;
+                _relPosition.Y = (parentRect.Height - (myClientRect.Height + MyPadding.Bottom - MyPadding.Top)) / 2;
             }
 
             myClientRect.X = parentRect.Left + MyPadding.Left + _relPosition.X;
@@ -140,15 +146,16 @@ namespace fooTitle.Geometries {
         {
             _curContentSize = contentSize;
             return new Size(MyPadding.Left + MyPadding.Right + contentSize.Width,
-                MyPadding.Top + MyPadding.Bottom + contentSize.Height);
+                            MyPadding.Top + MyPadding.Bottom + contentSize.Height);
         }
 
         public override Point GetPosition()
         {
-            return new Point(0,0);
+            return new Point(0, 0);
         }
 
-        public override bool IsDynamic() {
+        public override bool IsDynamic()
+        {
             return (MyExprPadding.Bottom != null || MyExprPadding.Left != null || MyExprPadding.Right != null || MyExprPadding.Top != null);
         }
     }

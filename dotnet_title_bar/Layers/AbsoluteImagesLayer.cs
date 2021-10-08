@@ -18,31 +18,33 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 using System;
+using System.Drawing;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using System.Drawing;
 
 namespace fooTitle.Layers
 {
-	/// <summary>
-	/// A simple layer that contains several images that are stretched across it's entire clientRect and drawn over.
-	/// </summary>
-    [LayerTypeAttribute("absolute-images")]
-	public class AbsoluteImagesLayer : Layer
+    /// <summary>
+    /// A simple layer that contains several images that are stretched across it's entire clientRect and drawn over.
+    /// </summary>
+    [LayerType("absolute-images")]
+    public class AbsoluteImagesLayer : Layer
     {
         private readonly bool _hasGif = false;
 
-		public AbsoluteImagesLayer(Rectangle parentRect, XElement node) : base(parentRect, node)
-		{
-			// load all images
-			XPathNavigator nav = node.CreateNavigator();
-			XPathNodeIterator xi = (XPathNodeIterator)nav.Evaluate("contents/image");
-			
-			while (xi.MoveNext()) {
-				AddImage(xi.Current);
-			}
+        public AbsoluteImagesLayer(Rectangle parentRect, XElement node, Skin skin)
+            : base(parentRect, node, skin)
+        {
+            // load all images
+            XPathNavigator nav = node.CreateNavigator();
+            XPathNodeIterator xi = (XPathNodeIterator)nav.Evaluate("contents/image");
 
-            foreach (Bitmap b in images)
+            while (xi.MoveNext())
+            {
+                AddImage(xi.Current);
+            }
+
+            foreach (Bitmap b in ContainedImages)
             {
                 if (ImageAnimator.CanAnimate(b))
                 {
@@ -51,30 +53,33 @@ namespace fooTitle.Layers
                 }
             }
             if (Enabled)
-		        OnLayerEnable();
-		}
+                OnLayerEnable();
+        }
 
-		private void AddImage(XPathNavigator node) {
-			string src = node.GetAttribute("src", "");
-			Bitmap b = Main.GetInstance().CurrentSkin.GetSkinImage(src);
-			images.Add(b);
-		}
+        private void AddImage(XPathNavigator node)
+        {
+            string src = node.GetAttribute("src", "");
+            Bitmap b = ParentSkin.GetSkinImage(src);
+            ContainedImages.Add(b);
+        }
 
-		protected override void DrawImpl() {
-		    if (_hasGif)
-		    {
-		        ImageAnimator.UpdateFrames();
+        protected override void DrawImpl(Graphics canvas)
+        {
+            if (_hasGif)
+            {
+                ImageAnimator.UpdateFrames();
             }
-		    foreach (Bitmap b in images){ 
-				Display.Canvas.DrawImage(b, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
-			}
-		}
+            foreach (Bitmap b in ContainedImages)
+            {
+                canvas.DrawImage(b, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
+            }
+        }
 
         protected override void OnLayerEnable()
         {
             if (_hasGif)
             {
-                foreach (Bitmap b in images)
+                foreach (Bitmap b in ContainedImages)
                 {
                     if (ImageAnimator.CanAnimate(b))
                         ImageAnimator.Animate(b, OnFrameChanged);
@@ -86,7 +91,7 @@ namespace fooTitle.Layers
         {
             if (_hasGif)
             {
-                foreach (Bitmap b in images)
+                foreach (Bitmap b in ContainedImages)
                 {
                     if (ImageAnimator.CanAnimate(b))
                         ImageAnimator.StopAnimate(b, OnFrameChanged);
@@ -96,7 +101,7 @@ namespace fooTitle.Layers
 
         private void OnFrameChanged(object o, EventArgs e)
         {
-            Main.GetInstance().RequestRedraw();
+            Main.Get().RedrawTitleBar();
         }
     }
 }

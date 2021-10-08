@@ -1,22 +1,3 @@
-/*
-    Copyright 2005 - 2006 Roman Plasil
-	http://foo-title.sourceforge.net
-    This file is part of foo_title.
-
-    foo_title is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation; either version 2.1 of the License, or
-    (at your option) any later version.
-
-    foo_title is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with foo_title; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -24,18 +5,18 @@ using System.Xml.Linq;
 
 namespace fooTitle.Layers
 {
-    [LayerTypeAttribute("scrolling-text")]
-    internal class ScrollingTextLayer : TextLayer, IContiniousRedraw
+    [LayerType("scrolling-text")]
+    public class ScrollingTextLayer : TextLayer, IContiniousRedraw
     {
         private int _direction = 1;
         /// <summary>
         /// Number of pixels to move the text per second.
         /// </summary>
-        private readonly int _speed = 25;
+        private readonly int _scrollSpeedPxPerSec = 25;
         /// <summary>
-        /// Length of pause in milliseconds when the text arrives to either of its edges. 
+        /// Length of pause in milliseconds when the text arrives to either of its edges.
         /// </summary>
-        private readonly int _pause = 1000;
+        private readonly int _pauseDurationInMs = 1000;
         private float _xpos = 0;
         private Bitmap _textImage;
         private Graphics _textCanvas;
@@ -50,20 +31,19 @@ namespace fooTitle.Layers
 
         private Align _align;
 
-        public ScrollingTextLayer(Rectangle parentRect, XElement node)
-            : base(parentRect, node)
+        public ScrollingTextLayer(Rectangle parentRect, XElement node, Skin skin)
+            : base(parentRect, node, skin)
         {
-
             XElement contents = GetFirstChildByName(node, "contents");
 
-            _speed = Main.GetInstance().ScaleValue(GetCastedAttributeValue(contents, "speed", 25));
-            _pause = GetCastedAttributeValue(contents, "pause", 1000);
+            _scrollSpeedPxPerSec = DpiHandler.ScaleValueByDpi(GetCastedAttributeValue(contents, "speed", 25));
+            _pauseDurationInMs = GetCastedAttributeValue(contents, "pause", 1000);
         }
 
-        protected override void AddLabel(XElement node, TextLayer.LabelPart def)
+        protected override void AddLabel(XElement node, LabelPart def)
         {
             string position = GetAttributeValue(node, "position", "left");
-            left = ReadLabel(node, def);
+            _left = ReadLabel(node, def);
 
             switch (position)
             {
@@ -81,14 +61,13 @@ namespace fooTitle.Layers
 
         protected override void StraightDraw(Graphics g)
         {
-            StringFormat sf = new StringFormat(StringFormat.GenericDefault)
-            { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
+            StringFormat sf = new StringFormat(StringFormat.GenericDefault) { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
 
             // first move the text
             long now = DateTime.Now.Ticks;
             long deltaTime = now - _lastUpdate;
-            float textWidth = g.MeasureString(left.formatted, left.font, new PointF(0, 0), sf).Width;
-            float farPoint = this.GetFarPointInClientRect(this.angle);
+            float textWidth = g.MeasureString(_left.formatted, _left.font, new PointF(0, 0), sf).Width;
+            float farPoint = this.GetFarPointInClientRect(this._angle);
             float drawAt = 0;
 
             if (textWidth <= farPoint)
@@ -110,7 +89,7 @@ namespace fooTitle.Layers
             }
             else if (!_paused)
             {
-                _xpos += _direction * _speed * (deltaTime / 10000000F);
+                _xpos += _direction * _scrollSpeedPxPerSec * (deltaTime / 10000000F);
                 if (_xpos >= textWidth - farPoint)
                 {
                     // reached the right end
@@ -137,7 +116,7 @@ namespace fooTitle.Layers
             {
                 _lastUpdate = now;
             }
-            else if ((deltaTime / 10000) >= _pause)
+            else if ((deltaTime / 10000) >= _pauseDurationInMs)
             {
                 _lastUpdate = now;
                 _paused = false;
@@ -151,7 +130,7 @@ namespace fooTitle.Layers
         /// <returns>the same as Layer.GetMinimialSize()</returns>
         protected override Size GetMinimalSizeImpl()
         {
-            return geometry.GetMinimalSize(GetContentSize());
+            return ContainedGeometry.GetMinimalSize(GetContentSize());
         }
 
         /// <summary>
@@ -159,45 +138,42 @@ namespace fooTitle.Layers
         /// </summary>
         protected override void UpdateText()
         {
-            string prevString = left.formatted;
+            string prevString = _left.formatted;
 
-            left.formatted = defaultText;
-            right.formatted = "";
+            _left.formatted = _defaultText;
+            _right.formatted = "";
 
-            var isPlaying = Main.GetInstance().Fb2kPlaybackControls.IsPlaying();
+            var isPlaying = Main.Get().Fb2kPlaybackControls.IsPlaying();
 
-            if (!string.IsNullOrEmpty(left.text) && isPlaying)
-            {
-                // Evaluate only when there is a track, otherwise keep default text
-                var tf = Main.GetInstance().Fb2kControls.TitleFormat(left.text);
-                left.formatted = tf.Eval(force: true);
+            if (!string.IsNullOrEmpty(_left.text) && isPlaying)
+            {// Evaluate only when there is a track, otherwise keep default text
+                var tf = Main.Get().Fb2kControls.TitleFormat(_left.text);
+                _left.formatted = tf.Eval(force: true);
             }
 
-            if (left.formatted != null)
+            if (_left.formatted != null)
             {
-                StringFormat sf = new StringFormat(StringFormat.GenericDefault)
-                { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
+                StringFormat sf = new StringFormat(StringFormat.GenericDefault) { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
 
-                SizeF textSize = Main.GetInstance().Display.Canvas.MeasureString(left.formatted, left.font, new PointF(0, 0), sf);
-                _textImage = new Bitmap(
-                    Math.Max(10, (int)Math.Ceiling(textSize.Width)),
-                    Math.Max(10, (int)Math.Ceiling(textSize.Height)),
-                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                SizeF textSize = SkinForm.CanvasForMeasure.MeasureString(_left.formatted, _left.font, new PointF(0, 0), sf);
+                _textImage = new Bitmap(Math.Max(10, (int)Math.Ceiling(textSize.Width)),
+                                        Math.Max(10, (int)Math.Ceiling(textSize.Height)),
+                                        System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                 _textCanvas = Graphics.FromImage(_textImage);
                 _textCanvas.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-                _textCanvas.DrawString(left.formatted, left.font, new SolidBrush(left.color), new PointF(0, 0));
+                _textCanvas.DrawString(_left.formatted, _left.font, new SolidBrush(_left.color), new PointF(0, 0));
             }
 
-            if (prevString != left.formatted)
+            if (prevString != _left.formatted)
             {
-                Main.GetInstance().RequestRedraw();
+                Main.Get().RedrawTitleBar();
                 if (IsScrollingNeeded())
                 {
-                    Main.GetInstance().AddRedrawRequester(this);
+                    Main.Get().AddRedrawRequester(this);
                 }
                 else
                 {
-                    Main.GetInstance().RemoveRedrawRequester(this);
+                    Main.Get().RemoveRedrawRequester(this);
                 }
             }
         }
@@ -205,18 +181,20 @@ namespace fooTitle.Layers
         protected override void OnLayerEnable()
         {
             if (IsScrollingNeeded())
-                Main.GetInstance().AddRedrawRequester(this);
+            {
+                Main.Get().AddRedrawRequester(this);
+            }
         }
 
         protected override void OnLayerDisable()
         {
-            Main.GetInstance().RemoveRedrawRequester(this);
+            Main.Get().RemoveRedrawRequester(this);
         }
 
         private bool IsScrollingNeeded()
         {
-            float textWidth = TextRenderer.MeasureText(left.formatted, left.font).Width;
-            float farPoint = GetFarPointInClientRect(this.angle);
+            float textWidth = TextRenderer.MeasureText(_left.formatted, _left.font).Width;
+            float farPoint = GetFarPointInClientRect(this._angle);
 
             return textWidth > farPoint;
         }
@@ -224,11 +202,7 @@ namespace fooTitle.Layers
         bool IContiniousRedraw.IsRedrawNeeded()
         {
             int deltaTime = (int)((DateTime.Now.Ticks - _lastUpdate) / 10000);
-
-            if (_paused && deltaTime < _pause)
-                return false;
-
-            return true;
+            return (!_paused || deltaTime >= _pauseDurationInMs);
         }
     }
 }

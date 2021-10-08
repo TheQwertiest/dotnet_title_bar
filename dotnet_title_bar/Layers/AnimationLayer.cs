@@ -24,70 +24,75 @@ using System.Xml.XPath;
 
 namespace fooTitle.Layers
 {
-	/// <summary>
-	/// Summary description for AnimationLayer.
-	/// </summary>
-    [LayerTypeAttribute("animation")]
+    /// <summary>
+    /// Summary description for AnimationLayer.
+    /// </summary>
+    [LayerType("animation")]
     public class AnimationLayer : Layer, IContiniousRedraw
-	{
-		protected int curFrame = 0;
+    {
+        protected int curFrame = 0;
         /// <summary>
         /// FPS rate of animation.
         /// </summary>
         protected int refreshRate = 15;
         protected long lastUpdate = DateTime.Now.Ticks;
 
-        public AnimationLayer(Rectangle parentRect, XElement node) : base(parentRect, node) {
+        public AnimationLayer(Rectangle parentRect, XElement node, Skin skin)
+            : base(parentRect, node, skin)
+        {
             XElement contents = GetFirstChildByName(node, "contents");
-            refreshRate = Math.Max(1, GetCastedAttributeValue<int>(contents, "speed", 15));
+            refreshRate = Math.Max(1, GetCastedAttributeValue(contents, "speed", 15));
 
             // load all images
             XPathNavigator nav = node.CreateNavigator();
-			XPathNodeIterator xi = (XPathNodeIterator)nav.Evaluate("contents/frame");
+            XPathNodeIterator xi = (XPathNodeIterator)nav.Evaluate("contents/frame");
 
-            while (xi.MoveNext()) {
-				AddImage(xi.Current);
-			}
+            while (xi.MoveNext())
+            {
+                AddImage(xi.Current);
+            }
 
-		    Main.GetInstance().AddRedrawRequester(this);
+            Main.Get().AddRedrawRequester(this);
         }
 
-		protected void AddImage(XPathNavigator node) {
-			string src = node.GetAttribute("src", "");
-			Bitmap b = Main.GetInstance().CurrentSkin.GetSkinImage(src);
-			images.Add(b);
-		}
+        protected void AddImage(XPathNavigator node)
+        {
+            string src = node.GetAttribute("src", "");
+            Bitmap b = ParentSkin.GetSkinImage(src);
+            ContainedImages.Add(b);
+        }
 
-        protected override void DrawImpl() {
+        protected override void DrawImpl(Graphics canvas)
+        {
             long now = DateTime.Now.Ticks;
             int deltaTime = (int)((now - lastUpdate) / 10000);
 
             if (deltaTime >= 1000 / refreshRate)
             {
                 ++curFrame;
-                if (curFrame >= images.Count)
+                if (curFrame >= ContainedImages.Count)
                     curFrame = 0;
 
                 lastUpdate = now;
             }
 
-            Display.Canvas.DrawImage((Bitmap)images[curFrame], ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);		
+            canvas.DrawImage((Bitmap)ContainedImages[curFrame], ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
         }
 
         protected override void OnLayerEnable()
         {
-            Main.GetInstance().AddRedrawRequester(this);
+            Main.Get().AddRedrawRequester(this);
         }
 
         protected override void OnLayerDisable()
         {
-            Main.GetInstance().RemoveRedrawRequester(this);
+            Main.Get().RemoveRedrawRequester(this);
         }
 
-	    public bool IsRedrawNeeded()
-	    {
-	        int deltaTime = (int)((DateTime.Now.Ticks - lastUpdate) / 10000);
-	        return (deltaTime >= 1000 / refreshRate);
-	    }
+        public bool IsRedrawNeeded()
+        {
+            int deltaTime = (int)((DateTime.Now.Ticks - lastUpdate) / 10000);
+            return (deltaTime >= 1000 / refreshRate);
+        }
     }
 }

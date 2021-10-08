@@ -41,7 +41,8 @@ namespace fooTitle.Extending
 
         public static XElement GetFirstChildByNameOrNull(XElement where, string name)
         {
-            return where.Elements().FirstOrDefault(i => i.Name == name);
+            return
+                where.Elements().FirstOrDefault(i => i.Name == name);
         }
 
         public static string GetNodeValue(XElement a, bool trim = true)
@@ -53,7 +54,8 @@ namespace fooTitle.Extending
         {
             if (where.Attribute(name) != null)
             {
-                return where.Attribute(name).Value;
+                return
+                    where.Attribute(name).Value;
             }
 
             return def;
@@ -71,7 +73,7 @@ namespace fooTitle.Extending
         }
 
         /// <summary>
-        /// If the attribute contains an expression, it is evaluated and the result is returned. 
+        /// If the attribute contains an expression, it is evaluated and the result is returned.
         /// If the attribute is a number, the number is returned
         /// </summary>
         /// <param name="where">the node</param>
@@ -85,12 +87,13 @@ namespace fooTitle.Extending
                 return def;
             }
 
-            string val = where.Attribute(name).Value;
+            string val =
+                where.Attribute(name).Value;
             try
             {
                 if (IsExpression(val))
                 {
-                    var tf = Main.GetInstance().Fb2kControls.TitleFormat(val);
+                    var tf = Main.Get().Fb2kControls.TitleFormat(val);
                     return float.Parse(tf.Eval(force: true));
                 }
                 else
@@ -101,8 +104,8 @@ namespace fooTitle.Extending
             }
             catch (Exception e)
             {
-                Main.Console.LogWarning(e.ToString());
-                Main.Console.LogWarning(val);
+                Console.Get().LogWarning(e.ToString());
+                Console.Get().LogWarning(val);
                 return def;
             }
         }
@@ -140,7 +143,7 @@ namespace fooTitle.Extending
 
             try
             {
-                var tf = Main.GetInstance().Fb2kControls.TitleFormat(expr);
+                var tf = Main.Get().Fb2kControls.TitleFormat(expr);
                 return int.Parse(tf.Eval(force: true));
             }
             catch (Exception)
@@ -159,8 +162,8 @@ namespace fooTitle.Extending
 
             try
             {
-                var tf = Main.GetInstance().Fb2kControls.TitleFormat(expr);
-                return Main.GetInstance().ScaleValue(int.Parse(tf.Eval(force: true)));
+                var tf = Main.Get().Fb2kControls.TitleFormat(expr);
+                return DpiHandler.ScaleValueByDpi(int.Parse(tf.Eval(force: true)));
             }
             catch (Exception)
             {
@@ -181,7 +184,7 @@ namespace fooTitle.Extending
             }
             try
             {
-                var tf = Main.GetInstance().Fb2kControls.TitleFormat(expr);
+                var tf = Main.Get().Fb2kControls.TitleFormat(expr);
                 return tf.Eval(force: true);
             }
             catch (Exception)

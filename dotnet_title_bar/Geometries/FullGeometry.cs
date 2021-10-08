@@ -21,9 +21,11 @@
 using System.Drawing;
 using System.Xml.Linq;
 
-namespace fooTitle.Geometries {
-    [GeometryTypeAttribute("full")]
-    internal class FullGeometry : Geometry{
+namespace fooTitle.Geometries
+{
+    [GeometryType("full")]
+    public class FullGeometry : Geometry
+    {
 
         /// <summary>
         /// Current values of padding
@@ -35,7 +37,9 @@ namespace fooTitle.Geometries {
         /// </summary>
         private ExpressionPadding _myExprPadding;
 
-        public FullGeometry(Rectangle parentRect, XElement node) : base(parentRect, node) {
+        public FullGeometry(Rectangle parentRect, XElement node)
+            : base(parentRect, node)
+        {
             XElement padding = GetFirstChildByName(node, "padding");
 
             // read and store expressions
@@ -45,14 +49,14 @@ namespace fooTitle.Geometries {
             _myExprPadding.Bottom = GetExpressionFromAttribute(padding, "bottom");
 
             // get the actual values
-            _myPadding.Left = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "left", 0));
-            _myPadding.Top = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "top", 0));
-            _myPadding.Right = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "right", 0));
-            _myPadding.Bottom = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(padding, "bottom", 0));
-            
+            _myPadding.Left = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(padding, "left", 0));
+            _myPadding.Top = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(padding, "top", 0));
+            _myPadding.Right = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(padding, "right", 0));
+            _myPadding.Bottom = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(padding, "bottom", 0));
         }
 
-        public override void Update(Rectangle parentRect) {
+        public override void Update(Rectangle parentRect)
+        {
             // get the actual values
             _myPadding.Left = GetScaledValueFromExpression(_myExprPadding.Left, _myPadding.Left);
             _myPadding.Top = GetScaledValueFromExpression(_myExprPadding.Top, _myPadding.Top);
@@ -66,16 +70,19 @@ namespace fooTitle.Geometries {
             myClientRect.Height = parentRect.Height - (_myPadding.Top + _myPadding.Bottom);
         }
 
-        public override Size GetMinimalSize(Size contentSize) {
+        public override Size GetMinimalSize(Size contentSize)
+        {
             return new Size(_myPadding.Left + _myPadding.Right + contentSize.Width,
                             _myPadding.Top + _myPadding.Bottom + contentSize.Height);
         }
 
-        public override Point GetPosition() {
+        public override Point GetPosition()
+        {
             return new Point(0, 0);
         }
 
-        public override bool IsDynamic() {
+        public override bool IsDynamic()
+        {
             return (_myExprPadding.Bottom != null || _myExprPadding.Left != null || _myExprPadding.Right != null || _myExprPadding.Top != null);
         }
     }

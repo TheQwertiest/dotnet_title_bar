@@ -77,17 +77,26 @@ namespace fooTitle.Config
             value.ReadVisit(this);
         }
 
-        public virtual void ReadInt(ConfInt val) { }
-        public virtual void ReadString(ConfString val) { }
-        public virtual void WriteInt(ConfInt val) { }
-        public virtual void WriteString(ConfString val) { }
+        public virtual void ReadInt(ConfInt val)
+        {
+        }
+        public virtual void ReadString(ConfString val)
+        {
+        }
+        public virtual void WriteInt(ConfInt val)
+        {
+        }
+        public virtual void WriteString(ConfString val)
+        {
+        }
     }
 
     public class TextBoxWrapper : ControlWrapper
     {
         private readonly TextBox _textBox;
 
-        public TextBoxWrapper(TextBox textBox, string valueName, IPreferencesPageCallback parentCallback) : base(valueName, parentCallback)
+        public TextBoxWrapper(TextBox textBox, string valueName, IPreferencesPageCallback parentCallback)
+            : base(valueName, parentCallback)
         {
             _textBox = textBox;
 
@@ -137,19 +146,19 @@ namespace fooTitle.Config
     {
         private readonly TrackBar _trackBar;
 
-        public TrackBarWrapper(TrackBar trackBar, string valueName, IPreferencesPageCallback parentCallback) : base(valueName, parentCallback)
+        public TrackBarWrapper(TrackBar trackBar, string valueName, IPreferencesPageCallback parentCallback)
+            : base(valueName, parentCallback)
         {
             _trackBar = trackBar;
-            _trackBar.ValueChanged += trackBar_ValueChanged;
+            _trackBar.ValueChanged += TrackBar_ValueChanged;
 
             value?.ReadVisit(this);
         }
 
-        void trackBar_ValueChanged(object sender, EventArgs e)
+        void TrackBar_ValueChanged(object sender, EventArgs e)
         {
             value?.WriteVisit(this);
         }
-
 
         /// <summary>
         /// This method sets tick frequency and large/small change values of the trackbar
@@ -184,15 +193,16 @@ namespace fooTitle.Config
     {
         private readonly NumericUpDown _numericUpDown;
 
-        public NumericUpDownWrapper(NumericUpDown numericUpDown, string valueName, IPreferencesPageCallback parentCallback) : base(valueName, parentCallback)
+        public NumericUpDownWrapper(NumericUpDown numericUpDown, string valueName, IPreferencesPageCallback parentCallback)
+            : base(valueName, parentCallback)
         {
             _numericUpDown = numericUpDown;
-            _numericUpDown.ValueChanged += numericUpDown_ValueChanged;
+            _numericUpDown.ValueChanged += NumericUpDown_ValueChanged;
 
             value?.ReadVisit(this);
         }
 
-        void numericUpDown_ValueChanged(object sender, EventArgs e)
+        void NumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             value?.WriteVisit(this);
         }
@@ -220,7 +230,10 @@ namespace fooTitle.Config
         private readonly List<RadioButton> _radioButtons = new List<RadioButton>();
         private int _checkedIndex = 0;
 
-        public RadioGroupWrapper(string valueName, IPreferencesPageCallback parentCallback) : base(valueName, parentCallback) { }
+        public RadioGroupWrapper(string valueName, IPreferencesPageCallback parentCallback)
+            : base(valueName, parentCallback)
+        {
+        }
 
         /// <summary>
         /// Adds a radiobutton to the group. The order in which radiobuttons are added matters
@@ -234,7 +247,7 @@ namespace fooTitle.Config
         ///     Normal,
         ///     Maximized
         /// }
-        /// 
+        ///
         /// ConfEnum&lt;WindowState&gt; state = new ConfEnum&lt;WindowState&gt;("state", WindowState.Normal);
         /// RadioGroupWrapper wrapper = new RadioGroupWrapper("state");
         /// wrapper.AddRadioButton(minimizedRadioButton);
@@ -308,17 +321,18 @@ namespace fooTitle.Config
     {
         private readonly CheckBox _checkBox;
 
-        public CheckBoxWrapper(CheckBox checkBox, string valueName, IPreferencesPageCallback parentCallback) : base(valueName, parentCallback)
+        public CheckBoxWrapper(CheckBox checkBox, string valueName, IPreferencesPageCallback parentCallback)
+            : base(valueName, parentCallback)
         {
             _checkBox = checkBox;
 
             // register onChange event
-            _checkBox.CheckedChanged += checkBox_CheckedChanged;
+            _checkBox.CheckedChanged += CheckBox_CheckedChanged;
 
             value?.ReadVisit(this);
         }
 
-        void checkBox_CheckedChanged(object sender, EventArgs e)
+        void CheckBox_CheckedChanged(object sender, EventArgs e)
         {
             value?.WriteVisit(this);
         }
@@ -338,7 +352,8 @@ namespace fooTitle.Config
     {
         private readonly Label _label;
 
-        public LabelWrapper(Label label, string valueName, IPreferencesPageCallback parentCallback) : base(valueName, parentCallback)
+        public LabelWrapper(Label label, string valueName, IPreferencesPageCallback parentCallback)
+            : base(valueName, parentCallback)
         {
             _label = label;
 
@@ -355,9 +370,13 @@ namespace fooTitle.Config
             _label.Text = val.Value;
         }
 
-        public override void WriteInt(ConfInt val) { }
+        public override void WriteInt(ConfInt val)
+        {
+        }
 
-        public override void WriteString(ConfString val) { }
+        public override void WriteString(ConfString val)
+        {
+        }
     }
 
     public class AutoWrapperCreator
@@ -370,8 +389,7 @@ namespace fooTitle.Config
             _instance = instance;
             Type formType = _instance.GetType();
 
-            MemberInfo[] controls = formType.FindMembers(MemberTypes.Field, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance,
-                ControlsMemberFilter, null);
+            MemberInfo[] controls = formType.FindMembers(MemberTypes.Field, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance, ControlsMemberFilter, null);
 
             foreach (MemberInfo m in controls)
             {

@@ -2,12 +2,12 @@
 
 namespace fooTitle
 {
-    internal class Utils
+    public class Utils
     {
         public static void ReportErrorWithPopup(string message)
         {
-            Main.Console?.LogError(message);
-            Main.GetInstance().Fb2kUtils?.ShowPopup(message, Main.ComponentNameUnderscored);
+            Console.Get()?.LogError(message);
+            Main.Get().Fb2kUtils?.ShowPopup(message, Constants.ComponentNameUnderscored);
         }
 
         public class ExplorerLikeSort : IComparer<string>

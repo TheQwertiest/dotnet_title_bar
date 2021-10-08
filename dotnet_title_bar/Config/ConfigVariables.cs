@@ -41,7 +41,6 @@ namespace fooTitle.Config
             this.Name = name;
         }
 
-
         /// <summary>
         /// Initializes the value - registers with the manager which sends events about updating. This should be
         /// called when the value is done setting up and is fully usable.
@@ -64,12 +63,12 @@ namespace fooTitle.Config
         /// <summary>
         /// Invoked when the value changes
         /// </summary>
-        public event ConfValuesManager.ChangedEventHandler Changed;
+        public event ConfValuesManager.Changed_EventHandler Changed;
 
         /// <summary>
-        /// Helper function to fire the OnChanged event. Should be preffered over invoking the event directly
+        /// Should be preffered over invoking the event directly
         /// </summary>
-        protected void OnChanged()
+        public void OnChanged()
         {
             Changed?.Invoke(Name);
         }
@@ -104,7 +103,6 @@ namespace fooTitle.Config
 
         public abstract bool HasChanged();
     }
-
 
     /// <summary>
     /// Stores an integer (Int32). Supports a minimum and a maximum value to be specified. Setting the value out of the
@@ -174,7 +172,8 @@ namespace fooTitle.Config
         /// </summary>
         public int Min => min;
 
-        public ConfInt(string name, int def) : base(name)
+        public ConfInt(string name, int def)
+            : base(name)
         {
             _def = def;
             val = _def;
@@ -185,7 +184,8 @@ namespace fooTitle.Config
             Initialize();
         }
 
-        public ConfInt(string name, int def, int _min, int _max) : base(name)
+        public ConfInt(string name, int def, int _min, int _max)
+            : base(name)
         {
             _def = def;
             val = _def;
@@ -237,7 +237,8 @@ namespace fooTitle.Config
         private string _val;
         private string _saved;
 
-        public ConfString(string name, string def) : base(name)
+        public ConfString(string name, string def)
+            : base(name)
         {
             _def = def;
             _val = def;
@@ -303,9 +304,11 @@ namespace fooTitle.Config
         }
     }
 
-    public class ConfEnum<T> : ConfInt where T : IConvertible
+    public class ConfEnum<T> : ConfInt
+        where T : IConvertible
     {
-        public ConfEnum(string name, T def) : base(name, Convert.ToInt32(def))
+        public ConfEnum(string name, T def)
+            : base(name, Convert.ToInt32(def))
         {
             min = 0;
         }
@@ -319,7 +322,8 @@ namespace fooTitle.Config
 
     public class ConfBool : ConfInt
     {
-        public ConfBool(string name, bool def) : base(name, def ? 1 : 0)
+        public ConfBool(string name, bool def)
+            : base(name, def ? 1 : 0)
         {
             min = 0;
             max = 1;
@@ -337,7 +341,8 @@ namespace fooTitle.Config
         private XElement _val;
         private XElement _saved;
 
-        public ConfXml(string name) : base(name)
+        public ConfXml(string name)
+            : base(name)
         {
             _val = null;
 

@@ -1,20 +1,3 @@
-/*
-*  This file is part of foo_title.
-*  Copyright 2017 TheQwertiest (https://github.com/TheQwertiest/foo_title)
-*  
-*  This library is free software; you can redistribute it and/or
-*  modify it under the terms of the GNU Lesser General Public
-*  License as published by the Free Software Foundation; either
-*  version 2.1 of the License, or (at your option) any later version.
-*  
-*  This library is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-*  
-*  See the file COPYING included with this distribution for more
-*  information.
-*/
-
 using fooTitle.Extending;
 using fooTitle.Layers;
 using System;
@@ -23,12 +6,13 @@ using System.Windows.Forms;
 
 namespace fooTitle
 {
-    public class ToolTip
+    public class ToolTip : IDisposable
     {
-        private readonly Display _display;
+        private readonly SkinForm _display;
+        private readonly ToolTipForm _tooltipForm;
         private readonly Layer _parentLayer;
 
-        private readonly object _tooltipLock = new object();
+        private readonly object _tooltipLock = new();
         private readonly Timer _toolTipTimer;
 
         private bool _wasShowCalled;
@@ -38,27 +22,35 @@ namespace fooTitle
 
         private bool _isMouseDown = false;
 
-        public ToolTip(Display display, Layer parentLayer)
+        public ToolTip(ToolTipForm tooltipForm, SkinForm display, Layer parentLayer)
         {
             _parentLayer = parentLayer;
             _display = display;
+            _tooltipForm = tooltipForm;
 
             _toolTipTimer = new Timer { Interval = 500 };
             _toolTipTimer.Tick += ToolTipTimer_OnTick;
         }
 
+        public void Dispose()
+        {
+            ClearToolTip();
+        }
+
         public void OnMouseMove(object sender, MouseEventArgs e)
         {
             if (_isMouseDown)
+            {
                 return;
+            }
 
             _curTopToolTipLayer = GetTopToolTipLayer(_parentLayer);
 
-            if (!Main.GetInstance().Ttd.Visible || _tooltipLayer != _curTopToolTipLayer)
+            if (!_tooltipForm.Visible || _tooltipLayer != _curTopToolTipLayer)
             {
                 Point mouse = _display.PointToScreen(new Point(e.X, e.Y));
-                Main.GetInstance().Ttd.Left = mouse.X;
-                Main.GetInstance().Ttd.Top = mouse.Y + 18;
+                _tooltipForm.Left = mouse.X;
+                _tooltipForm.Top = mouse.Y + 18;
             }
 
             if (_curTopToolTipLayer != null)
@@ -97,7 +89,7 @@ namespace fooTitle
                 {
                     _tooltipLayer = caller;
                     _tooltipText = toolTipText;
-                    Main.GetInstance().Ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
+                    _tooltipForm.SetText(Element.GetStringFromExpression(_tooltipText, null));
                 }
             }
         }
@@ -105,31 +97,39 @@ namespace fooTitle
         public void UpdateToolTip(Layer caller, string toolTipText)
         {
             if (_tooltipLayer != caller)
+            {
                 return;
+            }
 
             lock (_tooltipLock)
             {
                 if (_tooltipLayer != caller)
+                {
                     return;
+                }
 
                 _tooltipText = toolTipText;
-                Main.GetInstance().Ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
+                _tooltipForm.SetText(Element.GetStringFromExpression(_tooltipText, null));
             }
         }
 
         public void ClearToolTip()
         {
             if (!_wasShowCalled)
+            {
                 return;
+            }
 
             lock (_tooltipLock)
             {
                 if (!_wasShowCalled)
+                {
                     return;
+                }
 
                 _wasShowCalled = false;
                 _toolTipTimer.Stop();
-                Main.GetInstance().Ttd.Hide();
+                _tooltipForm.Hide();
                 _tooltipText = null;
                 _tooltipLayer = null;
             }
@@ -146,11 +146,15 @@ namespace fooTitle
             { // Last layer is the top one
                 Layer layer = parent.SubLayers[i];
                 if (!layer.IsMouseOver)
+                {
                     continue;
+                }
 
                 Layer tmpLayer = GetTopLayerUnderMouse(layer);
                 if (tmpLayer.HasContent)
+                {
                     return tmpLayer;
+                }
             }
             return parent;
         }
@@ -159,12 +163,13 @@ namespace fooTitle
         {
             lock (_tooltipLock)
             {
-                Main.GetInstance().Ttd.SetText(Element.GetStringFromExpression(_tooltipText, null));
-                Main.GetInstance().Ttd.SetWindowsPos(Win32.WindowPosition.Topmost);
-                Main.GetInstance().Ttd.Show();
+                _tooltipForm.SetText(Element.GetStringFromExpression(_tooltipText, null));
+                _tooltipForm.SetWindowsPos(Win32.WindowPosition.Topmost);
+                _tooltipForm.Show();
             }
 
             _toolTipTimer.Stop();
         }
+
     }
 }

@@ -2,15 +2,30 @@
 
 namespace fooTitle
 {
-    public class ConsoleWrapper
+    public class Console
     {
+        private static Console _instance;
         private readonly IConsole _console;
         private readonly string _componentName;
 
-        public ConsoleWrapper(IConsole console)
+        private Console(IConsole console)
         {
             _console = console;
-            _componentName = Main.ComponentNameUnderscored;
+            _componentName = Constants.ComponentNameUnderscored;
+        }
+
+        public static Console Get()
+        {
+            if (_instance == null)
+            {
+                var console = Main.Get().Fb2kControls?.Console();
+                if (console != null)
+                {
+                    _instance = new Console(console);
+                }
+            }
+
+            return _instance;
         }
 
         public void LogInfo(string message)

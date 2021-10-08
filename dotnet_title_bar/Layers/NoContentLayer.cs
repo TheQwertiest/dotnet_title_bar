@@ -16,21 +16,22 @@
 *  information.
 */
 
-using System.Xml.Linq;
 using System.Drawing;
+using System.Xml.Linq;
 
 namespace fooTitle.Layers
 {
-	/// <summary>
-	/// A layer for organizing other layers, has no content itself.
-	/// </summary>
-    [LayerTypeAttribute("no-content")]
+    /// <summary>
+    /// A layer for organizing other layers, has no content itself.
+    /// </summary>
+    [LayerType("no-content")]
     public class NoContentLayer : Layer
-	{
-	    public override bool HasToolTip => false;
+    {
+        public override bool HasToolTip => false;
 
-	    public NoContentLayer(Rectangle parentRect, XElement node) : base(parentRect, node)
-		{
+        public NoContentLayer(Rectangle parentRect, XElement node, Skin skin)
+            : base(parentRect, node, skin)
+        {
         }
-	}
+    }
 }

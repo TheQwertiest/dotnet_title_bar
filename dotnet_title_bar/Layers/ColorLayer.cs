@@ -16,20 +16,21 @@
 *  information.
 */
 
-using System.Xml.Linq;
 using System.Drawing;
+using System.Xml.Linq;
 
 namespace fooTitle.Layers
 {
     /// <summary>
     /// A simple layer that is filled with specified color.
     /// </summary>
-    [LayerTypeAttribute("color")]
+    [LayerType("color")]
     public class ColorLayer : Layer
     {
         private readonly Color _color;
 
-        public ColorLayer(Rectangle parentRect, XElement node) : base(parentRect, node)
+        public ColorLayer(Rectangle parentRect, XElement node, Skin skin)
+            : base(parentRect, node, skin)
         {
             XElement contents = GetFirstChildByName(node, "contents");
             _color = ColorFromCode(contents.Attribute("color").Value);
@@ -48,20 +49,18 @@ namespace fooTitle.Layers
                     int.Parse(a, System.Globalization.NumberStyles.HexNumber),
                     int.Parse(r, System.Globalization.NumberStyles.HexNumber),
                     int.Parse(g, System.Globalization.NumberStyles.HexNumber),
-                    int.Parse(b, System.Globalization.NumberStyles.HexNumber)
-                );
+                    int.Parse(b, System.Globalization.NumberStyles.HexNumber));
             }
             catch
             {
-                Main.Console.LogWarning($"Error in text layer {Name}, invalid color code {code}.");
+                Console.Get().LogWarning($"Error in text layer {Name}, invalid color code {code}.");
                 return Color.Black;
             }
         }
 
-        protected override void DrawImpl()
+        protected override void DrawImpl(Graphics canvas)
         {
-            Display.Canvas.FillRectangle(new SolidBrush(_color), ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
+            canvas.FillRectangle(new SolidBrush(_color), ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
         }
-
     }
 }

@@ -21,27 +21,32 @@ using System;
 using System.Drawing;
 using System.Xml.Linq;
 
-namespace fooTitle.Geometries {
+namespace fooTitle.Geometries
+{
 
-    [GeometryTypeAttribute("absolute")]
-    class AbsoluteGeometry : Geometry {
+    [GeometryType("absolute")]
+    class AbsoluteGeometry : Geometry
+    {
 
         public enum AlignType
         {
             Left,
             Right
-        };
+        }
+        ;
 
         private readonly Rectangle _myParentRect;
-        
+
         /// <summary>
         /// The expression to calculate width from. May be null if no expression was given.
         /// </summary>
         private readonly string _myExprWidth;
         private int _myWidth;
-        public int Width {
+        public int Width
+        {
             get => _myWidth;
-            set {
+            set
+            {
                 _myWidth = value;
                 Update(_myParentRect);
             }
@@ -52,9 +57,11 @@ namespace fooTitle.Geometries {
         /// </summary>
         private readonly string _myExprHeight;
         private int _myHeight;
-        public int Height {
+        public int Height
+        {
             get => _myHeight;
-            set {
+            set
+            {
                 _myHeight = value;
                 Update(_myParentRect);
             }
@@ -65,24 +72,30 @@ namespace fooTitle.Geometries {
         /// </summary>
         private ExpressionPoint _myExprPosition;
         private Point _myPosition;
-        public Point Position {
+        public Point Position
+        {
             get => _myPosition;
-            set {
+            set
+            {
                 _myPosition = value;
                 Update(_myParentRect);
             }
         }
 
         private AlignType _myAlign;
-        public AlignType Align {
+        public AlignType Align
+        {
             get => _myAlign;
-            set {
+            set
+            {
                 _myAlign = value;
                 Update(_myParentRect);
             }
         }
 
-        public AbsoluteGeometry(Rectangle parentRect, XElement node) : base(parentRect, node) {
+        public AbsoluteGeometry(Rectangle parentRect, XElement node)
+            : base(parentRect, node)
+        {
             _myParentRect = parentRect;
 
             // read description from the xml
@@ -93,8 +106,8 @@ namespace fooTitle.Geometries {
             _myExprHeight = GetExpressionFromAttribute(size, "y");
 
             // get the actual values
-            _myWidth = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(size, "x", 100));
-            _myHeight = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(size, "y", 30));
+            _myWidth = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(size, "x", 100));
+            _myHeight = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(size, "y", 30));
 
             // read position
             XElement position = GetFirstChildByName(node, "position");
@@ -105,8 +118,8 @@ namespace fooTitle.Geometries {
 
             // TODO: myPosition (i.e. relative to parent) calculation should take align into account
             // get the actual values
-            _myPosition.X = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(position, "x", 0));
-            _myPosition.Y = Main.GetInstance().ScaleValue((int)GetNumberFromAttribute(position, "y", 0));
+            _myPosition.X = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(position, "x", 0));
+            _myPosition.Y = DpiHandler.ScaleValueByDpi((int)GetNumberFromAttribute(position, "y", 0));
 
             // read align
             if (GetAttributeValue(position, "align", "left") == "right")
@@ -115,7 +128,8 @@ namespace fooTitle.Geometries {
                 _myAlign = AlignType.Left;
         }
 
-        public AbsoluteGeometry(Rectangle parentRect, int width, int height, Point position) {
+        public AbsoluteGeometry(Rectangle parentRect, int width, int height, Point position)
+        {
             _myParentRect = parentRect;
             _myWidth = width;
             _myHeight = height;
@@ -123,8 +137,9 @@ namespace fooTitle.Geometries {
             _myAlign = AlignType.Left;
         }
 
-        public override void Update(Rectangle parentRect) {
-            // calculate parameters 
+        public override void Update(Rectangle parentRect)
+        {
+            // calculate parameters
             _myPosition.X = GetScaledValueFromExpression(_myExprPosition.X, _myPosition.X);
             _myPosition.Y = GetScaledValueFromExpression(_myExprPosition.Y, _myPosition.Y);
             _myWidth = GetScaledValueFromExpression(_myExprWidth, _myWidth);
@@ -146,16 +161,19 @@ namespace fooTitle.Geometries {
                     break;
             }
         }
-        
-        public override Size GetMinimalSize(Size contentSize) {
+
+        public override Size GetMinimalSize(Size contentSize)
+        {
             return new Size(Math.Max(Width, contentSize.Width), Math.Max(Height, contentSize.Height));
         }
 
-        public override Point GetPosition() {
+        public override Point GetPosition()
+        {
             return Position;
         }
 
-        public override bool IsDynamic() {
+        public override bool IsDynamic()
+        {
             return (_myExprHeight != null || _myExprPosition.X != null || _myExprPosition.Y != null || _myExprWidth != null);
         }
     }

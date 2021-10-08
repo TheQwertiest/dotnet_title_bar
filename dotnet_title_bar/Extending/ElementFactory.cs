@@ -147,7 +147,7 @@ namespace fooTitle.Extending
         protected Type elementTypeAttributeType;
 
         /// finds all elements in assembly and adds them to list of elements which can be created later
-        public void SearchAssembly(Assembly assembly)
+        public void CollectDataFromAssembly(Assembly assembly)
         {
             Type[] types = assembly.GetTypes();
 
@@ -214,10 +214,10 @@ namespace fooTitle.Extending
         private static Element CreateElement(Type elementClass, string type, object[] parameters)
         {
             // construct list of types of parameters going to the constructor
-            Type[] paramTypes = Array.ConvertAll(parameters, p => p.GetType());
+            var paramTypes = Array.ConvertAll(parameters, p => p.GetType());
 
             // find the appropriate constructor
-            ConstructorInfo cons = elementClass.GetConstructor(paramTypes);
+            var cons = elementClass.GetConstructor(paramTypes);
             if (cons == null)
             {
                 throw new NoSuitableConstructorException(type, elementClass);

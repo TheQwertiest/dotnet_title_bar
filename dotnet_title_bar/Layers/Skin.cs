@@ -1,23 +1,3 @@
-/*
-    Copyright 2005 - 2006 Roman Plasil
-	http://foo-title.sourceforge.net
-    This file is part of foo_title.
-
-    foo_title is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation; either version 2.1 of the License, or
-    (at your option) any later version.
-
-    foo_title is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with foo_title; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-
 using fooTitle.Geometries;
 using Qwr.ComponentInterface;
 using System;
@@ -31,21 +11,31 @@ using System.Xml.Linq;
 
 namespace fooTitle.Layers
 {
+    public class SkinInfo
+    {
+        public string Author;
+        public string Name;
+    }
+
     /// <summary>
     ///     Loads itself from an xml file and handles all drawing.
     /// </summary>
     public class Skin : Layer, ICallbackSender, IDisposable
     {
-        private readonly XElement _skin;
-        public List<Layer> DynamicLayers = new List<Layer>();
+        private readonly XElement _skinXml;
+        private readonly string _skinDirectory;
+        private readonly SkinForm _skinForm;
+        private readonly ToolTipForm _tooltipForm;
+        public List<Layer> DynamicLayers = new();
 
         /// <summary>
         ///     Loads the skin from the specified xml file
         /// </summary>
-        /// <param name="path">Path to the skin directory.</param>
-        public Skin(SkinDirType skinDirType, string skinDir)
+        public Skin(string skinDirectory, SkinForm skinForm, ToolTipForm tooltipForm)
         {
-            _skinDirectory = Path.Combine(Main.SkinEnumToRootPath(skinDirType), skinDir);
+            _skinForm = skinForm;
+            _tooltipForm = tooltipForm;
+            _skinDirectory = skinDirectory;
             if (!Directory.Exists(_skinDirectory))
             {
                 throw new Exception($"Can't find the skin in the following path: {_skinDirectory}");
@@ -55,80 +45,94 @@ namespace fooTitle.Layers
             XDocument document = XDocument.Load(GetSkinFilePath("skin.xml"));
 
             // read the xml document for the basic properties
-            _skin = document.Elements("skin").First();
+            _skinXml = document.Elements("skin").First();
 
-            int width = int.Parse(_skin.Attribute("width").Value);
-            int height = int.Parse(_skin.Attribute("height").Value);
-            geometry = new AbsoluteGeometry(new Rectangle(0, 0, width, height), width, height, new Point(0, 0));
+            int width = int.Parse(_skinXml.Attribute("width").Value);
+            int height = int.Parse(_skinXml.Attribute("height").Value);
+            ContainedGeometry = new AbsoluteGeometry(new Rectangle(0, 0, width, height), width, height, new Point(0, 0));
 
             // register to main for playback events
-            Main.GetInstance().PlaybackAdvancedToNewTrack += OnPlaybackNewTrack;
-            Main.GetInstance().TrackPlaybackPositionChanged += OnPlaybackTime;
-            Main.GetInstance().PlaybackPausedStateChanged += OnPlaybackPause;
-            Main.GetInstance().PlaybackStopped += OnPlaybackStop;
-        }
+            Main.Get().PlaybackAdvancedToNewTrack += OnPlaybackNewTrack;
+            Main.Get().TrackPlaybackPositionChanged += OnPlaybackTime;
+            Main.Get().PlaybackPausedStateChanged += OnPlaybackPause;
+            Main.Get().PlaybackStopped += OnPlaybackStop;
 
-        /// <summary>
-        ///     Returns the directory of the skin. Can be used for loading images and other data files.
-        /// </summary>
-        private string _skinDirectory { get; }
-
-        public ToolTip ToolTip { get; private set; }
-
-        public void Initialize(Display display)
-        {
-            Display = display;
 
             // register to mouse events
-            Display.MouseMove += Display_MouseMove;
-            Display.MouseDown += Display_MouseDown;
-            Display.MouseUp += Display_MouseUp;
-            Display.MouseLeave += Display_MouseLeave;
-            Display.MouseWheel += Display_MouseWheel;
-            Display.MouseDoubleClick += Display_MouseDoubleClick;
+            skinForm.MouseMove += Display_MouseMove;
+            skinForm.MouseDown += Display_MouseDown;
+            skinForm.MouseUp += Display_MouseUp;
+            skinForm.MouseLeave += Display_MouseLeave;
+            skinForm.MouseWheel += Display_MouseWheel;
+            skinForm.MouseDoubleClick += Display_MouseDoubleClick;
 
-            InitAnchor();
+            // Load skin data
+            InitializeAnchor();
+            LoadLayers(_skinXml);
 
-            LoadLayers(_skin);
-
-            SkinState state = Main.GetInstance().SkinState;
-            if (!state.IsStateValid(this))
+            if (!SkinState.IsStateValid(this))
             {
-                state.ResetState();
-                state.SaveState(this);
+                SkinState.ResetState();
+                SkinState.SaveState(this);
             }
             else
             {
-                state.LoadState(this);
+                SkinState.LoadState(this);
             }
 
             if (HasToolTipLayer(this))
             {
-                ToolTip = new ToolTip(display, this);
+                ToolTip = new ToolTip(_tooltipForm, _skinForm, this);
             }
 
-            geometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)geometry).Width, ((AbsoluteGeometry)geometry).Height));
+            ContainedGeometry.Update(new Rectangle(0, 0, ((AbsoluteGeometry)ContainedGeometry).Width, ((AbsoluteGeometry)ContainedGeometry).Height));
         }
 
         public void Dispose()
         {
-            Main.GetInstance().PlaybackAdvancedToNewTrack -= OnPlaybackNewTrack;
-            Main.GetInstance().TrackPlaybackPositionChanged -= OnPlaybackTime;
-            Main.GetInstance().PlaybackStopped -= OnPlaybackStop;
-            Main.GetInstance().PlaybackPausedStateChanged -= OnPlaybackPause;
+            Main.Get().PlaybackAdvancedToNewTrack -= OnPlaybackNewTrack;
+            Main.Get().TrackPlaybackPositionChanged -= OnPlaybackTime;
+            Main.Get().PlaybackStopped -= OnPlaybackStop;
+            Main.Get().PlaybackPausedStateChanged -= OnPlaybackPause;
 
-            Display.MouseMove -= Display_MouseMove;
-            Display.MouseDown -= Display_MouseDown;
-            Display.MouseUp -= Display_MouseUp;
-            Display.MouseLeave -= Display_MouseLeave;
-            Display.MouseWheel -= Display_MouseWheel;
-            Display.MouseDoubleClick -= Display_MouseDoubleClick;
+            _skinForm.MouseMove -= Display_MouseMove;
+            _skinForm.MouseDown -= Display_MouseDown;
+            _skinForm.MouseUp -= Display_MouseUp;
+            _skinForm.MouseLeave -= Display_MouseLeave;
+            _skinForm.MouseWheel -= Display_MouseWheel;
+            _skinForm.MouseDoubleClick -= Display_MouseDoubleClick;
+
+            ToolTip?.Dispose();
+            ToolTip = null;
         }
 
-        protected override Size GetMinimalSizeImpl()
+        public ToolTip ToolTip { get; private set; }
+
+        public static SkinInfo GetSkinInfo(string skinDirectory)
         {
-            // don't ask geometry..
-            return GetContentSize();
+            string skinFullPath = Path.Combine(skinDirectory, "skin.xml");
+            if (!File.Exists(skinFullPath))
+            {
+                return null;
+            }
+
+            try
+            {
+                XDocument document = XDocument.Load(skinFullPath);
+                XElement skinXml = document.Elements("skin").First();
+
+                return new SkinInfo
+                {
+                    Name = GetAttributeValue(skinXml, "name", null),
+                    Author = GetAttributeValue(skinXml, "author", null)
+                };
+            }
+            catch (XmlException e)
+            {
+                Console.Get().LogError($"Failed to parse skin from {skinFullPath}:\n\n"
+                                       + $"{e}");
+                return null;
+            }
         }
 
         /// <summary>
@@ -137,9 +141,9 @@ namespace fooTitle.Layers
         /// <param name="newSize">The new size the skin should have</param>
         public void Resize(Size newSize)
         {
-            ((AbsoluteGeometry)geometry).Width = newSize.Width;
-            ((AbsoluteGeometry)geometry).Height = newSize.Height;
-            foreach (Layer l in layers)
+            ((AbsoluteGeometry)ContainedGeometry).Width = newSize.Width;
+            ((AbsoluteGeometry)ContainedGeometry).Height = newSize.Height;
+            foreach (Layer l in ContainedLayers)
             {
                 l.UpdateGeometry(ClientRect);
             }
@@ -151,11 +155,11 @@ namespace fooTitle.Layers
         public void CheckSize()
         {
             Size size = GetMinimalSize();
-            if (size.Width != ((AbsoluteGeometry)geometry).Width || size.Height != ((AbsoluteGeometry)geometry).Height)
+            if (size.Width != ((AbsoluteGeometry)ContainedGeometry).Width || size.Height != ((AbsoluteGeometry)ContainedGeometry).Height)
             {
                 Resize(size);
-                Main.GetInstance().Display.SetSize(ClientRect.Width, ClientRect.Height);
-                Main.GetInstance().RequestRedraw(true);
+                _skinForm.SetSize(ClientRect.Width, ClientRect.Height);
+                Main.Get().RedrawTitleBar(true);
             }
         }
 
@@ -167,7 +171,7 @@ namespace fooTitle.Layers
         {
             Size size = GetMinimalSize();
             Resize(size);
-            Main.GetInstance().Display.SetSize(ClientRect.Width, ClientRect.Height);
+            _skinForm.SetSize(ClientRect.Width, ClientRect.Height);
         }
 
         /// <summary>
@@ -199,63 +203,11 @@ namespace fooTitle.Layers
 
             return retImg;
         }
-        public class SkinInfo
+
+        protected override Size GetMinimalSizeImpl()
         {
-            public string Author;
-            public string Name;
-        }
-        public static SkinInfo GetSkinInfo(SkinDirType skinDirType, string skinPath)
-        {
-            string skinFullPath = Path.Combine(Main.SkinEnumToRootPath(skinDirType), skinPath, "skin.xml");
-            if (!File.Exists(skinFullPath))
-            {
-                return null;
-            }
-
-            try
-            {
-                XDocument document = XDocument.Load(skinFullPath);
-
-                XElement skin = document.Elements("skin").First();
-
-                return new SkinInfo
-                {
-                    Name = GetAttributeValue(skin, "name", null),
-                    Author = GetAttributeValue(skin, "author", null)
-                };
-            }
-            catch (XmlException e)
-            {
-                Main.Console.LogError($"Failed to parse skin from {skinPath}:\n\n"
-                                      + $"{e}");
-                return null;
-            }
-        }
-
-        /// <summary>
-        ///     Does not check for exceptions
-        /// </summary>
-        /// <param name="eventObj">This must be a delegate</param>
-        /// <param name="p">Parameters for the delegate</param>
-        protected static void SendEvent(object eventObj, params object[] p)
-        {
-            if (eventObj != null)
-            {
-                Delegate d = (Delegate)eventObj;
-                d.DynamicInvoke(p);
-            }
-        }
-
-        protected static void SendEventCatch(object eventObj, params object[] p)
-        {
-            try
-            {
-                SendEvent(eventObj, p);
-            }
-            catch (Exception e)
-            {
-                Utils.ReportErrorWithPopup(e.ToString());
-            }
+            // don't ask geometry..
+            return GetContentSize();
         }
 
         /// <summary>
@@ -268,103 +220,106 @@ namespace fooTitle.Layers
             return Path.Combine(_skinDirectory, fileName);
         }
 
-        private void InitAnchor()
+        private void InitializeAnchor()
         {
-            string anchorTypeStr = GetAttributeValue(_skin, "anchor", "top,left");
-            float anchorDx = GetNumberFromAttribute(_skin, "anchor_dx", 0);
-            float anchorDy = GetNumberFromAttribute(_skin, "anchor_dy", 0);
+            string anchorTypeStr = GetAttributeValue(_skinXml, "anchor", "top,left");
+            float anchorDx = GetNumberFromAttribute(_skinXml, "anchor_dx", 0);
+            float anchorDy = GetNumberFromAttribute(_skinXml, "anchor_dy", 0);
 
-            DockAnchor.Type anchorType = DockAnchor.Type.None;
+            DockAnchorType anchorType = DockAnchorType.None;
             foreach (string i in anchorTypeStr.ToLower().Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 switch (i)
                 {
                     case "top":
-                        anchorType |= DockAnchor.Type.Top;
+                        anchorType |= DockAnchorType.Top;
                         break;
                     case "bottom":
-                        anchorType |= DockAnchor.Type.Bottom;
+                        anchorType |= DockAnchorType.Bottom;
                         break;
                     case "right":
-                        anchorType |= DockAnchor.Type.Right;
+                        anchorType |= DockAnchorType.Right;
                         break;
                     case "left":
-                        anchorType |= DockAnchor.Type.Left;
+                        anchorType |= DockAnchorType.Left;
                         break;
                     case "center":
-                        anchorType |= DockAnchor.Type.Center;
+                        anchorType |= DockAnchorType.Center;
                         break;
                 }
             }
 
-            Display.InitializeAnchor(anchorType, anchorDx, anchorDy);
+            _skinForm.InitializeAnchor(anchorType, anchorDx, anchorDy);
         }
 
         private static bool HasToolTipLayer(Layer layer)
         {
-            foreach (Layer i in layer.SubLayers)
-            {
-                if (i.HasToolTip || HasToolTipLayer(i))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            var result_layer = layer.SubLayers.FirstOrDefault(i => i.HasToolTip || HasToolTipLayer(i));
+            return result_layer != null;
         }
 
         private static bool IsMouseOverButton(Layer layer)
         {
-            foreach (Layer i in layer.SubLayers)
-            {
-                if (i.Type == "button" && i.IsMouseOver || IsMouseOverButton(i))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            var result_layer = layer.SubLayers.FirstOrDefault(i => i.Type == "button" && i.IsMouseOver || IsMouseOverButton(i));
+            return result_layer != null;
         }
 
-        #region Event handling(public)
+        /// <summary>
+        ///     Does not check for exceptions
+        /// </summary>
+        /// <param name="eventObj">This must be a delegate</param>
+        /// <param name="p">Parameters for the delegate</param>
+        private static void SendEvent(object eventObj, params object[] p)
+        {
+            if (eventObj != null)
+            {
+                Delegate d = (Delegate)eventObj;
+                d.DynamicInvoke(p);
+            }
+        }
 
-        #region IPlayCallbackSender Members
+        private static void SendEventCatch(object eventObj, params object[] p)
+        {
+            try
+            {
+                SendEvent(eventObj, p);
+            }
+            catch (Exception e)
+            {
+                Utils.ReportErrorWithPopup(e.ToString());
+            }
+        }
 
 #pragma warning disable 0168, 219, 67
-        public event TrackPlaybackPositionChangedEventHandler TrackPlaybackPositionChanged;
-        public event PlaybackAdvancedToNewTrackEventHandler PlaybackAdvancedToNewTrack;
-        public event QuitEventHandler Quit;
-        public event InitializedEventHandler Initialized;
+        public event TrackPlaybackPositionChanged_EventHandler TrackPlaybackPositionChanged;
+        public event PlaybackAdvancedToNewTrack_EventHandler PlaybackAdvancedToNewTrack;
+        public event Quit_EventHandler Quit;
+        public event Initialized_EventHandler Initialized;
         public event PlaybackStoppedEventhandler PlaybackStopped;
-        public event PlaybackPausedStateChangedEventHandler PlaybackPausedStateChanged;
-        public event DynamicTrackInfoChangedEventHandler DynamicTrackInfoChanged;
+        public event PlaybackPausedStateChanged_EventHandler PlaybackPausedStateChanged;
+        public event DynamicTrackInfoChanged_EventHandler DynamicTrackInfoChanged;
 #pragma warning restore 0168, 219, 67
 
-        #endregion
+        public event MouseEventHandler MouseMove;
+        public event MouseEventHandler MouseDown;
+        public event MouseEventHandler MouseDoubleClick;
+        public event MouseEventHandler MouseUp;
+        public event EventHandler MouseLeave;
+        public event MouseEventHandler MouseWheel;
 
-        public event MouseEventHandler OnMouseMove;
-        public event MouseEventHandler OnMouseDown;
-        public event MouseEventHandler OnMouseDoubleClick;
-        public event MouseEventHandler OnMouseUp;
-        public event EventHandler OnMouseLeave;
-        public event MouseEventHandler OnMouseWheel;
-
-        public void OnPlaybackTime(double time)
+        private void OnPlaybackTime(double time)
         {
-            // pass it on
             SendEvent(TrackPlaybackPositionChanged, time);
         }
 
         public void OnPlaybackNewTrack(IMetadbHandle song)
         {
-            // pass it on
             SendEvent(PlaybackAdvancedToNewTrack, song);
             CheckSize();
         }
 
         public void OnPlaybackStop(PlaybackStopReason reason)
         {
-            // pass it on
             SendEvent(PlaybackStopped, reason);
             if (reason != PlaybackStopReason.StartingAnother)
             {
@@ -374,50 +329,43 @@ namespace fooTitle.Layers
 
         public void OnPlaybackPause(bool state)
         {
-            // pass it on
             SendEvent(PlaybackPausedStateChanged, state);
         }
 
-        #endregion // Event handling (public)
-
-        #region Event handling(private)
-
         private void Display_MouseUp(object sender, MouseEventArgs e)
         {
-            SendEventCatch(OnMouseUp, sender, e);
+            SendEventCatch(MouseUp, sender, e);
             ToolTip?.OnMouseUp(sender, e);
         }
 
         private void Display_MouseDown(object sender, MouseEventArgs e)
         {
-            SendEventCatch(OnMouseDown, sender, e);
+            SendEventCatch(MouseDown, sender, e);
             ToolTip?.OnMouseDown(sender, e);
         }
 
         private void Display_MouseMove(object sender, MouseEventArgs e)
         {
-            SendEventCatch(OnMouseMove, sender, e);
+            SendEventCatch(MouseMove, sender, e);
             ToolTip?.OnMouseMove(sender, e);
-            Main.GetInstance().CanDragDisplay = !IsMouseOverButton(this);
+            Main.Get().CanDragDisplay = !IsMouseOverButton(this);
         }
 
         private void Display_MouseLeave(object sender, EventArgs e)
         {
-            Main.GetInstance().CanDragDisplay = true;
-            SendEventCatch(OnMouseLeave, sender, e);
+            Main.Get().CanDragDisplay = true;
+            SendEventCatch(MouseLeave, sender, e);
             ToolTip?.ClearToolTip();
         }
 
         private void Display_MouseWheel(object sender, EventArgs e)
         {
-            SendEventCatch(OnMouseWheel, sender, e);
+            SendEventCatch(MouseWheel, sender, e);
         }
 
         private void Display_MouseDoubleClick(object sender, EventArgs e)
         {
-            SendEventCatch(OnMouseDoubleClick, sender, e);
+            SendEventCatch(MouseDoubleClick, sender, e);
         }
-
-        #endregion // Event handling (private)
     }
 }

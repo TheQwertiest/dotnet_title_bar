@@ -15,31 +15,24 @@
 *  information.
 */
 
+using fooTitle.Config;
 using System.Linq;
 using System.Xml.Linq;
-using fooTitle.Config;
 
 namespace fooTitle.Layers
 {
     public class SkinState
     {
-        private readonly XDocument _doc = new XDocument();
-        private XElement State
-        {
-            set => _skinState.Value = value;
-            get => _skinState.Value;
-        }
+        private static readonly ConfXml _skinState = Configs.Skin_State;
 
-        private readonly ConfXml _skinState = new ConfXml("skin/state");
-
-        public void ResetState()
+        public static void ResetState()
         {
             _skinState.Reset();
         }
 
-        public void LoadState(Skin skin)
+        public static void LoadState(Skin skin)
         {
-            LoadStateInternal(skin, State);
+            LoadStateInternal(skin, _skinState.Value);
         }
 
         private static void LoadStateInternal(Layer layer, XElement curNode)
@@ -50,27 +43,29 @@ namespace fooTitle.Layers
                                                                                 && el.Attribute("name").Value == i.Name);
 
                 if (i.IsPersistent && iNode?.Attribute("enabled") != null)
+                {
                     i.Enabled = bool.Parse(iNode.Attribute("enabled").Value);
+                }
 
                 LoadStateInternal(i, iNode);
             }
         }
 
-        public void SaveState(Skin skin)
+        public static void SaveState(Skin skin)
         {
             XElement newNode = new XElement("skin");
             SaveStateInternal(skin, newNode);
 
             _skinState.Reset();
-            State = newNode;
+            _skinState.Value = newNode;
 
             if (!Properties.IsOpen)
-            {// Config should not be written when preferences page is open, since user might not apply changes
-                ConfValuesManager.GetInstance().SaveTo(Main.GetInstance().Config);
+            { // Config should not be written when preferences page is open, since user might not apply changes
+                ConfValuesManager.GetInstance().SaveTo(Main.Get().Config);
             }
         }
 
-        private void SaveStateInternal(Layer layer, XElement curNode)
+        private static void SaveStateInternal(Layer layer, XElement curNode)
         {
             foreach (Layer i in layer.SubLayers)
             {
@@ -87,19 +82,21 @@ namespace fooTitle.Layers
             }
         }
 
-        public bool IsStateValid(Skin skin)
+        public static bool IsStateValid(Skin skin)
         {
-            return State != null && IsStateValidInternal(skin, State);
+            return _skinState.Value != null && IsStateValidInternal(skin, _skinState.Value);
         }
 
         private static bool IsStateValidInternal(Layer layer, XElement curNode)
         {
             foreach (Layer i in layer.SubLayers)
             {
-                XElement iNode = curNode.Elements("layer").FirstOrDefault(el => el.Attribute("name") != null 
+                XElement iNode = curNode.Elements("layer").FirstOrDefault(el => el.Attribute("name") != null
                                                                                 && el.Attribute("name").Value == i.Name);
                 if (iNode == null || !IsStateValidInternal(i, iNode))
+                {
                     return false;
+                }
             }
 
             return true;

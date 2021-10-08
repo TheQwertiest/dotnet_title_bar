@@ -26,56 +26,47 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
-
 namespace fooTitle.Layers
 {
-    internal enum MouseActionType
+    public enum MouseActionType
     {
         Click,
         DoubleClick,
         Wheel,
     }
 
-    internal interface IButtonAction
+    public interface IButtonAction
     {
-        void Init(XElement node);
+        void Init(XElement node, Skin skin);
         void Run(MouseButtons button, int clicks, int delta);
         MouseActionType GetMouseActionType();
     };
 
-    internal enum ScrollDirection
+    public enum ScrollDirection
     {
         Up,
         Down,
         None,
     }
 
-    internal abstract class ButtonAction : IButtonAction
+    public abstract class ButtonAction : IButtonAction
     {
+        protected Skin ParentSkin;
         protected MouseButtons button;
         protected int clicks;
         protected ScrollDirection scrollDir;
 
         private static MouseButtons StringToButton(string b)
         {
-            switch (b)
+            return b switch
             {
-                case "left":
-                case "left_doubleclick":
-                    return MouseButtons.Left;
-                case "right":
-                case "right_doubleclick":
-                    return MouseButtons.Right;
-                case "middle":
-                    return MouseButtons.Middle;
-                case "back":
-                    return MouseButtons.XButton1;
-                case "forward":
-                    return MouseButtons.XButton2;
-                case "all":
-                default:
-                    return MouseButtons.None;
-            }
+                "left" or "left_doubleclick" => MouseButtons.Left,
+                "right" or "right_doubleclick" => MouseButtons.Right,
+                "middle" => MouseButtons.Middle,
+                "back" => MouseButtons.XButton1,
+                "forward" => MouseButtons.XButton2,
+                _ => MouseButtons.None,
+            };
         }
 
         private static ScrollDirection StringToDir(string d)
@@ -92,8 +83,10 @@ namespace fooTitle.Layers
             }
         }
 
-        public virtual void Init(XElement node)
+        public virtual void Init(XElement node, Skin skin)
         {
+            ParentSkin = skin;
+
             string buttonStr = Element.GetAttributeValue(node, "button", "left").ToLowerInvariant();
             button = StringToButton(buttonStr);
             clicks = "left_doubleclick" == buttonStr ? 2 : 1;
@@ -132,13 +125,13 @@ namespace fooTitle.Layers
         }
     }
 
-    internal class MainMenuAction : ButtonAction
+    public class MainMenuAction : ButtonAction
     {
         private string _originalCmd;
 
-        public override void Init(XElement node)
+        public override void Init(XElement node, Skin skin)
         {
-            base.Init(node);
+            base.Init(node, skin);
             _originalCmd = Element.GetNodeValue(node);
         }
 
@@ -149,18 +142,18 @@ namespace fooTitle.Layers
                 return;
             }
 
-            Main.GetInstance().Fb2kControls.ExecuteMainMenuCommand(_originalCmd);
+            Main.Get().Fb2kControls.ExecuteMainMenuCommand(_originalCmd);
         }
     };
 
-    internal class ContextMenuAction : ButtonAction
+    public class ContextMenuAction : ButtonAction
     {
         private bool _useNowPlaying;
         private string _cmdPath;
 
-        public override void Init(XElement node)
+        public override void Init(XElement node, Skin skin)
         {
-            base.Init(node);
+            base.Init(node, skin);
             _useNowPlaying = (Element.GetAttributeValue(node, "context", "nowplaying").ToLowerInvariant() == "nowplaying");
             _cmdPath = Element.GetNodeValue(node);
         }
@@ -179,22 +172,22 @@ namespace fooTitle.Layers
             // TODO: fix the old scenario - it used active item selection for context menu when _useNowPlaying is false
             try
             {
-                Main.GetInstance().Fb2kControls.ExecuteContextMenuCommand(_cmdPath);
+                Main.Get().Fb2kControls.ExecuteContextMenuCommand(_cmdPath);
             }
             catch (Exception)
             {
-                Main.Console.LogWarning($"Contextmenu command {_cmdPath} not found.");
+                Console.Get().LogWarning($"Contextmenu command {_cmdPath} not found.");
             }
         }
     }
 
-    internal class LegacyMainMenuCommand : ButtonAction
+    public class LegacyMainMenuCommand : ButtonAction
     {
         private string _commandName;
 
-        public override void Init(XElement node)
+        public override void Init(XElement node, Skin skin)
         {
-            base.Init(node);
+            base.Init(node, skin);
             _commandName = Element.GetNodeValue(node);
         }
 
@@ -204,12 +197,13 @@ namespace fooTitle.Layers
             {
                 return;
             }
-            Main.GetInstance().Fb2kControls.ExecuteMainMenuCommand(_commandName);
+            Main.Get().Fb2kControls.ExecuteMainMenuCommand(_commandName);
         }
     };
 
-    internal class ToggleAction : ButtonAction
+    public class ToggleAction : ButtonAction
     {
+        private Skin _parentSkin;
         private string _target;
 
         private enum Kind
@@ -220,9 +214,11 @@ namespace fooTitle.Layers
         }
         private Kind _only;
 
-        public override void Init(XElement node)
+        public override void Init(XElement node, Skin skin)
         {
-            base.Init(node);
+            base.Init(node, skin);
+
+            _parentSkin = skin;
             _target = Element.GetAttributeValue(node, "target", "");
 
             string only = Element.GetAttributeValue(node, "only", "toggle").ToLowerInvariant();
@@ -246,10 +242,10 @@ namespace fooTitle.Layers
             {
                 return;
             }
-            Layer root = LayerTools.FindLayerByName(Main.GetInstance().CurrentSkin, _target);
+            Layer root = LayerTools.FindLayerByName(ParentSkin, _target);
             if (root == null)
             {
-                Main.Console.LogWarning($"Enable action couldn't find layer {_target}.");
+                Console.Get().LogWarning($"Enable action couldn't find layer {_target}.");
                 return;
             }
 
@@ -268,8 +264,8 @@ namespace fooTitle.Layers
         }
     };
 
-    [LayerTypeAttribute("button")]
-    internal class ButtonLayer : Layer
+    [LayerType("button")]
+    public class ButtonLayer : Layer
     {
         // action register
         public static Dictionary<string, Type> Actions = new Dictionary<string, Type>();
@@ -291,7 +287,8 @@ namespace fooTitle.Layers
 
         private ICollection<IButtonAction> _actions;
 
-        public ButtonLayer(Rectangle parentRect, XElement node) : base(parentRect, node)
+        public ButtonLayer(Rectangle parentRect, XElement node, Skin skin)
+            : base(parentRect, node, skin)
         {
             XElement contents = GetFirstChildByName(node, "contents");
             ReadActions(contents);
@@ -299,19 +296,19 @@ namespace fooTitle.Layers
             XElement img = GetFirstChildByNameOrNull(contents, "normalImg");
             if (img != null)
             {
-                myNormalImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attribute("src").Value);
+                myNormalImage = ParentSkin.GetSkinImage(img.Attribute("src").Value);
             }
 
             img = GetFirstChildByNameOrNull(contents, "overImg");
             if (img != null)
             {
-                myOverImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attribute("src").Value);
+                myOverImage = ParentSkin.GetSkinImage(img.Attribute("src").Value);
             }
 
             img = GetFirstChildByNameOrNull(contents, "downImg");
             if (img != null)
             {
-                myDownImage = Main.GetInstance().CurrentSkin.GetSkinImage(img.Attribute("src").Value);
+                myDownImage = ParentSkin.GetSkinImage(img.Attribute("src").Value);
             }
 
             RegisterMouseEvents();
@@ -330,15 +327,15 @@ namespace fooTitle.Layers
             }
 
             mouseDown = false;
-            Main.GetInstance().RequestRedraw();
+            Main.Get().RedrawTitleBar();
 
             if (e.Clicks == (e.Clicks >> 1) << 1)
-            {// double clicks
+            { // double clicks
                 return;
             }
 
             RunActions(sender, e);
-            Main.GetInstance().RequestRedraw(true);
+            Main.Get().RedrawTitleBar(true);
         }
 
         private void OnMouseDoubleClick(object sender, MouseEventArgs e)
@@ -349,7 +346,7 @@ namespace fooTitle.Layers
             }
 
             RunActions(sender, e);
-            Main.GetInstance().RequestRedraw(true);
+            Main.Get().RedrawTitleBar(true);
         }
 
         private void OnMouseWheel(object sender, MouseEventArgs e)
@@ -360,7 +357,7 @@ namespace fooTitle.Layers
             }
 
             RunActions(sender, e);
-            Main.GetInstance().RequestRedraw(true);
+            Main.Get().RedrawTitleBar(true);
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
@@ -368,11 +365,13 @@ namespace fooTitle.Layers
             bool wasMouseOne = mouseOn;
             mouseOn = ClientRect.Contains(e.X, e.Y);
             if (!mouseOn)
+            {
                 mouseDown = false;
+            }
 
             if (wasMouseOne != mouseOn)
             {
-                Main.GetInstance().RequestRedraw();
+                Main.Get().RedrawTitleBar();
             }
         }
 
@@ -384,7 +383,7 @@ namespace fooTitle.Layers
             }
 
             mouseDown = true;
-            Main.GetInstance().RequestRedraw();
+            Main.Get().RedrawTitleBar();
         }
 
         private void RunActions(object sender, MouseEventArgs e)
@@ -393,27 +392,38 @@ namespace fooTitle.Layers
             foreach (IButtonAction action in _actions)
             {
                 if (action.GetType() == typeof(ToggleAction))
+                {
                     hasToggle = true;
+                }
+
                 action.Run(e.Button, e.Clicks, e.Delta);
             }
 
             if (hasToggle)
-                Main.GetInstance().SkinState.SaveState(Main.GetInstance().CurrentSkin);
+            {
+                SkinState.SaveState(ParentSkin);
+            }
         }
 
-        protected override void DrawImpl()
+        protected override void DrawImpl(Graphics canvas)
         {
             Bitmap toDraw;
             if (mouseDown)
+            {
                 toDraw = myDownImage;
+            }
             else if (mouseOn)
+            {
                 toDraw = myOverImage;
+            }
             else
+            {
                 toDraw = myNormalImage;
+            }
 
             if (toDraw != null)
             {
-                Display.Canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
+                canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
             }
         }
 
@@ -424,11 +434,12 @@ namespace fooTitle.Layers
             foreach (ConstructorInfo cons in type.GetConstructors())
             {
                 if (cons.GetParameters().Length == 0)
-                    return (T)cons.Invoke(new object[] { });
+                {
+                    return (T)cons.Invoke(Array.Empty<object>());
+                }
             }
 
             throw new InvalidOperationException("No parameterless constructor found for class " + type.ToString());
-
         }
 
         private void ReadActions(XElement node)
@@ -438,7 +449,9 @@ namespace fooTitle.Layers
             foreach (XElement child in node.Elements())
             {
                 if (child.Name != "action")
+                {
                     continue;
+                }
 
                 string type = GetAttributeValue(child, "type", "legacy");
                 Type actionClass;
@@ -448,7 +461,7 @@ namespace fooTitle.Layers
                 }
 
                 IButtonAction newAction = ConstructParameterless<IButtonAction>(actionClass);
-                newAction.Init(child);
+                newAction.Init(child, ParentSkin);
                 _actions.Add(newAction);
             }
         }
@@ -474,26 +487,24 @@ namespace fooTitle.Layers
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-
             }
 
-            Main.GetInstance().CurrentSkin.OnMouseMove += OnMouseMove;
-            Main.GetInstance().CurrentSkin.OnMouseLeave += OnMouseLeave;
+            ParentSkin.MouseMove += OnMouseMove;
+            ParentSkin.MouseLeave += OnMouseLeave;
 
             if (clickIsSet)
             {
-                Main.GetInstance().CurrentSkin.OnMouseDown += OnMouseDown;
-                Main.GetInstance().CurrentSkin.OnMouseUp += OnMouseUp;
+                ParentSkin.MouseDown += OnMouseDown;
+                ParentSkin.MouseUp += OnMouseUp;
             }
             if (wheelIsSet)
             {
-                Main.GetInstance().CurrentSkin.OnMouseWheel += OnMouseWheel;
+                ParentSkin.MouseWheel += OnMouseWheel;
             }
             if (doubleClickIsSet)
             {
-                Main.GetInstance().CurrentSkin.OnMouseDoubleClick += OnMouseDoubleClick;
+                ParentSkin.MouseDoubleClick += OnMouseDoubleClick;
             }
         }
-
     }
 }

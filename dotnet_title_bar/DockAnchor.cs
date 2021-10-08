@@ -20,43 +20,43 @@ using System.Drawing;
 
 namespace fooTitle
 {
-    internal class DockAnchor
+    [Flags]
+    public enum DockAnchorType
     {
-        private readonly Display _display;
+        None = 0,
+        Left = 1,
+        Right = 1 << 1,
+        Top = 1 << 2,
+        Bottom = 1 << 3,
+        Center = 1 << 4,
+    }
+
+    public class DockAnchor
+    {
+        private readonly SkinForm _display;
         private double _anchorDx = 0;
         private double _anchorDy = 0;
         private int _anchorX = 0;
         private int _anchorY = 0;
-        private DockAnchor.Type _anchorType = DockAnchor.Type.Left | DockAnchor.Type.Top;
+        private DockAnchorType _anchorType = DockAnchorType.Left | DockAnchorType.Top;
 
-        internal DockAnchor(Display display)
+        public DockAnchor(SkinForm display)
         {
             _display = display;
         }
 
-        [Flags]
-        public enum Type
-        {
-            None = 0,
-            Left = 1,
-            Right = 1 << 1,
-            Top = 1 << 2,
-            Bottom = 1 << 3,
-            Center = 1 << 4,
-        }
-
-        internal void Initialize(DockAnchor.Type type, double dx, double dy)
+        public void Initialize(DockAnchorType type, double dx, double dy)
         {
             _anchorType = type;
 
             _anchorDx = 0.5 /*dx*/;
             _anchorDy = 0.5 /*dy*/;
 
-            if ((_anchorType & DockAnchor.Type.Left) != 0)
+            if ((_anchorType & DockAnchorType.Left) != 0)
             {
                 _anchorDx = 0;
             }
-            else if ((_anchorType & DockAnchor.Type.Right) != 0)
+            else if ((_anchorType & DockAnchorType.Right) != 0)
             {
                 _anchorDx = 1;
             }
@@ -65,11 +65,11 @@ namespace fooTitle
                 _anchorDx = 0.5;
             }
 
-            if ((_anchorType & DockAnchor.Type.Top) != 0)
+            if ((_anchorType & DockAnchorType.Top) != 0)
             {
                 _anchorDy = 0;
             }
-            else if ((_anchorType & DockAnchor.Type.Bottom) != 0)
+            else if ((_anchorType & DockAnchorType.Bottom) != 0)
             {
                 _anchorDy = 1;
             }
@@ -82,18 +82,18 @@ namespace fooTitle
             _anchorX = anchorPos.x;
             _anchorY = anchorPos.y;
         }
-        internal Win32.Point GetPosition()
+        public Win32.Point GetPosition()
         {
             return CalculatePositionFromWindow();
         }
 
-        internal void SetPosition(int anchorX, int anchorY)
+        public void SetPosition(int anchorX, int anchorY)
         {
             _anchorX = anchorX;
             _anchorY = anchorY;
         }
 
-        internal Win32.Point GetWindowPosition()
+        public Win32.Point GetWindowPosition()
         {
             int x = _anchorX - (int)(_display.Width * _anchorDx);
             int y = _anchorY - (int)(_display.Height * _anchorDy);
@@ -101,7 +101,7 @@ namespace fooTitle
             return new Win32.Point(x, y);
         }
 
-        internal void Draw()
+        public void Draw()
         {
             int anchorRelativeX = Math.Min((int)(_anchorDx * _display.Width), _display.Width - 1);
             int anchorRelativeY = Math.Min((int)(_anchorDy * _display.Height), _display.Height - 1);

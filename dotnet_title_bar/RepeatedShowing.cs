@@ -1,23 +1,3 @@
-/*
-    Copyright 2005 - 2006 Roman Plasil
-	http://foo-title.sourceforge.net
-    This file is part of foo_title.
-
-    foo_title is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation; either version 2.1 of the License, or
-    (at your option) any later version.
-
-    foo_title is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with foo_title; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-
 using fooTitle.Config;
 using System;
 using System.Windows.Forms;
@@ -30,27 +10,26 @@ namespace fooTitle
     /// </summary>
     public class RepeatedShowing
     {
-        private readonly ConfBool _reShowOnTop;
+        private readonly ConfBool _reShowOnTop = Configs.Display_ShouldRefreshOnTop;
+        private readonly ConfEnum<Win32.WindowPosition> _windowPosistion = Configs.Display_WindowPosition;
         private readonly Timer _timer = new() { Interval = 1000 * 1 * 60 }; // every minute
-        private readonly Main _main;
+        private readonly SkinForm _display;
 
-        public RepeatedShowing()
+        public RepeatedShowing(SkinForm display)
         {
-            _main = Main.GetInstance();
+            _display = display;
 
-            this._timer.Tick += Timer_TickEventHandler;
+            _timer.Tick += Timer_Tick_EventHandler;
 
-            this._reShowOnTop = Configs.Display_ShouldRefreshOnTop;
-            this._reShowOnTop.Changed += ReShowOnTop_OnChangedEventHandler;
+            _reShowOnTop.Changed += ReShowOnTop_Changed_EventHandler;
+            _windowPosistion.Changed += WindowPosition_Changed_EventHandler;
 
-            _main.Display.WindowPosition.Changed += WindowPosition_OnChangedEventHandler;
-
-            this.UpdateTimerState();
+            UpdateTimerState();
         }
 
         private void UpdateTimerState()
         {
-            if (_reShowOnTop.Value && _main.Display.WindowPosition.Value == Win32.WindowPosition.Topmost)
+            if (_reShowOnTop.Value && _windowPosistion.Value == Win32.WindowPosition.Topmost)
             {
                 _timer.Start();
             }
@@ -60,17 +39,17 @@ namespace fooTitle
             }
         }
 
-        private void WindowPosition_OnChangedEventHandler(string name)
+        private void WindowPosition_Changed_EventHandler(string name)
         {
             UpdateTimerState();
         }
 
-        private void Timer_TickEventHandler(object sender, EventArgs e)
+        private void Timer_Tick_EventHandler(object sender, EventArgs e)
         {
-            _main.Display?.SetWindowsPos(Win32.WindowPosition.Topmost);
+            _display.SetWindowsPos(Win32.WindowPosition.Topmost);
         }
 
-        private void ReShowOnTop_OnChangedEventHandler(string name)
+        private void ReShowOnTop_Changed_EventHandler(string name)
         {
             UpdateTimerState();
         }

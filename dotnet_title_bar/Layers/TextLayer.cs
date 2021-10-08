@@ -26,38 +26,25 @@ using System.Xml.Linq;
 
 namespace fooTitle.Layers
 {
-    [LayerTypeAttribute("text")]
+    [LayerType("text")]
     public class TextLayer : Layer
     {
-        protected class LabelPart
-        {
-            public string text;
-            public string formatted;
-            public Font font;
-            public Color color;
+        protected string _defaultText;
 
-            // Font properties
-            public string fontName;
-            public int fontSize;
-            public bool isBold;
-            public bool isItalic;
-        }
+        protected LabelPart _left = new();
+        protected LabelPart _right = new();
 
-        protected string defaultText;
+        protected int _space;
+        protected int _angle;
 
-        protected LabelPart left = new LabelPart();
-        protected LabelPart right = new LabelPart();
-
-        protected int space;
-        protected int angle;
-
-        public TextLayer(Rectangle parentRect, XElement node) : base(parentRect, node)
+        public TextLayer(Rectangle parentRect, XElement node, Skin skin)
+            : base(parentRect, node, skin)
         {
             XElement contents = GetFirstChildByName(node, "contents");
 
             // read the spacing
-            space = GetCastedAttributeValue(contents, "spacing", 20);
-            angle = GetCastedAttributeValue(contents, "angle", 0);
+            _space = GetCastedAttributeValue(contents, "spacing", 20);
+            _angle = GetCastedAttributeValue(contents, "angle", 0);
 
             // read the default font
             LabelPart empty = new LabelPart
@@ -76,20 +63,19 @@ namespace fooTitle.Layers
                 AddLabel(n, def);
             }
 
-            defaultText = "";
+            _defaultText = "";
             foreach (XElement n in contents.Elements())
             {
                 if (n.Name == "defaultText")
-                    defaultText = GetNodeValue(n, false);
+                {
+                    _defaultText = GetNodeValue(n, false);
+                }
             }
 
-            if (Main.GetInstance().CurrentSkin != null)
-            {
-                Main.GetInstance().CurrentSkin.PlaybackAdvancedToNewTrack += OnPlaybackNewTrack;
-                Main.GetInstance().CurrentSkin.TrackPlaybackPositionChanged += OnPlaybackTime;
-                Main.GetInstance().CurrentSkin.PlaybackStopped += CurrentSkin_OnPlaybackStopEvent;
-                Main.GetInstance().CurrentSkin.PlaybackPausedStateChanged += CurrentSkin_OnPlaybackPauseEvent;
-            }
+            ParentSkin.PlaybackAdvancedToNewTrack += OnPlaybackNewTrack;
+            ParentSkin.TrackPlaybackPositionChanged += OnPlaybackTime;
+            ParentSkin.PlaybackStopped += CurrentSkin_OnPlaybackStopEvent;
+            ParentSkin.PlaybackPausedStateChanged += CurrentSkin_OnPlaybackPauseEvent;
         }
 
         public void CurrentSkin_OnPlaybackPauseEvent(bool state)
@@ -110,39 +96,66 @@ namespace fooTitle.Layers
             LabelPart res = new LabelPart();
 
             if (node.Attribute("size") != null)
+            {
                 res.fontSize = int.Parse(node.Attribute("size").Value);
+            }
             else
+            {
                 res.fontSize = def.fontSize;
+            }
 
             if (node.Attribute("italic") != null)
+            {
                 res.isItalic = bool.Parse(node.Attribute("italic").Value);
+            }
             else
+            {
                 res.isItalic = def.isItalic;
+            }
 
             if (node.Attribute("bold") != null)
+            {
                 res.isBold = bool.Parse(node.Attribute("bold").Value);
+            }
             else
+            {
                 res.isBold = def.isBold;
+            }
 
             if (node.Attribute("font") != null)
+            {
                 res.fontName = node.Attribute("font").Value;
+            }
             else
+            {
                 res.fontName = def.fontName;
+            }
 
             if (node.Attribute("color") != null)
+            {
                 res.color = ColorFromCode(node.Attribute("color").Value);
+            }
             else
+            {
                 res.color = def.color;
+            }
 
             FontStyle fontStyle = FontStyle.Regular;
             if (res.isItalic)
+            {
                 fontStyle |= FontStyle.Italic;
+            }
+
             if (res.isBold)
+            {
                 fontStyle |= FontStyle.Bold;
+            }
+
+            var isDpiScalable = Configs.Display_IsDpiScalingEnabled.Value;
             res.font = new Font(res.fontName,
-                Main.GetInstance().IsDpiScalable ? res.fontSize : (int)Math.Round((double)res.fontSize * 96 / 72),
-                fontStyle,
-                Main.GetInstance().IsDpiScalable ? GraphicsUnit.Point : GraphicsUnit.Pixel);
+                                isDpiScalable ? res.fontSize : (int)Math.Round((double)res.fontSize * 96 / 72),
+                                fontStyle,
+                                isDpiScalable ? GraphicsUnit.Point : GraphicsUnit.Pixel);
             res.text = GetNodeValue(node, false);
 
             return res;
@@ -155,10 +168,10 @@ namespace fooTitle.Layers
             switch (position)
             {
                 case "left":
-                    this.left = label;
+                    _left = label;
                     break;
                 case "right":
-                    this.right = label;
+                    _right = label;
                     break;
             }
         }
@@ -176,29 +189,27 @@ namespace fooTitle.Layers
                     int.Parse(a, System.Globalization.NumberStyles.HexNumber),
                     int.Parse(r, System.Globalization.NumberStyles.HexNumber),
                     int.Parse(g, System.Globalization.NumberStyles.HexNumber),
-                    int.Parse(b, System.Globalization.NumberStyles.HexNumber)
-                );
+                    int.Parse(b, System.Globalization.NumberStyles.HexNumber));
             }
             catch
             {
-                Main.Console.LogWarning($"Error in text layer {Name}, invalid color code {code}.");
+                Console.Get().LogWarning($"Error in text layer {Name}, invalid color code {code}.");
                 return Color.Black;
             }
         }
 
-        protected override void DrawImpl()
+        protected override void DrawImpl(Graphics canvas)
         {
-            Matrix oldTransform = Display.Canvas.Transform;
+            Matrix oldTransform = canvas.Transform;
 
             Rectangle bounds = CalcRotatedBounds();
 
-            Display.Canvas.TranslateTransform(-bounds.X, -bounds.Y);
-            Display.Canvas.TranslateTransform(ClientRect.X, ClientRect.Y);
+            canvas.TranslateTransform(-bounds.X, -bounds.Y);
+            canvas.TranslateTransform(ClientRect.X, ClientRect.Y);
+            canvas.RotateTransform(_angle);
 
-            Display.Canvas.RotateTransform(angle);
-
-            StraightDraw(Display.Canvas);
-            Display.Canvas.Transform = oldTransform;
+            StraightDraw(canvas);
+            canvas.Transform = oldTransform;
         }
 
         /// <summary>
@@ -208,13 +219,13 @@ namespace fooTitle.Layers
         {
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
             //float leftWidth = 0;
-            if (!string.IsNullOrEmpty(left.formatted))
+            if (!string.IsNullOrEmpty(_left.formatted))
             {
                 //leftWidth = Display.Canvas.MeasureString(left.formatted, left.font).Width;
-                g.DrawString(left.formatted, left.font, new SolidBrush(left.color), 0, 0);
+                g.DrawString(_left.formatted, _left.font, new SolidBrush(_left.color), 0, 0);
             }
 
-            if (!string.IsNullOrEmpty(right.formatted))
+            if (!string.IsNullOrEmpty(_right.formatted))
             {
                 StringFormat rightFormat = new StringFormat { Alignment = StringAlignment.Far };
                 //g.DrawString(right.formatted, right.font, new SolidBrush(right.color), space + leftWidth, 0);
@@ -222,32 +233,30 @@ namespace fooTitle.Layers
                 // the text is right-aligned, so we must take the size of client rect into account. But
                 // the text can be also rotated, so we must consider different sizes. This will probably
                 // not work very well for arbitrary angles, but is ok for 90*n.
-                float farEdge = GetFarPointInClientRect(angle);
+                float farEdge = GetFarPointInClientRect(_angle);
                 Rectangle drawInto = new Rectangle { Width = (int)farEdge };
-                g.DrawString(right.formatted, right.font, new SolidBrush(right.color), drawInto, rightFormat);
-
+                g.DrawString(_right.formatted, _right.font, new SolidBrush(_right.color), drawInto, rightFormat);
             }
         }
 
         protected virtual void UpdateText()
         {
             LabelPart[] parts = new LabelPart[2];
-            parts[0] = left;
-            parts[1] = right;
+            parts[0] = _left;
+            parts[1] = _right;
 
+            string[] prevText = { _left.formatted, _right.formatted };
 
-            string[] prevText = { left.formatted, right.formatted };
+            _left.formatted = _defaultText;
+            _right.formatted = "";
 
-            left.formatted = defaultText;
-            right.formatted = "";
-
-            var isPlaying = Main.GetInstance().Fb2kPlaybackControls.IsPlaying();
+            var isPlaying = Main.Get().Fb2kPlaybackControls.IsPlaying();
             for (int i = 0; i < 2; ++i)
             {
                 if (!string.IsNullOrEmpty(parts[i].text) && isPlaying)
                 {
                     // Evaluate only when there is a track, otherwise keep default text
-                    var tf = Main.GetInstance().Fb2kControls.TitleFormat(parts[i].text);
+                    var tf = Main.Get().Fb2kControls.TitleFormat(parts[i].text);
                     parts[i].formatted = tf.Eval(force: true);
                 }
             }
@@ -256,7 +265,7 @@ namespace fooTitle.Layers
             {
                 if (prevText[i] != parts[i].formatted)
                 {
-                    Main.GetInstance().RequestRedraw();
+                    Main.Get().RedrawTitleBar();
                     break;
                 }
             }
@@ -264,7 +273,7 @@ namespace fooTitle.Layers
 
         protected override Size GetMinimalSizeImpl()
         {
-            return geometry.GetMinimalSize(CalcRotatedBounds().Size);
+            return ContainedGeometry.GetMinimalSize(CalcRotatedBounds().Size);
         }
 
         /// <returns>
@@ -274,50 +283,55 @@ namespace fooTitle.Layers
         {
             float width = 0;
 
-            StringFormat sf = new StringFormat(StringFormat.GenericDefault)
-            { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
+            StringFormat sf = new StringFormat(StringFormat.GenericDefault) { FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
+            var canvas = SkinForm.CanvasForMeasure;
 
-            if (!string.IsNullOrEmpty(left.formatted))
+            if (!string.IsNullOrEmpty(_left.formatted))
             {
-                width += Display.Canvas.MeasureString(left.formatted, left.font, new PointF(0, 0), sf).Width;
+                width += canvas.MeasureString(_left.formatted, _left.font, new PointF(0, 0), sf).Width;
             }
-            if (!string.IsNullOrEmpty(right.formatted))
+            if (!string.IsNullOrEmpty(_right.formatted))
             {
-                width += Display.Canvas.MeasureString(right.formatted, right.font, new PointF(0, 0), sf).Width;
-                width += space;
+                width += canvas.MeasureString(_right.formatted, _right.font, new PointF(0, 0), sf).Width;
+                width += _space;
             }
 
             float height = 0;
-            if (!string.IsNullOrEmpty(left.formatted))
-                height = Display.Canvas.MeasureString(left.formatted, left.font).Height;
-            if (!string.IsNullOrEmpty(right.formatted))
-                height = Math.Max(height, Display.Canvas.MeasureString(right.formatted, right.font).Height);
+            if (!string.IsNullOrEmpty(_left.formatted))
+            {
+                height = canvas.MeasureString(_left.formatted, _left.font).Height;
+            }
+
+            if (!string.IsNullOrEmpty(_right.formatted))
+            {
+                height = Math.Max(height, canvas.MeasureString(_right.formatted, _right.font).Height);
+            }
 
             return new Size((int)Math.Ceiling(width), (int)Math.Ceiling(height));
         }
 
         // TODO: remove
 
-        private static void SetLeft(ref System.Drawing.Rectangle r, int val)
+        private static void SetLeft(ref Rectangle r, int val)
         {
             int oldRight = r.Right;
             r.X = val;
             SetRight(ref r, oldRight);
         }
 
-        private static void SetTop(ref System.Drawing.Rectangle r, int val)
+        private static void SetTop(ref Rectangle r, int val)
         {
             int oldBottom = r.Bottom;
             r.Y = val;
             SetBottom(ref r, oldBottom);
         }
 
-        private static void SetRight(ref System.Drawing.Rectangle r, int val)
+        private static void SetRight(ref Rectangle r, int val)
         {
             r.Width = val - r.X;
         }
 
-        private static void SetBottom(ref System.Drawing.Rectangle r, int val)
+        private static void SetBottom(ref Rectangle r, int val)
         {
             r.Height = val - r.Y;
         }
@@ -326,9 +340,9 @@ namespace fooTitle.Layers
         {
             Size size = CalcStraightSize();
             Matrix transform = new Matrix();
-            transform.Rotate(angle);
+            transform.Rotate(_angle);
             Point[] boundPoints = {
-                new Point(0,0),
+                new Point(0, 0),
                 new Point(size.Width, 0),
                 new Point(size.Width, size.Height),
                 new Point(0, size.Height)
@@ -340,13 +354,24 @@ namespace fooTitle.Layers
             foreach (Point p in boundPoints)
             {
                 if (p.X < result.X)
+                {
                     SetLeft(ref result, p.X);
+                }
+
                 if (p.X > result.Right)
+                {
                     SetRight(ref result, p.X);
+                }
+
                 if (p.Y < result.Y)
+                {
                     SetTop(ref result, p.Y);
+                }
+
                 if (p.Y > result.Bottom)
+                {
                     SetBottom(ref result, p.Y);
+                }
             }
 
             return result;
@@ -377,5 +402,19 @@ namespace fooTitle.Layers
         {
             UpdateText();
         }
+        protected class LabelPart
+        {
+            public string text;
+            public string formatted;
+            public Font font;
+            public Color color;
+
+            // Font properties
+            public string fontName;
+            public int fontSize;
+            public bool isBold;
+            public bool isItalic;
+        }
+
     }
 }

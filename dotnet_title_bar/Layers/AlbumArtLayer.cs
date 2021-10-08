@@ -24,8 +24,8 @@ using System.Xml.Linq;
 
 namespace fooTitle.Layers
 {
-    [LayerTypeAttribute("album-art")]
-    internal class AlbumArtLayer : Layer
+    [LayerType("album-art")]
+    public class AlbumArtLayer : Layer
     {
         protected Bitmap albumArt;
         protected Bitmap albumArtStub;
@@ -37,28 +37,29 @@ namespace fooTitle.Layers
         protected Bitmap cachedResized;
         private int timesCheckedArtwork = 0;
 
-        public AlbumArtLayer(Rectangle parentRect, XElement node) : base(parentRect, node)
+        public AlbumArtLayer(Rectangle parentRect, XElement node, Skin skin)
+            : base(parentRect, node, skin)
         {
             try
             {
                 XElement contents = GetFirstChildByName(node, "contents");
                 XElement NoAlbumArt = GetFirstChildByName(contents, "NoAlbumArt");
                 string name = GetNodeValue(NoAlbumArt);
-                noCover = Main.GetInstance().CurrentSkin.GetSkinImage(name);
+                noCover = ParentSkin.GetSkinImage(name);
             }
             catch (Exception)
             {
                 noCover = null;
             }
 
-            Main.GetInstance().CurrentSkin.PlaybackAdvancedToNewTrack += CurrentSkin_OnPlaybackNewTrackEvent;
-            Main.GetInstance().CurrentSkin.TrackPlaybackPositionChanged += CurrentSkin_OnPlaybackTimeEvent;
-            Main.GetInstance().CurrentSkin.PlaybackStopped += CurrentSkin_OnPlaybackStopEvent;
+            ParentSkin.PlaybackAdvancedToNewTrack += CurrentSkin_OnPlaybackNewTrackEvent;
+            ParentSkin.TrackPlaybackPositionChanged += CurrentSkin_OnPlaybackTimeEvent;
+            ParentSkin.PlaybackStopped += CurrentSkin_OnPlaybackStopEvent;
         }
 
         private void LoadArtwork(IMetadbHandle song)
         {
-            Main.Console.LogInfo("Loading album art... ");
+            Console.Get().LogInfo("Loading album art... ");
             Bitmap artwork = song.Artwork(ArtId.CoverFront);
             if (artwork != null)
             {
@@ -70,7 +71,7 @@ namespace fooTitle.Layers
                 catch (Exception e)
                 {
                     albumArt = null;
-                    Main.Console.LogWarning($"Cannot open album art {song.Path()} : {e.Message}");
+                    Console.Get().LogWarning($"Cannot open album art {song.Path()} : {e.Message}");
                 }
             }
             Bitmap artworkStub = song.ArtworkStub(ArtId.CoverFront);
@@ -84,7 +85,7 @@ namespace fooTitle.Layers
                 catch (Exception e)
                 {
                     albumArtStub = null;
-                    Main.Console.LogWarning($"Cannot open album art stub {song.Path()} : {e.Message}");
+                    Console.Get().LogWarning($"Cannot open album art stub {song.Path()} : {e.Message}");
                 }
             }
         }
@@ -102,11 +103,11 @@ namespace fooTitle.Layers
 
         private void CurrentSkin_OnPlaybackTimeEvent(double time)
         {
-            if (albumArt == null && time % Main.GetInstance().ArtReloadFreq == 0
-                && (timesCheckedArtwork < Main.GetInstance().ArtReloadMax || Main.GetInstance().ArtReloadMax == -1))
+            if (albumArt == null && time % Configs.Display_ArtLoadRetryFrequency.Value == 0
+                && (timesCheckedArtwork < Configs.Display_ArtLoadMaxRetries.Value || Configs.Display_ArtLoadMaxRetries.Value == -1))
             {
                 timesCheckedArtwork++;
-                LoadArtwork(Main.GetInstance().Fb2kPlaybackControls.NowPlaying());
+                LoadArtwork(Main.Get().Fb2kPlaybackControls.NowPlaying());
             }
         }
 
@@ -119,13 +120,13 @@ namespace fooTitle.Layers
             LoadArtwork(song);
         }
 
-        protected override void DrawImpl()
+        protected override void DrawImpl(Graphics canvas)
         {
             Bitmap toDraw = prepareCachedImage();
             if (toDraw != null)
             {
-                Display.Canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-                Display.Canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
+                canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+                canvas.DrawImage(toDraw, ClientRect.X, ClientRect.Y, ClientRect.Width, ClientRect.Height);
             }
         }
 

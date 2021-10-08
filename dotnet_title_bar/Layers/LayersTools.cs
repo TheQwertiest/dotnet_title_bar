@@ -17,44 +17,53 @@
     along with foo_title; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-using System;
-using System.Xml.Linq;
 using fooTitle.Extending;
+using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
-namespace fooTitle.Layers {
+namespace fooTitle.Layers
+{
     /// <summary>
     /// This attribute should be used on classes that represent layers accessible from the
     /// skin's XML file. Type corresponds to the type="..." attribute in the skin's layer tag.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class LayerTypeAttribute : ElementTypeAttribute {
-        public LayerTypeAttribute(string type):base(type) {
+    public class LayerTypeAttribute : ElementTypeAttribute
+    {
+        public LayerTypeAttribute(string type)
+            : base(type)
+        {
         }
     }
 
     /// <summary>
     /// Keeps track of layer available in this and extension assemblies
     /// </summary>
-    public class LayerFactory : ElementFactory {
-        
-        public LayerFactory() {
+    public class LayerFactory : ElementFactory
+    {
+
+        public LayerFactory()
+        {
             elementType = typeof(Layer);
             elementTypeAttributeType = typeof(LayerTypeAttribute);
         }
 
-        public Layer CreateLayer(string type, System.Drawing.Rectangle parentRect, XNode node) {
-            return(Layer)CreateElement(type, new object[] { parentRect, node });
+        public Layer CreateLayer(string type, System.Drawing.Rectangle parentRect, XNode node, Skin skin)
+        {
+            return (Layer)CreateElement(type, new object[] { parentRect, node, skin });
         }
-
     }
 
-    public static class LayerTools {
-        public static void DepthFirstVisit(Layer initial, Predicate<Layer> visitor) {
+    public static class LayerTools
+    {
+        public static void DepthFirstVisit(Layer initial, Predicate<Layer> visitor)
+        {
             Stack<Layer> stack = new Stack<Layer>();
             stack.Push(initial);
 
-            while (stack.Count > 0) {
+            while (stack.Count > 0)
+            {
                 Layer current = stack.Pop();
                 if (current == null)
                     return;
@@ -62,7 +71,8 @@ namespace fooTitle.Layers {
                 if (!visitor(current))
                     return;
 
-                foreach (Layer sub in current.SubLayers) {
+                foreach (Layer sub in current.SubLayers)
+                {
                     stack.Push(sub);
                 }
             }
@@ -74,19 +84,23 @@ namespace fooTitle.Layers {
         /// <summary>
         /// Enables or disables a layer and all its children.
         /// </summary>
-        public static void EnableLayer(Layer layer, bool enable) {
-            DepthFirstVisit(layer, delegate(Layer l) {
+        public static void EnableLayer(Layer layer, bool enable)
+        {
+            DepthFirstVisit(layer, delegate (Layer l)
+            {
                 l.Enabled = enable;
                 return true;
             });
         }
 
-        public static Layer FindLayerByName(Layer initial, string name) {
+        public static Layer FindLayerByName(Layer initial, string name)
+        {
             Layer result = null;
 
-            DepthFirstVisit(initial, delegate(Layer l)
+            DepthFirstVisit(initial, delegate (Layer l)
             {
-                if (l.Name == name) {
+                if (l.Name == name)
+                {
                     result = l;
                     return false;
                 }

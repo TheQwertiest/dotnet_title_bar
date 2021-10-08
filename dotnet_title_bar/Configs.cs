@@ -3,12 +3,39 @@ using System;
 
 namespace fooTitle
 {
-    internal class Configs
+    public enum EnableWhenEnum
+    {
+        Always,
+        WhenMinimized,
+        Never
+    }
+    public enum ShowWhenEnum
+    {
+        Always,
+        OnTrigger
+    }
+    public enum EnableDragging
+    {
+        Always,
+        WhenPropertiesOpen,
+        Never,
+    }
+
+    public enum SkinDirType
+    {
+        Component,
+        Profile,
+        ProfileOld,
+    }
+    /// <summary>
+    /// Note: these might be referenced in Preferences form via tags
+    /// </summary>
+    public class Configs
     {
         /// <summary>
         /// Used to retain compatibility with foo_title
         /// </summary>
-        private static ConfString _base_SkinDir = new("base/dataDir", null);
+        private static readonly ConfString _base_SkinDir = new("base/dataDir", null);
         public static ConfEnum<SkinDirType> Base_SkinDirType = new("base/skinDirType", _base_SkinDir.Value == null ? SkinDirType.Component : SkinDirType.ProfileOld);
 
         /// <summary>
@@ -61,5 +88,7 @@ namespace fooTitle
         public static ConfInt ShowControl_StayDelay_OnPeek = new("showControl/timeBeforeFade", 2, 0, int.MaxValue);
         public static ConfInt ShowControl_StayDelay_OnSongStart = new("showControl/onSongStartStay", 5, 0, int.MaxValue);
         public static ConfInt ShowControl_StayDelay_OnSongEnd = new("showControl/beforeSongEndsStay", 5, 0, int.MaxValue);
+
+        public static ConfXml Skin_State = new("skin/state");
     }
 }
