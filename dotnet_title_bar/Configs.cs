@@ -23,9 +23,9 @@ namespace fooTitle
 
     public enum SkinDirType
     {
-        Component,
+        Sample,
         Profile,
-        ProfileOld,
+        ProfileLegacy,
     }
     /// <summary>
     /// Note: these might be referenced in Preferences form via tags
@@ -36,7 +36,7 @@ namespace fooTitle
         /// Used to retain compatibility with foo_title
         /// </summary>
         private static readonly ConfString _base_SkinDir = new("base/dataDir", null);
-        public static ConfEnum<SkinDirType> Base_SkinDirType = new("base/skinDirType", _base_SkinDir.Value == null ? SkinDirType.Component : SkinDirType.ProfileOld);
+        public static ConfEnum<SkinDirType> Base_SkinDirType = new("base/skinDirType", _base_SkinDir.Value == null ? SkinDirType.Sample : SkinDirType.ProfileLegacy);
 
         /// <summary>
         /// The name of the currently used skin.

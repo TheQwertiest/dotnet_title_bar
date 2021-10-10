@@ -9,9 +9,9 @@ namespace fooTitle
         {
             return skinDirType switch
             {
-                SkinDirType.Component => Main.ComponentSkinsDir,
-                SkinDirType.Profile => Main.ProfileSkinsDir,
-                SkinDirType.ProfileOld => Main.ProfileSkinsDirOld,
+                SkinDirType.Sample => Directories.Skins_Sample,
+                SkinDirType.Profile => Directories.Skins_Profile,
+                SkinDirType.ProfileLegacy => Directories.Skins_ProfileLegacy,
                 _ => throw new Exception("Internal error: unexpected skin dir type path `{skinDirType}`")
             };
         }

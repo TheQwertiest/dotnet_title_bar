@@ -170,6 +170,5 @@ namespace fooTitle
 
             _toolTipTimer.Stop();
         }
-
     }
 }

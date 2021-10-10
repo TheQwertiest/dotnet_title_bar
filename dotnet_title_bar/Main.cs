@@ -117,10 +117,6 @@ namespace fooTitle
             OnQuit();
         }
 
-        public static string ComponentSkinsDir { get; private set; }
-        public static string ProfileSkinsDir { get; private set; }
-        public static string ProfileSkinsDirOld { get; private set; }
-
         public IConfigStorage Config { get; private set; }
         public IUtils Fb2kUtils { get; private set; }
         public IDynamicServicesManager Fb2kServices { get; private set; }
@@ -398,10 +394,6 @@ namespace fooTitle
         /// </summary>
         private void OnInitialized()
         {
-            ComponentSkinsDir = Path.Combine(Assembly.GetExecutingAssembly().Location, "skins");
-            ProfileSkinsDir = Path.Combine(Fb2kUtils.ProfilePath(), Constants.ComponentNameUnderscored, "skins");
-            ProfileSkinsDirOld = Path.Combine(Fb2kUtils.ProfilePath(), "foo_title");
-
             Config.Load();
             ConfValuesManager.GetInstance().LoadFrom(Config);
             ConfValuesManager.GetInstance().SetStorage(Config);

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -49,6 +50,9 @@ namespace fooTitle
             enableDraggingWrapper.AddRadioButton(dragOnPrefRadio);
             enableDraggingWrapper.AddRadioButton(dragNeverRadio);
 
+            skinsList.DragEnter += SkinsList_DragEnter;
+            skinsList.DragDrop += SkinsList_DragDrop;
+
             _autoWrapperCreator.CreateWrappers(this, preferencesCallback);
         }
 
@@ -60,21 +64,7 @@ namespace fooTitle
             versionLabel.Text = "Version: " + myAssembly.GetName().Version;
             IsOpen = true;
 
-            if (_cts != null)
-            {
-                _cts.Cancel();
-                _cts = null;
-            }
-            _cts = new CancellationTokenSource();
-            try
-            {
-                _fillSkinTask = FillSkinListAsync(_cts.Token);
-                await _fillSkinTask;
-            }
-            finally
-            {
-                _cts = null;
-            }
+            await RefreshSkinsList();
         }
 
         private void Properties_HandleDestroyed(object sender, EventArgs e)
@@ -94,6 +84,96 @@ namespace fooTitle
         private void SkinsList_DoubleClick(object sender, EventArgs e)
         {
             ApplySkinBtn_Click(null, null);
+        }
+
+        private void SkinsList_DragEnter(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            e.Effect = (files.Any(f => f.EndsWith(".zip")) ? DragDropEffects.Copy : DragDropEffects.None);
+        }
+
+        private async void SkinsList_DragDrop(object sender, DragEventArgs e)
+        {
+            var skinsDir = Directories.Skins_Profile;
+            if (!Directory.Exists(skinsDir))
+            {
+                Directory.CreateDirectory(skinsDir);
+            }
+
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            var fileLookup = files.ToLookup(f => f.EndsWith(".zip"));
+            var zipFiles = fileLookup[true].ToArray();
+            var skippedFiles = fileLookup[false].Select(f => (path: f, reason: "Not a zip file")).ToList();
+
+            var tmpUnpackDir = Directories.Temp_SkinUnpack;
+            foreach (var zf in zipFiles)
+            {
+                try
+                {
+                    if (Directory.Exists(tmpUnpackDir))
+                    {
+                        Directory.Delete(tmpUnpackDir, true);
+                    }
+                    Directory.CreateDirectory(tmpUnpackDir);
+
+                    ZipFile.ExtractToDirectory(zf, tmpUnpackDir);
+
+                    // TODO: extract skin file to const
+                    string[] skinFiles = Directory.GetFiles(tmpUnpackDir, "skin.xml", SearchOption.AllDirectories);
+                    if (skinFiles.Length == 0)
+                    {
+                        skippedFiles.Add((path: zf, reason: "Missing `skin.xml`"));
+                        continue;
+                    }
+
+                    var srcPath = Path.GetDirectoryName(skinFiles[0]);
+                    var skinInfo = Skin.GetSkinInfo(srcPath);
+                    if (skinInfo == null)
+                    {
+                        skippedFiles.Add((path: zf, reason: "`skin.xml` parsing failed"));
+                        continue;
+                    }
+
+                    var dstPath = Path.Combine(skinsDir, skinInfo.Name);
+                    if (Directory.Exists(dstPath))
+                    {
+                        var confirmResult = MessageBox.Show($"The following skin is already present: {skinInfo.Name}\n\n"
+                                                                + "Do you want to update?",
+                                                            "Importing skin",
+                                                            MessageBoxButtons.YesNo);
+                        if (confirmResult != DialogResult.Yes)
+                        {
+                            continue;
+                        }
+                        Directory.Delete(dstPath, true);
+                    }
+
+                    Directory.Move(srcPath, dstPath);
+                }
+                catch (Exception ex)
+                {
+                    skippedFiles.Add((path: zf,
+                                      reason: "Failed to import skin:\n"
+                                          + $"{ex.Message}\n"
+                                          + $"{ex}"));
+                    continue;
+                }
+            }
+
+            if (skippedFiles.Count != 0)
+            {
+                var msgList = skippedFiles.Select(f => $"Path: {f.path}\n" + $"Error: {f.reason}");
+                Console.Get().LogError("Failed to import the following files:\n\n" + String.Join("\n\n", msgList));
+                SynchronizationContext.Current.Post(_ => MessageBox.Show("Failed to import some files. See Foobar2000 console for more information", "Importing skin"), null);
+            }
+
+            await RefreshSkinsList();
         }
 
         private void ApplySkinBtn_Click(object sender, EventArgs e)
@@ -124,7 +204,7 @@ namespace fooTitle
             {
                 if (skinsList.SelectedItems.Count == 0)
                 {
-                    var psi = new System.Diagnostics.ProcessStartInfo() { FileName = Main.ComponentSkinsDir, UseShellExecute = true };
+                    var psi = new System.Diagnostics.ProcessStartInfo() { FileName = Directories.Skins_Sample, UseShellExecute = true };
                     System.Diagnostics.Process.Start(psi);
                 }
                 else
@@ -136,7 +216,7 @@ namespace fooTitle
             }
             catch (Exception ex)
             {
-                Utils.ReportErrorWithPopup($"There was an error opening directory {Main.ComponentSkinsDir}:\n"
+                Utils.ReportErrorWithPopup($"There was an error opening directory:\n"
                                            + $"{ex.Message}\n"
                                            + $"{ex}");
             }
@@ -146,7 +226,7 @@ namespace fooTitle
         {
             try
             {
-                var skinDirGroup = new[] { SkinDirType.Profile, SkinDirType.ProfileOld, SkinDirType.Component }
+                var skinDirGroup = new[] { SkinDirType.Profile, SkinDirType.ProfileLegacy, SkinDirType.Sample }
                                        .Select(dirType => (DirType: dirType, DirPath: SkinUtils.SkinEnumToRootPath(dirType)))
                                        .Where(dir => Directory.Exists(dir.DirPath))
                                        .Select(dir => (
@@ -164,6 +244,7 @@ namespace fooTitle
                     {
                         token.ThrowIfCancellationRequested();
 
+                        // TODO: make it throwing instead
                         var skinInfo = Skin.GetSkinInfo(SkinUtils.GenerateSkinPath(dirType, skinDir));
                         if (skinInfo?.Name != null)
                         {
@@ -193,10 +274,29 @@ namespace fooTitle
             }
         }
 
+        async private Task RefreshSkinsList()
+        {
+            if (_cts != null)
+            {
+                _cts.Cancel();
+                _cts = null;
+            }
+            _cts = new CancellationTokenSource();
+            try
+            {
+                _fillSkinTask = FillSkinListAsync(_cts.Token);
+                await _fillSkinTask;
+            }
+            finally
+            {
+                _cts = null;
+            }
+        }
+
         private void StartSkinListFill()
         {
             skinsList.Items.Clear();
-            skinsList.Items.Add(new SkinListEntry(SkinDirType.Component, "", "", ""));
+            skinsList.Items.Add(new SkinListEntry(SkinDirType.Sample, "", "", ""));
             UpdateSkinListProgress(null, 0);
             ResizeListView(skinsList);
         }
