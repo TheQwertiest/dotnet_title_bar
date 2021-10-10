@@ -53,6 +53,11 @@ namespace fooTitle
         public event PlaybackPausedStateChanged_EventHandler PlaybackPausedStateChanged;
         public event DynamicTrackInfoChanged_EventHandler DynamicTrackInfoChanged;
 
+        [ComponentInterfaceVersion("0.1")]
+        Main()
+        {
+        }
+
         public ComponentInfo GetInfo()
         {
             ComponentInfo info;

@@ -33,7 +33,7 @@ Note: must be used in conjunction with `foo_dotnet_component_host`.</Description
     <Compile Remove="ElementFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="dotnet_component_interface" Version="*-*" />
+    <PackageReference Include="dotnet_component_interface" Version="0.1.*-*" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\..\props\submodules\submodules.props" />
   <Import Project="$(SubmodulesDirectory)fb2k_utils\props\env\BuildEnvCommon.props" />
