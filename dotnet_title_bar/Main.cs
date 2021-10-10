@@ -54,7 +54,7 @@ namespace fooTitle
         public event DynamicTrackInfoChanged_EventHandler DynamicTrackInfoChanged;
 
         [ComponentInterfaceVersion("0.1")]
-        Main()
+        public Main()
         {
         }
 
