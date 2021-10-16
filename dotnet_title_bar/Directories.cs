@@ -5,14 +5,14 @@ namespace fooTitle
 {
     class Directories
     {
-        public static readonly string Component = Assembly.GetExecutingAssembly().Location;
+        public static readonly string Component = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         public static readonly string Skins_Sample = Path.Combine(Component, "skins");
         public static string Fb2kProfile
         {
             get
             {
                 if (_fb2kProfile == null)
-                { // Fb2k profile can only be retrieved after initialization
+                {
                     _fb2kProfile = Main.Get().Fb2kUtils.ProfilePath();
                 }
 

@@ -76,8 +76,6 @@ namespace fooTitle
 
         public void Initialize(IStaticServicesManager servicesManager, IUtils utils)
         {
-            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-
             _instance = this;
             Fb2kUtils = utils;
 
