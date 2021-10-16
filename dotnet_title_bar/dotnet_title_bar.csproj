@@ -34,6 +34,7 @@ Note: must be used in conjunction with `foo_dotnet_component_host`.</Description
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="dotnet_component_interface" Version="0.1.*-*" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
   <Import Project="$(SolutionDir)\..\props\submodules\submodules.props" />
   <Import Project="$(SubmodulesDirectory)fb2k_utils\props\env\BuildEnvCommon.props" />

@@ -1,4 +1,6 @@
-/mozjs/*
+# Local
+
+dotnet_title_bar/Directory.Build.props
 
 # Created by https://www.gitignore.io/api/visualstudio
 

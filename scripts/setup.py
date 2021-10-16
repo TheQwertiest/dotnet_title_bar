@@ -44,35 +44,12 @@ def setup( skip_submodules_download,
     if (not skip_submodules_download):
         call_decorator('Downloading submodules')(download_submodules.download)()
 
-    call_decorator('Version header generation')(
-        load_module(scripts_path/'generate_version_header.py').generate_header_custom
+    call_decorator('Version props file generation')(
+        load_module(scripts_path/'generate_cs_version_prop.py').generate_props_custom
     )(
         repo_dir=root_dir,
-        output_dir=root_dir/'_result'/'AllPlatforms'/'generated',
-        component_prefix='DNET'
+        output_dir=root_dir/'dotnet_title_bar'
     )
-    call_decorator('Commit hash header generation')(
-        load_module(scripts_path/'generate_commit_hash_header.py').generate_header_custom
-    )(
-        repo_dir=root_dir,
-        output_dir=root_dir/'_result'/'AllPlatforms'/'generated',
-        component_prefix='DNET'
-    )
-    # call_decorator('SourceLink configuration file generation'
-    # )(
-    #     load_module(scripts_path/'generate_source_link_config.py').generate_config_custom
-    # )(
-    #     repo_dir=root_dir,
-    #     output_dir=root_dir/'_result'/'AllPlatforms'/'generated',
-    #     repo='theqwertiest/foo_spider_monkey_panel'
-    # )
-    # call_decorator('3rd-party notices generation'
-    # )(
-    #     load_module(scripts_path/'generate_third_party.py').generate
-    # )(
-    #     root_dir=root_dir,
-    #     component_name='Spider Monkey Panel'
-    # )
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Setup project')
@@ -91,3 +68,5 @@ if __name__ == '__main__':
         args.skip_submodules_download,
         args.skip_submodules_patches
     )
+
+
