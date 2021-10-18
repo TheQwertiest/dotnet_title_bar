@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+    author="Mindtempest, based on Transparent Black by Sune"
+    name="Transparent2"
+    width="150"
+    height="150">
+<layer name="AlbumArt" type="album-art">
+            <geometry type="absolute">
+                <size x="142" y="142" />
+                <position x="4" y="4" align="center" />
+            </geometry>
+            <contents>
+                <NoAlbumArt>
+                    layout/noalbum.png
+                </NoAlbumArt>
+            </contents>
+</layer>
+
+<layer name="main" type="absolute-images">
+	<geometry type="absolute">
+		<size x="150" y="150" />
+		<position x="0" y="0" align="left" />
+	</geometry>
+	<contents>
+		<image src="bgimage7.png" />
+	</contents>
+
+	<layer name="tracks" type="text">
+		<geometry type="absolute">
+			<size x="40" y="12" />
+			<position x="$if(%totaltracks%,36,33)" y="6" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="7">
+			<label position="left" color="FFffffff"> $if(%totaltracks%,%tracknumber% $char(47) %totaltracks%,Track %tracknumber%)</label>
+		</contents>
+	</layer>
+
+	<layer name="artist" type="scrolling-text">
+		<geometry type="absolute">
+			<size x="140" y="12" />
+			<position x="5" y="21" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="8">
+			<label position="left" color="FFebebe6">[%artist%]</label>
+		</contents>
+	</layer>
+
+	<layer name="title" type="scrolling-text">
+		<geometry type="absolute">
+			<size x="140" y="16" />
+			<position x="5" y="52" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="10">
+			<label position="left" color="FFebebe6">[%title%]</label>
+		</contents>
+	</layer>
+
+	<layer name="album - date" type="scrolling-text">
+		<geometry type="absolute">
+			<size x="140" y="12" />
+			<position x="5" y="37" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="7">
+			<label position="left" color="FFebebe6">[%album%] - [%date%]</label>
+		</contents>
+	</layer>
+
+	<layer name="time1" type="text">
+		<geometry type="absolute">
+			<size x="40" y="12" />
+			<position x="10" y="120" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="7">
+			<label position="left" color="FFebebe6"> %_time_elapsed%</label>
+		</contents>
+	</layer>
+
+	<layer name="time2" type="text">
+		<geometry type="absolute">
+			<size x="40" y="12" />
+			<position x="98" y="120" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="7">
+			<label position="right" color="FFebebe6"> %_length%</label>
+		</contents>
+	</layer>
+
+	<layer name="details1" type="text">
+		<geometry type="absolute">
+			<size x="140" y="12" />
+			<position x="5" y="72" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="7">
+			<label position="left" color="FFebebe6">%codec% [%codec_profile% ]%bitrate%kbps</label>
+		</contents>
+	</layer>
+
+	<layer name="details2" type="text">
+		<geometry type="absolute">
+			<size x="140" y="12" />
+			<position x="5" y="88" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="7">
+			<label position="left" color="FFebebe6">%samplerate%Hz %channels%</label>
+		</contents>
+	</layer>
+
+// Control Foobar Buttons
+	
+	<layer name="Activate" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+                			<position x="7" y="6" align="left" />
+            		</geometry>
+           		<contents>
+                			<action>
+                    			Activate or Hide
+                			</action>
+                			<normalImg src="open.png" />
+                			<overImg src="openON.png" />
+                			<downImg src="open.png" />
+            		</contents>
+        	</layer>
+
+	<layer name="Exit" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+                			<position x="21" y="6" align="left" />
+            		</geometry>
+           		<contents>
+                			<action>
+                    			Exit
+                			</action>
+                			<normalImg src="Close.png" />
+                			<overImg src="CloseON.png" />
+                			<downImg src="Close.png" />
+            		</contents>
+        	</layer>
+
+// Control Playback Buttons
+
+
+	<layer name="previous" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="68" y="6" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+        	   	 	Previous
+    			</action>
+    			<normalImg src="prev.png" />
+    			<overImg src="prevON.png" />
+    			<downImg src="prev.png" />
+		</contents>
+	</layer>
+
+	<layer name="stop" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="83" y="6" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Stop
+    			</action>
+    			<normalImg src="stop.png" />
+    			<overImg src="stopON.png" />
+    			<downImg src="stop.png" />
+		</contents>
+	</layer>
+
+	<layer name="playpause" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="98" y="6" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Play Or Pause
+    			</action>
+    			<normalImg src="pauseplay.png" />
+    			<overImg src="pauseplayON.png" />
+    			<downImg src="pauseplay.png" />
+		</contents>
+	</layer>
+
+	<layer name="next" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="113" y="6" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Next
+    			</action>
+    			<normalImg src="next.png" />
+    			<overImg src="nextON.png" />
+    			<downImg src="next.png" />
+		</contents>
+	</layer>
+
+	<layer name="random" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="128" y="6" align="left" />
+		</geometry>
+		<contents>
+    			<action type="menu">
+				Playback/Random
+    			</action>
+    			<normalImg src="Random.png" />
+    			<overImg src="RandomON.png" />
+    			<downImg src="Random.png" />
+		</contents>
+	</layer>
+
+// Delete From Playlist Button
+
+	<layer name="delete" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="65" y="121" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Remove
+    			</action>
+    			<normalImg src="Cross.png" />
+    			<overImg src="CrossON.png" />
+    			<downImg src="Cross.png" />
+		</contents>
+	</layer>
+	<layer name="zadvance" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="65" y="121" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Next
+    			</action>
+    			<normalImg src="stop.png" />
+    			<overImg src="stopON.png" />
+    			<downImg src="stop.png" />
+		</contents>
+	</layer>
+
+// Seek Control Buttons
+
+	<layer name="SeekForwardS" type="button">
+		<geometry type="absolute">
+			<size x="9" y="9" />
+			<position x="82" y="122" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Ahead by 5 seconds
+    			</action>
+    			<normalImg src="next.png" />
+    			<overImg src="nextON.png" />
+    			<downImg src="next.png" />
+		</contents>
+	</layer>
+	<layer name="SeekForwardM" type="button">
+		<geometry type="absolute">
+			<size x="11" y="11" />
+			<position x="91" y="121" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Ahead by 10 seconds
+    			</action>
+    			<normalImg src="next.png" />
+    			<overImg src="nextON.png" />
+    			<downImg src="next.png" />
+		</contents>
+	</layer>
+	<layer name="SeekForwardL" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="100" y="120" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Ahead by 1 minute
+    			</action>
+    			<normalImg src="next.png" />
+    			<overImg src="nextON.png" />
+    			<downImg src="next.png" />
+		</contents>
+	</layer>
+	<layer name="SeekBackwardS" type="button">
+		<geometry type="absolute">
+			<size x="9" y="9" />
+			<position x="50" y="122" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Back by 5 seconds
+    			</action>
+    			<normalImg src="prev.png" />
+    			<overImg src="prevON.png" />
+    			<downImg src="prev.png" />
+		</contents>
+	</layer>
+	<layer name="SeekBackwardM" type="button">
+		<geometry type="absolute">
+			<size x="11" y="11" />
+			<position x="40" y="121" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Back by 10 seconds
+    			</action>
+    			<normalImg src="prev.png" />
+    			<overImg src="prevON.png" />
+    			<downImg src="prev.png" />
+		</contents>
+	</layer>
+	<layer name="SeekBackwardL" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="30" y="120" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Back by 1 minute
+    			</action>
+    			<normalImg src="prev.png" />
+    			<overImg src="prevON.png" />
+    			<downImg src="prev.png" />
+		</contents>
+	</layer>
+
+// Playback Order Control Buttons
+
+	<layer name="DefaultPlay" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="10" y="102" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Default
+    			</action>
+    			<normalImg src="conti.png" />
+    			<overImg src="contiON.png" />
+    			<downImg src="conti.png" />
+		</contents>
+	</layer>
+	<layer name="RepeatPlay" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="25" y="102" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Repeat (playlist)
+    			</action>
+    			<normalImg src="loop.png" />
+    			<overImg src="loopON.png" />
+    			<downImg src="loop.png" />
+		</contents>
+	</layer>
+	<layer name="ShufflePlay" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="40" y="102" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Shuffle (albums)
+    			</action>
+    			<normalImg src="shuffle.png" />
+    			<overImg src="shuffleON.png" />
+    			<downImg src="shuffle.png" />
+		</contents>
+	</layer>
+
+
+// Volume Up Down Buttons
+
+	<layer name="rgvolume" type="text">
+		<geometry type="absolute">
+			<size x="50" y="12" />
+			<position x="56" y="103" align="left" />
+		</geometry>
+		<contents spacing="0" font="Microsoft Sans Serif" size="7">
+			<label position="left" color="FFebebe6">%replaygain_track_gain%</label>
+		</contents>
+	</layer>
+
+	<layer name="VolumeUp" type="button">
+		<geometry type="absolute">
+			<size x="11" y="11" />
+			<position x="100" y="86" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Up
+    			</action>
+    			<normalImg src="plus.png" />
+    			<overImg src="plusON.png" />
+    			<downImg src="plus.png" />
+		</contents>
+	</layer>
+	<layer name="VolumeDown" type="button">
+		<geometry type="absolute">
+			<size x="11" y="11" />
+			<position x="113" y="86" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Down
+    			</action>
+    			<normalImg src="minus.png" />
+    			<overImg src="minusON.png" />
+    			<downImg src="minus.png" />
+		</contents>
+	</layer>
+
+//Additional Volume Control Buttons
+
+	<layer name="volume0" type="button">
+		<geometry type="absolute">
+			<size x="4" y="28" />
+			<position x="138" y="86" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Set to -0 dB
+    			</action>
+			<action type="toggle" target="volumeg0" only="enable"></action>
+			<action type="toggle" target="volumeg1" only="disable"></action>
+			<action type="toggle" target="volumeg2" only="disable"></action>
+			<action type="toggle" target="volumeg3" only="disable"></action>
+			<action type="toggle" target="volumeg4" only="disable"></action>
+			<action type="toggle" target="volumeg5" only="disable"></action>
+			<action type="toggle" target="volumeg6" only="disable"></action>
+			<action type="toggle" target="volumeg7" only="disable"></action>
+    			<normalImg src="bar.png" />
+    			<overImg src="bar2.png" />
+    			<downImg src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volume1" type="button">
+		<geometry type="absolute">
+			<size x="4" y="22" />
+			<position x="133" y="92" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Set to -3 dB
+    			</action>
+			<action type="toggle" target="volumeg0" only="disable"></action>
+			<action type="toggle" target="volumeg1" only="enable"></action>
+			<action type="toggle" target="volumeg2" only="disable"></action>
+			<action type="toggle" target="volumeg3" only="disable"></action>
+			<action type="toggle" target="volumeg4" only="disable"></action>
+			<action type="toggle" target="volumeg5" only="disable"></action>
+			<action type="toggle" target="volumeg6" only="disable"></action>
+			<action type="toggle" target="volumeg7" only="disable"></action>
+    			<normalImg src="bar.png" />
+    			<overImg src="bar2.png" />
+    			<downImg src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volume2" type="button">
+		<geometry type="absolute">
+			<size x="4" y="17" />
+			<position x="128" y="97" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Set to -6 dB
+    			</action>
+			<action type="toggle" target="volumeg0" only="disable"></action>
+			<action type="toggle" target="volumeg1" only="disable"></action>
+			<action type="toggle" target="volumeg2" only="enable"></action>
+			<action type="toggle" target="volumeg3" only="disable"></action>
+			<action type="toggle" target="volumeg4" only="disable"></action>
+			<action type="toggle" target="volumeg5" only="disable"></action>
+			<action type="toggle" target="volumeg6" only="disable"></action>
+			<action type="toggle" target="volumeg7" only="disable"></action>
+    			<normalImg src="bar.png" />
+    			<overImg src="bar2.png" />
+    			<downImg src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volume3" type="button">
+		<geometry type="absolute">
+			<size x="4" y="13" />
+			<position x="123" y="101" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Set to -9 dB
+    			</action>
+			<action type="toggle" target="volumeg0" only="disable"></action>
+			<action type="toggle" target="volumeg1" only="disable"></action>
+			<action type="toggle" target="volumeg2" only="disable"></action>
+			<action type="toggle" target="volumeg3" only="enable"></action>
+			<action type="toggle" target="volumeg4" only="disable"></action>
+			<action type="toggle" target="volumeg5" only="disable"></action>
+			<action type="toggle" target="volumeg6" only="disable"></action>
+			<action type="toggle" target="volumeg7" only="disable"></action>
+    			<normalImg src="bar.png" />
+    			<overImg src="bar2.png" />
+    			<downImg src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volume4" type="button">
+		<geometry type="absolute">
+			<size x="4" y="10" />
+			<position x="118" y="104" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Set to -12 dB
+    			</action>
+			<action type="toggle" target="volumeg0" only="disable"></action>
+			<action type="toggle" target="volumeg1" only="disable"></action>
+			<action type="toggle" target="volumeg2" only="disable"></action>
+			<action type="toggle" target="volumeg3" only="disable"></action>
+			<action type="toggle" target="volumeg4" only="enable"></action>
+			<action type="toggle" target="volumeg5" only="disable"></action>
+			<action type="toggle" target="volumeg6" only="disable"></action>
+			<action type="toggle" target="volumeg7" only="disable"></action>
+    			<normalImg src="bar.png" />
+    			<overImg src="bar2.png" />
+    			<downImg src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volume5" type="button">
+		<geometry type="absolute">
+			<size x="4" y="8" />
+			<position x="113" y="106" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Set to -15 dB
+    			</action>
+			<action type="toggle" target="volumeg0" only="disable"></action>
+			<action type="toggle" target="volumeg1" only="disable"></action>
+			<action type="toggle" target="volumeg2" only="disable"></action>
+			<action type="toggle" target="volumeg3" only="disable"></action>
+			<action type="toggle" target="volumeg4" only="disable"></action>
+			<action type="toggle" target="volumeg5" only="enable"></action>
+			<action type="toggle" target="volumeg6" only="disable"></action>
+			<action type="toggle" target="volumeg7" only="disable"></action>
+    			<normalImg src="bar.png" />
+    			<overImg src="bar2.png" />
+    			<downImg src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volume6" type="button">
+		<geometry type="absolute">
+			<size x="4" y="7" />
+			<position x="108" y="107" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Set to -18 dB
+    			</action>
+			<action type="toggle" target="volumeg0" only="disable"></action>
+			<action type="toggle" target="volumeg1" only="disable"></action>
+			<action type="toggle" target="volumeg2" only="disable"></action>
+			<action type="toggle" target="volumeg3" only="disable"></action>
+			<action type="toggle" target="volumeg4" only="disable"></action>
+			<action type="toggle" target="volumeg5" only="disable"></action>
+			<action type="toggle" target="volumeg6" only="enable"></action>
+			<action type="toggle" target="volumeg7" only="disable"></action>
+    			<normalImg src="bar.png" />
+    			<overImg src="bar2.png" />
+    			<downImg src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volume7" type="button">
+		<geometry type="absolute">
+			<size x="4" y="6" />
+			<position x="103" y="108" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Set to -21 dB
+    			</action>
+			<action type="toggle" target="volumeg0" only="disable"></action>
+			<action type="toggle" target="volumeg1" only="disable"></action>
+			<action type="toggle" target="volumeg2" only="disable"></action>
+			<action type="toggle" target="volumeg3" only="disable"></action>
+			<action type="toggle" target="volumeg4" only="disable"></action>
+			<action type="toggle" target="volumeg5" only="disable"></action>
+			<action type="toggle" target="volumeg6" only="disable"></action>
+			<action type="toggle" target="volumeg7" only="enable"></action>
+    			<normalImg src="bar.png" />
+    			<overImg src="bar2.png" />
+    			<downImg src="bar.png" />
+		</contents>
+	</layer>
+
+
+//Volume Control Graphics
+	<layer name="volumeg0" type="absolute-images" enabled="false">
+		<geometry type="absolute">
+			<size x="4" y="28" />
+			<position x="138" y="86" align="left" />
+		</geometry>
+		<contents>
+    			<image src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volumeg1" type="absolute-images" enabled="false">
+		<geometry type="absolute">
+			<size x="4" y="22" />
+			<position x="133" y="92" align="left" />
+		</geometry>
+		<contents>
+    			<image src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volumeg2" type="absolute-images" enabled="true">
+		<geometry type="absolute">
+			<size x="4" y="17" />
+			<position x="128" y="97" align="left" />
+		</geometry>
+		<contents>
+    			<image src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volumeg3" type="absolute-images" enabled="false">
+		<geometry type="absolute">
+			<size x="4" y="13" />
+			<position x="123" y="101" align="left" />
+		</geometry>
+		<contents>
+    			<image src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volumeg4" type="absolute-images" enabled="false">
+		<geometry type="absolute">
+			<size x="4" y="10" />
+			<position x="118" y="104" align="left" />
+		</geometry>
+		<contents>
+    			<image src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volumeg5" type="absolute-images" enabled="false">
+		<geometry type="absolute">
+			<size x="4" y="8" />
+			<position x="113" y="106" align="left" />
+		</geometry>
+		<contents>
+    			<image src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volumeg6" type="absolute-images" enabled="false">
+		<geometry type="absolute">
+			<size x="4" y="7" />
+			<position x="108" y="107" align="left" />
+		</geometry>
+		<contents>
+    			<image src="bar.png" />
+		</contents>
+	</layer>
+	<layer name="volumeg7" type="absolute-images" enabled="false">
+		<geometry type="absolute">
+			<size x="4" y="6" />
+			<position x="103" y="108" align="left" />
+		</geometry>
+		<contents>
+    			<image src="bar.png" />
+		</contents>
+	</layer>
+
+
+// Now Playing Progress Bar
+
+	<layer name="blackground" type="absolute-images">
+		<geometry type="absolute">
+			<size x="130" y="2" />
+			<position x="10" y="137" align="left" />
+		</geometry>
+		<contents>			
+			<image src="barblack.png"/>
+		</contents>
+	</layer>
+
+	<layer name="prog bar" type="absolute-images">
+		<geometry type="absolute">
+			<size x="$if(%length%,$muldiv(%playback_time_seconds%,130,%length_seconds%),130)" y="2" />
+			<position x="10" y="137" align="left" />
+		</geometry>
+		<contents>			
+			<image src="barwhite.png"/>
+		</contents>
+	</layer>
+
+
+	
+
+</layer>
+</skin>
+
+
+
+
