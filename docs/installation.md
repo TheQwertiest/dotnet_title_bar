@@ -26,5 +26,4 @@ nav_order: 2
 ## Installation
 
 1. Download the [latest release](https://github.com/TheQwertiest/dotnet_title_bar/releases/latest) (you only need `dotnet_title_bar.net-component`).
-1. TODO: add installation instruction on foo_dotnet_component_host page
-1. Install the component using the [following instructions](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:How_to_install_a_component).
+1. Install the component using the [following instructions](https://theqwertiest.github.io/foo_dotnet_component_host/docs/faq/#how-do-i-install-a-net-component).
