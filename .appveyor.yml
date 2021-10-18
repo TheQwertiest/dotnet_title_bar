@@ -46,6 +46,9 @@ environment:
   git_user_name: TheQwertiest
   GITHUB_TOKEN:
     secure: tGGDBtpW74kNoY4PwFw2uuRCj/Npr9kDYaJTdm3IFOcEXA1dr8pc9vgur+6rvaoq
+  GITHUB_NUGET_TOKEN:
+    secure: imzJbQWXXMh7ack567rslJ9mKOCXF7JQVQDZHj0LRS3UG7LUCh7r8qgd5EbGhGdz
+  platform_hardcode: AnyCPU
 
 # this is how to allow failing jobs in the matrix
 matrix:
@@ -56,6 +59,8 @@ cache:
 
 # scripts that run after cloning repository
 install:
+  # GH NuGet source
+  - cmd: dotnet nuget add source --name github --username %git_user_email% --password %GITHUB_NUGET_TOKEN% https://nuget.pkg.github.com/theqwertiest/index.json
   # GitHub CLI
   - choco install gh -y
   - refreshenv
@@ -71,7 +76,7 @@ install:
 
 # build platform, i.e. x86, x64, Any CPU. This setting is optional.
 platform:
-  - AnyCPU
+  - Any CPU
 
 # build Configuration, i.e. Debug, Release, etc.
 configuration:
@@ -101,7 +106,7 @@ after_build:
 before_package:
   - if '%configuration%' == 'Debug' (
       py -u scripts\pack_component.py --debug &&
-      ren "_result\%platform%_%configuration%\dotnet_title_bar.net-component" "dotnet_title_bar.net-component_debug"
+      ren "_result\%platform_hardcode%_%configuration%\dotnet_title_bar.net-component" "dotnet_title_bar.net-component_debug"
     )
     else (
       py -u scripts\pack_component.py
@@ -116,11 +121,11 @@ before_package:
 
 artifacts:
   # pushing a single file with environment variable in path and "Deployment name" specified
-  - path: _result\$(platform)_$(configuration)\dotnet_title_bar.net-component
+  - path: _result\$(platform_hardcode)_$(configuration)\dotnet_title_bar.net-component
     name: Title Bar package (Release)
-  - path: _result\$(platform)_$(configuration)\dotnet_title_bar_pdb.zip
+  - path: _result\$(platform_hardcode)_$(configuration)\dotnet_title_bar_pdb.zip
     name: Title Bar PDB package (Release)
-  - path: _result\$(platform)_$(configuration)\dotnet_title_bar.net-component_debug
+  - path: _result\$(platform_hardcode)_$(configuration)\dotnet_title_bar.net-component_debug
     name: Title Bar package (Debug)
 
 #---------------------------------#
