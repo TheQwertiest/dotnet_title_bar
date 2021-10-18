@@ -19,7 +19,7 @@ markdown: kramdown
 kramdown:
   parse_block_html: true
 
-baseurl: "/foo_title/" 
+baseurl: "/dotnet_title_bar/" 
 url: "https://theqwertiest.github.io"
 
 permalink: pretty
@@ -34,7 +34,7 @@ collections:
 
 aux_links:
   "View on GitHub":
-    - "//github.com/theqwertiest/foo_title"
+    - "//github.com/theqwertiest/dotnet_title_bar"
 
 color_scheme: "dark"
 
