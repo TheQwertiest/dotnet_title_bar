@@ -211,7 +211,8 @@ namespace fooTitle
                 {
                     var skinEntry = (SkinListEntry)skinsList.SelectedItems[0];
                     var skinFullPath = SkinUtils.GenerateSkinPath(skinEntry.DirType, skinEntry.SkinDir);
-                    System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{skinFullPath}\"");
+                    var psi = new System.Diagnostics.ProcessStartInfo() { FileName = skinFullPath, UseShellExecute = true };
+                    System.Diagnostics.Process.Start(psi);
                 }
             }
             catch (Exception ex)
