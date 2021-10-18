@@ -5,18 +5,11 @@
 - think about adding .gif support to all the layers.
 - research possibility of .svg support
 - support for custom fonts load in skin (is it secure?)
-
-cleaning the code:
-    - divide the Main class into several smaller classes for easier mantaince
-		- one class that is the plugin itself - that receives events from foobar
-		- that creates services such as menu commands
-		- other classes for ..
-    - clean up code of fooManagedWrapper (pref pages, CManagedWrapper)
-		- and commenting to use doxygen probably
+- cache title format objects
+- add proper urls to pref page links
 
 testing:
 	- profile for speed 
 	- test stability
-
 bugs:
     - Preferences page has some text that is cut-off, when resolution scaling is above 100%.
