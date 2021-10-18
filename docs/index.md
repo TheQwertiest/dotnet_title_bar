@@ -28,12 +28,12 @@ Features:
 
 - Use [Installation Guide](installation.md).
 - Check out [Built-in and User Skins](skin_showcase.md).
-- Take a look at [Documentation](script_documentation.md), if you are craving for more!
+- Take a look at [Documentation](skin_format_documentation.md), if you are craving for more!
 
 ## Links
 [Support thread](https://hydrogenaud.io/index.php/topic,116669.new.html)  
 [Changelog][changelog]  
-[Dev build](https://ci.appveyor.com/api/projects/theqwertiest/dotnet-title-bar/artifacts/_result%2FWin32_Release%2Fdotnet_title_bar.net-component?branch=master&job=Configuration%3A%20Release)
+[Dev build](https://ci.appveyor.com/api/projects/theqwertiest/dotnet-title-bar/artifacts/_result%2FAnyCPU_Release%2Fdotnet_title_bar.net-component?branch=master&job=Configuration%3A%20Release)
 
 ## Credits
 - [Quiark](https://github.com/Quiark): original component.  

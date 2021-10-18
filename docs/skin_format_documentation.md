@@ -42,9 +42,14 @@ anchor::== left | right | top | bottom | center | ... | comma-separated combinat
 ```
 
 In some case the size of the skin will adjusted automatically (see [Text Elements](#text-elements) for more info).
-[[File:Anchor showcase.gif|frame|Example with anchor position displayed]]
 
 When skin size changes, anchor stays on the same place relative to display, meaning that the skin will expand or contract only in non-anchored directions. The position of the anchor can be displayed via `Preferences`>`Display`>`Title Bar`>`Advanced`>`Anchor Position`>`Display anchor`.
+
+{% include functions/clickable_img.html
+    img='/assets/img/screenshots/docs/anchor.gif'
+    title='Illustration of anchor position displayed'
+    alt='Illustration of anchor position displayed'
+  %}
 
 ## Layer
 
@@ -83,7 +88,7 @@ If `persistent` property is set to `true`, then the enabled state of the layer w
 
 ## Geometry type
 
-`size`, `position` and `padding` properties of geometry can contain foobar2000 queries. Everything that works in foobar2000 will work here as well, see [http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Title_Formatting_Reference titleformat help] for further reference. Be advised, that using queries in geometry might degrade your performance if overused, since it parses those queries every time frame update is called (see [http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Advanced Preferences]).
+`size`, `position` and `padding` properties of geometry can contain foobar2000 queries. Everything that works in foobar2000 will work here as well, see [Title Formatting Reference][http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Title_Formatting_Reference] for further reference. Be advised, that using queries in `geometry` might degrade your performance if overused, since it parses those queries every time frame update is called (see [Advanced Preferences](settings.md/#advanced)).
 
 ### full
 
@@ -102,7 +107,15 @@ The layer occupies as much space as possible - the whole client area of the pare
 </geometry>
 ```
 
-[[Image:Foo title4.png]] ==> [[Image:Foo title5.png]]
+{% include functions/clickable_img.html
+    img='/assets/img/screenshots/docs/geometry_full_1.png'
+    title='Illustration of the `full` geometry before resize'
+    alt='Illustration of the `full` geometry before resize'
+  -%} ==> {%- include functions/clickable_img.html
+    img='/assets/img/screenshots/docs/geometry_full_2.png'
+    title='Illustration of the `full` geometry after resize'
+    alt='Illustration of the `full` geometry after resize'
+  %}
 
 ### absolute
 
@@ -128,7 +141,11 @@ The `x` and `y` attributes adjust the position of the layer relative to it's ali
 </geometry>
 ```
 
-[[Image:Foo title6.png]]
+{% include functions/clickable_img.html
+    img='/assets/img/screenshots/docs/geometry_absolute_1.png'
+    title='Illustration of the `absolute` geometry with left alignment'
+    alt='Illustration of the `absolute` geometry with left alignment'
+  %}
 
 ```xml
 <geometry type="absolute">
@@ -137,7 +154,11 @@ The `x` and `y` attributes adjust the position of the layer relative to it's ali
 </geometry>
 ```
 
-[[Image:Foo title7.png]]
+{% include functions/clickable_img.html
+    img='/assets/img/screenshots/docs/geometry_absolute_2.png'
+    title='Illustration of the `absolute` geometry with right alignment'
+    alt='Illustration of the `absolute` geometry with right alignment'
+  %}
 
 ### minimal
 ```xml
@@ -332,9 +353,11 @@ Only a single attribute from `button` and `scroll` can contain values different 
 #### mainmenu
 Executes a main menu command. The path to the menu item is entered using `/` (slash) as a separator. For example the following will set the playback order to random:
 
+```xml
 <action type="menu">
     Playback/Order/Random
 </action>
+```
 
 It's adviced to enter the full path to the command to avoid mismatches with a command that have a similar name.
 E.g. a command with a name `5` can be matched both to a command `Rate/5` and to a command `Layout/5`.
@@ -380,6 +403,4 @@ only ::= enable | disable | [toggle]
 To enable/disable more layers at once, simply include multiple `action` tags in the button.
 
 ## Examples
-See skins supplied with component and links below.
-
-TODO: add proper links
+See skins supplied with component and user-created skins: [Skin Showcase](skin_showcase.md)
