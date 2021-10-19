@@ -15,6 +15,7 @@ It supports custom-made skins and is written in C#.
 Note: must be used in conjunction with `foo_dotnet_component_host`.</Description>
     <Copyright></Copyright>
     <PackageLicenseExpression>LGPL-2.1</PackageLicenseExpression>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>$(NoWarn);MSB3270</NoWarn>
