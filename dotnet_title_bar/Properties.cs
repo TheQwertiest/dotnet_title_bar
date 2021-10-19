@@ -19,8 +19,7 @@ namespace fooTitle
                 info.Name = Constants.ComponentName;
                 info.Guid = Guids.PreferencesPage_Main;
                 info.ParentGuid = Main.Get().Fb2kUtils.Fb2kGuid(Fb2kGuidId.PrefPage_Display);
-                // TODO: fill properly
-                info.HelpUrl = null;
+                info.HelpUrl = "https://theqwertiest.github.io/dotnet_title_bar/";
 
                 return info;
             }

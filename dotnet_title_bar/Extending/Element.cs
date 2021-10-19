@@ -54,8 +54,7 @@ namespace fooTitle.Extending
         {
             if (where.Attribute(name) != null)
             {
-                return
-                    where.Attribute(name).Value;
+                return where.Attribute(name).Value;
             }
 
             return def;
@@ -87,8 +86,7 @@ namespace fooTitle.Extending
                 return def;
             }
 
-            string val =
-                where.Attribute(name).Value;
+            string val = where.Attribute(name).Value;
             try
             {
                 if (IsExpression(val))
@@ -182,6 +180,7 @@ namespace fooTitle.Extending
             {
                 return expr;
             }
+
             try
             {
                 var tf = Main.Get().Fb2kControls.TitleFormat(expr);

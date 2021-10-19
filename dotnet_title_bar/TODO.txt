@@ -6,10 +6,10 @@
 - research possibility of .svg support
 - support for custom fonts load in skin (is it secure?)
 - cache title format objects
-- add proper urls to pref page links
 
 testing:
 	- profile for speed 
 	- test stability
 bugs:
     - Preferences page has some text that is cut-off, when resolution scaling is above 100%.
+

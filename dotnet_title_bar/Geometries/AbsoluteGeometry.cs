@@ -33,7 +33,6 @@ namespace fooTitle.Geometries
             Left,
             Right
         }
-        ;
 
         private readonly Rectangle _myParentRect;
 

@@ -4,6 +4,7 @@ using fooTitle.Layers;
 using Qwr.ComponentInterface;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -53,7 +54,7 @@ namespace fooTitle
         public event PlaybackPausedStateChanged_EventHandler PlaybackPausedStateChanged;
         public event DynamicTrackInfoChanged_EventHandler DynamicTrackInfoChanged;
 
-        [ComponentInterfaceVersion("0.1")]
+        [ComponentInterfaceVersion("0.1.1")]
         public Main()
         {
         }
@@ -62,7 +63,7 @@ namespace fooTitle
         {
             ComponentInfo info;
             info.Name = Constants.ComponentName;
-            info.Version = Assembly.GetExecutingAssembly().GetName().Version;
+            info.Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
             info.Description =
                 "Displays a title - bar(like Winamp's WindowShade mode)\n\n"
                 + "Copyright( c ) 2005-2006 by Roman Plasil\n\n"
@@ -84,6 +85,8 @@ namespace fooTitle
 
             // create the configuration manager
             Config = new XmlConfigStorage(cfgEntry);
+
+            servicesManager.RegisterAcfu(Guids.Acfu, Constants.ComponentNameUnderscored, "TheQwertiest");
 
             // create the property sheet form
             servicesManager.RegisterPreferencesPage(Properties.Info, typeof(Properties));
