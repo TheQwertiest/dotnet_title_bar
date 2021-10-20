@@ -1,17 +1,44 @@
 # Changelog
 
-## [Unreleased]
+#### Table of Contents
+- [Unreleased](#unreleased)
+- [1.0.5](#105---2018-02-21)
+- [1.0.4a](#104a---2017-10-18)
+- [1.0.4](#104---2017-10-17)
+- [1.0.3](#103---2017-10-04)
+- [1.0.2](#102---2017-09-22)
+- [1.0.1](#101---2017-09-14)
+- [1.0.0](#100---2017-08-15)
+- [0.9.5](#095---2017-08-10)
+- [0.9.4a](#094a---2017-08-08)
+- [0.9.4](#094---2017-08-07)
+- [0.9.3](#093---2017-08-01)
+- [0.9.2](#092---2017-07-25)
+- [0.9.1](#091---2017-07-18)
+- [Prior releases](#prior-releases)
 
-## [1.0.5] - 2018-02-21
+___
+
+
+## [Unreleased][]
+
+### Changed
+- Rewritten as a standalone .NET component. Now requires `foo_dotnet_component_host` component to work.
+
+### Fixed
+- Fixed anchor not always being displayed.
+- Fixed `show only when minimized` setting not being applied.
+
+## [1.0.5][] - 2018-02-21
 ### Changed
 - Rebuilt with the latest fb2k SDK (2018-02-05).
 
-## [1.0.4a] - 2017-10-18
+## [1.0.4a][] - 2017-10-18
 ### Fixed
 - Fixed text truncation when DPI scaling is enabled.
 - Fixed invalid height of the default text in flourish skin ([link](https://github.com/TheQwertiest/foo_title/wiki/Skin-Gallery#flourish-linkfixed-version)).
 
-## [1.0.4] - 2017-10-17
+## [1.0.4][] - 2017-10-17
 ### Added
 - Added in-built DPI scaling, which is enabled by default (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Advanced)).
 
@@ -21,7 +48,7 @@
 ### Fixed
 - Fixed bug: preferences changes were not always reverted, when exiting without applying those changes.
 
-## [1.0.3] - 2017-10-04
+## [1.0.3][] - 2017-10-04
 ### Added
 - Added 'persistent' attribute to layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Layer)).
 - Added animated .gif support to 'absolute-images' layer.
@@ -30,7 +57,7 @@
 - Updated Milk Plate skin to make use of new 'persistent' attribute: now the panel's state is persistent across fb2k launches.
 - Updated White skin to make use of .gif support.
 
-## [1.0.2] - 2017-09-22
+## [1.0.2][] - 2017-09-22
 ### Added
 - Added foo_title to Preferences > Components menu.
 
@@ -41,7 +68,7 @@
 - Fixed bug: 'enable when minimized' was not working at all.
 - Fixed inconsistent fade-in/fade-out animations (hopefully for the last time).
 
-## [1.0.1] - 2017-09-14
+## [1.0.1][] - 2017-09-14
 ### Added
 - Added 'scaleable' attribute to text layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#text)).
 
@@ -49,7 +76,7 @@
 - Text is not scaled with DPI by default now, thus preserving skins, that are not compatible with scaling, from breaking on high DPI screens.
 - Fixed preferences page being cut-off, when resolution scaling is above 100%.
 
-## [1.0.0] - 2017-08-15
+## [1.0.0][] - 2017-08-15
 ### Added
 - Added 'speed' property to animation layer (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#animation)).
 - Added [>>gallery<<](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery) showcasing stock and user-created skins.
@@ -66,7 +93,7 @@
 - Fixed bug: foo_title might move beyond screen borders, when changing to skin with different anchor position.
 - Fixed bug: inconsistent fade-out animation when mouse is leaving foo_title.
 
-## [0.9.5] - 2017-08-10
+## [0.9.5][] - 2017-08-10
 ### Added
 - Added 'clip' property to skin element: set to false to disable clipping (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Layer)).
 - Added 'no-content' layer type: this layer has no contents itself and is used solely for positioning other layers, it is also transparent for tool-tip layer detection (see [docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#no-content)).
@@ -80,11 +107,11 @@
 - Fixed error that prevented the filling of the skin list, when one of the skins is not parsable.
 - Fixed clipping not being applied.
 
-## [0.9.4a] - 2017-08-08
+## [0.9.4a][] - 2017-08-08
 ### Fixed
 - Fixed crash on exit from foobar2000.
 
-## [0.9.4] - 2017-08-07
+## [0.9.4][] - 2017-08-07
 ### Added
 - Added ability to display tooltip ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:0.9_Titlebar_%28foo_title%29#Layer)).
 - Added 'align' attribute to minimal geometry ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:0.9_Titlebar_%28foo_title%29#minimal)).
@@ -101,7 +128,7 @@
 - Preferences page now displays only folders containing skin.xml.
 - Fixed anchor drawing.
 
-## [0.9.3] - 2017-08-01
+## [0.9.3][] - 2017-08-01
 ### Added
 - Added double-click action to button layer ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#button)).
 - Added 'minimal' geometry type ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#minimal)).
@@ -115,7 +142,7 @@
 - Fixed popup being out of screen when changing to skin with different anchor.
 - Fixed error being displayed on startup, when there is no foo_title folder found.
 
-## [0.9.2] - 2017-07-25
+## [0.9.2][] - 2017-07-25
 ### Added
 - Added ability to configure anchor point position in skin.xml ([docs](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)#Header)).
 - Added ability to display anchor point (see preferences page).
@@ -124,7 +151,7 @@
 - Fixed inability to evaluate foobar2000 queries in skin.xml, when there is no song playing.
 - Fixed memory leak.
 
-## 0.9.1 - 2017-07-18
+## [0.9.1][] - 2017-07-18
 ### Added
 - Added peek action: this action displays foo_title popup for a brief time. Can be assigned to hotkeys. Can only be used when foo_title is enabled.
 - Added fade in and fade away animations for popup.
@@ -151,3 +178,4 @@
 [0.9.4]: https://github.com/theqwertiest/foo_title/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/theqwertiest/foo_title/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/theqwertiest/foo_title/compare/v0.9.1...v0.9.2
+[0.9.1]: https://github.com/theqwertiest/foo_title/compare/master...v0.9.1

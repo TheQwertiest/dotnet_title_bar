@@ -1,31 +1,13 @@
-# foo_title [![version][version-badge]][CHANGELOG]
-![alt text](https://i.imgur.com/KskthTl.png)  
-foobar2000 component
+# Title Bar
+[![version][version_badge]][changelog] [![Build status][appveyor_badge]](https://ci.appveyor.com/project/TheQwertiest/dotnet-title-bar/branch/master) [![CodeFactor][codefactor_badge]](https://www.codefactor.io/repository/github/theqwertiest/dotnet_title_bar/overview/master) [![Codacy Badge][codacy_badge]](https://app.codacy.com/app/qwertiest/dotnet_title_bar?utm_source=github.com&utm_medium=referral&utm_content=TheQwertiest/dotnet_title_bar&utm_campaign=Badge_Grade_Dashboard) 
 
-This is a skinnable UI for [foobar2000](https://www.foobar2000.org).
+This is a component for the [foobar2000](https://www.foobar2000.org) audio player that provides a skinnable overlay UI.
 
-See [>>gallery<<](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery) for screenshots.
+Visit [component homepage](https://theqwertiest.github.io/dotnet_title_bar/) for more info.
 
-## Prerequisites
-1. Microsoft .Net Framework 4.5 (https://www.microsoft.com/download/details.aspx?id=42642)
-1. foobar2000 v1.4+
+[changelog]: CHANGELOG.md
+[version_badge]: https://img.shields.io/github/release/theqwertiest/dotnet_title_bar.svg
+[appveyor_badge]: https://ci.appveyor.com/api/projects/status/7e55506jhcybsif3/branch/master?svg=true
+[codacy_badge]: https://api.codacy.com/project/badge/Grade/e66d47f010b34b1684969499bb9508d7
+[codefactor_badge]: https://www.codefactor.io/repository/github/theqwertiest/dotnet_title_bar/badge/master
 
-## Installation
-1. Extract and install foo_title.fb2k-component (http://wiki.hydrogenaud.io/index.php?title=Foobar2000:How_to_install_a_component).  
-1. Open folder for skins (Preferences -> Display -> foo_title -> Main -> Open directory).
-1. Extract directories contained in 'skins' folder to the opened folder.
-1. Check out and download [user-created skins](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery).
-1. Choose and apply your preferred skin =)
-
-## Links
-[Documentation](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Titlebar_(foo_managed_wrapper)) ([v0.8.1](https://quiark.github.io/foo_title))  
-[Changelog](https://github.com/theqwertiest/foo_title/blob/master/CHANGELOG.md)  
-[Skins](https://hydrogenaud.io/index.php/topic,46619.0.html) ([gallery](https://github.com/TheQwertiest/foo_title/wiki/Skin-gallery))  
-[Discussion/support thread @ hydrogenaud.io](http://www.hydrogenaudio.org/forums/index.php?showtopic=46595)
-
-## Credits
-[Quiark](https://github.com/Quiark): original component.  
-[LepkoQQ](https://github.com/LepkoQQ): further improvements on the original component.
-
-[CHANGELOG]: ./CHANGELOG.md
-[version-badge]: https://img.shields.io/badge/version-1.0.5-blue.svg

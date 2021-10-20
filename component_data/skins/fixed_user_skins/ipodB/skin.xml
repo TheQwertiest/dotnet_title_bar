@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skin
+    author="banga77"
+    name="iPod"
+    width="100"
+    height="220">
+
+<layer name="main" type="absolute-images">
+	<geometry type="absolute">
+		<size x="100" y="220" />
+		<position x="0" y="0" align="left" />
+	</geometry>
+	<contents>
+		<image src="B.png" />
+	</contents>
+
+<layer name="Artist" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="90" y="14" />
+                <position x="6" y="183" align="center" />
+            </geometry>
+            <contents spacing="0" font="eunjin" size="8">
+                <label position="center" color="ffffffff">$if2(%artist%,Unknown Artist)</label>
+            </contents>
+        </layer>
+        
+        <layer name="TrackTitle" type="scrolling-text">
+            <geometry type="absolute">
+                <size x="90" y="14" />
+                <position x="6" y="200" align="center" />
+            </geometry>
+            <contents spacing="0" font="eunjin" size="7">
+                <label position="center" color="ffffffff">$if2(%title%,Unknown Track)</label>
+            </contents>
+        </layer>
+
+	<layer name="time" type="text">
+		<geometry type="absolute">
+			<size x="30" y="12" />
+			<position x="55" y="18" align="left" />
+		</geometry>
+		<contents spacing="0" font="eunjin" size="7">
+			<label position="right" color="CC000000"> %_time_elapsed%</label>
+		</contents>
+	</layer>
+	
+	<layer name="time" type="text">
+		<geometry type="absolute">
+			<size x="30" y="12" />
+			<position x="55" y="57" align="left" />
+		</geometry>
+		<contents spacing="0" font="eunjin" size="7">
+			<label position="right" color="CC000000">%_length%</label>
+		</contents>
+	</layer>
+
+<layer name="AlbumArt" type="album-art">
+            <geometry type="absolute">
+                <size x="48" y="48" />
+                <position x="14" y="20" align="center" />
+            </geometry>
+            <contents>
+                <NoAlbumArt>
+                    images/noalbum.png
+                </NoAlbumArt>
+            </contents>
+</layer>
+
+	<layer name="Activate" type="button">
+		<geometry type="absolute">
+			<size x="15" y="15" />
+                			<position x="25" y="80" align="left" />
+            		</geometry>
+           		<contents>
+                			<action>
+                    			Activate
+                			</action>
+                			<normalImg src="open.png" />
+                			<overImg src="openON.png" />
+                			<downImg src="open.png" />
+            		</contents>
+        	</layer>
+
+	<layer name="Exit" type="button">
+		<geometry type="absolute">
+			<size x="15" y="15" />
+                			<position x="63" y="80" align="left" />
+            		</geometry>
+           		<contents>
+                			<action>
+                    			Exit
+                			</action>
+                			<normalImg src="close.png" />
+                			<overImg src="closeON.png" />
+                			<downImg src="close.png" />
+            		</contents>
+        	</layer>
+
+	<layer name="previous" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="16" y="136" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+        	   	 		Previous
+    			</action>
+    			<normalImg src="prev.png" />
+    			<overImg src="prevON.png" />
+    			<downImg src="prev.png" />
+		</contents>
+	</layer>
+
+	<layer name="stop" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="43" y="136" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Stop
+    			</action>
+    			<normalImg src="stop.png" />
+    			<overImg src="stopON.png" />
+    			<downImg src="stop.png" />
+		</contents>
+	</layer>
+
+	<layer name="play" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="44" y="162" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Play
+    			</action>
+    			<normalImg src="play.png" />
+    			<overImg src="playON.png" />
+    			<downImg src="play.png" />
+		</contents>
+	</layer>
+
+	<layer name="pause" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="44" y="110" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Pause
+    			</action>
+    			<normalImg src="pause.png" />
+    			<overImg src="pauseON.png" />
+    			<downImg src="pause.png" />
+		</contents>
+	</layer>
+
+	<layer name="next" type="button">
+		<geometry type="absolute">
+			<size x="13" y="13" />
+			<position x="70" y="136" align="left" />
+		</geometry>
+		<contents>
+    			<action>
+				Next
+    			</action>
+    			<normalImg src="next.png" />
+    			<overImg src="nextON.png" />
+    			<downImg src="next.png" />
+		</contents>
+	</layer>
+
+
+
+	
+
+</layer>
+</skin>
+
+
+
+
