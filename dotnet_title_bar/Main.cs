@@ -88,7 +88,7 @@ namespace fooTitle
             servicesManager.RegisterAcfu(Guids.Acfu, Constants.ComponentNameUnderscored, "TheQwertiest");
 
             // create the property sheet form
-            servicesManager.RegisterPreferencesPage(Properties.Info, typeof(Properties));
+            servicesManager.RegisterPreferencesPage(Preferences.Info, typeof(Preferences));
 
             // initialize show control
             _showControl = new ShowControl();
@@ -145,7 +145,7 @@ namespace fooTitle
                 return Configs.Display_IsDraggingEnabled.Value switch
                 {
                     EnableDragging.Always => _isMouseOnDragLayer,
-                    EnableDragging.WhenPropertiesOpen => Properties.IsOpen,
+                    EnableDragging.WhenPropertiesOpen => Preferences.IsOpen,
                     EnableDragging.Never => false,
                     _ => throw new ArgumentOutOfRangeException(),
                 };
@@ -275,7 +275,7 @@ namespace fooTitle
             _positionX.Value = anchorPos.x;
             _positionY.Value = anchorPos.y;
 
-            if (Configs.Display_IsDraggingEnabled.Value == EnableDragging.Always && !Properties.IsOpen)
+            if (Configs.Display_IsDraggingEnabled.Value == EnableDragging.Always && !Preferences.IsOpen)
             {
                 ConfValuesManager.GetInstance().SaveTo(Config);
             }

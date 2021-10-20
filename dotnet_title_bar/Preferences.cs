@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace fooTitle
 {
-    class Properties : IPreferencesPage
+    class Preferences : IPreferencesPage
     {
         public IPreferencesPageCallback PreferencesCallback;
         private ContainerControl _impl;
@@ -29,7 +29,7 @@ namespace fooTitle
         {
             PreferencesCallback = callback;
 
-            _impl = new PropertiesForm(this);
+            _impl = new PreferencesForm(this);
             Win32.SetParent(_impl.Handle, parentHandle);
             _impl.Anchor = (AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom);
             _impl.Show();
@@ -61,6 +61,6 @@ namespace fooTitle
             return _impl.Handle;
         }
 
-        public static bool IsOpen => PropertiesForm.IsOpen;
+        public static bool IsOpen => PreferencesForm.IsOpen;
     }
 }

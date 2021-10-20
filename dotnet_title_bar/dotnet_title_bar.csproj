@@ -25,7 +25,7 @@ Note: must be used in conjunction with `foo_dotnet_component_host`.</Description
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="Properties.cs" />
-    <Compile Update="PropertiesForm.User.cs" />
+    <Compile Update="PreferencesForm.User.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TODO.txt" />

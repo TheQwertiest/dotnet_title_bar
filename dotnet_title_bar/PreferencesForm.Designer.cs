@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace fooTitle
 {
-    partial class PropertiesForm : UserControl
+    partial class PreferencesForm : UserControl
     {
         private RadioGroupWrapper showWhenWrapper;
         private RadioGroupWrapper windowPositionWrapper;
@@ -1280,5 +1280,6 @@ namespace fooTitle
 #endregion
     }
 }
+
 
 

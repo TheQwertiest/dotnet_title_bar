@@ -6,23 +6,22 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace fooTitle
 {
-    partial class PropertiesForm : UserControl
+    partial class PreferencesForm : UserControl
     {
-        private readonly Properties _parent;
+        private readonly Preferences _parent;
         private readonly Main _main;
         private readonly AutoWrapperCreator _autoWrapperCreator = new();
         private CancellationTokenSource _cts;
         private ProgressTimer _skinListProgressTimer;
         private Task _fillSkinTask;
 
-        public PropertiesForm(Properties parent)
+        public PreferencesForm(Preferences parent)
         {
             _main = Main.Get();
             _parent = parent;

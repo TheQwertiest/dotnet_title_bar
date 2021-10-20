@@ -59,7 +59,7 @@ namespace fooTitle.Layers
             _skinState.Reset();
             _skinState.Value = newNode;
 
-            if (!Properties.IsOpen)
+            if (!Preferences.IsOpen)
             { // Config should not be written when preferences page is open, since user might not apply changes
                 ConfValuesManager.GetInstance().SaveTo(Main.Get().Config);
             }
