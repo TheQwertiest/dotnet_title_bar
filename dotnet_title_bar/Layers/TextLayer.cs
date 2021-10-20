@@ -241,33 +241,26 @@ namespace fooTitle.Layers
 
         protected virtual void UpdateText()
         {
-            LabelPart[] parts = new LabelPart[2];
-            parts[0] = _left;
-            parts[1] = _right;
-
-            string[] prevText = { _left.formatted, _right.formatted };
+            var prevLeft = _left.formatted;
+            var prevRight = _right.formatted;
 
             _left.formatted = _defaultText;
             _right.formatted = "";
 
             var isPlaying = Main.Get().Fb2kPlaybackControls.IsPlaying();
-            for (int i = 0; i < 2; ++i)
+            foreach (var part in new LabelPart[] { _left, _right })
             {
-                if (!string.IsNullOrEmpty(parts[i].text) && isPlaying)
+                if (!string.IsNullOrEmpty(part.text) && isPlaying)
                 {
                     // Evaluate only when there is a track, otherwise keep default text
-                    var tf = Main.Get().Fb2kControls.TitleFormat(parts[i].text);
-                    parts[i].formatted = tf.Eval(force: true);
+                    var tf = Main.Get().Fb2kControls.TitleFormat(part.text);
+                    part.formatted = tf.Eval(force: true);
                 }
             }
 
-            for (int i = 0; i < 2; ++i)
+            if (_left.formatted != prevLeft || _right.formatted != prevRight)
             {
-                if (prevText[i] != parts[i].formatted)
-                {
-                    Main.Get().RedrawTitleBar();
-                    break;
-                }
+                Main.Get().RedrawTitleBar();
             }
         }
 

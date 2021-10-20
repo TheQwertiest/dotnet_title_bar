@@ -60,8 +60,7 @@ namespace fooTitle
 
         private async void Properties_HandleCreated(object sender, EventArgs e)
         {
-            var myAssembly = Assembly.GetExecutingAssembly();
-            versionLabel.Text = "Version: " + myAssembly.GetName().Version;
+            versionLabel.Text = $"Version: {Utils.GetVersion()}";
             IsOpen = true;
 
             await RefreshSkinsList();

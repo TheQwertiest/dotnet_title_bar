@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace fooTitle
 {
@@ -9,6 +10,11 @@ namespace fooTitle
         {
             Console.Get()?.LogError(message);
             Main.Get().Fb2kUtils?.ShowPopup(message, Constants.ComponentNameUnderscored);
+        }
+
+        public static string GetVersion()
+        {
+            return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
         }
 
         public class ExplorerLikeSort : IComparer<string>

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -63,7 +62,7 @@ namespace fooTitle
         {
             ComponentInfo info;
             info.Name = Constants.ComponentName;
-            info.Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+            info.Version = Utils.GetVersion();
             info.Description =
                 "Displays a title - bar(like Winamp's WindowShade mode)\n\n"
                 + "Copyright( c ) 2005-2006 by Roman Plasil\n\n"
