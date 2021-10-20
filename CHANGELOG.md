@@ -2,6 +2,7 @@
 
 #### Table of Contents
 - [Unreleased](#unreleased)
+- [2.0.0](#200---2021-10-21)
 - [1.0.5](#105---2018-02-21)
 - [1.0.4a](#104a---2017-10-18)
 - [1.0.4](#104---2017-10-17)
@@ -21,6 +22,8 @@ ___
 
 
 ## [Unreleased][]
+
+## [2.0.0][] - 2021-10-21
 
 ### Changed
 - Rewritten as a standalone .NET component. Now requires `foo_dotnet_component_host` component to work.
@@ -165,17 +168,19 @@ ___
 ## Prior releases
 - See https://github.com/lepkoqq/foo_title/releases
 
-[Unreleased]: https://github.com/theqwertiest/foo_title/compare/v1.0.5...HEAD
-[1.0.5]: https://github.com/theqwertiest/foo_title/compare/v1.0.4a...v1.0.5
-[1.0.4a]: https://github.com/theqwertiest/foo_title/compare/v1.0.4...v1.0.4a
-[1.0.4]: https://github.com/theqwertiest/foo_title/compare/v1.0.3...v1.0.4
-[1.0.3]: https://github.com/theqwertiest/foo_title/compare/v1.0.2...v1.0.3
-[1.0.2]: https://github.com/theqwertiest/foo_title/compare/v1.0.1...v1.0.2
-[1.0.1]: https://github.com/theqwertiest/foo_title/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/theqwertiest/foo_title/compare/v0.9.5...v1.0.0
-[0.9.5]: https://github.com/theqwertiest/foo_title/compare/v0.9.4a...v0.9.5
-[0.9.4a]: https://github.com/theqwertiest/foo_title/compare/v0.9.4...v0.9.4a
-[0.9.4]: https://github.com/theqwertiest/foo_title/compare/v0.9.3...v0.9.4
-[0.9.3]: https://github.com/theqwertiest/foo_title/compare/v0.9.2...v0.9.3
-[0.9.2]: https://github.com/theqwertiest/foo_title/compare/v0.9.1...v0.9.2
-[0.9.1]: https://github.com/theqwertiest/foo_title/compare/master...v0.9.1
+[unreleased]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v1.0.5...v2.0.0
+[1.0.5]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v1.0.4a...v1.0.5
+[1.0.4a]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v1.0.4...v1.0.4a
+[1.0.4]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v1.0.2...v1.0.3
+[1.0.2]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v0.9.5...v1.0.0
+[0.9.5]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v0.9.4a...v0.9.5
+[0.9.4a]: https://github.com/TheQwertiest/dotnet_title_bar/compare/v0.9.4...v0.9.4a
+[0.9.4]: https://github.com/TheQwertiest/dotnet_title_bare/compare/v0.9.3...v0.9.4
+[0.9.3]: https://github.com/TheQwertiest/dotnet_title_bare/compare/v0.9.2...v0.9.3
+[0.9.2]: https://github.com/TheQwertiest/dotnet_title_bare/compare/v0.9.1...v0.9.2
+[0.9.1]: https://github.com/TheQwertiest/dotnet_title_bare/compare/master...v0.9.1
+
