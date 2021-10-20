@@ -20,6 +20,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 
 namespace fooTitle.Extending
 {
@@ -223,7 +224,15 @@ namespace fooTitle.Extending
                 throw new NoSuitableConstructorException(type, elementClass);
             }
 
-            return (Element)cons.Invoke(parameters);
+            try
+            {
+                return (Element)cons.Invoke(parameters);
+            }
+            catch (TargetInvocationException ex) when (ex.InnerException != null)
+            {
+                ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+                throw;
+            }
         }
     }
 

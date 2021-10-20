@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
@@ -435,7 +436,15 @@ namespace fooTitle.Layers
             {
                 if (cons.GetParameters().Length == 0)
                 {
-                    return (T)cons.Invoke(Array.Empty<object>());
+                    try
+                    {
+                        return (T)cons.Invoke(Array.Empty<object>());
+                    }
+                    catch (TargetInvocationException ex) when (ex.InnerException != null)
+                    {
+                        ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+                        throw;
+                    }
                 }
             }
 
