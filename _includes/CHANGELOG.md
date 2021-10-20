@@ -25,6 +25,9 @@ ___
 
 ## [2.0.0][] - 2021-10-21
 
+### Added
+- Added ability to install skins via drag-n-drop'ing `.zip` archives to skin list on Preferences page.
+
 ### Changed
 - Rewritten as a standalone .NET component. Now requires `foo_dotnet_component_host` component to work.
 
