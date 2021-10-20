@@ -88,7 +88,7 @@ If `persistent` property is set to `true`, then the enabled state of the layer w
 
 ## Geometry type
 
-`size`, `position` and `padding` properties of geometry can contain foobar2000 queries. Everything that works in foobar2000 will work here as well, see [Title Formatting Reference][http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Title_Formatting_Reference] for further reference. Be advised, that using queries in `geometry` might degrade your performance if overused, since it parses those queries every time frame update is called (see [Advanced Preferences](settings.md/#advanced)).
+`size`, `position` and `padding` properties of geometry can contain foobar2000 queries. Everything that works in foobar2000 will work here as well, see [Title Formatting Reference](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Title_Formatting_Reference) for further reference. Be advised, that using queries in `geometry` might degrade your performance if overused, since it parses those queries every time frame update is called (see [Advanced Preferences](settings.md/#advanced)).
 
 ### full
 
@@ -259,7 +259,7 @@ It is the only content type that can resize the skin dynamically. It does so acc
 ```xml
 <contents spacing="[text spacing]" angle="[angle of the text]" font="[font name]" size="[font size]" bold="[bold]" italic="[italic]" color="[hex coded argb color]">
     <defaultText>
-        <!-- default text which is displayed which is shown when nothing is playing or when labels are empty -->
+        <!-- default text which is displayed when nothing is playing or when labels are empty -->
     </defaultText>
     <label position="left" font="[font name]" size="[font size]" bold="[bold]" italic="[italic]" color="[hex coded argb color]">
         <!-- text that might contain foobar2000 query -->
