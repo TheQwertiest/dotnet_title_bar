@@ -64,12 +64,12 @@ namespace fooTitle
             info.Name = Constants.ComponentName;
             info.Version = Utils.GetVersion();
             info.Description =
-                "Displays a title - bar(like Winamp's WindowShade mode)\n\n"
+                "Displays a title bar overlay\n\n"
                 + "Copyright( c ) 2005-2006 by Roman Plasil\n\n"
                 + "Copyright( c ) 2016 by Miha Lepej\n"
                 + "https://github.com/LepkoQQ/foo_title \n\n"
                 + "Copyright( c ) 2017-2021 by TheQwertiest\n"
-                + "https://github.com/TheQwertiest/foo_title";
+                + "https://github.com/TheQwertiest/dotnet_title_bar";
 
             return info;
         }
