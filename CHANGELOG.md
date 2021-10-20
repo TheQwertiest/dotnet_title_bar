@@ -25,6 +25,9 @@ ___
 
 ## [2.0.0][] - 2021-10-21
 
+### Added
+- Added ability to install skins via drag-n-drop'ing `.zip` archives to skin list on Preferences page.
+
 ### Changed
 - Rewritten as a standalone .NET component. Now requires `foo_dotnet_component_host` component to work.
 
@@ -183,4 +186,5 @@ ___
 [0.9.3]: https://github.com/TheQwertiest/dotnet_title_bare/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/TheQwertiest/dotnet_title_bare/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/TheQwertiest/dotnet_title_bare/compare/master...v0.9.1
+
 
