@@ -46,14 +46,6 @@ namespace fooTitle
             }
 
             _curTopToolTipLayer = GetTopToolTipLayer();
-
-            if (!_tooltipForm.Visible || _tooltipLayer != _curTopToolTipLayer)
-            {
-                Point mouse = _display.PointToScreen(new Point(e.X, e.Y));
-                _tooltipForm.Left = mouse.X;
-                _tooltipForm.Top = mouse.Y + 18;
-            }
-
             if (_curTopToolTipLayer != null)
             {
                 ShowDelayedToolTip(_curTopToolTipLayer, _curTopToolTipLayer.ToolTipText);
@@ -81,6 +73,13 @@ namespace fooTitle
             {
                 if (!_wasShowCalled)
                 {
+                    if (!_tooltipForm.Visible || _tooltipLayer != _curTopToolTipLayer)
+                    {
+                        Win32.GetCursorPos(out var cursorPos);
+                        _tooltipForm.Left = cursorPos.x;
+                        _tooltipForm.Top = cursorPos.y + 18;
+                    }
+
                     _wasShowCalled = true;
                     _tooltipText = toolTipText;
                     _tooltipLayer = caller;

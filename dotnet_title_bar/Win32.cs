@@ -91,6 +91,10 @@ namespace fooTitle
         public const byte AC_SRC_OVER = 0x00;
         public const byte AC_SRC_ALPHA = 0x01;
 
+        public const int GWL_EXSTYLE = -20;
+        public const int WS_EX_LAYERED = 0x00080000;
+        public const int WS_EX_TRANSPARENT = 0x00000020;
+
         [DllImport("user32", ExactSpelling = true)]
         public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
@@ -133,6 +137,9 @@ namespace fooTitle
             Bottom = 1,
             NoTopmost = 2
         }
+
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out Point lpPoint);
     }
 
 }
