@@ -408,6 +408,5 @@ namespace fooTitle.Layers
             public bool isBold;
             public bool isItalic;
         }
-
     }
 }

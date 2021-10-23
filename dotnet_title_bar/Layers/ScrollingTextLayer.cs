@@ -146,7 +146,7 @@ namespace fooTitle.Layers
             var isPlaying = Main.Get().Fb2kPlaybackControls.IsPlaying();
 
             if (!string.IsNullOrEmpty(_left.text) && isPlaying)
-            {// Evaluate only when there is a track, otherwise keep default text
+            { // Evaluate only when there is a track, otherwise keep default text
                 var tf = Main.Get().Fb2kControls.TitleFormat(_left.text);
                 _left.formatted = tf.Eval(force: true);
             }

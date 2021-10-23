@@ -68,7 +68,7 @@ namespace fooTitle
             if (message.Contains('\n'))
             {
                 _console.Log($"{_componentName}:\n"
-                         + $"  {message}\n");
+                             + $"  {message}\n");
             }
             else
             {
@@ -81,7 +81,7 @@ namespace fooTitle
             if (message.Contains('\n'))
             {
                 _console.Log($"{_componentName}: {prefix}:\n"
-                         + $"  {message}\n");
+                             + $"  {message}\n");
             }
             else
             {
@@ -92,16 +92,16 @@ namespace fooTitle
         private void LogFormattedMessage(string prefix, Exception e)
         {
             _console.Log($"{_componentName}: {prefix}:\n"
-                        + $"  {e.Message}\n\n"
-                                        + $"{e}\n");
+                         + $"  {e.Message}\n\n"
+                         + $"{e}\n");
         }
 
         private void LogFormattedMessage(string prefix, string message, Exception e)
         {
             _console.Log($"{_componentName}: {prefix}:\n"
-                        + $"  {message}\n"
-                                         + $"  {e.Message}\n\n"
-                                         + $"{e}\n");
+                         + $"  {message}\n"
+                         + $"  {e.Message}\n\n"
+                         + $"{e}\n");
         }
     }
 }

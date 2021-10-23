@@ -27,30 +27,38 @@ namespace fooTitle.Layers
     [LayerType("album-art")]
     public class AlbumArtLayer : Layer
     {
-        protected Bitmap albumArt;
-        protected Bitmap albumArtStub;
-        protected Bitmap noCover;
+        private readonly ArtId _artId;
+        private readonly Bitmap _noCover;
+        private Bitmap _albumArt;
+        private Bitmap _albumArtStub;
         /// <summary>
         /// This is a scaled copy of albumArt. This prevents rescaling
         /// a large bitmap every frame.
         /// </summary>
-        protected Bitmap cachedResized;
-        private int timesCheckedArtwork = 0;
+        private Bitmap _cachedResized;
+        private int _timesCheckedArtwork = 0;
 
         public AlbumArtLayer(Rectangle parentRect, XElement node, Skin skin)
             : base(parentRect, node, skin)
         {
-            try
+            var contents = GetFirstChildByName(node, "contents");
+            var noAlbumArt = GetFirstChildByNameOrNull(contents, "NoAlbumArt");
+            if (noAlbumArt != null)
             {
-                XElement contents = GetFirstChildByName(node, "contents");
-                XElement NoAlbumArt = GetFirstChildByName(contents, "NoAlbumArt");
-                string name = GetNodeValue(NoAlbumArt);
-                noCover = ParentSkin.GetSkinImage(name);
+                string name = GetNodeValue(noAlbumArt);
+                _noCover = ParentSkin.GetSkinImage(name);
             }
-            catch (Exception)
+
+            var artIdStr = GetCastedAttributeValue(contents, "art-id", "cover-front");
+            _artId = artIdStr switch
             {
-                noCover = null;
-            }
+                "cover-front" => ArtId.CoverFront,
+                "cover-back" => ArtId.CoverBack,
+                "disc" => ArtId.Disc,
+                "icon" => ArtId.Icon,
+                "artist" => ArtId.Artist,
+                _ => throw new Exception($"Unknown art id: `{artIdStr}`"),
+            };
 
             ParentSkin.PlaybackAdvancedToNewTrack += CurrentSkin_OnPlaybackNewTrackEvent;
             ParentSkin.TrackPlaybackPositionChanged += CurrentSkin_OnPlaybackTimeEvent;
@@ -60,31 +68,31 @@ namespace fooTitle.Layers
         private void LoadArtwork(IMetadbHandle song)
         {
             Console.Get().LogInfo("Loading album art... ");
-            Bitmap artwork = song.Artwork(ArtId.CoverFront);
+
+            using var artwork = song.Artwork(_artId);
             if (artwork != null)
             {
                 try
                 {
-                    albumArt = new Bitmap(artwork);
-                    artwork.Dispose();
+                    _albumArt = new Bitmap(artwork);
                 }
                 catch (Exception e)
                 {
-                    albumArt = null;
+                    _albumArt = null;
                     Console.Get().LogWarning($"Cannot open album art {song.Path()}:", e);
                 }
             }
-            Bitmap artworkStub = song.ArtworkStub(ArtId.CoverFront);
+
+            using var artworkStub = song.ArtworkStub(_artId);
             if (artworkStub != null)
             {
                 try
                 {
-                    albumArtStub = new Bitmap(artworkStub);
-                    artworkStub.Dispose();
+                    _albumArtStub = new Bitmap(artworkStub);
                 }
                 catch (Exception e)
                 {
-                    albumArtStub = null;
+                    _albumArtStub = null;
                     Console.Get().LogWarning($"Cannot open album art stub {song.Path()}:", e);
                 }
             }
@@ -94,35 +102,35 @@ namespace fooTitle.Layers
         {
             if (reason != PlaybackStopReason.StartingAnother)
             {
-                timesCheckedArtwork = 0;
-                albumArt = null;
-                albumArtStub = null;
-                cachedResized = null;
+                _timesCheckedArtwork = 0;
+                _albumArt = null;
+                _albumArtStub = null;
+                _cachedResized = null;
             }
         }
 
         private void CurrentSkin_OnPlaybackTimeEvent(double time)
         {
-            if (albumArt == null && time % Configs.Display_ArtLoadRetryFrequency.Value == 0
-                && (timesCheckedArtwork < Configs.Display_ArtLoadMaxRetries.Value || Configs.Display_ArtLoadMaxRetries.Value == -1))
+            if (_albumArt == null && time % Configs.Display_ArtLoadRetryFrequency.Value == 0
+                && (_timesCheckedArtwork < Configs.Display_ArtLoadMaxRetries.Value || Configs.Display_ArtLoadMaxRetries.Value == -1))
             {
-                timesCheckedArtwork++;
+                _timesCheckedArtwork++;
                 LoadArtwork(Main.Get().Fb2kPlaybackControls.NowPlaying());
             }
         }
 
         private void CurrentSkin_OnPlaybackNewTrackEvent(IMetadbHandle song)
         {
-            timesCheckedArtwork = 0;
-            albumArt = null;
-            albumArtStub = null;
-            cachedResized = null;
+            _timesCheckedArtwork = 0;
+            _albumArt = null;
+            _albumArtStub = null;
+            _cachedResized = null;
             LoadArtwork(song);
         }
 
         protected override void DrawImpl(Graphics canvas)
         {
-            Bitmap toDraw = prepareCachedImage();
+            Bitmap toDraw = PrepareCachedImage();
             if (toDraw != null)
             {
                 canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
@@ -130,35 +138,41 @@ namespace fooTitle.Layers
             }
         }
 
-        private Bitmap prepareCachedImage()
+        private Bitmap PrepareCachedImage()
         {
             if (ClientRect.Width <= 0 || ClientRect.Height <= 0)
+            {
                 return null;
+            }
 
-            if (cachedResized != null && cachedResized.Width == ClientRect.Width && cachedResized.Height == ClientRect.Height)
-                return cachedResized;
+            if (_cachedResized != null && _cachedResized.Width == ClientRect.Width && _cachedResized.Height == ClientRect.Height)
+            {
+                return _cachedResized;
+            }
 
-            if (albumArt == null && albumArtStub == null)
-                return noCover;
+            if (_albumArt == null && _albumArtStub == null)
+            {
+                return _noCover;
+            }
 
-            Bitmap artOrStub = albumArt ?? albumArtStub;
-            cachedResized = new Bitmap(ClientRect.Width, ClientRect.Height);
+            Bitmap artOrStub = _albumArt ?? _albumArtStub;
+            _cachedResized = new Bitmap(ClientRect.Width, ClientRect.Height);
 
             float scale = Math.Min((float)ClientRect.Width / artOrStub.Width, (float)ClientRect.Height / artOrStub.Height);
             float scaledWidth = artOrStub.Width * scale;
             float scaledHeight = artOrStub.Height * scale;
 
-            using (Graphics canvas = Graphics.FromImage(cachedResized))
+            using (Graphics canvas = Graphics.FromImage(_cachedResized))
             {
                 canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-                if (noCover != null)
+                if (_noCover != null)
                 {
-                    canvas.DrawImage(noCover, 0, 0, ClientRect.Width, ClientRect.Height);
+                    canvas.DrawImage(_noCover, 0, 0, ClientRect.Width, ClientRect.Height);
                 }
                 canvas.DrawImage(artOrStub, (ClientRect.Width - scaledWidth) / 2, (ClientRect.Height - scaledHeight) / 2, scaledWidth, scaledHeight);
             }
 
-            return cachedResized;
+            return _cachedResized;
         }
     }
 }

@@ -59,7 +59,6 @@ namespace fooTitle.Layers
             Main.Get().PlaybackPausedStateChanged += OnPlaybackPause;
             Main.Get().PlaybackStopped += OnPlaybackStop;
 
-
             // register to mouse events
             skinForm.MouseMove += Display_MouseMove;
             skinForm.MouseDown += Display_MouseDown;
@@ -193,16 +192,12 @@ namespace fooTitle.Layers
         /// </summary>
         public Bitmap GetSkinImage(string fileName)
         {
-            Image img = Image.FromFile(GetSkinFilePath(fileName));
+            using var img = Image.FromFile(GetSkinFilePath(fileName));
 
-            MemoryStream mstr = new MemoryStream();
+            MemoryStream mstr = new();
             img.Save(mstr, img.RawFormat);
 
-            Bitmap retImg = new Bitmap(mstr);
-
-            img.Dispose();
-
-            return retImg;
+            return new Bitmap(mstr);
         }
 
         protected override Size GetMinimalSizeImpl()

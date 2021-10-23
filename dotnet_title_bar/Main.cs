@@ -190,7 +190,7 @@ namespace fooTitle
             catch (Exception e)
             {
                 _currentSkin = null;
-                Utils.ReportErrorWithPopup($"There was an error loading skin:", e);
+                Utils.ReportErrorWithPopup("There was an error loading skin:", e);
             }
         }
 
