@@ -71,7 +71,7 @@ namespace fooTitle.Layers
                 catch (Exception e)
                 {
                     albumArt = null;
-                    Console.Get().LogWarning($"Cannot open album art {song.Path()} : {e.Message}");
+                    Console.Get().LogWarning($"Cannot open album art {song.Path()}:", e);
                 }
             }
             Bitmap artworkStub = song.ArtworkStub(ArtId.CoverFront);
@@ -85,7 +85,7 @@ namespace fooTitle.Layers
                 catch (Exception e)
                 {
                     albumArtStub = null;
-                    Console.Get().LogWarning($"Cannot open album art stub {song.Path()} : {e.Message}");
+                    Console.Get().LogWarning($"Cannot open album art stub {song.Path()}:", e);
                 }
             }
         }

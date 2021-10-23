@@ -59,6 +59,7 @@ namespace fooTitle.Layers
             IsPersistent = GetCastedAttributeValue(node, "persistent", false);
             _enabled = GetCastedAttributeValue(node, "enabled", true);
             _clipEnabled = GetCastedAttributeValue(node, "clip", true);
+            IsTooltipTransparent = GetCastedAttributeValue(node, "tooltip-transparent", false);
             HasContent = GetFirstChildByNameOrNull(node, "contents") != null;
 
             // create the geometry
@@ -124,10 +125,9 @@ namespace fooTitle.Layers
 
         public bool IsMouseOver { get; private set; } = false;
 
-        /// <summary>
-        /// Indicates if layer is used only for positioning
-        /// </summary>
         public bool HasContent { get; } = false;
+
+        public virtual bool IsTooltipTransparent { get; } = false;
 
         public virtual bool HasToolTip { get; } = false;
         public string ToolTipText { get; }

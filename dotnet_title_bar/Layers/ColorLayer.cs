@@ -53,7 +53,7 @@ namespace fooTitle.Layers
             }
             catch
             {
-                Console.Get().LogWarning($"Error in text layer {Name}, invalid color code {code}.");
+                Console.Get().LogWarning($"Error in text layer `{Name}`, invalid color code `{code}`.");
                 return Color.Black;
             }
         }

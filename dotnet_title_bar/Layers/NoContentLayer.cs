@@ -28,6 +28,7 @@ namespace fooTitle.Layers
     public class NoContentLayer : Layer
     {
         public override bool HasToolTip => false;
+        public override bool IsTooltipTransparent => true;
 
         public NoContentLayer(Rectangle parentRect, XElement node, Skin skin)
             : base(parentRect, node, skin)

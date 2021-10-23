@@ -175,9 +175,9 @@ namespace fooTitle.Layers
             {
                 Main.Get().Fb2kControls.ExecuteContextMenuCommand(_cmdPath);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Console.Get().LogWarning($"Contextmenu command {_cmdPath} not found.");
+                Console.Get().LogWarning($"Failed to execute command `{_cmdPath}`", e);
             }
         }
     }

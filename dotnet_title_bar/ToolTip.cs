@@ -1,6 +1,7 @@
 using fooTitle.Extending;
 using fooTitle.Layers;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -10,7 +11,7 @@ namespace fooTitle
     {
         private readonly SkinForm _display;
         private readonly ToolTipForm _tooltipForm;
-        private readonly Layer _parentLayer;
+        private readonly Skin _skin;
 
         private readonly object _tooltipLock = new();
         private readonly Timer _toolTipTimer;
@@ -22,9 +23,9 @@ namespace fooTitle
 
         private bool _isMouseDown = false;
 
-        public ToolTip(ToolTipForm tooltipForm, SkinForm display, Layer parentLayer)
+        public ToolTip(ToolTipForm tooltipForm, SkinForm display, Skin skin)
         {
-            _parentLayer = parentLayer;
+            _skin = skin;
             _display = display;
             _tooltipForm = tooltipForm;
 
@@ -44,7 +45,7 @@ namespace fooTitle
                 return;
             }
 
-            _curTopToolTipLayer = GetTopToolTipLayer(_parentLayer);
+            _curTopToolTipLayer = GetTopToolTipLayer();
 
             if (!_tooltipForm.Visible || _tooltipLayer != _curTopToolTipLayer)
             {
@@ -134,9 +135,9 @@ namespace fooTitle
                 _tooltipLayer = null;
             }
         }
-        private static Layer GetTopToolTipLayer(Layer layer)
+        private Layer GetTopToolTipLayer()
         {
-            Layer tmp = GetTopLayerUnderMouse(layer);
+            Layer tmp = GetTopLayerUnderMouse(_skin);
             return tmp.HasToolTip ? tmp : null;
         }
 
@@ -145,7 +146,7 @@ namespace fooTitle
             for (int i = parent.SubLayers.Count - 1; i >= 0; --i)
             { // Last layer is the top one
                 Layer layer = parent.SubLayers[i];
-                if (!layer.IsMouseOver)
+                if (!layer.IsMouseOver || layer.IsTooltipTransparent)
                 {
                     continue;
                 }

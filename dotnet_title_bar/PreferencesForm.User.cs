@@ -215,9 +215,7 @@ namespace fooTitle
             }
             catch (Exception ex)
             {
-                Utils.ReportErrorWithPopup($"There was an error opening directory:\n"
-                                           + $"{ex.Message}\n"
-                                           + $"{ex}");
+                Utils.ReportErrorWithPopup("There was an error opening directory:", ex);
             }
         }
 
@@ -267,8 +265,7 @@ namespace fooTitle
             }
             catch (Exception e)
             {
-                Console.Get().LogError($"Skin enumeration failed:\n\n"
-                                       + $"{e}");
+                Console.Get().LogError($"Skin enumeration failed:", e);
                 return new List<ListViewItem>();
             }
         }

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
@@ -129,8 +131,7 @@ namespace fooTitle.Layers
             }
             catch (XmlException e)
             {
-                Console.Get().LogError($"Failed to parse skin from {skinFullPath}:\n\n"
-                                       + $"{e}");
+                Console.Get().LogError($"Failed to parse skin from {skinFullPath}:", e);
                 return null;
             }
         }
@@ -274,7 +275,15 @@ namespace fooTitle.Layers
             if (eventObj != null)
             {
                 Delegate d = (Delegate)eventObj;
-                d.DynamicInvoke(p);
+                try
+                {
+                    d.DynamicInvoke(p);
+                }
+                catch (TargetInvocationException ex) when (ex.InnerException != null)
+                {
+                    ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+                    throw;
+                }
             }
         }
 
@@ -286,7 +295,7 @@ namespace fooTitle.Layers
             }
             catch (Exception e)
             {
-                Utils.ReportErrorWithPopup(e.ToString());
+                Utils.ReportErrorWithPopup(e);
             }
         }
 

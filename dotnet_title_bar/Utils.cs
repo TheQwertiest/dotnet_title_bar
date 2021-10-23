@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 
 namespace fooTitle
 {
@@ -10,6 +12,21 @@ namespace fooTitle
         {
             Console.Get()?.LogError(message);
             Main.Get().Fb2kUtils?.ShowPopup(message, Constants.ComponentNameUnderscored);
+        }
+
+        public static void ReportErrorWithPopup(Exception e)
+        {
+            var generatedMessage = $"{ e.Message }\n\n"
+                                          + $"{e}";
+            ReportErrorWithPopup(generatedMessage);
+        }
+
+        public static void ReportErrorWithPopup(string message, Exception e)
+        {
+            var generatedMessage = $"${message}\n"
+                                     + $"{ e.Message }\n\n"
+                                          + $"{e}";
+            ReportErrorWithPopup(generatedMessage);
         }
 
         public static string GetVersion()

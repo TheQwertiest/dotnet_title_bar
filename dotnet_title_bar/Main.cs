@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 
 namespace fooTitle
 {
@@ -189,9 +190,7 @@ namespace fooTitle
             catch (Exception e)
             {
                 _currentSkin = null;
-                Utils.ReportErrorWithPopup($"There was an error loading skin:\n"
-                                           + $"{e.Message}\n\n"
-                                           + $"{e}");
+                Utils.ReportErrorWithPopup($"There was an error loading skin:", e);
             }
         }
 
@@ -328,9 +327,7 @@ namespace fooTitle
                 _currentSkin?.Dispose();
                 _currentSkin = null;
 
-                Utils.ReportErrorWithPopup($"There was an error loading skin `{Configs.Base_CurrentSkinName.Value}`:\n"
-                                           + $"{e.Message}\n\n"
-                                           + $"{e}");
+                Utils.ReportErrorWithPopup($"There was an error loading skin `{Configs.Base_CurrentSkinName.Value}`:", e);
             }
         }
 
@@ -486,12 +483,20 @@ namespace fooTitle
                 if (_event != null)
                 {
                     var d = (Delegate)_event;
-                    d.DynamicInvoke(p);
+                    try
+                    {
+                        d.DynamicInvoke(p);
+                    }
+                    catch (TargetInvocationException ex) when (ex.InnerException != null)
+                    {
+                        ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+                        throw;
+                    }
                 }
             }
             catch (Exception e)
             {
-                Console.Get().LogError(e.ToString());
+                Console.Get().LogError(e);
             }
         }
 

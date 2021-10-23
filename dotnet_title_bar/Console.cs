@@ -1,4 +1,5 @@
 ﻿using Qwr.ComponentInterface;
+using System;
 
 namespace fooTitle
 {
@@ -30,21 +31,77 @@ namespace fooTitle
 
         public void LogInfo(string message)
         {
-            _console.Log($"{_componentName}: {message}\n");
+            LogFormattedMessage(message);
         }
 
         public void LogWarning(string message)
         {
-            _console.Log($"{_componentName}:\n"
-                         + "  Warning:\n"
-                         + $"  {message}\n");
+            LogFormattedMessage("Warning", message);
+        }
+
+        public void LogWarning(Exception e)
+        {
+            LogFormattedMessage("Warning", e);
+        }
+
+        public void LogWarning(string message, Exception e)
+        {
+            LogFormattedMessage("Warning", message, e);
         }
 
         public void LogError(string message)
         {
-            _console.Log($"{_componentName}:\n"
-                         + "  Error:\n"
+            LogFormattedMessage("Error", message);
+        }
+
+        public void LogError(Exception e)
+        {
+            LogFormattedMessage("Error", e);
+        }
+        public void LogError(string message, Exception e)
+        {
+            LogFormattedMessage("Error", message, e);
+        }
+
+        private void LogFormattedMessage(string message)
+        {
+            if (message.Contains('\n'))
+            {
+                _console.Log($"{_componentName}:\n"
                          + $"  {message}\n");
+            }
+            else
+            {
+                _console.Log($"{_componentName}: {message}");
+            }
+        }
+
+        private void LogFormattedMessage(string prefix, string message)
+        {
+            if (message.Contains('\n'))
+            {
+                _console.Log($"{_componentName}: {prefix}:\n"
+                         + $"  {message}\n");
+            }
+            else
+            {
+                _console.Log($"{_componentName}: {prefix}: {message}");
+            }
+        }
+
+        private void LogFormattedMessage(string prefix, Exception e)
+        {
+            _console.Log($"{_componentName}: {prefix}:\n"
+                        + $"  {e.Message}\n\n"
+                                        + $"{e}\n");
+        }
+
+        private void LogFormattedMessage(string prefix, string message, Exception e)
+        {
+            _console.Log($"{_componentName}: {prefix}:\n"
+                        + $"  {message}\n"
+                                         + $"  {e.Message}\n\n"
+                                         + $"{e}\n");
         }
     }
 }

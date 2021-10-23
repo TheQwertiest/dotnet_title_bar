@@ -102,8 +102,7 @@ namespace fooTitle.Extending
             }
             catch (Exception e)
             {
-                Console.Get().LogWarning(e.ToString());
-                Console.Get().LogWarning(val);
+                Console.Get().LogWarning($"Failed to parse value `{val}`:", e);
                 return def;
             }
         }
