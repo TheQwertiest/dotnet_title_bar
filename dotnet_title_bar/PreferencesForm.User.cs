@@ -59,8 +59,10 @@ namespace fooTitle
 
         private async void Properties_HandleCreated(object sender, EventArgs e)
         {
-            versionLabel.Text = $"Version: {Utils.GetVersion()}";
             IsOpen = true;
+            Main.Get().RefreshPassthroughState();
+
+            versionLabel.Text = $"Version: {Utils.GetVersion()}";
 
             await RefreshSkinsList();
         }
@@ -77,6 +79,7 @@ namespace fooTitle
             _cts = null;
 
             IsOpen = false;
+            Main.Get().RefreshPassthroughState();
         }
 
         private void SkinsList_DoubleClick(object sender, EventArgs e)

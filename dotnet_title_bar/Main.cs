@@ -35,6 +35,7 @@ namespace fooTitle
         private System.Windows.Forms.Timer _redrawTimer;
         private IMetadbHandle _lastSong;
         private IMainMenuCommand _enableDisplayCommand;
+        private IMainMenuCommand _passthroughDisplayCommand;
 
         /// <summary>
         /// List of layers, that need continuous redrawing (e.g. animation, scrolling text)
@@ -96,14 +97,20 @@ namespace fooTitle
 
             // initialize menu commands
             var menuGroup = servicesManager.GetMainMenuGroup(Fb2kUtils.Fb2kGuid(Fb2kGuidId.MainMenuGroups_View));
-            var commandSection = menuGroup.AddCommandSection();
-            _enableDisplayCommand = commandSection.AddCommand(Guids.MainMenu_ToggleTitleBar, "Toggle Title Bar", "Enables or disables dotnet_title_bar popup.", () =>
+            var tbGroup = menuGroup.AddGroup(Guids.MainMenu_GroupTitleBar, "Title Bar");
+            var commandSection = tbGroup.AddCommandSection();
+            _enableDisplayCommand = commandSection.AddCommand(Guids.MainMenu_ToggleTitleBar, "Display", "Enables or disables dotnet_title_bar popup.", () =>
             {
                 _showControl.TogglePopup();
                 _enableDisplayCommand.IsChecked = (Configs.ShowControl_EnableWhen.Value != EnableWhenEnum.Never);
             });
             _enableDisplayCommand.IsChecked = (Configs.ShowControl_EnableWhen.Value != EnableWhenEnum.Never);
-            var peekCmd = commandSection.AddCommand(Guids.MainMenu_PeekTitleBar, "Peek Title Bar", "Shows dotnet_title_bar popup briefly.", () => _showControl.TriggerPopup());
+            _passthroughDisplayCommand = commandSection.AddCommand(Guids.MainMenu_PassthroughTitleBar, "Passthrough", "Makes dotnet_title_bar ignore or handle mouse events.", () =>
+            {
+                Configs.Display_IsPassthroughEnabled.Value = !Configs.Display_IsPassthroughEnabled.Value;
+                _passthroughDisplayCommand.IsChecked = Configs.Display_IsPassthroughEnabled.Value;
+            });
+            var peekCmd = commandSection.AddCommand(Guids.MainMenu_PeekTitleBar, "Peek", "Shows dotnet_title_bar popup briefly.", () => _showControl.TriggerPopup());
             peekCmd.IsDefaultHidden = true;
         }
 
@@ -154,6 +161,22 @@ namespace fooTitle
             set
             {
                 _isMouseOnDragLayer = value;
+            }
+        }
+
+        public bool ShouldPassthroughDisplay
+        {
+            get
+            {
+                if (Preferences.IsOpen)
+                {
+                    // TODO: add config similar to EnableDragging
+                    return false;
+                }
+                else
+                {
+                    return Configs.Display_IsPassthroughEnabled.Value;
+                }
             }
         }
 
@@ -285,6 +308,11 @@ namespace fooTitle
             SkinForm.SetAnchorPosition(_positionX.Value, _positionY.Value);
         }
 
+        public void RefreshPassthroughState()
+        {
+            SkinForm.RefreshPassthroughState();
+        }
+
         private void InitializeDisplay()
         {
             // initialize the form displaying the images
@@ -374,6 +402,12 @@ namespace fooTitle
             RedrawTitleBar();
         }
 
+        private void IsPassthroughEnabled_Changed_EventHandler(string name)
+        {
+            _passthroughDisplayCommand.IsChecked = Configs.Display_IsPassthroughEnabled.Value;
+            RefreshPassthroughState();
+        }
+
         private void MyDisplay_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _skinForm.Closing -= MyDisplay_Closing;
@@ -440,6 +474,7 @@ namespace fooTitle
             Configs.Display_RefreshRate.Changed += UpdateInterval_Changed_EventHandler;
             Configs.Base_CurrentSkinName.Changed += SkinPath_Changed_EventHandler;
             Configs.Display_IsDpiScalingEnabled.Changed += EnableDpiScale_Changed_EventHandler;
+            Configs.Display_IsPassthroughEnabled.Changed += IsPassthroughEnabled_Changed_EventHandler;
             _positionX.Changed += PositionX_Changed_EventHandler;
             _positionY.Changed += PositionY_Changed_EventHandler;
 

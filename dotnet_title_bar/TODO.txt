@@ -1,7 +1,6 @@
 - some other glow or blur or whatever effect that will make sure that white text on a transparent background will be easily readable
 - maybe create the effect of reflecting glass ;)
 - pixel accurate button hit testing
-- click through - could be made .... and buttons wouldn't be click through..
 - think about adding .gif support to all the layers.
 - research possibility of .svg support
 - support for custom fonts load in skin (is it secure?)
@@ -12,4 +11,5 @@ testing:
 	- test stability
 bugs:
     - Preferences page has some text that is cut-off, when resolution scaling is above 100%.
+
 

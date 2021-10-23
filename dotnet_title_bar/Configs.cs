@@ -46,6 +46,7 @@ namespace fooTitle
         public static ConfInt Display_ArtLoadMaxRetries = new("display/artLoadMaxTimes", 2, -1, int.MaxValue);
         public static ConfEnum<EnableDragging> Display_IsDraggingEnabled = new("display/enableDragging", EnableDragging.Always);
 
+        public static ConfBool Display_IsPassthroughEnabled = new("display/enablePassthrough", false);
         public static ConfBool Display_IsDpiScalingEnabled = new("display/dpiScale", true);
 
         /// <summary>

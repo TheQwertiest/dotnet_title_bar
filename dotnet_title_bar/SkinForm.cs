@@ -87,6 +87,7 @@ namespace fooTitle
             _reshower = new RepeatedShowing(this);
             _dockAnchor = new DockAnchor(this);
             SetWindowsPos(_windowPosition.Value);
+            RefreshPassthroughState();
         }
 
         /// <summary>
@@ -107,6 +108,20 @@ namespace fooTitle
         }
 
         public AnimationManager AnimManager { get; }
+
+        public void RefreshPassthroughState()
+        {
+            int style = Win32.GetWindowLong(this.Handle, Win32.GWL_EXSTYLE);
+            if (Main.Get().ShouldPassthroughDisplay)
+            {
+                style |= Win32.WS_EX_TRANSPARENT;
+            }
+            else
+            {
+                style &= ~Win32.WS_EX_TRANSPARENT;
+            }
+            _ = Win32.SetWindowLong(this.Handle, Win32.GWL_EXSTYLE, style);
+        }
 
         public void FrameRedraw()
         {
