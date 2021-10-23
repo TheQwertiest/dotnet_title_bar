@@ -65,7 +65,7 @@
         </layer>
 
         <!--   Buttons -->
-        <layer name="bPrev" type="button">
+        <layer name="bPrev" type="button" tooltip="Previous">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="10" y="4" />
@@ -78,7 +78,7 @@
             </contents>
         </layer>
 
-        <layer name="bPlay" type="button">
+        <layer name="bPlay" type="button" tooltip="Play or Pause">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="28" y="4" />
@@ -92,7 +92,7 @@
         </layer>
 
 
-        <layer name="bNext" type="button">
+        <layer name="bNext" type="button" tooltip="Next">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="427" y="4" />
@@ -105,7 +105,7 @@
             </contents>
         </layer>
 
-        <layer name="bActivate" type="button">
+        <layer name="bActivate" type="button" tooltip="Show/Hide foobar2000">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="407" y="4" />
@@ -118,7 +118,7 @@
             </contents>
         </layer>
 
-        <layer name="bExtendBlue" type="button">
+        <layer name="bExtendBlue" type="button" tooltip="Toggle extra bar">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="392" y="4" />
@@ -135,7 +135,7 @@
             </contents>
         </layer>
 
-        <layer name="bExtendYellow" type="button" enabled="false">
+        <layer name="bExtendYellow" type="button" enabled="false" tooltip="Toggle extra bar">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="392" y="4" />
@@ -152,7 +152,7 @@
             </contents>
         </layer>
 
-        <layer name="bExtendGreen" type="button" enabled="false">
+        <layer name="bExtendGreen" type="button" enabled="false" tooltip="Toggle extra bar">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="392" y="4" />
@@ -169,7 +169,7 @@
             </contents>
         </layer>
 
-        <layer name="reflection1" type="absolute-images">
+        <layer name="reflection1" type="absolute-images" tooltip-transparent="true">
             <geometry type="absolute">
                 <size x="450" y="25" />
                 <position x="0" y="0" align="left" />
@@ -189,7 +189,7 @@
             <image src="shade_albumart.png" />
         </contents>
         
-        <layer name="prev" type="button">
+        <layer name="prev" type="button" tooltip="Open current track directory">
             <geometry type="absolute">
             <size x="62" y="64"/>
                  <position x="0" y="0" align="left"/>
@@ -288,7 +288,7 @@
             </contents>
         </layer>
 
-        <layer name="bAlbumArtBlue" type="button" persistent="true">
+        <layer name="bAlbumArtBlue" type="button" persistent="true" tooltip="Toggle album art">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="427" y="3" />
@@ -303,7 +303,7 @@
             </contents>
         </layer>
 
-        <layer name="bAlbumArtYellow" type="button" enabled="false" persistent="true">
+        <layer name="bAlbumArtYellow" type="button" enabled="false" persistent="true" tooltip="Toggle album art">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="427" y="3" />
@@ -318,7 +318,7 @@
             </contents>
         </layer>
 
-        <layer name="bAlbumArtGreen" type="button" enabled="false" persistent="true">
+        <layer name="bAlbumArtGreen" type="button" enabled="false" persistent="true" tooltip="Toggle album art">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="427" y="3" />
@@ -333,20 +333,20 @@
             </contents>
         </layer>
 
-        <layer name="bMute" type="button">
+        <layer name="bMute" type="button" tooltip="Mute">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="407" y="3" />
             </geometry>
             <contents>
-                <action>Volume Mute</action>
+                <action>Volume/Mute</action>
                 <normalImg src="normal\mute.png" />
                 <overImg src="over\mute.png" />
                 <downImg src="down\mute.png" />
             </contents>
         </layer>
 
-        <layer name="bProps" type="button">
+        <layer name="bProps" type="button" tooltip="Track properties">
             <geometry type="absolute">
                 <size x="18" y="18" />
                 <position x="390" y="3" />
@@ -466,7 +466,7 @@
         </layer>
 
         <!-- Color buttons -->
-        <layer name="bBlue" type="button">
+        <layer name="bBlue" type="button" tooltip="Change background to blue">
             <geometry type="absolute">
                 <size x="16" y="16" />
                 <position x="429" y="20" />
@@ -492,7 +492,7 @@
                 <normalImg src="color_btn_normal.png" />
             </contents>
 
-            <layer name="bBlueInside" type="absolute-images">
+            <layer name="bBlueInside" type="absolute-images" tooltip-transparent="true">
                 <geometry type="absolute">
                     <size x="14" y="14" />
                     <position x="1" y="1" align="left" />
@@ -504,7 +504,7 @@
 
         </layer>
 
-        <layer name="bYellow" type="button">
+        <layer name="bYellow" type="button" tooltip="Change background to yellow">
             <geometry type="absolute">
                 <size x="16" y="16" />
                 <position x="411" y="20" />
@@ -530,7 +530,7 @@
                 <normalImg src="color_btn_normal.png" />
             </contents>
 
-            <layer name="bBlueInside" type="absolute-images">
+            <layer name="bBlueInside" type="absolute-images" tooltip-transparent="true">
                 <geometry type="absolute">
                     <size x="14" y="14" />
                     <position x="1" y="1" align="left" />
@@ -541,7 +541,7 @@
             </layer>
         </layer>
 
-        <layer name="bGreen" type="button">
+        <layer name="bGreen" type="button" tooltip="Change background to green">
             <geometry type="absolute">
                 <size x="16" y="16" />
                 <position x="393" y="20" />
@@ -567,7 +567,7 @@
                 <normalImg src="color_btn_normal.png" />
             </contents>
 
-            <layer name="bGreenInside" type="absolute-images">
+            <layer name="bGreenInside" type="absolute-images" tooltip-transparent="true">
                 <geometry type="absolute">
                     <size x="14" y="14" />
                     <position x="1" y="1" align="left" />
