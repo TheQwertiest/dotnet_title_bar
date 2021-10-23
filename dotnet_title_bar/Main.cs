@@ -102,12 +102,20 @@ namespace fooTitle
             _enableDisplayCommand = commandSection.AddCommand(Guids.MainMenu_ToggleTitleBar, "Display", "Enables or disables dotnet_title_bar popup.", () =>
             {
                 _showControl.TogglePopup();
+                if (!Preferences.IsOpen)
+                {
+                    ConfValuesManager.GetInstance().SaveTo(Config);
+                }
                 _enableDisplayCommand.IsChecked = (Configs.ShowControl_EnableWhen.Value != EnableWhenEnum.Never);
             });
             _enableDisplayCommand.IsChecked = (Configs.ShowControl_EnableWhen.Value != EnableWhenEnum.Never);
             _passthroughDisplayCommand = commandSection.AddCommand(Guids.MainMenu_PassthroughTitleBar, "Passthrough", "Makes dotnet_title_bar ignore or handle mouse events.", () =>
             {
                 Configs.Display_IsPassthroughEnabled.Value = !Configs.Display_IsPassthroughEnabled.Value;
+                if (!Preferences.IsOpen)
+                {
+                    ConfValuesManager.GetInstance().SaveTo(Config);
+                }
                 _passthroughDisplayCommand.IsChecked = Configs.Display_IsPassthroughEnabled.Value;
             });
             var peekCmd = commandSection.AddCommand(Guids.MainMenu_PeekTitleBar, "Peek", "Shows dotnet_title_bar popup briefly.", () => _showControl.TriggerPopup());
