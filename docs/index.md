@@ -28,7 +28,7 @@ Features:
 ## Links
 [Support thread](https://hydrogenaud.io/index.php?topic=121673)  
 [Changelog][changelog]  
-[Dev build](https://ci.appveyor.com/api/projects/theqwertiest/dotnet-title-bar/artifacts/_result%2FAnyCPU_Release%2Fdotnet_title_bar.net-component?branch=master&job=Configuration%3A%20Release)
+[Dev build](https://ci.appveyor.com/api/projects/theqwertiest/dotnet-title-bar/artifacts/_result%2FAnyCPU_Release%2Fdotnet_title_bar.net-component?branch=master&pr=false&job=Configuration%3A%20Release)
 
 ## Credits
 - [Quiark](https://github.com/Quiark): original component.  
